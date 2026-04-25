@@ -127,6 +127,15 @@ html,body{min-height:100%;background:var(--cream);font-family:'DM Sans',sans-ser
       <option value="0">Hole 1</option><option value="9">Hole 10</option>
     </select></div>
   </div>
+  <div class="frow2">
+    <div style="grid-column:1/-1"><label class="flbl">Round Format</label><select class="finp" id="pFormat" onchange="previewHcp()">
+      <option value="1.00">General Play (100%)</option>
+      <option value="0.95">Stableford (95%)</option>
+      <option value="0.95">Strokeplay (95%)</option>
+      <option value="1.00">Matchplay (100%)</option>
+      <option value="0.90">Four-ball Betterball (90%)</option>
+    </select></div>
+  </div>
   <div class="hcp-calc-preview" id="hcpPreview"></div>
   <button class="start-btn" onclick="startRound()">Start Round →</button>
 </div>
@@ -211,13 +220,15 @@ const R = { name:'', hi:0, teeKey:'yellow_m', gender:'m', ph:0, startIdx:0, scor
 function previewHcp(){
   const hi=parseFloat(document.getElementById('pHI').value);
   const teeKey=document.getElementById('pTee').value;
+  const allow=parseFloat(document.getElementById('pFormat').value)||1.00;
   if(isNaN(hi)||hi<0){document.getElementById('hcpPreview').style.display='none';return;}
   const ch=calcCourseHcp(hi,teeKey);
-  const ph=calcPlayingHcp(hi,teeKey,0.95);
+  const ph=calcPlayingHcp(hi,teeKey,allow);
   const t=COURSE.ratings[teeKey];
+  const fmtLabel=document.getElementById('pFormat').options[document.getElementById('pFormat').selectedIndex].text;
   document.getElementById('hcpPreview').style.display='block';
   document.getElementById('hcpPreview').innerHTML=
-    `📊 <strong>Course HCP:</strong> ${ch} &nbsp;|&nbsp; <strong>Playing HCP (95%):</strong> ${ph}<br>`+
+    `📊 <strong>Course HCP:</strong> ${ch} &nbsp;|&nbsp; <strong>Playing HCP (${fmtLabel}):</strong> ${ph}<br>`+
     `<span style="font-size:.7rem;color:var(--grey)">${t.name} · CR ${t.cr} · Slope ${t.slope} · Par ${t.par}</span>`;
 }
 
@@ -230,12 +241,14 @@ function startRound(){
   R.teeKey=document.getElementById('pTee').value;
   R.gender=document.getElementById('pGender').value;
   R.startIdx=parseInt(document.getElementById('pStart').value);
-  R.ph=calcPlayingHcp(hi,R.teeKey,0.95);
+  const allow=parseFloat(document.getElementById('pFormat').value)||1.00;
+  R.ph=calcPlayingHcp(hi,R.teeKey,allow);
   R.curIdx=R.startIdx;
   R.scores=new Array(18).fill(null);
   document.getElementById('pbName').textContent=name;
   const t=COURSE.ratings[R.teeKey];
-  document.getElementById('pbMeta').textContent=`HI ${hi.toFixed(1)} · Playing HCP ${R.ph} · ${t.name}`;
+  const fmtLabel=document.getElementById('pFormat').options[document.getElementById('pFormat').selectedIndex].text;
+  document.getElementById('pbMeta').textContent=`HI ${hi.toFixed(1)} · Playing HCP ${R.ph} · ${fmtLabel}`;
   showScr('scrCard'); renderHole();
 }
 
