@@ -126,6 +126,21 @@ html,body{min-height:100%;background:linear-gradient(160deg,#09132a 0%,var(--nav
 
   <div class="content">
 
+    <!-- QUICK SETTINGS - prominent at top -->
+    <div class="sec" style="border-color:rgba(212,160,23,.4);background:rgba(212,160,23,.07);">
+      <div class="sec-title" style="color:var(--gold-lt)">⚡ Quick Settings</div>
+      <div class="sec-desc">Changes here update the competition name and announcement shown on the Score Entry and Leaderboard apps immediately.</div>
+      <div class="field">
+        <label class="slabel">Competition Name</label>
+        <input class="finp" id="quickNameInput" type="text" placeholder="e.g. Seniors Open 2025" oninput="syncQuickName()">
+      </div>
+      <div class="field">
+        <label class="slabel">Announcement / Ticker Message</label>
+        <input class="finp" id="quickTickerInput" type="text" placeholder="e.g. Prize presentation at 6:30 PM in the Spike Bar" oninput="syncQuickTicker()">
+      </div>
+      <button class="save-btn" onclick="saveQuick()">⚡ Apply Changes Now</button>
+    </div>
+
     <!-- LIVE STATUS -->
     <div class="sec">
       <div class="sec-title">Live Status</div>
@@ -307,20 +322,37 @@ function changePassword() {
 // ── COMPETITION SETTINGS ──
 const SETTINGS_KEY = 'sgc_comp_settings';
 
+function syncQuickName() {
+  const v = document.getElementById('quickNameInput').value;
+  document.getElementById('compNameInput').value = v;
+}
+function syncQuickTicker() {
+  const v = document.getElementById('quickTickerInput').value;
+  document.getElementById('compTickerInput').value = v;
+}
+async function saveQuick() {
+  // Sync quick fields to full settings fields first
+  syncQuickName(); syncQuickTicker();
+  // Then save everything
+  await saveSettings();
+}
+
 function loadSettings() {
   try {
     const s = JSON.parse(localStorage.getItem(SETTINGS_KEY) || '{}');
-    document.getElementById('compNameInput').value   = s.name   || 'Seniors Open 2025';
+    document.getElementById('compNameInput').value   = s.name   || 'Stanmore Golf Club';
+    document.getElementById('quickNameInput').value   = s.name   || 'Stanmore Golf Club';
     document.getElementById('compDateInput').value   = s.date   || '';
     document.getElementById('compFormatInput').value = s.format || 'stableford';
     document.getElementById('compTeeInput').value    = s.tee    || 'yellow_m';
     document.getElementById('compTickerInput').value = s.ticker || '';
+    document.getElementById('quickTickerInput').value = s.ticker || '';
   } catch(e) {}
 }
 
 async function saveSettings() {
   const settings = {
-    name:   document.getElementById('compNameInput').value.trim() || 'Seniors Open 2025',
+    name:   document.getElementById('compNameInput').value.trim() || 'Stanmore Golf Club',
     date:   document.getElementById('compDateInput').value,
     format: document.getElementById('compFormatInput').value,
     tee:    document.getElementById('compTeeInput').value,

@@ -112,7 +112,7 @@ html,body{height:100%;background:var(--cream);font-family:'DM Sans',sans-serif;c
       </div>
     </div>
     <div class="cstrip">
-      <div class="cname" id="compNameHdr">Seniors Open 2025</div>
+      <div class="cname" id="compNameHdr">Stanmore Golf Club</div>
       <div class="cdate" id="compDate"></div>
     </div>
   </div>
@@ -345,7 +345,7 @@ function closeShare(){document.getElementById('sharePanel').classList.remove('op
 function copyUrl(){const u=document.getElementById('shareUrlTxt').textContent;navigator.clipboard&&navigator.clipboard.writeText(u);}
 function shareUrl(){
   const u=document.getElementById('shareUrlTxt').textContent;
-  const compName=document.getElementById('compNameHdr').textContent||'Seniors Open 2025';const t=`⛳ Stanmore GC – ${compName}\n\nEnter your scores here:\n${u}`;
+  const compName=document.getElementById('compNameHdr').textContent||'Stanmore Golf Club';const t=`⛳ Stanmore GC – ${compName}\n\nEnter your scores here:\n${u}`;
   if(navigator.share)navigator.share({title:'Stanmore GC Score Entry',text:t,url:u});
   else window.open('https://wa.me/?text='+encodeURIComponent(t),'_blank');
 }
