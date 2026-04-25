@@ -112,7 +112,7 @@ html,body{height:100%;background:var(--cream);font-family:'DM Sans',sans-serif;c
       </div>
     </div>
     <div class="cstrip">
-      <div class="cname">Seniors Open 2025</div>
+      <div class="cname" id="compNameHdr">Seniors Open 2025</div>
       <div class="cdate" id="compDate"></div>
     </div>
   </div>
@@ -122,6 +122,11 @@ html,body{height:100%;background:var(--cream);font-family:'DM Sans',sans-serif;c
     <div class="si"><div class="sv" id="stFin">0</div><div class="sl">Finished</div></div>
     <div class="si"><div class="sv" id="stLead">—</div><div class="sl">Leader Pts</div></div>
   </div>
+  <!-- TICKER from admin settings -->
+  <div id="tickerBar" style="display:none;background:rgba(212,160,23,.12);border-top:1px solid rgba(212,160,23,.2);border-bottom:1px solid rgba(212,160,23,.2);padding:7px 16px;flex-shrink:0;">
+    <div style="font-size:.7rem;color:var(--gold-lt);font-family:'DM Mono',monospace;text-align:center;" id="tickerMsg"></div>
+  </div>
+
   <div class="tab-bar">
     <div class="tab active" onclick="setTab('all',this)">All</div>
     <div class="tab" onclick="setTab('inplay',this)">On Course</div>
@@ -215,9 +220,31 @@ let players=[], tab='all', refreshTimer=null;
 
 window.addEventListener('load',()=>{
   document.getElementById('compDate').textContent=new Date().toLocaleDateString('en-GB',{weekday:'short',day:'numeric',month:'long',year:'numeric'});
+  loadAdminSettings();
   loadScores();
-  refreshTimer=setInterval(loadScores,15000);
+  refreshTimer=setInterval(()=>{loadAdminSettings();loadScores();},15000);
 });
+
+// ── READ ADMIN SETTINGS ──
+async function loadAdminSettings() {
+  try {
+    const r = await window.storage.get('sgc_settings', true);
+    if (!r || !r.value) return;
+    const s = JSON.parse(r.value);
+    if (s.name) document.getElementById('compNameHdr').textContent = s.name;
+    if (s.ticker && s.ticker.trim()) {
+      const el = document.getElementById('tickerMsg');
+      const bar = document.getElementById('tickerBar');
+      if (el) el.textContent = s.ticker;
+      if (bar) bar.style.display = 'block';
+    } else {
+      const bar = document.getElementById('tickerBar');
+      if (bar) bar.style.display = 'none';
+    }
+    // Store format for score display
+    window.compFormat = s.format || 'stableford';
+  } catch(e) {}
+}
 
 async function loadScores(){
   try{
@@ -318,7 +345,7 @@ function closeShare(){document.getElementById('sharePanel').classList.remove('op
 function copyUrl(){const u=document.getElementById('shareUrlTxt').textContent;navigator.clipboard&&navigator.clipboard.writeText(u);}
 function shareUrl(){
   const u=document.getElementById('shareUrlTxt').textContent;
-  const t=`⛳ Stanmore GC – Seniors Open 2025\n\nEnter your scores here:\n${u}`;
+  const compName=document.getElementById('compNameHdr').textContent||'Seniors Open 2025';const t=`⛳ Stanmore GC – ${compName}\n\nEnter your scores here:\n${u}`;
   if(navigator.share)navigator.share({title:'Stanmore GC Score Entry',text:t,url:u});
   else window.open('https://wa.me/?text='+encodeURIComponent(t),'_blank');
 }

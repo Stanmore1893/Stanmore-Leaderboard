@@ -332,7 +332,7 @@ async function saveSettings() {
   // Also push to shared storage so leaderboard + scoring apps pick it up
   try {
     await window.storage.set('sgc_settings', JSON.stringify(settings), true);
-    toast('✓ Settings saved — all apps will update on next refresh');
+    toast('✓ Settings saved — Score Entry & Leaderboard will update automatically');
   } catch(e) {
     toast('✓ Settings saved locally');
   }
