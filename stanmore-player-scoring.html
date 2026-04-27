@@ -182,6 +182,55 @@ html,body{min-height:100%;background:var(--cream);font-family:'DM Sans',sans-ser
 </div>
 
 <script>
+const STORAGE_CONFIG = {
+  BIN_ID:  '69ef1de136566621a8f75577',
+  API_KEY: '$2a$10$SbiSprdRGXi1U.q9BjYmM.0j1zDR1KPafxbgdfo9OFgGPmLVv/W5e',
+};
+
+const _localStore = {};
+
+const SGC = {
+  async get(key) {
+    if (STORAGE_CONFIG.BIN_ID && STORAGE_CONFIG.API_KEY) {
+      try {
+        const res = await fetch(
+          `https://api.jsonbin.io/v3/b/${STORAGE_CONFIG.BIN_ID}/latest`,
+          { headers: { 'X-Master-Key': STORAGE_CONFIG.API_KEY } }
+        );
+        if (res.ok) {
+          const data = await res.json();
+          const val = data.record[key];
+          return val !== undefined ? val : null;
+        }
+      } catch(e) { console.warn('SGC.get failed:', e.message); }
+    }
+    return _localStore[key] || null;
+  },
+  async set(key, value) {
+    if (STORAGE_CONFIG.BIN_ID && STORAGE_CONFIG.API_KEY) {
+      try {
+        const getRes = await fetch(
+          `https://api.jsonbin.io/v3/b/${STORAGE_CONFIG.BIN_ID}/latest`,
+          { headers: { 'X-Master-Key': STORAGE_CONFIG.API_KEY } }
+        );
+        let record = {};
+        if (getRes.ok) { const d = await getRes.json(); record = d.record || {}; }
+        record[key] = value;
+        const putRes = await fetch(
+          `https://api.jsonbin.io/v3/b/${STORAGE_CONFIG.BIN_ID}`,
+          {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json', 'X-Master-Key': STORAGE_CONFIG.API_KEY },
+            body: JSON.stringify(record)
+          }
+        );
+        if (putRes.ok) { _localStore[key] = value; return true; }
+      } catch(e) { console.warn('SGC.set failed:', e.message); }
+    }
+    _localStore[key] = value;
+    return true;
+  }
+};
 
 const COURSE = {
   holes:[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18],
@@ -353,10 +402,10 @@ async function submitScore(pts,gross,nett){
   try{
     const entry={name:R.name,hi:R.hi,teeKey:R.teeKey,gender:R.gender,ph:R.ph,gross,nett,thru:18,pts,fin:true,ts:Date.now()};
     let scores=[];
-    try{const ex=await window.storage.get('sgc_scores',true);if(ex)scores=JSON.parse(ex.value);}catch(e){}
+    try{const ex=await SGC.get('scores');if(ex&&Array.isArray(ex))scores=ex;else if(ex)scores=JSON.parse(ex);}catch(e){}
     const idx=scores.findIndex(s=>s.name.toLowerCase()===R.name.toLowerCase());
     if(idx>=0)scores[idx]=entry;else scores.push(entry);
-    await window.storage.set('sgc_scores',JSON.stringify(scores),true);
+    await SGC.set('scores', scores);
     document.getElementById('submitMsg').textContent='✓ Score submitted! Head to the clubhouse leaderboard to see your position.';
   }catch(e){document.getElementById('submitMsg').textContent='Score saved. Ask your Comp Sec to add it manually if needed.';}
 }
@@ -365,17 +414,17 @@ async function saveProgress(){
   try{
     const partial={name:R.name,hi:R.hi,teeKey:R.teeKey,gender:R.gender,ph:R.ph,gross:R.scores.reduce((s,g)=>s+(g||0),0),nett:0,thru:R.scores.filter(s=>s!==null).length,pts:runningPts(),fin:false,ts:Date.now()};
     let scores=[];
-    try{const ex=await window.storage.get('sgc_scores',true);if(ex)scores=JSON.parse(ex.value);}catch(e){}
+    try{const ex=await SGC.get('scores');if(ex&&Array.isArray(ex))scores=ex;else if(ex)scores=JSON.parse(ex);}catch(e){}
     const idx=scores.findIndex(s=>s.name.toLowerCase()===R.name.toLowerCase());
     if(idx>=0)scores[idx]=partial;else scores.push(partial);
-    await window.storage.set('sgc_scores',JSON.stringify(scores),true);
+    await SGC.set('scores', scores);
   }catch(e){}
 }
 
 // ── LOAD ADMIN SETTINGS ──
 async function loadAdminSettings() {
   try {
-    const r = await window.storage.get('sgc_settings', true);
+    const r = await SGC.get('settings');
     if (!r || !r.value) return;
     const s = JSON.parse(r.value);
 

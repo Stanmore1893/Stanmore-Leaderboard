@@ -180,6 +180,70 @@ html,body{height:100%;background:var(--cream);font-family:'DM Sans',sans-serif;c
   </div>
 </div>
 
+<script>
+
+// ══════════════════════════════════════════════════
+// SHARED STORAGE — connects Score Entry, Leaderboard
+// and Admin across all devices via JSONBin.io
+// Setup: create a free bin at jsonbin.io and paste
+// your BIN_ID and API_KEY below.
+// ══════════════════════════════════════════════════
+const STORAGE_CONFIG = {
+  BIN_ID:  '69ef1de136566621a8f75577',
+  API_KEY: '$2a$10$SbiSprdRGXi1U.q9BjYmM.0j1zDR1KPafxbgdfo9OFgGPmLVv/W5e',
+};
+
+// In-memory fallback store (works locally, resets on refresh)
+const _localStore = {};
+
+const SGC = {
+  // Read a value
+  async get(key) {
+    if (STORAGE_CONFIG.BIN_ID && STORAGE_CONFIG.API_KEY) {
+      try {
+        const res = await fetch(
+          `https://api.jsonbin.io/v3/b/${STORAGE_CONFIG.BIN_ID}/latest`,
+          { headers: { 'X-Master-Key': STORAGE_CONFIG.API_KEY } }
+        );
+        if (res.ok) {
+          const data = await res.json();
+          const val = data.record[key];
+          return val !== undefined ? val : null;
+        }
+      } catch(e) { console.warn('SGC.get failed, using local:', e.message); }
+    }
+    return _localStore[key] || null;
+  },
+
+  // Write a value
+  async set(key, value) {
+    if (STORAGE_CONFIG.BIN_ID && STORAGE_CONFIG.API_KEY) {
+      try {
+        // Read current bin first (JSONBin replaces entire record)
+        const getRes = await fetch(
+          `https://api.jsonbin.io/v3/b/${STORAGE_CONFIG.BIN_ID}/latest`,
+          { headers: { 'X-Master-Key': STORAGE_CONFIG.API_KEY } }
+        );
+        let record = {};
+        if (getRes.ok) { const d = await getRes.json(); record = d.record || {}; }
+        record[key] = value;
+        const putRes = await fetch(
+          `https://api.jsonbin.io/v3/b/${STORAGE_CONFIG.BIN_ID}`,
+          {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json', 'X-Master-Key': STORAGE_CONFIG.API_KEY },
+            body: JSON.stringify(record)
+          }
+        );
+        if (putRes.ok) { _localStore[key] = value; return true; }
+      } catch(e) { console.warn('SGC.set failed, using local:', e.message); }
+    }
+    _localStore[key] = value;
+    return true;
+  }
+};
+
+</script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 <script>
 
@@ -228,7 +292,7 @@ window.addEventListener('load',()=>{
 // ── READ ADMIN SETTINGS ──
 async function loadAdminSettings() {
   try {
-    const r = await window.storage.get('sgc_settings', true);
+    const r = await SGC.get('settings');
     if (!r || !r.value) return;
     const s = JSON.parse(r.value);
     if (s.name) document.getElementById('compNameHdr').textContent = s.name;
@@ -248,8 +312,8 @@ async function loadAdminSettings() {
 
 async function loadScores(){
   try{
-    const r=await window.storage.get('sgc_scores',true);
-    if(r&&r.value) players=JSON.parse(r.value);
+    const r=await SGC.get('scores');
+    if(r&&Array.isArray(r))players=r;else if(r)try{players=JSON.parse(r);}catch(e){}
   }catch(e){}
   render(); stamp();
 }
@@ -335,7 +399,7 @@ async function saveEntry(){
     const pts=fin&&gross>0?Math.max(0,Math.round((totalPar-nett)*1.0+36)):0;
     updated.push({name,hi,teeKey,gender,ph,gross,nett,thru:fin?18:thru,pts,fin,ts:Date.now()});
   });
-  try{await window.storage.set('sgc_scores',JSON.stringify(updated),true);players=updated;}catch(e){players=updated;}
+  try{await SGC.set('scores', updated);players=updated;}catch(e){players=updated;}
   stamp();render();closeEntry();
 }
 function closeEntry(){document.getElementById('entryPanel').classList.remove('open');}

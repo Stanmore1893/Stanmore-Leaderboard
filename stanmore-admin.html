@@ -242,7 +242,18 @@ html,body{min-height:100%;background:linear-gradient(160deg,#09132a 0%,var(--nav
       <div class="info-box info-amber">
         💡 <strong>Tip:</strong> In Netlify you can rename the site (e.g. <em>stanmore-seniors-open</em>) under Site Settings → Site Details → Change site name. Your URL becomes <em>stanmore-seniors-open.netlify.app</em>
       </div>
-      <a href="https://app.netlify.com/drop" target="_blank" style="display:block;width:100%;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.14);color:var(--white);text-align:center;padding:13px;border-radius:10px;font-size:.88rem;font-weight:600;text-decoration:none;margin-top:4px;letter-spacing:.04em;">🌐 Open Netlify Drop →</a>
+          <div class="info-box info-amber" style="margin-top:14px">
+      <strong>⚡ JSONBin Setup (one-time, takes 2 mins):</strong><br><br>
+      1. Go to <strong>jsonbin.io</strong> and create a free account<br>
+      2. Click <strong>Create Bin</strong> — paste in <code>{}</code> and save<br>
+      3. Copy your <strong>Bin ID</strong> (shown in the URL)<br>
+      4. Go to <strong>API Keys</strong> and copy your <strong>Master Key</strong><br>
+      5. Open each of the 5 HTML files in a text editor, find <strong>STORAGE_CONFIG</strong> near the top of the script, and paste in your Bin ID and API Key<br>
+      6. Save and re-upload all 5 files to GitHub<br><br>
+      Once done, scores entered on any phone will appear on the leaderboard within 10 seconds. ✓
+    </div>
+    <a href="https://jsonbin.io" target="_blank" style="display:block;width:100%;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.14);color:var(--white);text-align:center;padding:13px;border-radius:10px;font-size:.88rem;font-weight:600;text-decoration:none;margin-bottom:10px;letter-spacing:.04em;">🗄️ Open JSONBin.io →</a>
+    <a href="https://app.netlify.com/drop"  target="_blank" style="display:block;width:100%;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.14);color:var(--white);text-align:center;padding:13px;border-radius:10px;font-size:.88rem;font-weight:600;text-decoration:none;margin-top:4px;letter-spacing:.04em;">🌐 Open Netlify Drop →</a>
     </div>
 
     <!-- EMBED CODE -->
@@ -275,6 +286,68 @@ html,body{min-height:100%;background:linear-gradient(160deg,#09132a 0%,var(--nav
 <div class="toast" id="toast"></div>
 
 <script>
+
+// ══════════════════════════════════════════════════
+// SHARED STORAGE — connects Score Entry, Leaderboard
+// and Admin across all devices via JSONBin.io
+// Setup: create a free bin at jsonbin.io and paste
+// your BIN_ID and API_KEY below.
+// ══════════════════════════════════════════════════
+const STORAGE_CONFIG = {
+  BIN_ID:  '69ef1de136566621a8f75577',
+  API_KEY: '$2a$10$SbiSprdRGXi1U.q9BjYmM.0j1zDR1KPafxbgdfo9OFgGPmLVv/W5e',
+};
+
+// In-memory fallback store (works locally, resets on refresh)
+const _localStore = {};
+
+const SGC = {
+  // Read a value
+  async get(key) {
+    if (STORAGE_CONFIG.BIN_ID && STORAGE_CONFIG.API_KEY) {
+      try {
+        const res = await fetch(
+          `https://api.jsonbin.io/v3/b/${STORAGE_CONFIG.BIN_ID}/latest`,
+          { headers: { 'X-Master-Key': STORAGE_CONFIG.API_KEY } }
+        );
+        if (res.ok) {
+          const data = await res.json();
+          const val = data.record[key];
+          return val !== undefined ? val : null;
+        }
+      } catch(e) { console.warn('SGC.get failed, using local:', e.message); }
+    }
+    return _localStore[key] || null;
+  },
+
+  // Write a value
+  async set(key, value) {
+    if (STORAGE_CONFIG.BIN_ID && STORAGE_CONFIG.API_KEY) {
+      try {
+        // Read current bin first (JSONBin replaces entire record)
+        const getRes = await fetch(
+          `https://api.jsonbin.io/v3/b/${STORAGE_CONFIG.BIN_ID}/latest`,
+          { headers: { 'X-Master-Key': STORAGE_CONFIG.API_KEY } }
+        );
+        let record = {};
+        if (getRes.ok) { const d = await getRes.json(); record = d.record || {}; }
+        record[key] = value;
+        const putRes = await fetch(
+          `https://api.jsonbin.io/v3/b/${STORAGE_CONFIG.BIN_ID}`,
+          {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json', 'X-Master-Key': STORAGE_CONFIG.API_KEY },
+            body: JSON.stringify(record)
+          }
+        );
+        if (putRes.ok) { _localStore[key] = value; return true; }
+      } catch(e) { console.warn('SGC.set failed, using local:', e.message); }
+    }
+    _localStore[key] = value;
+    return true;
+  }
+};
+
 // ── AUTH ──
 const DEFAULT_PWD = 'stanmore1893';
 
@@ -339,7 +412,8 @@ async function saveQuick() {
 
 function loadSettings() {
   try {
-    const s = JSON.parse(localStorage.getItem(SETTINGS_KEY) || '{}');
+    const stored = localStorage.getItem(SETTINGS_KEY);
+    const s = stored ? JSON.parse(stored) : {};
     document.getElementById('compNameInput').value   = s.name   || 'Stanmore Golf Club';
     document.getElementById('quickNameInput').value   = s.name   || 'Stanmore Golf Club';
     document.getElementById('compDateInput').value   = s.date   || '';
@@ -363,7 +437,7 @@ async function saveSettings() {
   localStorage.setItem(SETTINGS_KEY, JSON.stringify(settings));
   // Also push to shared storage so leaderboard + scoring apps pick it up
   try {
-    await window.storage.set('sgc_settings', JSON.stringify(settings), true);
+    await SGC.set('settings', settings);
     toast('✓ Settings saved — Score Entry & Leaderboard will update automatically');
   } catch(e) {
     toast('✓ Settings saved locally');
@@ -373,11 +447,11 @@ async function saveSettings() {
 // ── SCORES ──
 async function loadScores() {
   try {
-    const r = await window.storage.get('sgc_scores', true);
-    const players = r ? JSON.parse(r.value) : [];
-    renderScores(players);
-    document.getElementById('statusTxt').textContent = players.length + ' player' + (players.length !== 1 ? 's' : '') + ' entered';
-    document.getElementById('statusCount').textContent = players.filter(p=>p.fin).length + ' finished';
+    const raw = await SGC.get('scores');
+    const players = Array.isArray(raw) ? raw : (raw ? JSON.parse(raw) : []);
+    renderScores(players || []);
+    document.getElementById('statusTxt').textContent = (players||[]).length + ' player' + (players.length !== 1 ? 's' : '') + ' entered';
+    document.getElementById('statusCount').textContent = (players||[]).filter(p=>p.fin).length + ' finished';
   } catch(e) {
     document.getElementById('statusTxt').textContent = 'No scores yet';
     document.getElementById('statusCount').textContent = '';
@@ -411,10 +485,10 @@ function renderScores(players) {
 
 async function deletePlayer(name) {
   try {
-    const r = await window.storage.get('sgc_scores', true);
+    const r = await SGC.get('scores');
     let players = r ? JSON.parse(r.value) : [];
     players = players.filter(p => p.name !== name);
-    await window.storage.set('sgc_scores', JSON.stringify(players), true);
+    await SGC.set('scores', players);
     toast(`✓ Removed ${name}`);
     loadScores();
   } catch(e) { toast('❌ Could not remove player'); }
@@ -426,7 +500,7 @@ function confirmClear() {
 
 async function clearScores() {
   try {
-    await window.storage.set('sgc_scores', '[]', true);
+    await SGC.set('scores', []);
     toast('✓ All scores cleared');
     document.getElementById('clearModal').classList.remove('open');
     loadScores();
