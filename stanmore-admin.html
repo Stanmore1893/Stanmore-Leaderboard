@@ -298,56 +298,78 @@ const STORAGE_CONFIG = {
   API_KEY: '$2a$10$SbiSprdRGXi1U.q9BjYmM.0j1zDR1KPafxbgdfo9OFgGPmLVv/W5e',
 };
 
-// In-memory fallback store (works locally, resets on refresh)
 const _localStore = {};
 
 const SGC = {
-  // Read a value
   async get(key) {
     if (STORAGE_CONFIG.BIN_ID && STORAGE_CONFIG.API_KEY) {
       try {
         const res = await fetch(
           `https://api.jsonbin.io/v3/b/${STORAGE_CONFIG.BIN_ID}/latest`,
-          { headers: { 'X-Master-Key': STORAGE_CONFIG.API_KEY } }
+          {
+            method: 'GET',
+            headers: {
+              'X-Master-Key': STORAGE_CONFIG.API_KEY,
+              'X-Bin-Meta': 'false'
+            }
+          }
         );
         if (res.ok) {
           const data = await res.json();
-          const val = data.record[key];
+          const val = data.record ? data.record[key] : data[key];
           return val !== undefined ? val : null;
+        } else {
+          console.warn('SGC.get HTTP error:', res.status, await res.text());
         }
-      } catch(e) { console.warn('SGC.get failed, using local:', e.message); }
+      } catch(e) { console.warn('SGC.get failed:', e.message); }
     }
     return _localStore[key] || null;
   },
 
-  // Write a value
   async set(key, value) {
     if (STORAGE_CONFIG.BIN_ID && STORAGE_CONFIG.API_KEY) {
       try {
-        // Read current bin first (JSONBin replaces entire record)
+        // Read current record first
         const getRes = await fetch(
           `https://api.jsonbin.io/v3/b/${STORAGE_CONFIG.BIN_ID}/latest`,
-          { headers: { 'X-Master-Key': STORAGE_CONFIG.API_KEY } }
+          {
+            method: 'GET',
+            headers: {
+              'X-Master-Key': STORAGE_CONFIG.API_KEY,
+              'X-Bin-Meta': 'false'
+            }
+          }
         );
         let record = {};
-        if (getRes.ok) { const d = await getRes.json(); record = d.record || {}; }
+        if (getRes.ok) {
+          const d = await getRes.json();
+          record = d.record || d || {};
+        }
         record[key] = value;
+
         const putRes = await fetch(
           `https://api.jsonbin.io/v3/b/${STORAGE_CONFIG.BIN_ID}`,
           {
             method: 'PUT',
-            headers: { 'Content-Type': 'application/json', 'X-Master-Key': STORAGE_CONFIG.API_KEY },
+            headers: {
+              'Content-Type': 'application/json',
+              'X-Master-Key': STORAGE_CONFIG.API_KEY
+            },
             body: JSON.stringify(record)
           }
         );
-        if (putRes.ok) { _localStore[key] = value; return true; }
-      } catch(e) { console.warn('SGC.set failed, using local:', e.message); }
+        if (putRes.ok) {
+          _localStore[key] = value;
+          return true;
+        } else {
+          console.warn('SGC.set HTTP error:', putRes.status, await putRes.text());
+        }
+      } catch(e) { console.warn('SGC.set failed:', e.message); }
     }
     _localStore[key] = value;
     return true;
   }
 };
-
 // ── AUTH ──
 const DEFAULT_PWD = 'stanmore1893';
 

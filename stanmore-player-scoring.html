@@ -195,43 +195,70 @@ const SGC = {
       try {
         const res = await fetch(
           `https://api.jsonbin.io/v3/b/${STORAGE_CONFIG.BIN_ID}/latest`,
-          { headers: { 'X-Master-Key': STORAGE_CONFIG.API_KEY } }
+          {
+            method: 'GET',
+            headers: {
+              'X-Master-Key': STORAGE_CONFIG.API_KEY,
+              'X-Bin-Meta': 'false'
+            }
+          }
         );
         if (res.ok) {
           const data = await res.json();
-          const val = data.record[key];
+          const val = data.record ? data.record[key] : data[key];
           return val !== undefined ? val : null;
+        } else {
+          console.warn('SGC.get HTTP error:', res.status, await res.text());
         }
       } catch(e) { console.warn('SGC.get failed:', e.message); }
     }
     return _localStore[key] || null;
   },
+
   async set(key, value) {
     if (STORAGE_CONFIG.BIN_ID && STORAGE_CONFIG.API_KEY) {
       try {
+        // Read current record first
         const getRes = await fetch(
           `https://api.jsonbin.io/v3/b/${STORAGE_CONFIG.BIN_ID}/latest`,
-          { headers: { 'X-Master-Key': STORAGE_CONFIG.API_KEY } }
+          {
+            method: 'GET',
+            headers: {
+              'X-Master-Key': STORAGE_CONFIG.API_KEY,
+              'X-Bin-Meta': 'false'
+            }
+          }
         );
         let record = {};
-        if (getRes.ok) { const d = await getRes.json(); record = d.record || {}; }
+        if (getRes.ok) {
+          const d = await getRes.json();
+          record = d.record || d || {};
+        }
         record[key] = value;
+
         const putRes = await fetch(
           `https://api.jsonbin.io/v3/b/${STORAGE_CONFIG.BIN_ID}`,
           {
             method: 'PUT',
-            headers: { 'Content-Type': 'application/json', 'X-Master-Key': STORAGE_CONFIG.API_KEY },
+            headers: {
+              'Content-Type': 'application/json',
+              'X-Master-Key': STORAGE_CONFIG.API_KEY
+            },
             body: JSON.stringify(record)
           }
         );
-        if (putRes.ok) { _localStore[key] = value; return true; }
+        if (putRes.ok) {
+          _localStore[key] = value;
+          return true;
+        } else {
+          console.warn('SGC.set HTTP error:', putRes.status, await putRes.text());
+        }
       } catch(e) { console.warn('SGC.set failed:', e.message); }
     }
     _localStore[key] = value;
     return true;
   }
 };
-
 const COURSE = {
   holes:[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18],
   par_men:  [4,4,4,3,4,3,4,3,4,3,5,4,4,4,4,4,3,5],
