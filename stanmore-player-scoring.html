@@ -185,51 +185,88 @@ html,body{min-height:100%;background:var(--cream);font-family:'DM Sans',sans-ser
 const STORAGE_CONFIG = {
   BIN_ID:  '69ef1de136566621a8f75577',
   API_KEY: '$2a$10$SbiSprdRGXi1U.q9BjYmM.0j1zDR1KPafxbgdfo9OFgGPmLVv/W5e',
+  URL: 'https://api.jsonbin.io/v3/b/69ef1de136566621a8f75577',
 };
 
-const _localStore = {};
+let _cache = {};
 
 const SGC = {
-  async get(key) {
-    if (STORAGE_CONFIG.BIN_ID && STORAGE_CONFIG.API_KEY) {
+  async _fetch(url, options, retries) {
+    retries = retries || 3;
+    for (var i = 0; i < retries; i++) {
       try {
-        const res = await fetch(
-          `https://api.jsonbin.io/v3/b/${STORAGE_CONFIG.BIN_ID}/latest`,
-          {
-            method: 'GET',
-            headers: {
-              'X-Master-Key': STORAGE_CONFIG.API_KEY,
-              'X-Bin-Meta': 'false'
-            }
-          }
-        );
-        if (res.ok) {
-          const data = await res.json();
-          const val = data.record ? data.record[key] : data[key];
-          return val !== undefined ? val : null;
-        } else {
-          console.warn('SGC.get HTTP error:', res.status, await res.text());
-        }
-      } catch(e) { console.warn('SGC.get failed:', e.message); }
+        var res = await fetch(url, options);
+        if (res.ok) return res;
+        console.warn('SGC attempt ' + (i+1) + ' failed: HTTP ' + res.status);
+      } catch(e) {
+        console.warn('SGC attempt ' + (i+1) + ' error:', e.message);
+        if (i < retries-1) await new Promise(function(r){ setTimeout(r, 1000*(i+1)); });
+      }
     }
-    return _localStore[key] || null;
+    return null;
+  },
+
+  async _readBin() {
+    var res = await SGC._fetch(
+      STORAGE_CONFIG.URL + '/latest',
+      { method:'GET', headers:{'X-Master-Key':STORAGE_CONFIG.API_KEY,'X-Bin-Meta':'false'} }
+    );
+    if (!res) return _cache;
+    try {
+      var data = await res.json();
+      var record = data.record || data;
+      _cache = record;
+      return record;
+    } catch(e) { return _cache; }
+  },
+
+  async _writeBin(record) {
+    var res = await SGC._fetch(
+      STORAGE_CONFIG.URL,
+      {
+        method:'PUT',
+        headers:{'Content-Type':'application/json','X-Master-Key':STORAGE_CONFIG.API_KEY},
+        body: JSON.stringify(record)
+      }
+    );
+    if (res) { _cache = record; return true; }
+    return false;
+  },
+
+  async get(key) {
+    var record = await SGC._readBin();
+    return record[key] !== undefined ? record[key] : null;
   },
 
   async set(key, value) {
-    if (STORAGE_CONFIG.BIN_ID && STORAGE_CONFIG.API_KEY) {
-      try {
-        // Read current record first
-        const getRes = await fetch(
-          `https://api.jsonbin.io/v3/b/${STORAGE_CONFIG.BIN_ID}/latest`,
-          {
-            method: 'GET',
-            headers: {
-              'X-Master-Key': STORAGE_CONFIG.API_KEY,
-              'X-Bin-Meta': 'false'
-            }
+    var record = await SGC._readBin();
+    if (key === 'scores' && Array.isArray(value) && Array.isArray(record.scores)) {
+      var existing = record.scores;
+      var updated = existing.slice();
+      for (var n = 0; n < value.length; n++) {
+        var newEntry = value[n];
+        var found = -1;
+        for (var m = 0; m < updated.length; m++) {
+          if (updated[m].name.toLowerCase() === newEntry.name.toLowerCase()) { found = m; break; }
+        }
+        if (found >= 0) {
+          // Finished round always wins; otherwise take higher points
+          if (newEntry.fin || !updated[found].fin || newEntry.pts >= updated[found].pts) {
+            updated[found] = newEntry;
           }
-        );
-        let record = {};
+        } else {
+          updated.push(newEntry);
+        }
+      }
+      record.scores = updated;
+    } else {
+      record[key] = value;
+    }
+    var ok = await SGC._writeBin(record);
+    if (!ok) { console.warn('SGC.set failed - saved locally only'); _cache[key] = value; }
+    return ok;
+  }
+};
         if (getRes.ok) {
           const d = await getRes.json();
           record = d.record || d || {};
