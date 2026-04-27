@@ -407,7 +407,8 @@ function render(){
     const thruH=p.fin?'<div class="pthru"><span class="tv fin">✓ F</span></div>':`<div class="pthru"><span class="tv">${p.thru||0}</span><span class="tl">Thru</span></div>`;
     const ph=p.ph||p.hcp||0;
     const teeLabel=p.teeKey?(p.teeKey.includes('white')?'W':p.teeKey.includes('yellow')?'Y':'R'):'';
-    card.innerHTML=`${posH}<div><div class="pname">${p.name}</div><div class="pmeta">HCP ${ph}${teeLabel?' · '+teeLabel:''}</div></div><div class="pcell"><span class="pv">${ph}</span></div><div class="pcell"><span class="pv">${p.gross||0}</span><span class="pl">gross</span></div>${thruH}<div class="pscore"><span class="ptv">${p.pts}</span><span class="psl">pts</span></div>`;
+    const compTag=p.competition?` · ${p.competition}`:'';
+    card.innerHTML=`${posH}<div><div class="pname">${p.name}</div><div class="pmeta">HCP ${ph}${teeLabel?' · '+teeLabel:''}${compTag}</div></div><div class="pcell"><span class="pv">${ph}</span></div><div class="pcell"><span class="pv">${p.gross||0}</span><span class="pl">gross</span></div>${thruH}<div class="pscore"><span class="ptv">${p.pts}</span><span class="psl">pts</span></div>`;
     board.appendChild(card);
   });
 }

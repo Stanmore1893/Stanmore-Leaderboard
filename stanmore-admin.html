@@ -141,6 +141,62 @@ html,body{min-height:100%;background:linear-gradient(160deg,#09132a 0%,var(--nav
       <button class="save-btn" onclick="saveQuick()">⚡ Apply Changes Now</button>
     </div>
 
+
+    <!-- COMPETITIONS MANAGER -->
+    <div class="sec" style="border-color:rgba(45,110,78,.3);background:rgba(45,110,78,.05);">
+      <div class="sec-title" style="color:#8ee0b4">🏆 Competitions & Societies</div>
+      <div class="sec-desc">Set up each competition or society round here. Players select which one they're playing in on the Score Entry page — the format and tee are then fixed automatically so everyone plays under the same rules.</div>
+
+      <!-- EXISTING COMPETITIONS -->
+      <div id="compList" style="display:flex;flex-direction:column;gap:8px;margin-bottom:14px;"></div>
+
+      <!-- ADD NEW COMPETITION -->
+      <div style="background:rgba(0,0,0,.2);border:1px solid rgba(255,255,255,.08);border-radius:12px;padding:16px 15px;margin-bottom:12px;">
+        <div style="font-size:.65rem;letter-spacing:.15em;text-transform:uppercase;color:var(--gold-lt);margin-bottom:12px;font-weight:600;">+ Add Competition / Society</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-bottom:9px;">
+          <div>
+            <label class="slabel">Competition Name</label>
+            <input class="finp" id="newCompName" type="text" placeholder="e.g. Seniors Open 2025">
+          </div>
+          <div>
+            <label class="slabel">Date</label>
+            <input class="finp" id="newCompDate" type="date">
+          </div>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-bottom:9px;">
+          <div>
+            <label class="slabel">Score Format</label>
+            <select class="finp" id="newCompFormat">
+              <option value="general_100">General Play (100%)</option>
+              <option value="stableford_95">Stableford (95%)</option>
+              <option value="strokeplay_95">Stroke Play (95%)</option>
+              <option value="matchplay_100">Singles Matchplay (100%)</option>
+              <option value="fourball_90">Four-ball Betterball (90%)</option>
+              <option value="foursomes_50">Foursomes (50%)</option>
+            </select>
+          </div>
+          <div>
+            <label class="slabel">Tee</label>
+            <select class="finp" id="newCompTee">
+              <option value="yellow_m">Yellow (Men)</option>
+              <option value="white_m">White (Men)</option>
+              <option value="red_m">Red (Men)</option>
+              <option value="red_f">Red (Women)</option>
+              <option value="yellow_f">Yellow (Women)</option>
+              <option value="white_f">White (Women)</option>
+            </select>
+          </div>
+        </div>
+        <div style="margin-bottom:12px;">
+          <label class="slabel">Notes (optional)</label>
+          <input class="finp" id="newCompNotes" type="text" placeholder="e.g. 18 holes, shotgun start 8:30am">
+        </div>
+        <button class="save-btn green" onclick="addCompetition()" style="margin-top:0">+ Add Competition</button>
+      </div>
+
+      <button class="save-btn" onclick="saveCompetitions()">💾 Save All Competitions</button>
+    </div>
+
     <!-- LIVE STATUS -->
     <div class="sec">
       <div class="sec-title">Live Status</div>
@@ -582,7 +638,99 @@ function toast(msg) {
 function onAdminLoad() {
   loadSettings();
   loadScores();
+  loadCompetitions();
 }
+
+// ── COMPETITIONS MANAGER ──
+const FORMAT_LABELS = {
+  'general_100':   { label:'General Play',        allowance: 1.00, display:'100%' },
+  'stableford_95': { label:'Stableford',          allowance: 0.95, display:'95%'  },
+  'strokeplay_95': { label:'Stroke Play (Nett)',   allowance: 0.95, display:'95%'  },
+  'matchplay_100': { label:'Singles Matchplay',   allowance: 1.00, display:'100%' },
+  'fourball_90':   { label:'Four-ball Betterball', allowance: 0.90, display:'90%'  },
+  'foursomes_50':  { label:'Foursomes',            allowance: 0.50, display:'50%'  },
+};
+
+const TEE_LABELS = {
+  'yellow_m':'Yellow (Men)', 'white_m':'White (Men)', 'red_m':'Red (Men)',
+  'red_f':'Red (Women)', 'yellow_f':'Yellow (Women)', 'white_f':'White (Women)',
+};
+
+let competitions = [];
+
+async function loadCompetitions() {
+  try {
+    const c = await SGC.get('competitions');
+    competitions = Array.isArray(c) ? c : [];
+  } catch(e) { competitions = []; }
+  renderCompList();
+}
+
+function renderCompList() {
+  const el = document.getElementById('compList');
+  if (!competitions.length) {
+    el.innerHTML = '<div style="font-size:.78rem;color:var(--grey);padding:10px 0;">No competitions set up yet. Add one below.</div>';
+    return;
+  }
+  el.innerHTML = '';
+  competitions.forEach((c, i) => {
+    const fmt = FORMAT_LABELS[c.format] || { label: c.format, display: '' };
+    const teeLabel = TEE_LABELS[c.tee] || c.tee;
+    const isActive = c.active;
+    const div = document.createElement('div');
+    div.style.cssText = `background:${isActive ? 'rgba(45,110,78,.2)' : 'rgba(0,0,0,.2)'};border:1px solid ${isActive ? 'rgba(45,110,78,.5)' : 'rgba(255,255,255,.08)'};border-radius:10px;padding:13px 14px;display:flex;align-items:center;justify-content:space-between;gap:10px;`;
+    div.innerHTML = `
+      <div style="flex:1;">
+        <div style="font-family:'Cormorant Garamond',serif;font-size:1rem;font-weight:700;color:${isActive ? '#8ee0b4' : 'var(--white)'};">${c.name}${isActive ? ' <span style="font-size:.6rem;background:rgba(45,110,78,.4);border-radius:4px;padding:2px 7px;letter-spacing:.1em;vertical-align:middle;">ACTIVE</span>' : ''}</div>
+        <div style="font-size:.65rem;color:var(--grey);margin-top:3px;font-family:'DM Mono',monospace;">${fmt.label} · ${fmt.display} · ${teeLabel}${c.date ? ' · ' + c.date : ''}${c.notes ? ' · ' + c.notes : ''}</div>
+      </div>
+      <div style="display:flex;gap:6px;flex-shrink:0;">
+        <button onclick="setActiveComp(${i})" style="background:${isActive ? 'rgba(45,110,78,.3)' : 'rgba(255,255,255,.07)'};border:1px solid ${isActive ? 'rgba(45,110,78,.5)' : 'rgba(255,255,255,.12)'};color:${isActive ? '#8ee0b4' : 'var(--grey)'};border-radius:8px;padding:6px 10px;font-size:.68rem;cursor:pointer;font-family:'DM Sans',sans-serif;font-weight:600;">${isActive ? '✓ Active' : 'Set Active'}</button>
+        <button onclick="deleteComp(${i})" style="background:rgba(192,57,43,.1);border:1px solid rgba(192,57,43,.25);color:#e87878;border-radius:8px;padding:6px 10px;font-size:.68rem;cursor:pointer;">✕</button>
+      </div>`;
+    el.appendChild(div);
+  });
+}
+
+function addCompetition() {
+  const name = document.getElementById('newCompName').value.trim();
+  if (!name) { toast('Please enter a competition name'); return; }
+  const comp = {
+    id: Date.now().toString(),
+    name,
+    date:   document.getElementById('newCompDate').value,
+    format: document.getElementById('newCompFormat').value,
+    tee:    document.getElementById('newCompTee').value,
+    notes:  document.getElementById('newCompNotes').value.trim(),
+    active: competitions.length === 0, // first one auto-activates
+  };
+  competitions.push(comp);
+  // Clear inputs
+  document.getElementById('newCompName').value = '';
+  document.getElementById('newCompDate').value = '';
+  document.getElementById('newCompNotes').value = '';
+  renderCompList();
+  toast('✓ Competition added — tap Save All to publish');
+}
+
+function setActiveComp(idx) {
+  competitions.forEach((c, i) => c.active = (i === idx));
+  renderCompList();
+  toast('✓ Active competition changed — tap Save All to publish');
+}
+
+function deleteComp(idx) {
+  competitions.splice(idx, 1);
+  renderCompList();
+  toast('Competition removed — tap Save All to publish');
+}
+
+async function saveCompetitions() {
+  const ok = await SGC.set('competitions', competitions);
+  if (ok) toast('✓ Competitions saved — Score Entry will update automatically');
+  else toast('❌ Save failed — check connection');
+}
+
 </script>
 </body>
 </html>

@@ -116,25 +116,30 @@ html,body{min-height:100%;background:var(--cream);font-family:'DM Sans',sans-ser
     <div><label class="flbl">Gender</label><select class="finp" id="pGender" onchange="previewHcp()"><option value="m">Male</option><option value="f">Female</option></select></div>
   </div>
   <div class="frow2">
-    <div><label class="flbl">Tee Colour</label><select class="finp" id="pTee" onchange="previewHcp()">
-      <option value="yellow_m">Yellow (Men)</option>
-      <option value="white_m">White (Men)</option>
-      <option value="red_m">Red (Men)</option>
-      <option value="red_f">Red (Women)</option>
-      <option value="yellow_f">Yellow (Women)</option>
-    </select></div>
+    <div>
+      <label class="flbl">Tee Colour <span id="teeLockLabel" style="color:rgba(212,160,23,.7);font-size:.55rem;">(set by competition)</span></label>
+      <select class="finp" id="pTee" onchange="previewHcp()" disabled style="opacity:.7;">
+        <option value="yellow_m">Yellow (Men)</option>
+        <option value="white_m">White (Men)</option>
+        <option value="red_m">Red (Men)</option>
+        <option value="red_f">Red (Women)</option>
+        <option value="yellow_f">Yellow (Women)</option>
+        <option value="white_f">White (Women)</option>
+      </select>
+    </div>
     <div><label class="flbl">Starting Hole</label><select class="finp" id="pStart">
       <option value="0">Hole 1</option><option value="9">Hole 10</option>
     </select></div>
   </div>
-  <div class="frow2">
-    <div style="grid-column:1/-1"><label class="flbl">Round Format</label><select class="finp" id="pFormat" onchange="previewHcp()">
-      <option value="1.00">General Play (100%)</option>
-      <option value="0.95">Stableford (95%)</option>
-      <option value="0.95">Strokeplay (95%)</option>
-      <option value="1.00">Matchplay (100%)</option>
-      <option value="0.90">Four-ball Betterball (90%)</option>
-    </select></div>
+  <!-- Hidden format selector - value set by competition -->
+  <input type="hidden" id="pFormat" value="1.00">
+  <!-- COMPETITION SELECTOR -->
+  <div style="margin-bottom:14px;" id="compPickerWrap">
+    <label class="flbl">Competition / Society</label>
+    <select class="finp" id="compPicker" onchange="onCompSelect()">
+      <option value="">Loading competitions…</option>
+    </select>
+    <div id="compDetails" style="display:none;background:rgba(26,58,107,.15);border:1px solid rgba(26,58,107,.3);border-radius:8px;padding:10px 13px;margin-top:8px;font-size:.75rem;color:#a8c4f0;line-height:1.7;"></div>
   </div>
   <div class="hcp-calc-preview" id="hcpPreview"></div>
   <button class="start-btn" onclick="startRound()">Start Round →</button>
@@ -333,7 +338,7 @@ const R = { name:'', hi:0, teeKey:'yellow_m', gender:'m', ph:0, startIdx:0, scor
 function previewHcp(){
   const hi=parseFloat(document.getElementById('pHI').value);
   const teeKey=document.getElementById('pTee').value;
-  const allow=parseFloat(document.getElementById('pFormat').value)||1.00;
+  const fmtEl=document.getElementById('pFormat'); const allow=parseFloat(fmtEl?fmtEl.value:'1.00')||1.00;
   if(isNaN(hi)||hi<0){document.getElementById('hcpPreview').style.display='none';return;}
   const ch=calcCourseHcp(hi,teeKey);
   const ph=calcPlayingHcp(hi,teeKey,allow);
@@ -354,7 +359,7 @@ function startRound(){
   R.teeKey=document.getElementById('pTee').value;
   R.gender=document.getElementById('pGender').value;
   R.startIdx=parseInt(document.getElementById('pStart').value);
-  const allow=parseFloat(document.getElementById('pFormat').value)||1.00;
+  const fmtEl=document.getElementById('pFormat'); const allow=parseFloat(fmtEl?fmtEl.value:'1.00')||1.00;
   R.ph=calcPlayingHcp(hi,R.teeKey,allow);
   R.curIdx=R.startIdx;
   R.scores=new Array(18).fill(null);
@@ -464,7 +469,10 @@ function finishRound(){
 
 async function submitScore(pts,gross,nett){
   try{
-    const entry={name:R.name,hi:R.hi,teeKey:R.teeKey,gender:R.gender,ph:R.ph,gross,nett,thru:18,pts,fin:true,ts:Date.now()};
+    const picker=document.getElementById('compPicker');
+    const compIdx=parseInt(picker?picker.value:-1);
+    const compName=(!isNaN(compIdx)&&_competitions[compIdx])?_competitions[compIdx].name:'';
+    const entry={name:R.name,hi:R.hi,teeKey:R.teeKey,gender:R.gender,ph:R.ph,gross,nett,thru:18,pts,fin:true,competition:compName,ts:Date.now()};
     let scores=[];
     try{const ex=await SGC.get('scores');if(ex&&Array.isArray(ex))scores=ex;else if(ex)scores=JSON.parse(ex);}catch(e){}
     const idx=scores.findIndex(s=>s.name.toLowerCase()===R.name.toLowerCase());
