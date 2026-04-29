@@ -493,45 +493,129 @@ async function saveProgress(){
   }catch(e){}
 }
 
-// ── LOAD ADMIN SETTINGS ──
-async function loadAdminSettings() {
-  try {
-    const r = await SGC.get('settings');
-    if (!r || !r.value) return;
-    const s = JSON.parse(r.value);
+function showScr(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active');window.scrollTo(0,0);}
 
-    // Update competition name
-    if (s.name) {
+window.addEventListener('load', loadAdminSettings);
+
+// ── FORMAT & TEE LOOKUPS ──
+var FORMAT_MAP = {
+  'general_100':   {label:'General Play',         allowance:'1.00'},
+  'stableford_95': {label:'Stableford (95%)',     allowance:'0.95'},
+  'strokeplay_95': {label:'Stroke Play (95%)',    allowance:'0.95'},
+  'matchplay_100': {label:'Singles Matchplay',    allowance:'1.00'},
+  'fourball_90':   {label:'Four-ball Betterball', allowance:'0.90'},
+  'foursomes_50':  {label:'Foursomes',            allowance:'0.50'},
+};
+var TEE_LABELS = {
+  'yellow_m':'Yellow (Men)','white_m':'White (Men)','red_m':'Red (Men)',
+  'red_f':'Red (Women)','yellow_f':'Yellow (Women)','white_f':'White (Women)',
+};
+
+var _competitions = [];
+
+// ── LOAD SETTINGS & COMPETITIONS FROM ADMIN ──
+async function loadAdminSettings() {
+  // 1. Load competitions
+  try {
+    var c = await SGC.get('competitions');
+    _competitions = Array.isArray(c) ? c : [];
+  } catch(e) { _competitions = []; }
+  populateCompPicker();
+
+  // 2. Load general settings (name, ticker)
+  try {
+    var s = await SGC.get('settings');
+    if (s && s.name) {
       document.getElementById('headerCompName').textContent = s.name;
       document.getElementById('setupCompName').textContent  = s.name;
     }
-
-    // Pre-select default tee if set
-    if (s.tee) {
-      const teeEl = document.getElementById('pTee');
-      for (let i = 0; i < teeEl.options.length; i++) {
-        if (teeEl.options[i].value === s.tee) { teeEl.selectedIndex = i; break; }
-      }
-    }
-
-    // Pre-select format if set
-    if (s.format) {
-      const allowMap = { general:'1.00', stableford:'0.95', strokeplay:'0.95', matchplay:'1.00', fourball:'0.90' };
-      const allow = allowMap[s.format] || '1.00';
-      const fmtEl = document.getElementById('pFormat');
-      for (let i = 0; i < fmtEl.options.length; i++) {
-        if (fmtEl.options[i].value === allow) { fmtEl.selectedIndex = i; break; }
-      }
-    }
-
-    previewHcp();
-  } catch(e) { console.warn('Could not load admin settings:', e); }
+  } catch(e) {}
 }
 
-function showScr(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active');window.scrollTo(0,0);}
+function populateCompPicker() {
+  var picker = document.getElementById('compPicker');
+  if (!picker) return;
+  picker.innerHTML = '';
 
-// Load settings on page start
+  if (!_competitions.length) {
+    var opt = document.createElement('option');
+    opt.value = ''; opt.textContent = 'No competitions set up yet';
+    picker.appendChild(opt);
+    // Unlock tee so player can choose manually
+    var teeEl = document.getElementById('pTee');
+    if (teeEl) teeEl.disabled = false;
+    document.getElementById('teeLockLabel').style.display = 'none';
+    return;
+  }
+
+  var placeholder = document.createElement('option');
+  placeholder.value = ''; placeholder.textContent = 'Select your competition…';
+  picker.appendChild(placeholder);
+
+  _competitions.forEach(function(c, i) {
+    var opt = document.createElement('option');
+    opt.value = i;
+    var fmt = FORMAT_MAP[c.format] || {label: c.format};
+    opt.textContent = c.name + (c.date ? ' · ' + c.date : '');
+    picker.appendChild(opt);
+  });
+
+  // Auto-select active competition
+  var activeIdx = -1;
+  for (var i = 0; i < _competitions.length; i++) {
+    if (_competitions[i].active) { activeIdx = i; break; }
+  }
+  if (activeIdx >= 0) {
+    picker.value = activeIdx;
+    onCompSelect();
+  }
+}
+
+function onCompSelect() {
+  var picker = document.getElementById('compPicker');
+  var details = document.getElementById('compDetails');
+  var idx = parseInt(picker.value);
+
+  if (isNaN(idx) || !_competitions[idx]) {
+    if (details) details.style.display = 'none';
+    var teeEl = document.getElementById('pTee');
+    if (teeEl) teeEl.disabled = false;
+    document.getElementById('teeLockLabel').style.display = 'none';
+    return;
+  }
+
+  var comp = _competitions[idx];
+  var fmt  = FORMAT_MAP[comp.format] || {label: comp.format, allowance:'0.95'};
+  var teeLabel = TEE_LABELS[comp.tee] || comp.tee;
+
+  // Lock tee and format
+  var teeEl = document.getElementById('pTee');
+  if (teeEl) { teeEl.value = comp.tee; teeEl.disabled = true; }
+  var fmtEl = document.getElementById('pFormat');
+  if (fmtEl) fmtEl.value = fmt.allowance;
+  document.getElementById('teeLockLabel').style.display = 'inline';
+
+  // Show details card
+  if (details) {
+    details.style.display = 'block';
+    details.innerHTML =
+      '<strong>' + comp.name + '</strong><br>' +
+      '📋 ' + fmt.label + ' &nbsp;·&nbsp; 🏌️ ' + teeLabel +
+      (comp.date ? ' &nbsp;·&nbsp; 📅 ' + comp.date : '') +
+      (comp.notes ? '<br><span style="color:var(--grey)">' + comp.notes + '</span>' : '');
+  }
+
+  previewHcp();
+}
+
+function showScr(id) {
+  document.querySelectorAll('.screen').forEach(function(s){ s.classList.remove('active'); });
+  document.getElementById(id).classList.add('active');
+  window.scrollTo(0,0);
+}
+
 window.addEventListener('load', loadAdminSettings);
+
 </script>
 </body>
 </html>
