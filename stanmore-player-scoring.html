@@ -306,7 +306,11 @@ function previewHcp(){
   const ch=calcCourseHcp(hi,teeKey);
   const ph=calcPlayingHcp(hi,teeKey,allow);
   const t=COURSE.ratings[teeKey];
-  const fmtLabel=document.getElementById('pFormat').options[document.getElementById('pFormat').selectedIndex].text;
+  // pFormat is a hidden input set by competition picker - get label from _competitions
+  var _selIdx = parseInt(document.getElementById('compPicker') ? document.getElementById('compPicker').value : -1);
+  var _comp = (!isNaN(_selIdx) && _competitions[_selIdx]) ? _competitions[_selIdx] : null;
+  var _fmtMap = {'general_100':'General Play (100%)','stableford_95':'Stableford (95%)','strokeplay_95':'Stroke Play (95%)','matchplay_100':'Matchplay (100%)','fourball_90':'4BBB (90%)','foursomes_50':'Foursomes (50%)'};
+  const fmtLabel = _comp ? (_fmtMap[_comp.format] || _comp.format) : 'General Play (100%)';
   document.getElementById('hcpPreview').style.display='block';
   document.getElementById('hcpPreview').innerHTML=
     `📊 <strong>Course HCP:</strong> ${ch} &nbsp;|&nbsp; <strong>Playing HCP (${fmtLabel}):</strong> ${ph}<br>`+
@@ -328,7 +332,11 @@ function startRound(){
   R.scores=new Array(18).fill(null);
   document.getElementById('pbName').textContent=name;
   const t=COURSE.ratings[R.teeKey];
-  const fmtLabel=document.getElementById('pFormat').options[document.getElementById('pFormat').selectedIndex].text;
+  // pFormat is a hidden input set by competition picker - get label from _competitions
+  var _selIdx = parseInt(document.getElementById('compPicker') ? document.getElementById('compPicker').value : -1);
+  var _comp = (!isNaN(_selIdx) && _competitions[_selIdx]) ? _competitions[_selIdx] : null;
+  var _fmtMap = {'general_100':'General Play (100%)','stableford_95':'Stableford (95%)','strokeplay_95':'Stroke Play (95%)','matchplay_100':'Matchplay (100%)','fourball_90':'4BBB (90%)','foursomes_50':'Foursomes (50%)'};
+  const fmtLabel = _comp ? (_fmtMap[_comp.format] || _comp.format) : 'General Play (100%)';
   document.getElementById('pbMeta').textContent=`HI ${hi.toFixed(1)} · Playing HCP ${R.ph} · ${fmtLabel}`;
   showScr('scrCard'); renderHole();
 }
