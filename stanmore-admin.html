@@ -491,25 +491,34 @@ function renderScores(players) {
       '<td class="mono r" style="color:var(--gold-lt);font-weight:500">' + p.pts + '</td>' +
       '<td class="r">' + status + '</td>' +
       '<td class="r" style="font-size:.65rem;color:var(--grey)">' + (p.competition||'—') + '</td>' +
-      '<td class="r"><button class="del-row-btn" onclick="deletePlayer(\'' + p.name.replace(/'/g,"\'") + '\')">✕</button></td>';
+      '<td class="r"><button class="del-row-btn">✕</button></td>';
+    // Use dataset to safely store name — avoids all escaping issues
+    tr.dataset.playerName = p.name;
+    tr.querySelector('.del-row-btn').addEventListener('click', function() {
+      deletePlayer(tr.dataset.playerName);
+    });
     body.appendChild(tr);
   });
 }
 
 async function deletePlayer(name) {
   try {
-    // Bypass merge logic - read bin directly, filter, write back
     var record = await SGC._read();
     var players = Array.isArray(record.scores) ? record.scores : [];
-    record.scores = players.filter(function(p){ return p.name !== name; });
+    var before = players.length;
+    // Trim both sides to handle whitespace/encoding differences
+    record.scores = players.filter(function(p) {
+      return p.name.trim().toLowerCase() !== name.trim().toLowerCase();
+    });
+    var after = record.scores.length;
     var ok = await SGC._write(record);
     if (ok) {
-      toast('✓ Removed ' + name);
+      toast('✓ Removed ' + name + ' (' + (before - after) + ' entry removed)');
     } else {
-      toast('❌ Could not remove player — check connection');
+      toast('❌ Could not remove — check connection');
     }
     loadScores();
-  } catch(e) { toast('❌ Could not remove player: ' + e.message); }
+  } catch(e) { toast('❌ Error: ' + e.message); }
 }
 
 async function clearAllScores() {
