@@ -498,18 +498,34 @@ function renderScores(players) {
 
 async function deletePlayer(name) {
   try {
-    var raw = await SGC.get('scores');
-    var players = Array.isArray(raw) ? raw : [];
-    players = players.filter(function(p){ return p.name !== name; });
-    await SGC.set('scores', players);
-    toast('✓ Removed ' + name);
+    // Bypass merge logic - read bin directly, filter, write back
+    var record = await SGC._read();
+    var players = Array.isArray(record.scores) ? record.scores : [];
+    record.scores = players.filter(function(p){ return p.name !== name; });
+    var ok = await SGC._write(record);
+    if (ok) {
+      toast('✓ Removed ' + name);
+    } else {
+      toast('❌ Could not remove player — check connection');
+    }
     loadScores();
-  } catch(e) { toast('❌ Could not remove player'); }
+  } catch(e) { toast('❌ Could not remove player: ' + e.message); }
 }
 
 async function clearAllScores() {
-  await SGC.set('scores', []);
-  toast('✓ All scores cleared');
+  try {
+    // Bypass merge logic - read bin, force scores to [], write back directly
+    var record = await SGC._read();
+    record.scores = [];
+    var ok = await SGC._write(record);
+    if (ok) {
+      toast('✓ All scores cleared');
+    } else {
+      toast('❌ Could not clear scores — check connection');
+    }
+  } catch(e) {
+    toast('❌ Error: ' + e.message);
+  }
   document.getElementById('clearModal').classList.remove('open');
   loadScores();
 }
