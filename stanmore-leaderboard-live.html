@@ -305,6 +305,115 @@ const SGC = {
 </script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 <script>
+const STORAGE_CONFIG = {
+  BIN_ID:  '69ef1de136566621a8f75577',
+  API_KEY: '$2a$10$SbiSprdRGXi1U.q9BjYmM.0j1zDR1KPafxbgdfo9OFgGPmLVv/W5e',
+  URL:     'https://api.jsonbin.io/v3/b/69ef1de136566621a8f75577',
+};
+
+var _cache = {};
+
+var SGC = {
+  _fetch: async function(url, opts, retries) {
+    retries = retries || 3;
+    for (var i = 0; i < retries; i++) {
+      try {
+        var res = await fetch(url, opts);
+        if (res.ok) return res;
+        console.warn('SGC attempt ' + (i+1) + ' failed: HTTP ' + res.status);
+      } catch(e) {
+        console.warn('SGC attempt ' + (i+1) + ' error:', e.message);
+        if (i < retries - 1) await new Promise(function(r) { setTimeout(r, 1000 * (i+1)); });
+      }
+    }
+    return null;
+  },
+  _read: async function() {
+    var res = await SGC._fetch(STORAGE_CONFIG.URL + '/latest', {
+      method: 'GET',
+      headers: { 'X-Master-Key': STORAGE_CONFIG.API_KEY, 'X-Bin-Meta': 'false' }
+    });
+    if (!res) return _cache;
+    try {
+      var data = await res.json();
+      var record = data.record || data;
+      _cache = record;
+      return record;
+    } catch(e) { return _cache; }
+  },
+  _write: async function(record) {
+    var res = await SGC._fetch(STORAGE_CONFIG.URL, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json', 'X-Master-Key': STORAGE_CONFIG.API_KEY },
+      body: JSON.stringify(record)
+    });
+    if (res) { _cache = record; return true; }
+    return false;
+  },
+  get: async function(key) {
+    var record = await SGC._read();
+    return record[key] !== undefined ? record[key] : null;
+  },
+  set: async function(key, value) {
+    var record = await SGC._read();
+    if (key === 'scores' && Array.isArray(value) && Array.isArray(record.scores)) {
+      var existing = record.scores.slice();
+      for (var n = 0; n < value.length; n++) {
+        var newEntry = value[n];
+        var found = -1;
+        for (var m = 0; m < existing.length; m++) {
+          if (existing[m].name.toLowerCase() === newEntry.name.toLowerCase()) { found = m; break; }
+        }
+        if (found >= 0) {
+          if (newEntry.fin || !existing[found].fin || newEntry.pts >= existing[found].pts) {
+            existing[found] = newEntry;
+          }
+        } else {
+          existing.push(newEntry);
+        }
+      }
+      record.scores = existing;
+    } else {
+      record[key] = value;
+    }
+    var ok = await SGC._write(record);
+    if (!ok) { console.warn('SGC.set failed - saved locally only'); _cache[key] = value; }
+    return ok;
+  }
+};
+
+        if (getRes.ok) {
+          const d = await getRes.json();
+          record = d.record || d || {};
+        }
+        record[key] = value;
+
+        const putRes = await fetch(
+          `https://api.jsonbin.io/v3/b/${STORAGE_CONFIG.BIN_ID}`,
+          {
+            method: 'PUT',
+            headers: {
+              'Content-Type': 'application/json',
+              'X-Master-Key': STORAGE_CONFIG.API_KEY
+            },
+            body: JSON.stringify(record)
+          }
+        );
+        if (putRes.ok) {
+          _localStore[key] = value;
+          return true;
+        } else {
+          console.warn('SGC.set HTTP error:', putRes.status, await putRes.text());
+        }
+      } catch(e) { console.warn('SGC.set failed:', e.message); }
+    }
+    _localStore[key] = value;
+    return true;
+  }
+};
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<script>
 
 const COURSE = {
   holes:[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18],

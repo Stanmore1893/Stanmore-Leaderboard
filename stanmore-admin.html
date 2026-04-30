@@ -226,7 +226,6 @@ html,body{min-height:100%;background:linear-gradient(160deg,#09132a 0%,var(--nav
 <div class="toast" id="toast"></div>
 
 <script>
-
 const STORAGE_CONFIG = {
   BIN_ID:  '69ef1de136566621a8f75577',
   API_KEY: '$2a$10$SbiSprdRGXi1U.q9BjYmM.0j1zDR1KPafxbgdfo9OFgGPmLVv/W5e',
@@ -242,10 +241,10 @@ var SGC = {
       try {
         var res = await fetch(url, opts);
         if (res.ok) return res;
-        console.warn('SGC attempt ' + (i+1) + ' HTTP ' + res.status);
+        console.warn('SGC attempt ' + (i+1) + ' failed: HTTP ' + res.status);
       } catch(e) {
-        console.warn('SGC attempt ' + (i+1) + ':', e.message);
-        if (i < retries-1) await new Promise(function(r){ setTimeout(r, 800*(i+1)); });
+        console.warn('SGC attempt ' + (i+1) + ' error:', e.message);
+        if (i < retries - 1) await new Promise(function(r) { setTimeout(r, 1000 * (i+1)); });
       }
     }
     return null;
@@ -256,8 +255,12 @@ var SGC = {
       headers: { 'X-Master-Key': STORAGE_CONFIG.API_KEY, 'X-Bin-Meta': 'false' }
     });
     if (!res) return _cache;
-    try { var d = await res.json(); _cache = d.record || d; return _cache; }
-    catch(e) { return _cache; }
+    try {
+      var data = await res.json();
+      var record = data.record || data;
+      _cache = record;
+      return record;
+    } catch(e) { return _cache; }
   },
   _write: async function(record) {
     var res = await SGC._fetch(STORAGE_CONFIG.URL, {
@@ -269,31 +272,36 @@ var SGC = {
     return false;
   },
   get: async function(key) {
-    var rec = await SGC._read();
-    return (rec && rec[key] !== undefined) ? rec[key] : null;
+    var record = await SGC._read();
+    return record[key] !== undefined ? record[key] : null;
   },
   set: async function(key, value) {
-    var rec = await SGC._read();
-    if (key === 'scores' && Array.isArray(value) && Array.isArray(rec.scores)) {
-      var merged = rec.scores.slice();
-      for (var i = 0; i < value.length; i++) {
-        var n = value[i];
+    var record = await SGC._read();
+    if (key === 'scores' && Array.isArray(value) && Array.isArray(record.scores)) {
+      var existing = record.scores.slice();
+      for (var n = 0; n < value.length; n++) {
+        var newEntry = value[n];
         var found = -1;
-        for (var j = 0; j < merged.length; j++) {
-          if (merged[j].name.toLowerCase() === n.name.toLowerCase()) { found = j; break; }
+        for (var m = 0; m < existing.length; m++) {
+          if (existing[m].name.toLowerCase() === newEntry.name.toLowerCase()) { found = m; break; }
         }
         if (found >= 0) {
-          if (n.fin || !merged[found].fin || n.pts >= merged[found].pts) merged[found] = n;
-        } else { merged.push(n); }
+          if (newEntry.fin || !existing[found].fin || newEntry.pts >= existing[found].pts) {
+            existing[found] = newEntry;
+          }
+        } else {
+          existing.push(newEntry);
+        }
       }
-      rec.scores = merged;
-    } else { rec[key] = value; }
-    var ok = await SGC._write(rec);
-    if (!ok) { _cache[key] = value; console.warn('SGC.set failed - local only'); }
+      record.scores = existing;
+    } else {
+      record[key] = value;
+    }
+    var ok = await SGC._write(record);
+    if (!ok) { console.warn('SGC.set failed - saved locally only'); _cache[key] = value; }
     return ok;
   }
 };
-
 
 // ── CONSTANTS ──
 var DEFAULT_PWD = 'stanmore1893';
