@@ -180,18 +180,13 @@ html,body{height:100%;background:var(--cream);font-family:'DM Sans',sans-serif;c
   </div>
 </div>
 
-<script>
 
-// ══════════════════════════════════════════════════
-// SHARED STORAGE — connects Score Entry, Leaderboard
-// and Admin across all devices via JSONBin.io
-// Setup: create a free bin at jsonbin.io and paste
-// your BIN_ID and API_KEY below.
-// ══════════════════════════════════════════════════
-const STORAGE_CONFIG = {
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<script>
+var STORAGE_CONFIG = {
   BIN_ID:  '69ef1de136566621a8f75577',
   API_KEY: '$2a$10$SbiSprdRGXi1U.q9BjYmM.0j1zDR1KPafxbgdfo9OFgGPmLVv/W5e',
-  URL:     'https://api.jsonbin.io/v3/b/69ef1de136566621a8f75577',
+  URL:     'https://api.jsonbin.io/v3/b/69ef1de136566621a8f75577'
 };
 
 var _cache = {};
@@ -206,7 +201,9 @@ var SGC = {
         console.warn('SGC attempt ' + (i+1) + ' failed: HTTP ' + res.status);
       } catch(e) {
         console.warn('SGC attempt ' + (i+1) + ' error:', e.message);
-        if (i < retries - 1) await new Promise(function(r) { setTimeout(r, 1000 * (i+1)); });
+        if (i < retries - 1) {
+          await new Promise(function(r){ setTimeout(r, 1000 * (i+1)); });
+        }
       }
     }
     return null;
@@ -245,7 +242,9 @@ var SGC = {
         var newEntry = value[n];
         var found = -1;
         for (var m = 0; m < existing.length; m++) {
-          if (existing[m].name.toLowerCase() === newEntry.name.toLowerCase()) { found = m; break; }
+          if (existing[m].name.toLowerCase() === newEntry.name.toLowerCase()) {
+            found = m; break;
+          }
         }
         if (found >= 0) {
           if (newEntry.fin || !existing[found].fin || newEntry.pts >= existing[found].pts) {
@@ -260,43 +259,12 @@ var SGC = {
       record[key] = value;
     }
     var ok = await SGC._write(record);
-    if (!ok) { console.warn('SGC.set failed - saved locally only'); _cache[key] = value; }
+    if (!ok) { console.warn('SGC.set failed'); _cache[key] = value; }
     return ok;
   }
 };
 
-        if (getRes.ok) {
-          const d = await getRes.json();
-          record = d.record || d || {};
-        }
-        record[key] = value;
 
-        const putRes = await fetch(
-          `https://api.jsonbin.io/v3/b/${STORAGE_CONFIG.BIN_ID}`,
-          {
-            method: 'PUT',
-            headers: {
-              'Content-Type': 'application/json',
-              'X-Master-Key': STORAGE_CONFIG.API_KEY
-            },
-            body: JSON.stringify(record)
-          }
-        );
-        if (putRes.ok) {
-          _localStore[key] = value;
-          return true;
-        } else {
-          console.warn('SGC.set HTTP error:', putRes.status, await putRes.text());
-        }
-      } catch(e) { console.warn('SGC.set failed:', e.message); }
-    }
-    _localStore[key] = value;
-    return true;
-  }
-};
-</script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
-<script>
 
 const COURSE = {
   holes:[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18],
@@ -482,6 +450,7 @@ function shareUrl(){
 }
 
 function stamp(){document.getElementById('updTxt').textContent='Updated '+new Date().toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit',second:'2-digit'});}
+
 </script>
 </body>
 </html>
