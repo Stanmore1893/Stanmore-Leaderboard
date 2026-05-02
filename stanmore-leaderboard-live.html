@@ -191,123 +191,6 @@ html,body{height:100%;background:var(--cream);font-family:'DM Sans',sans-serif;c
 const STORAGE_CONFIG = {
   BIN_ID:  '69ef1de136566621a8f75577',
   API_KEY: '$2a$10$SbiSprdRGXi1U.q9BjYmM.0j1zDR1KPafxbgdfo9OFgGPmLVv/W5e',
-  URL: 'https://api.jsonbin.io/v3/b/69ef1de136566621a8f75577',
-};
-
-let _cache = {};
-
-const SGC = {
-  async _fetch(url, options, retries) {
-    retries = retries || 3;
-    for (var i = 0; i < retries; i++) {
-      try {
-        var res = await fetch(url, options);
-        if (res.ok) return res;
-        console.warn('SGC attempt ' + (i+1) + ' failed: HTTP ' + res.status);
-      } catch(e) {
-        console.warn('SGC attempt ' + (i+1) + ' error:', e.message);
-        if (i < retries-1) await new Promise(function(r){ setTimeout(r, 1000*(i+1)); });
-      }
-    }
-    return null;
-  },
-
-  async _readBin() {
-    var res = await SGC._fetch(
-      STORAGE_CONFIG.URL + '/latest',
-      { method:'GET', headers:{'X-Master-Key':STORAGE_CONFIG.API_KEY,'X-Bin-Meta':'false'} }
-    );
-    if (!res) return _cache;
-    try {
-      var data = await res.json();
-      var record = data.record || data;
-      _cache = record;
-      return record;
-    } catch(e) { return _cache; }
-  },
-
-  async _writeBin(record) {
-    var res = await SGC._fetch(
-      STORAGE_CONFIG.URL,
-      {
-        method:'PUT',
-        headers:{'Content-Type':'application/json','X-Master-Key':STORAGE_CONFIG.API_KEY},
-        body: JSON.stringify(record)
-      }
-    );
-    if (res) { _cache = record; return true; }
-    return false;
-  },
-
-  async get(key) {
-    var record = await SGC._readBin();
-    return record[key] !== undefined ? record[key] : null;
-  },
-
-  async set(key, value) {
-    var record = await SGC._readBin();
-    if (key === 'scores' && Array.isArray(value) && Array.isArray(record.scores)) {
-      var existing = record.scores;
-      var updated = existing.slice();
-      for (var n = 0; n < value.length; n++) {
-        var newEntry = value[n];
-        var found = -1;
-        for (var m = 0; m < updated.length; m++) {
-          if (updated[m].name.toLowerCase() === newEntry.name.toLowerCase()) { found = m; break; }
-        }
-        if (found >= 0) {
-          // Finished round always wins; otherwise take higher points
-          if (newEntry.fin || !updated[found].fin || newEntry.pts >= updated[found].pts) {
-            updated[found] = newEntry;
-          }
-        } else {
-          updated.push(newEntry);
-        }
-      }
-      record.scores = updated;
-    } else {
-      record[key] = value;
-    }
-    var ok = await SGC._writeBin(record);
-    if (!ok) { console.warn('SGC.set failed - saved locally only'); _cache[key] = value; }
-    return ok;
-  }
-};
-        if (getRes.ok) {
-          const d = await getRes.json();
-          record = d.record || d || {};
-        }
-        record[key] = value;
-
-        const putRes = await fetch(
-          `https://api.jsonbin.io/v3/b/${STORAGE_CONFIG.BIN_ID}`,
-          {
-            method: 'PUT',
-            headers: {
-              'Content-Type': 'application/json',
-              'X-Master-Key': STORAGE_CONFIG.API_KEY
-            },
-            body: JSON.stringify(record)
-          }
-        );
-        if (putRes.ok) {
-          _localStore[key] = value;
-          return true;
-        } else {
-          console.warn('SGC.set HTTP error:', putRes.status, await putRes.text());
-        }
-      } catch(e) { console.warn('SGC.set failed:', e.message); }
-    }
-    _localStore[key] = value;
-    return true;
-  }
-};
-</script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
-<script>
-const STORAGE_CONFIG = {
-  BIN_ID:  '69ef1de136566621a8f75577',
-  API_KEY: '$2a$10$SbiSprdRGXi1U.q9BjYmM.0j1zDR1KPafxbgdfo9OFgGPmLVv/W5e',
   URL:     'https://api.jsonbin.io/v3/b/69ef1de136566621a8f75577',
 };
 
@@ -450,39 +333,54 @@ function totalNett(scores,ph){return scores.reduce((s,g)=>s+(g||0),0)-ph;}
 const MEDALS=['🥇','🥈','🥉'];
 let players=[], tab='all', refreshTimer=null;
 
-window.addEventListener('load',()=>{
+window.addEventListener('load', async ()=>{
   document.getElementById('compDate').textContent=new Date().toLocaleDateString('en-GB',{weekday:'short',day:'numeric',month:'long',year:'numeric'});
-  loadAdminSettings();
+  // Run independently so a settings failure doesn't block scores
+  loadAdminSettings().catch(e => console.warn('Settings load failed:', e));
   loadScores();
-  refreshTimer=setInterval(()=>{loadAdminSettings();loadScores();},15000);
+  refreshTimer = setInterval(() => {
+    loadAdminSettings().catch(e => console.warn('Settings refresh failed:', e));
+    loadScores();
+  }, 15000);
 });
 
 // ── READ ADMIN SETTINGS ──
 async function loadAdminSettings() {
   try {
-    const r = await SGC.get('settings');
-    if (!r || !r.value) return;
-    const s = JSON.parse(r.value);
-    if (s.name) document.getElementById('compNameHdr').textContent = s.name;
-    if (s.ticker && s.ticker.trim()) {
+    // SGC.get returns the value directly (not wrapped)
+    const s = await SGC.get('settings');
+    if (!s) return;
+    // s may be an object already or a JSON string
+    const settings = (typeof s === 'string') ? JSON.parse(s) : s;
+    if (settings.name) document.getElementById('compNameHdr').textContent = settings.name;
+    if (settings.ticker && settings.ticker.trim()) {
       const el = document.getElementById('tickerMsg');
       const bar = document.getElementById('tickerBar');
-      if (el) el.textContent = s.ticker;
+      if (el) el.textContent = settings.ticker;
       if (bar) bar.style.display = 'block';
     } else {
       const bar = document.getElementById('tickerBar');
       if (bar) bar.style.display = 'none';
     }
-    // Store format for score display
-    window.compFormat = s.format || 'stableford';
-  } catch(e) {}
+    window.compFormat = settings.format || 'stableford';
+  } catch(e) { console.warn('loadAdminSettings error:', e.message); }
 }
 
 async function loadScores(){
   try{
-    const r=await SGC.get('scores');
-    if(r&&Array.isArray(r))players=r;else if(r)try{players=JSON.parse(r);}catch(e){}
-  }catch(e){}
+    const r = await SGC.get('scores');
+    if (Array.isArray(r)) {
+      players = r;
+    } else if (r && typeof r === 'string') {
+      try { players = JSON.parse(r); } catch(e) { console.warn('Score parse error:', e); }
+    } else if (r && typeof r === 'object') {
+      // Sometimes JSONBin returns object with scores key
+      if (Array.isArray(r.scores)) players = r.scores;
+    }
+    console.log('Scores loaded:', players.length, 'players');
+  } catch(e) {
+    console.warn('loadScores error:', e.message);
+  }
   render(); stamp();
 }
 
