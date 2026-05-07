@@ -183,11 +183,10 @@ html,body{height:100%;background:var(--cream);font-family:'DM Sans',sans-serif;c
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 <script>
-var STORAGE_CONFIG = {
-  BIN_ID:  '69ef1de136566621a8f75577',
-  API_KEY: '$2a$10$SbiSprdRGXi1U.q9BjYmM.0j1zDR1KPafxbgdfo9OFgGPmLVv/W5e',
-  URL:     'https://api.jsonbin.io/v3/b/69ef1de136566621a8f75577'
-};
+// ── STORAGE via Cloudflare Worker Proxy ──
+// API key is kept server-side in the Worker — never exposed to browser
+var PROXY_URL = 'https://stanmore-proxy.vercel.app/api/proxy';
+// ↑ Replace YOURSUBDOMAIN with your Cloudflare Workers subdomain after setup
 
 var _cache = {};
 
@@ -202,17 +201,14 @@ var SGC = {
       } catch(e) {
         console.warn('SGC attempt ' + (i+1) + ' error:', e.message);
         if (i < retries - 1) {
-          await new Promise(function(r){ setTimeout(r, 1000 * (i+1)); });
+          await new Promise(function(r){ setTimeout(r, 800 * (i+1)); });
         }
       }
     }
     return null;
   },
   _read: async function() {
-    var res = await SGC._fetch(STORAGE_CONFIG.URL + '/latest', {
-      method: 'GET',
-      headers: { 'X-Master-Key': STORAGE_CONFIG.API_KEY, 'X-Bin-Meta': 'false' }
-    });
+    var res = await SGC._fetch(PROXY_URL, { method: 'GET' });
     if (!res) return _cache;
     try {
       var data = await res.json();
@@ -222,9 +218,9 @@ var SGC = {
     } catch(e) { return _cache; }
   },
   _write: async function(record) {
-    var res = await SGC._fetch(STORAGE_CONFIG.URL, {
+    var res = await SGC._fetch(PROXY_URL, {
       method: 'PUT',
-      headers: { 'Content-Type': 'application/json', 'X-Master-Key': STORAGE_CONFIG.API_KEY },
+      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(record)
     });
     if (res) { _cache = record; return true; }
