@@ -375,22 +375,40 @@ function startRound(){
   R.name=name; R.hi=hi;
   R.teeKey=document.getElementById('pTee').value;
   R.gender=document.getElementById('pGender').value;
-  R.startIdx=parseInt(document.getElementById('pStart').value);
-  const fmtEl=document.getElementById('pFormat'); const allow=parseFloat(fmtEl?fmtEl.value:'1.00')||1.00;
-  R.ph=calcPlayingHcp(hi,R.teeKey,allow);
-  R.curIdx=R.startIdx;
-  R.scores=new Array(18).fill(null);
+
+  // Get format info from active competition
+  var _fmt = window._activeFmt || {};
+  var allow = parseFloat(document.getElementById('pFormat').value) || 1.00;
+
+  // For 9-hole: halve the playing handicap
+  var fullPH = calcPlayingHcp(hi, R.teeKey, allow);
+  R.ph       = _fmt.holes === 9 ? Math.round(fullPH / 2) : fullPH;
+  R.holes    = _fmt.holes    || 18;
+  R.nineHole = _fmt.nineHole || null;
+  R.matchplay= _fmt.matchplay|| false;
+
+  // Build ordered list of hole indexes to play
+  if (R.nineHole === 'front') {
+    R.holeIndexes = [0,1,2,3,4,5,6,7,8];
+  } else if (R.nineHole === 'back') {
+    R.holeIndexes = [9,10,11,12,13,14,15,16,17];
+  } else {
+    var startIdx = parseInt(document.getElementById('pStart').value) || 0;
+    R.holeIndexes = [];
+    for (var h=0; h<18; h++) R.holeIndexes.push((startIdx + h) % 18);
+  }
+  R.holeStep = 0;
+  R.curIdx   = R.holeIndexes[0];
+  R.scores   = new Array(18).fill(null);
+
   document.getElementById('pbName').textContent=name;
   const t=COURSE.ratings[R.teeKey];
-  // pFormat is a hidden input set by competition picker - get label from _competitions
   var _selIdx = parseInt(document.getElementById('compPicker') ? document.getElementById('compPicker').value : -1);
   var _comp = (!isNaN(_selIdx) && _competitions[_selIdx]) ? _competitions[_selIdx] : null;
-  var _fmtMap = {'general_100':'General Play (100%)','stableford_95':'Stableford (95%)','strokeplay_95':'Stroke Play (95%)','matchplay_100':'Matchplay (100%)','fourball_90':'4BBB (90%)','foursomes_50':'Foursomes (50%)'};
-  const fmtLabel = _comp ? (_fmtMap[_comp.format] || _comp.format) : 'General Play (100%)';
-  document.getElementById('pbMeta').textContent=`HI ${hi.toFixed(1)} · Playing HCP ${R.ph} · ${fmtLabel}`;
+  var fmtLabel = _comp ? (_fmt.label || _comp.format) : 'General Play';
+  document.getElementById('pbMeta').textContent='HI '+hi.toFixed(1)+' · Playing HCP '+R.ph+' · '+fmtLabel+(R.holes===9?' · '+( R.nineHole==='front'?'Front 9':'Back 9'):'');
   showScr('scrCard'); renderHole();
 }
-
 function getPar(i){return R.gender==='f'?COURSE.par_women[i]:COURSE.par_men[i];}
 function getSI(i){return R.gender==='f'?COURSE.si_women[i]:COURSE.si_men[i];}
 
@@ -398,7 +416,7 @@ function renderHole(){
   const i=R.curIdx;
   const par=getPar(i); const si=getSI(i);
   const strokes=strokesOnHole(R.ph,si);
-  document.getElementById('holeBadge').textContent=`Hole ${i+1} / 18`;
+  document.getElementById('holeBadge').textContent='Hole '+(R.curIdx+1)+' / '+(R.holes===9?'9 ('+R.holeIndexes.map(function(x){return x+1;}).join(',').substring(0,10)+'…)':'18');
   document.getElementById('hcNum').textContent=`Hole ${i+1}`;
   document.getElementById('hcInfo').textContent=`Par ${par} · SI ${si}${strokes>0?' · +'+strokes+' stroke'+(strokes>1?'s':''):''}`;
   document.getElementById('pbPts').textContent=runningPts();
@@ -420,7 +438,7 @@ function renderHole(){
     btns.appendChild(btn);
   }
   updatePtsPreview();
-  document.getElementById('prevBtn').disabled=(i===R.startIdx);
+  document.getElementById('prevBtn').disabled=(R.holeStep===0);
   const isLast=(R.startIdx===0&&i===17)||(R.startIdx===9&&i===8);
   document.getElementById('nextBtn').textContent=isLast?'Finish ✓':'Next →';
   renderDone();
@@ -462,18 +480,17 @@ function renderDone(){
 }
 
 function nextHole(){
-  const isLast=(R.startIdx===0&&R.curIdx===17)||(R.startIdx===9&&R.curIdx===8);
-  if(isLast){finishRound();return;}
-  if(R.startIdx===9&&R.curIdx===17)R.curIdx=0;
-  else R.curIdx++;
+  if(R.holeStep >= R.holeIndexes.length - 1){finishRound();return;}
+  R.holeStep++;
+  R.curIdx = R.holeIndexes[R.holeStep];
   renderHole();
 }
 function prevHole(){
-  if(R.startIdx===9&&R.curIdx===0)R.curIdx=17;
-  else R.curIdx--;
+  if(R.holeStep <= 0) return;
+  R.holeStep--;
+  R.curIdx = R.holeIndexes[R.holeStep];
   renderHole();
 }
-
 function finishRound(){
   const pts=runningPts();
   const gross=R.scores.reduce((s,g)=>s+(g||0),0);
@@ -483,7 +500,7 @@ function finishRound(){
   document.getElementById('doneGross').textContent=gross;
   document.getElementById('doneNett').textContent=nett;
   document.getElementById('donePH').textContent=R.ph;
-  document.getElementById('holeBadge').textContent='Complete';
+  document.getElementById('holeBadge').textContent=(R.holes===9?'9 Holes':'18 Holes')+' Complete';
   showScr('scrDone');
   submitScore(pts,gross,nett);
 }
@@ -493,7 +510,7 @@ async function submitScore(pts,gross,nett){
     const picker=document.getElementById('compPicker');
     const compIdx=parseInt(picker?picker.value:-1);
     const compName=(!isNaN(compIdx)&&_competitions[compIdx])?_competitions[compIdx].name:'';
-    const entry={name:R.name,hi:R.hi,teeKey:R.teeKey,gender:R.gender,ph:R.ph,gross,nett,thru:18,pts,fin:true,competition:compName,ts:Date.now()};
+    const entry={name:R.name,hi:R.hi,teeKey:R.teeKey,gender:R.gender,ph:R.ph,gross,nett,thru:R.holes,pts,fin:true,competition:compName,holes:R.holes,nineHole:R.nineHole||null,ts:Date.now()};
     let scores=[];
     try{const ex=await SGC.get('scores');if(ex&&Array.isArray(ex))scores=ex;else if(ex)scores=JSON.parse(ex);}catch(e){}
     const idx=scores.findIndex(s=>s.name.toLowerCase()===R.name.toLowerCase());
@@ -520,12 +537,20 @@ window.addEventListener('load', loadAdminSettings);
 
 // ── FORMAT & TEE LOOKUPS ──
 var FORMAT_MAP = {
-  'general_100':   {label:'General Play',         allowance:'1.00'},
-  'stableford_95': {label:'Stableford (95%)',     allowance:'0.95'},
-  'strokeplay_95': {label:'Stroke Play (95%)',    allowance:'0.95'},
-  'matchplay_100': {label:'Singles Matchplay',    allowance:'1.00'},
-  'fourball_90':   {label:'Four-ball Betterball', allowance:'0.90'},
-  'foursomes_50':  {label:'Foursomes',            allowance:'0.50'},
+  'general_100':   {label:'General Play (18)',         allowance:1.00, holes:18, matchplay:false, nineHole:null},
+  'stableford_95': {label:'Stableford (18)',           allowance:0.95, holes:18, matchplay:false, nineHole:null},
+  'strokeplay_95': {label:'Stroke Play Nett (18)',     allowance:0.95, holes:18, matchplay:false, nineHole:null},
+  'matchplay_100': {label:'Singles Matchplay (18)',    allowance:1.00, holes:18, matchplay:true,  nineHole:null},
+  'fourball_90':   {label:'Four-ball Betterball (18)', allowance:0.90, holes:18, matchplay:true,  nineHole:null},
+  'foursomes_50':  {label:'Foursomes (18)',            allowance:0.50, holes:18, matchplay:true,  nineHole:null},
+  'stableford_9f': {label:'Stableford - Front 9',     allowance:0.95, holes:9,  matchplay:false, nineHole:'front'},
+  'strokeplay_9f': {label:'Stroke Play - Front 9',    allowance:0.95, holes:9,  matchplay:false, nineHole:'front'},
+  'general_9f':    {label:'General Play - Front 9',   allowance:1.00, holes:9,  matchplay:false, nineHole:'front'},
+  'matchplay_9f':  {label:'Matchplay - Front 9',      allowance:1.00, holes:9,  matchplay:true,  nineHole:'front'},
+  'stableford_9b': {label:'Stableford - Back 9',      allowance:0.95, holes:9,  matchplay:false, nineHole:'back'},
+  'strokeplay_9b': {label:'Stroke Play - Back 9',     allowance:0.95, holes:9,  matchplay:false, nineHole:'back'},
+  'general_9b':    {label:'General Play - Back 9',    allowance:1.00, holes:9,  matchplay:false, nineHole:'back'},
+  'matchplay_9b':  {label:'Matchplay - Back 9',       allowance:1.00, holes:9,  matchplay:true,  nineHole:'back'},
 };
 var TEE_LABELS = {
   'yellow_m':'Yellow (Men)','white_m':'White (Men)','red_m':'Red (Men)',
@@ -626,6 +651,9 @@ function onCompSelect() {
       (comp.notes ? '<br><span style="color:var(--grey)">' + comp.notes + '</span>' : '');
   }
 
+  // Store for startRound to use
+  window._activeComp = comp;
+  window._activeFmt  = fmt;
   previewHcp();
 }
 

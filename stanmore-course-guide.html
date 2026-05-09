@@ -297,6 +297,48 @@ td.lbl{font-family:'DM Sans',sans-serif;font-weight:600;font-size:.72rem;text-al
     <button class="cbtn" onclick="calcBatch()">Calculate All</button>
     <div id="bRes" style="margin-top:13px;"></div>
   </div>
+
+  <!-- MATCHPLAY HANDICAP DIFFERENCE CALCULATOR -->
+  <div class="calc-card">
+    <div class="calc-title">Matchplay / Fourball / Foursomes — Stroke Difference</div>
+    <div style="font-size:.75rem;color:var(--grey);margin-bottom:12px;line-height:1.6;">
+      In matchplay formats, the higher-handicap player receives the <strong>difference</strong> in Course Handicaps. 
+      Enter both players' Handicap Indexes and tee to calculate who receives strokes and on which holes.
+    </div>
+    <div class="frow">
+      <div class="fld">
+        <div class="flbl">Player A — Handicap Index</div>
+        <input class="finp" id="mpA_hi" type="number" placeholder="e.g. 5.1" step="0.1" min="0" max="54">
+      </div>
+      <div class="fld">
+        <div class="flbl">Player B — Handicap Index</div>
+        <input class="finp" id="mpB_hi" type="number" placeholder="e.g. 14.2" step="0.1" min="0" max="54">
+      </div>
+    </div>
+    <div class="frow">
+      <div class="fld">
+        <div class="flbl">Tee</div>
+        <select class="finp" id="mpTee">
+          <option value="yellow_m">Yellow (Men)</option>
+          <option value="white_m">White (Men)</option>
+          <option value="red_m">Red (Men)</option>
+          <option value="red_f">Red (Women)</option>
+          <option value="yellow_f">Yellow (Women)</option>
+        </select>
+      </div>
+      <div class="fld">
+        <div class="flbl">Format</div>
+        <select class="finp" id="mpFmt">
+          <option value="singles">Singles Matchplay (100%)</option>
+          <option value="fourball">Four-ball Betterball (90%)</option>
+          <option value="foursomes">Foursomes (50%)</option>
+        </select>
+      </div>
+    </div>
+    <button class="cbtn" onclick="calcMatchplay()">Calculate Strokes</button>
+    <div id="mpResult" style="margin-top:13px;"></div>
+  </div>
+
 </div>
 
 <script>
@@ -403,6 +445,75 @@ function calcBatch(){
   });
   h+='</div>';
   document.getElementById('bRes').innerHTML=h;
+}
+
+function calcMatchplay(){
+  var hiA = parseFloat(document.getElementById('mpA_hi').value);
+  var hiB = parseFloat(document.getElementById('mpB_hi').value);
+  var teeKey = document.getElementById('mpTee').value;
+  var fmt    = document.getElementById('mpFmt').value;
+
+  if(isNaN(hiA)||isNaN(hiB)){alert('Please enter both Handicap Indexes');return;}
+
+  // Course handicaps (unrounded for allowance, rounded for display)
+  var chA_raw = courseHcpRaw(hiA, teeKey);
+  var chB_raw = courseHcpRaw(hiB, teeKey);
+  var chA = Math.round(chA_raw);
+  var chB = Math.round(chB_raw);
+
+  // Playing handicaps based on format allowance
+  var allowMap = {singles:1.00, fourball:0.90, foursomes:0.50};
+  var allow = allowMap[fmt] || 1.00;
+  var phA = Math.round(chA_raw * allow);
+  var phB = Math.round(chB_raw * allow);
+
+  // Difference — higher handicap player receives strokes
+  var diff = Math.abs(phA - phB);
+  var higherPlayer = phA > phB ? 'Player A' : (phB > phA ? 'Player B' : null);
+  var t = COURSE.ratings[teeKey];
+
+  // Find which holes the higher handicap player receives strokes on
+  var gender = teeKey.endsWith('_f') ? 'f' : 'm';
+  var si = gender === 'f' ? COURSE.si_women : COURSE.si_men;
+  var par = gender === 'f' ? COURSE.par_women : COURSE.par_men;
+  var strokeHoles = [];
+  for(var h=0; h<18; h++){
+    var strokes = Math.floor(diff/18) + (si[h] <= (diff%18) ? 1 : 0);
+    if(strokes > 0) strokeHoles.push({hole:h+1, si:si[h], par:par[h], strokes:strokes});
+  }
+  strokeHoles.sort(function(a,b){return a.si-b.si;});
+
+  var fmtLabel = fmt==='singles'?'Singles Matchplay':fmt==='fourball'?'Four-ball Betterball':'Foursomes';
+
+  var html = '<div style="background:linear-gradient(135deg,var(--navy-dk),var(--navy));border-radius:12px;padding:16px;color:#fff;">';
+  html += '<div style="font-family:Cormorant Garamond,serif;font-size:1rem;color:var(--gold-lt,#f0c040);margin-bottom:12px;">'+fmtLabel+' · '+t.name+'</div>';
+
+  // Summary grid
+  html += '<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:12px;">';
+  html += '<div style="background:rgba(255,255,255,.07);border-radius:8px;padding:10px;text-align:center;"><div style="font-size:.55rem;letter-spacing:.12em;text-transform:uppercase;color:var(--grey,#8896a8);margin-bottom:3px;">Player A Course HCP</div><div style="font-family:DM Mono,monospace;font-size:1.2rem;">'+chA+'</div></div>';
+  html += '<div style="background:rgba(255,255,255,.07);border-radius:8px;padding:10px;text-align:center;"><div style="font-size:.55rem;letter-spacing:.12em;text-transform:uppercase;color:var(--grey,#8896a8);margin-bottom:3px;">Player B Course HCP</div><div style="font-family:DM Mono,monospace;font-size:1.2rem;">'+chB+'</div></div>';
+  html += '<div style="background:rgba(212,160,23,.2);border:1px solid rgba(212,160,23,.3);border-radius:8px;padding:10px;text-align:center;"><div style="font-size:.55rem;letter-spacing:.12em;text-transform:uppercase;color:rgba(212,160,23,.7);margin-bottom:3px;">Stroke Difference</div><div style="font-family:DM Mono,monospace;font-size:1.4rem;color:#f0c040;">'+diff+'</div></div>';
+  html += '</div>';
+
+  if(diff === 0){
+    html += '<div style="background:rgba(255,255,255,.07);border-radius:8px;padding:12px;text-align:center;font-size:.85rem;color:rgba(255,255,255,.7);">Both players have equal handicaps — no strokes given.</div>';
+  } else {
+    html += '<div style="background:rgba(255,255,255,.07);border-radius:8px;padding:12px;margin-bottom:10px;font-size:.82rem;color:rgba(255,255,255,.8);line-height:1.6;">';
+    html += '<strong style="color:#f0c040;">'+higherPlayer+'</strong> receives <strong style="color:#f0c040;">'+diff+' stroke'+(diff!==1?'s':''+'</strong>')+' on the following holes:</div>';
+
+    // Holes table
+    html += '<div style="background:rgba(0,0,0,.2);border-radius:8px;overflow:hidden;">';
+    html += '<div style="display:grid;grid-template-columns:50px 50px 50px 1fr;padding:7px 12px;background:rgba(0,0,0,.2);font-size:.55rem;letter-spacing:.12em;text-transform:uppercase;color:rgba(212,160,23,.7);">';
+    html += '<div>Hole</div><div>Par</div><div>SI</div><div>Strokes Given</div></div>';
+    strokeHoles.forEach(function(h){
+      html += '<div style="display:grid;grid-template-columns:50px 50px 50px 1fr;padding:9px 12px;border-top:1px solid rgba(255,255,255,.05);font-family:DM Mono,monospace;font-size:.82rem;">';
+      html += '<div>'+h.hole+'</div><div>'+h.par+'</div><div>'+h.si+'</div>';
+      html += '<div>'+(h.strokes===1?'1 stroke':'2 strokes')+'</div></div>';
+    });
+    html += '</div>';
+  }
+  html += '</div>';
+  document.getElementById('mpResult').innerHTML = html;
 }
 
 function showPage(id,el){

@@ -190,12 +190,26 @@ html,body{min-height:100%;background:linear-gradient(160deg,#09132a 0%,var(--nav
         <div class="grid2">
           <div><label class="slabel">Format</label>
             <select class="finp" id="ncFormat">
+              <optgroup label="── 18 Holes ──" style="color:rgba(212,160,23,.7)">
               <option value="general_100">General Play (100%)</option>
               <option value="stableford_95">Stableford (95%)</option>
-              <option value="strokeplay_95">Stroke Play (95%)</option>
-              <option value="matchplay_100">Matchplay (100%)</option>
+              <option value="strokeplay_95">Stroke Play Nett (95%)</option>
+              <option value="matchplay_100">Singles Matchplay (100%)</option>
               <option value="fourball_90">Four-ball Betterball (90%)</option>
               <option value="foursomes_50">Foursomes (50%)</option>
+              </optgroup>
+              <optgroup label="── Front 9 (Holes 1-9) ──" style="color:rgba(212,160,23,.7)">
+              <option value="stableford_9f">Stableford - Front 9</option>
+              <option value="strokeplay_9f">Stroke Play - Front 9</option>
+              <option value="general_9f">General Play - Front 9</option>
+              <option value="matchplay_9f">Matchplay - Front 9</option>
+              </optgroup>
+              <optgroup label="── Back 9 (Holes 10-18) ──" style="color:rgba(212,160,23,.7)">
+              <option value="stableford_9b">Stableford - Back 9</option>
+              <option value="strokeplay_9b">Stroke Play - Back 9</option>
+              <option value="general_9b">General Play - Back 9</option>
+              <option value="matchplay_9b">Matchplay - Back 9</option>
+              </optgroup>
             </select>
           </div>
           <div><label class="slabel">Tee</label>
@@ -359,12 +373,23 @@ var PWD_KEY     = 'sgc_admin_pwd';
 var SETTINGS_KEY = 'sgc_settings_local';
 
 var FORMAT_LABELS = {
-  'general_100':   {label:'General Play',         pct:'100%', allowance:1.00},
-  'stableford_95': {label:'Stableford',           pct:'95%',  allowance:0.95},
-  'strokeplay_95': {label:'Stroke Play (Nett)',    pct:'95%',  allowance:0.95},
-  'matchplay_100': {label:'Singles Matchplay',    pct:'100%', allowance:1.00},
-  'fourball_90':   {label:'Four-ball Betterball', pct:'90%',  allowance:0.90},
-  'foursomes_50':  {label:'Foursomes',            pct:'50%',  allowance:0.50},
+  // 18-hole formats
+  'general_100':      {label:'General Play (18)',          pct:'100%', allowance:1.00,   holes:18, matchplay:false},
+  'stableford_95':    {label:'Stableford (18)',            pct:'95%',  allowance:0.95,   holes:18, matchplay:false},
+  'strokeplay_95':    {label:'Stroke Play Nett (18)',      pct:'95%',  allowance:0.95,   holes:18, matchplay:false},
+  'matchplay_100':    {label:'Singles Matchplay (18)',     pct:'100%', allowance:1.00,   holes:18, matchplay:true},
+  'fourball_90':      {label:'Four-ball Betterball (18)',  pct:'90%',  allowance:0.90,   holes:18, matchplay:true},
+  'foursomes_50':     {label:'Foursomes (18)',             pct:'50%',  allowance:0.50,   holes:18, matchplay:true},
+  // 9-hole formats - Front 9 (holes 1-9)
+  'stableford_9f':    {label:'Stableford - Front 9',      pct:'95%',  allowance:0.95,   holes:9,  matchplay:false, nineHole:'front'},
+  'strokeplay_9f':    {label:'Stroke Play - Front 9',     pct:'95%',  allowance:0.95,   holes:9,  matchplay:false, nineHole:'front'},
+  'general_9f':       {label:'General Play - Front 9',    pct:'100%', allowance:1.00,   holes:9,  matchplay:false, nineHole:'front'},
+  'matchplay_9f':     {label:'Matchplay - Front 9',       pct:'100%', allowance:1.00,   holes:9,  matchplay:true,  nineHole:'front'},
+  // 9-hole formats - Back 9 (holes 10-18)
+  'stableford_9b':    {label:'Stableford - Back 9',       pct:'95%',  allowance:0.95,   holes:9,  matchplay:false, nineHole:'back'},
+  'strokeplay_9b':    {label:'Stroke Play - Back 9',      pct:'95%',  allowance:0.95,   holes:9,  matchplay:false, nineHole:'back'},
+  'general_9b':       {label:'General Play - Back 9',     pct:'100%', allowance:1.00,   holes:9,  matchplay:false, nineHole:'back'},
+  'matchplay_9b':     {label:'Matchplay - Back 9',        pct:'100%', allowance:1.00,   holes:9,  matchplay:true,  nineHole:'back'},
 };
 var TEE_LABELS = {
   'yellow_m':'Yellow (Men)','white_m':'White (Men)','red_m':'Red (Men)',
@@ -475,14 +500,20 @@ function renderComps() {
 function addComp() {
   var name = document.getElementById('ncName').value.trim();
   if (!name) { toast('Please enter a competition name'); return; }
+  var fmt = document.getElementById('ncFormat').value;
+  var fmtInfo = FORMAT_LABELS[fmt] || {};
   competitions.push({
-    id:     Date.now().toString(),
-    name:   name,
-    date:   document.getElementById('ncDate').value,
-    format: document.getElementById('ncFormat').value,
-    tee:    document.getElementById('ncTee').value,
-    notes:  document.getElementById('ncNotes').value.trim(),
-    active: competitions.length === 0,
+    id:        Date.now().toString(),
+    name:      name,
+    date:      document.getElementById('ncDate').value,
+    format:    fmt,
+    tee:       document.getElementById('ncTee').value,
+    notes:     document.getElementById('ncNotes').value.trim(),
+    active:    competitions.length === 0,
+    holes:     fmtInfo.holes     || 18,
+    nineHole:  fmtInfo.nineHole  || null,
+    matchplay: fmtInfo.matchplay || false,
+    allowance: fmtInfo.allowance || 0.95,
   });
   document.getElementById('ncName').value = '';
   document.getElementById('ncDate').value = '';

@@ -425,7 +425,8 @@ function render(){
     card.className='pcard'+(rank===1?' leader':'');
     card.style.animationDelay=(i*.025)+'s';
     const posH=rank<=3?`<div class="ppos top">${MEDALS[rank-1]}</div>`:`<div class="ppos">${rank}</div>`;
-    const thruH=p.fin?'<div class="pthru"><span class="tv fin">✓ F</span></div>':`<div class="pthru"><span class="tv">${p.thru||0}</span><span class="tl">Thru</span></div>`;
+    var finLabel = p.fin ? (p.nineHole==='front'?'✓ F9':p.nineHole==='back'?'✓ B9':'✓ F') : null;
+    const thruH=p.fin?'<div class="pthru"><span class="tv fin">'+finLabel+'</span></div>':`<div class="pthru"><span class="tv">${p.thru||0}</span><span class="tl">Thru</span></div>`;
     const ph=p.ph||p.hcp||0;
     const teeLabel=p.teeKey?(p.teeKey.includes('white')?'W':p.teeKey.includes('yellow')?'Y':'R'):'';
     const compTag=p.competition?` · ${p.competition}`:'';
