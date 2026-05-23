@@ -283,7 +283,7 @@ td.lbl{font-family:sans-serif;font-weight:600;font-size:.72rem;text-align:left;p
   <div class="calc-card">
     <div class="calc-title">Individual Playing Handicap</div>
     <div class="frow">
-      <div class="fld"><div class="flbl">Handicap Index</div><input class="finp" id="hiIn" type="number" placeholder="e.g. 14.2" step="0.1" min="0" max="54"></div>
+      <div class="fld"><div class="flbl">Handicap Index</div><input class="finp" id="hiIn" type="number" placeholder="e.g. 14.2" step="0.1" min="-5" max="54"></div>
       <div class="fld"><div class="flbl">Gender</div><select class="finp" id="genIn"><option value="m">Male</option><option value="f">Female</option></select></div>
     </div>
     <div class="frow">
@@ -352,8 +352,8 @@ td.lbl{font-family:sans-serif;font-weight:600;font-size:.72rem;text-align:left;p
       Enter both players' Handicap Indexes to see who receives strokes and on which holes.
     </div>
     <div class="frow">
-      <div class="fld"><div class="flbl">Player A — HI</div><input class="finp" id="mpA_hi" type="number" placeholder="e.g. 5.1" step="0.1" min="0" max="54"></div>
-      <div class="fld"><div class="flbl">Player B — HI</div><input class="finp" id="mpB_hi" type="number" placeholder="e.g. 14.2" step="0.1" min="0" max="54"></div>
+      <div class="fld"><div class="flbl">Player A — HI</div><input class="finp" id="mpA_hi" type="number" placeholder="e.g. 5.1" step="0.1" min="-5" max="54"></div>
+      <div class="fld"><div class="flbl">Player B — HI</div><input class="finp" id="mpB_hi" type="number" placeholder="e.g. 14.2" step="0.1" min="-5" max="54"></div>
     </div>
     <div class="frow">
       <div class="fld"><div class="flbl">Tee</div><select class="finp" id="mpTee">
@@ -379,8 +379,8 @@ td.lbl{font-family:sans-serif;font-weight:600;font-size:.72rem;text-align:left;p
       Foursomes: 50% of each player's Course Handicap combined.
     </div>
     <div class="frow">
-      <div class="fld"><div class="flbl">Player A — HI</div><input class="finp" id="gsA_hi" type="number" placeholder="e.g. 8.4" step="0.1" min="0" max="54"></div>
-      <div class="fld"><div class="flbl">Player B — HI</div><input class="finp" id="gsB_hi" type="number" placeholder="e.g. 15.2" step="0.1" min="0" max="54"></div>
+      <div class="fld"><div class="flbl">Player A — HI</div><input class="finp" id="gsA_hi" type="number" placeholder="e.g. 8.4" step="0.1" min="-5" max="54"></div>
+      <div class="fld"><div class="flbl">Player B — HI</div><input class="finp" id="gsB_hi" type="number" placeholder="e.g. 15.2" step="0.1" min="-5" max="54"></div>
     </div>
     <div class="frow one">
       <div class="fld"><div class="flbl">Tee</div><select class="finp" id="gsTee">
@@ -431,7 +431,7 @@ function calcSingle(){
   var hi=parseFloat(document.getElementById('hiIn').value);
   var teeKey=document.getElementById('teeIn').value;
   var allow=parseFloat(document.getElementById('fmtIn').value);
-  if(isNaN(hi)||hi<0){alert('Please enter a valid Handicap Index');return;}
+  if(isNaN(hi)||hi<-5||hi>54){alert('Please enter a valid Handicap Index (-5 to 54)');return;}
   var t=COURSE.ratings[teeKey];
   var ch=calcCourseHcp(hi,teeKey);
   var ph=calcPlayingHcp(hi,teeKey,allow);
@@ -476,7 +476,7 @@ function calcMatchplay(){
   var hiB=parseFloat(document.getElementById('mpB_hi').value);
   var teeKey=document.getElementById('mpTee').value;
   var fmtVal=document.getElementById('mpFmt').value;
-  if(isNaN(hiA)||isNaN(hiB)){alert('Please enter both Handicap Indexes');return;}
+  if(isNaN(hiA)||isNaN(hiB)||hiA<-5||hiB<-5){alert('Please enter valid Handicap Indexes (-5 to 54)');return;}
 
   var allowMap={'singles_100':1.00,'fourball_90':0.90,'foursomes_50':0.50};
   var fmtLabelMap={'singles_100':'Singles Matchplay','fourball_90':'Fourball Matchplay','foursomes_50':'Foursomes Matchplay'};
@@ -531,7 +531,7 @@ function calcTeam(){
   var hiA=parseFloat(document.getElementById('gsA_hi').value);
   var hiB=parseFloat(document.getElementById('gsB_hi').value);
   var teeKey=document.getElementById('gsTee').value;
-  if(isNaN(hiA)||isNaN(hiB)){alert('Please enter both Handicap Indexes');return;}
+  if(isNaN(hiA)||isNaN(hiB)||hiA<-5||hiB<-5){alert('Please enter valid Handicap Indexes (-5 to 54)');return;}
 
   var chA_raw=courseHcpRaw(hiA,teeKey);
   var chB_raw=courseHcpRaw(hiB,teeKey);

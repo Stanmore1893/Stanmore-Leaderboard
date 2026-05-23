@@ -162,7 +162,7 @@ html,body{min-height:100%;background:var(--cream);font-family:'DM Sans',sans-ser
   <label class="flbl">Your Name</label>
   <input class="finp" id="pName" type="text" placeholder="e.g. Brian Holloway" autocomplete="name">
   <div class="frow2">
-    <div><label class="flbl">WHS Handicap Index</label><input class="finp" id="pHI" type="number" placeholder="e.g. 14.2" step="0.1" min="0" max="54" oninput="previewHcp()"></div>
+    <div><label class="flbl">WHS Handicap Index</label><input class="finp" id="pHI" type="number" placeholder="e.g. 14.2 or +2 (enter -2)" step="0.1" min="-5" max="54" oninput="previewHcp()"></div>
     <div><label class="flbl">Gender</label><select class="finp" id="pGender" onchange="previewHcp()"><option value="m">Male</option><option value="f">Female</option></select></div>
   </div>
   <div class="frow2">
@@ -332,7 +332,13 @@ const COURSE = {
     red_f:   {cr:72.1,slope:127,par:72,name:'Red (Women)'},
   }
 };
-function strokesOnHole(ph,si){if(ph<=0)return 0;let s=Math.floor(ph/18);if(si<=(ph%18))s++;return s;}
+function strokesOnHole(ph,si){
+  // Plus handicap (negative ph) — player receives no strokes, gives shots back to course
+  if(ph<=0) return 0;
+  let s=Math.floor(ph/18);
+  if(si<=(ph%18)) s++;
+  return s;
+}
 function stablefordPts(gross,par,ph,si){if(!gross||gross<=0)return 0;const n=gross-strokesOnHole(ph,si);return Math.max(0,(par-n)+2);}
 // WHS correct: allowance on unrounded course handicap
 function courseHcpRaw(hi,teeKey){const t=COURSE.ratings[teeKey];return hi*(t.slope/113)+(t.cr-t.par);}
@@ -352,7 +358,7 @@ function previewHcp(){
   const hi=parseFloat(document.getElementById('pHI').value);
   const teeKey=document.getElementById('pTee').value;
   const fmtEl=document.getElementById('pFormat'); const allow=parseFloat(fmtEl?fmtEl.value:'1.00')||1.00;
-  if(isNaN(hi)||hi<0){document.getElementById('hcpPreview').style.display='none';return;}
+  if(isNaN(hi)||hi<-5||hi>54){document.getElementById('hcpPreview').style.display='none';return;}
   const ch=calcCourseHcp(hi,teeKey);
   const ph=calcPlayingHcp(hi,teeKey,allow);
   const t=COURSE.ratings[teeKey];
@@ -371,7 +377,7 @@ function startRound(){
   const name=document.getElementById('pName').value.trim();
   const hi=parseFloat(document.getElementById('pHI').value);
   if(!name){alert('Please enter your name');return;}
-  if(isNaN(hi)||hi<0){alert('Please enter your Handicap Index');return;}
+  if(isNaN(hi)||hi<-5){alert('Please enter your Handicap Index');return;}
   R.name=name; R.hi=hi;
   R.teeKey=document.getElementById('pTee').value;
   R.gender=document.getElementById('pGender').value;
