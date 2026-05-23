@@ -292,34 +292,7 @@ html,body{min-height:100%;background:linear-gradient(160deg,#09132a 0%,var(--nav
       <button class="save-btn red-btn" onclick="confirmClear()">&#128465; Clear All Scores</button>
     </div>
 
-    <!-- SETTINGS -->
-    <div class="sec">
-      <div class="sec-title">Competition Settings</div>
-      <div class="sec-desc">Detailed settings pushed to Score Entry and Leaderboard apps.</div>
-      <label class="slabel">Competition Name</label>
-      <input class="finp" id="compNameInput" type="text" placeholder="e.g. Seniors Open 2025">
-      <label class="slabel">Date</label>
-      <input class="finp" id="compDateInput" type="date">
-      <label class="slabel">Default Format</label>
-      <select class="finp" id="compFormatInput">
-        <option value="general">General Play (100%)</option>
-        <option value="stableford">Stableford (95%)</option>
-        <option value="strokeplay">Stroke Play (95%)</option>
-        <option value="matchplay">Singles Matchplay (100%)</option>
-        <option value="fourball">Four-ball Betterball (90%)</option>
-      </select>
-      <label class="slabel">Default Tee</label>
-      <select class="finp" id="compTeeInput">
-        <option value="yellow_m">Yellow (Men)</option>
-        <option value="white_m">White (Men)</option>
-        <option value="red_m">Red (Men)</option>
-        <option value="red_f">Red (Women)</option>
-        <option value="yellow_f">Yellow (Women)</option>
-      </select>
-      <label class="slabel">Announcement Ticker</label>
-      <input class="finp" id="compTickerInput" type="text" placeholder="e.g. Prize presentation at 6:30 PM">
-      <button class="save-btn" onclick="saveSettings()">Save Settings</button>
-    </div>
+
 
     <!-- PASSWORD -->
     <div class="sec">
@@ -568,11 +541,8 @@ async function saveQuick(){
 // ── FULL SETTINGS ──
 async function saveSettings(){
   var settings={
-    name:document.getElementById('compNameInput').value.trim()||'Stanmore Golf Club',
-    date:document.getElementById('compDateInput').value,
-    format:document.getElementById('compFormatInput').value,
-    tee:document.getElementById('compTeeInput').value,
-    ticker:document.getElementById('compTickerInput').value.trim(),
+    name:document.getElementById('quickName').value.trim()||'Stanmore Golf Club',
+    ticker:document.getElementById('quickTicker').value.trim(),
     ts:Date.now(),
   };
   localStorage.setItem('sgc_comp_settings',JSON.stringify(settings));
@@ -584,11 +554,6 @@ function loadLocalSettings(){
     var s=JSON.parse(localStorage.getItem('sgc_comp_settings')||'{}');
     document.getElementById('quickName').value=s.name||'';
     document.getElementById('quickTicker').value=s.ticker||'';
-    document.getElementById('compNameInput').value=s.name||'Stanmore Golf Club';
-    document.getElementById('compDateInput').value=s.date||'';
-    document.getElementById('compFormatInput').value=s.format||'stableford';
-    document.getElementById('compTeeInput').value=s.tee||'yellow_m';
-    document.getElementById('compTickerInput').value=s.ticker||'';
   }catch(e){}
 }
 
