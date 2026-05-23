@@ -224,25 +224,43 @@ html,body{min-height:100%;background:linear-gradient(160deg,#09132a 0%,var(--nav
           <button type="button" class="type-btn" id="typeTeamBtn" onclick="setCompType('team')">&#128101; Team</button>
         </div>
 
-        <label class="slabel">Format</label>
-        <div id="fmtIndividual">
-          <label class="fmt-radio-lbl"><input type="radio" name="ncFmt" value="ind_stableford" checked> Stableford <span class="pct-badge">95%</span></label>
-          <label class="fmt-radio-lbl"><input type="radio" name="ncFmt" value="ind_strokeplay"> Stroke Play <span class="pct-badge">95%</span></label>
-          <label class="fmt-radio-lbl"><input type="radio" name="ncFmt" value="ind_parbogey"> Par / Bogey <span class="pct-badge">95%</span></label>
-          <label class="fmt-radio-lbl"><input type="radio" name="ncFmt" value="ind_maxscore"> Maximum Score <span class="pct-badge">95%</span></label>
-          <label class="fmt-radio-lbl"><input type="radio" name="ncFmt" value="ind_matchplay"> Singles Matchplay <span class="pct-badge">100%</span></label>
+        <div class="grid2" style="margin-bottom:0">
+          <div>
+            <label class="slabel">Format</label>
+            <select class="finp" id="ncFmtSelect" onchange="onFmtChange()" style="margin-bottom:0">
+              <optgroup label="Individual">
+                <option value="ind_stableford">Stableford</option>
+                <option value="ind_strokeplay">Stroke Play</option>
+                <option value="ind_parbogey">Par / Bogey</option>
+                <option value="ind_maxscore">Maximum Score</option>
+                <option value="ind_matchplay">Singles Matchplay</option>
+              </optgroup>
+              <optgroup label="Team">
+                <option value="team_fourball_sf">Fourball Stableford</option>
+                <option value="team_fourball_sp">Fourball Stroke Play</option>
+                <option value="team_fourball_pb">Fourball Par/Bogey</option>
+                <option value="team_foursomes">Foursomes</option>
+                <option value="team_greensomes">Greensomes</option>
+                <option value="team_matchplay_fb">Fourball Matchplay</option>
+                <option value="team_matchplay_fs">Foursomes Matchplay</option>
+              </optgroup>
+            </select>
+          </div>
+          <div>
+            <label class="slabel">% Allowance</label>
+            <select class="finp" id="ncAllowance" style="margin-bottom:0">
+              <option value="1.00">100%</option>
+              <option value="0.95" selected>95%</option>
+              <option value="0.90">90%</option>
+              <option value="0.85">85%</option>
+              <option value="0.80">80%</option>
+              <option value="0.75">75%</option>
+              <option value="0.50">50%</option>
+              <option value="greensomes">60% low + 40% high</option>
+            </select>
+          </div>
         </div>
-        <div id="fmtTeam" style="display:none;">
-          <div class="fmt-section-lbl">Strokeplay / Stableford</div>
-          <label class="fmt-radio-lbl"><input type="radio" name="ncFmt" value="team_fourball_sf"> Fourball Stableford <span class="pct-badge">85%</span></label>
-          <label class="fmt-radio-lbl"><input type="radio" name="ncFmt" value="team_fourball_sp"> Fourball Stroke Play <span class="pct-badge">85%</span></label>
-          <label class="fmt-radio-lbl"><input type="radio" name="ncFmt" value="team_fourball_pb"> Fourball Par/Bogey <span class="pct-badge">90%</span></label>
-          <label class="fmt-radio-lbl"><input type="radio" name="ncFmt" value="team_foursomes"> Foursomes <span class="pct-badge">50% combined</span></label>
-          <label class="fmt-radio-lbl"><input type="radio" name="ncFmt" value="team_greensomes"> Greensomes <span class="pct-badge">60%+40%</span></label>
-          <div class="fmt-section-lbl">Matchplay</div>
-          <label class="fmt-radio-lbl"><input type="radio" name="ncFmt" value="team_matchplay_fb"> Fourball Matchplay <span class="pct-badge">90%</span></label>
-          <label class="fmt-radio-lbl"><input type="radio" name="ncFmt" value="team_matchplay_fs"> Foursomes Matchplay <span class="pct-badge">50%</span></label>
-        </div>
+        <div id="fmtHint" style="font-size:.68rem;color:rgba(212,160,23,.65);margin-top:6px;margin-bottom:12px;font-family:'DM Mono',monospace;padding:5px 8px;background:rgba(212,160,23,.08);border-radius:6px;"></div>
 
         <label class="slabel" style="margin-top:12px">Holes</label>
         <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:12px;">
@@ -438,13 +456,20 @@ var TEE_LABELS = {
 // ── COMPETITION FORM ──
 var _ncType='individual', _ncTeeBase='white';
 function setCompType(type) {
-  _ncType=type;
-  document.getElementById('typeIndBtn').classList.toggle('active',type==='individual');
-  document.getElementById('typeTeamBtn').classList.toggle('active',type==='team');
-  document.getElementById('fmtIndividual').style.display=type==='individual'?'block':'none';
-  document.getElementById('fmtTeam').style.display=type==='team'?'block':'none';
-  var radios=document.querySelectorAll('#fmt'+(type==='individual'?'Individual':'Team')+' input[type=radio]');
-  if(radios.length) radios[0].checked=true;
+  _ncType = type;
+  document.getElementById('typeIndBtn').classList.toggle('active', type==='individual');
+  document.getElementById('typeTeamBtn').classList.toggle('active', type==='team');
+  // Filter the format dropdown to show relevant optgroup first
+  var sel = document.getElementById('ncFmtSelect');
+  var groups = sel.querySelectorAll('optgroup');
+  if (type === 'individual') {
+    groups[0].style.display = ''; groups[1].style.display = 'none';
+    sel.value = 'ind_stableford';
+  } else {
+    groups[0].style.display = 'none'; groups[1].style.display = '';
+    sel.value = 'team_fourball_sf';
+  }
+  onFmtChange();
 }
 function setHoles(val) {
   ['18','front9','back9'].forEach(function(v){
@@ -480,7 +505,9 @@ function renderCompList() {
   competitions.forEach(function(c,i){
     var fmt=FORMAT_LABELS[c.format]||{label:c.format,allowance:null};
     var teeLabel=TEE_LABELS[c.tee]||c.tee;
-    var pct=fmt.allowance?Math.round(fmt.allowance*100)+'%':(fmt.special==='greensomes'?'60/40%':'—');
+    // Show custom allowance if set, otherwise use format default
+  var dispAllowance = c.allowance !== undefined ? c.allowance : fmt.allowance;
+  var pct = c.customAllowance==='greensomes'?'60/40%' : (dispAllowance ? Math.round(dispAllowance*100)+'%' : '—');
     var holes=c.nineHole==='front'?'Front 9':c.nineHole==='back'?'Back 9':'18 holes';
     var div=document.createElement('div');
     div.className='comp-item'+(c.active?' active-comp':'');
@@ -501,13 +528,56 @@ async function saveCompetitions(){
   var ok=await SGC.set('competitions',competitions);
   toast(ok?'Competitions saved':'Save failed — check connection');
 }
+// Mandatory allowances from England Golf table
+var MANDATORY_ALLOWANCES = {
+  'ind_stableford':    {pct:0.95, hint:'Mandatory: 95%'},
+  'ind_strokeplay':    {pct:0.95, hint:'Mandatory: 95%'},
+  'ind_parbogey':      {pct:0.95, hint:'Mandatory: 95%'},
+  'ind_maxscore':      {pct:0.95, hint:'Mandatory: 95%'},
+  'ind_matchplay':     {pct:1.00, hint:'Mandatory: 100%'},
+  'team_fourball_sf':  {pct:0.85, hint:'Mandatory: 85%'},
+  'team_fourball_sp':  {pct:0.85, hint:'Mandatory: 85%'},
+  'team_fourball_pb':  {pct:0.90, hint:'Mandatory: 90%'},
+  'team_foursomes':    {pct:0.50, hint:'Mandatory: 50% each'},
+  'team_greensomes':   {pct:'greensomes', hint:'Mandatory: 60% low + 40% high'},
+  'team_matchplay_fb': {pct:0.90, hint:'Mandatory: 90%'},
+  'team_matchplay_fs': {pct:0.50, hint:'Mandatory: 50%'},
+};
+
+function onFmtChange() {
+  var fmt = document.getElementById('ncFmtSelect').value;
+  var mandatory = MANDATORY_ALLOWANCES[fmt] || {};
+  // Auto-set the allowance to mandatory value
+  var allowEl = document.getElementById('ncAllowance');
+  var suggestedVal = mandatory.pct ? mandatory.pct.toString() : '0.95';
+  // Find matching option
+  var matched = false;
+  for (var i = 0; i < allowEl.options.length; i++) {
+    if (allowEl.options[i].value === suggestedVal) {
+      allowEl.selectedIndex = i;
+      matched = true;
+      break;
+    }
+  }
+  // Show hint
+  var hint = document.getElementById('fmtHint');
+  if (mandatory.hint) {
+    hint.textContent = 'England Golf mandatory allowance: ' + mandatory.hint + (matched ? ' — pre-selected' : '');
+    hint.style.display = 'block';
+  } else {
+    hint.style.display = 'none';
+  }
+}
+
 function addComp() {
   var name=document.getElementById('ncName').value.trim();
   if(!name){toast('Please enter a competition name');return;}
-  var selectedFmt=null;
-  document.querySelectorAll('input[name="ncFmt"]').forEach(function(r){if(r.checked)selectedFmt=r.value;});
+  var selectedFmt = document.getElementById('ncFmtSelect').value;
   if(!selectedFmt){toast('Please select a format');return;}
-  var fmtInfo=FORMAT_LABELS[selectedFmt]||{};
+  var customAllowance = document.getElementById('ncAllowance').value;
+  var fmtInfo = FORMAT_LABELS[selectedFmt] || {};
+  // Use custom allowance if set, otherwise use format default
+  var finalAllowance = customAllowance === 'greensomes' ? null : parseFloat(customAllowance);
   competitions.push({
     id:Date.now().toString(), name:name,
     date:document.getElementById('ncDate').value,
@@ -518,14 +588,16 @@ function addComp() {
     holes:parseInt(document.getElementById('ncHoles').value)||18,
     nineHole:document.getElementById('ncNineHole').value||null,
     matchplay:fmtInfo.matchplay||false,
-    allowance:fmtInfo.allowance||0.95,
+    allowance:finalAllowance!==null?finalAllowance:(fmtInfo.allowance||0.95),
+    customAllowance:customAllowance,
   });
   document.getElementById('ncName').value='';
   document.getElementById('ncDate').value='';
   document.getElementById('ncNotes').value='';
   setCompType('individual'); setHoles('18'); setTee('white');
   document.getElementById('ncLadies').checked=false;
-  var fr=document.querySelector('#fmtIndividual input[type=radio]'); if(fr) fr.checked=true;
+  document.getElementById('ncFmtSelect').value='ind_stableford';
+  onFmtChange();
   renderCompList(); toast('Added — tap Save All to publish');
 }
 
