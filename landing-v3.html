@@ -183,11 +183,11 @@ h2{font-family:'Cormorant Garamond',serif;font-size:clamp(1.8rem,4vw,2.8rem);fon
 .cta-link:hover .cta-link-arrow{transform:translateX(4px);}
 
 /* FOOTER */
-footer{background:#060e1e;padding:40px 24px;text-align:center;border-top:2px solid rgba(212,160,23,.15);}
+footer{background:var(--navy);padding:40px 24px;text-align:center;border-top:2px solid rgba(212,160,23,.25);}
 .footer-logo{width:50px;height:50px;object-fit:contain;opacity:.6;margin-bottom:14px;transition:opacity .3s;}
 .footer-logo:hover{opacity:1;}
-footer p{font-size:.72rem;color:rgba(255,255,255,.22);line-height:1.9;}
-footer strong{color:rgba(212,160,23,.5);}
+footer p{font-size:.72rem;color:rgba(255,255,255,.55);line-height:1.9;}
+footer strong{color:var(--gold-lt);}
 
 @media(max-width:900px){
   .feat-grid{grid-template-columns:1fr 1fr;}
@@ -369,6 +369,11 @@ footer strong{color:rgba(212,160,23,.5);}
   <p><strong>Stanmore Golf Club</strong> · Est. 1893 · Middlesex<br>
   Digital Competition Hub · stanmore1893.github.io<br>
   Powered by WHS · Built for club golf</p>
+  <div style="margin-top:20px;padding-top:18px;border-top:1px solid rgba(212,160,23,.15);display:inline-flex;align-items:center;gap:10px;">
+    <div style="width:32px;height:1.5px;background:linear-gradient(to right,transparent,var(--gold));"></div>
+    <p style="font-size:.72rem;color:rgba(212,160,23,.65);letter-spacing:.12em;font-family:'DM Sans',sans-serif;">Designed &amp; built by <strong style="color:var(--gold-lt);font-weight:600;">Alex Persaud</strong> &nbsp;·&nbsp; PGA Professional</p>
+    <div style="width:32px;height:1.5px;background:linear-gradient(to left,transparent,var(--gold));"></div>
+  </div>
 </footer>
 
 <script>
