@@ -681,8 +681,12 @@ function calcSinglesResult(hiA, teeA, hiB, teeB, allow, isMixed, labelA, labelB)
 }
 
 function calcFourballResult(hiA, teeA, hiB, teeB, hiC, teeC, hiD, teeD, allow, isMixed) {
-  // Each player gets individual course hcp × allow, then equalisation
-  // Team handicap = each player's final ph (lower of team used in matchplay)
+  // FOURBALL MATCHPLAY — each player plays their own ball
+  // Step 1: Calculate each player's Course Handicap
+  // Step 2: Find the lowest Course Handicap across all 4 players — they play off scratch
+  // Step 3: Each other player receives: round((their CH - lowest CH) × allow%) shots
+  // Step 4: Add equalisation shots if mixed tees (vs lowest CR tee in group)
+
   var players = [
     {hi:hiA, tee:teeA, label:'Team 1 — A', team:1},
     {hi:hiB, tee:teeB, label:'Team 1 — B', team:1},
@@ -690,45 +694,84 @@ function calcFourballResult(hiA, teeA, hiB, teeB, hiC, teeC, hiD, teeD, allow, i
     {hi:hiD, tee:teeD, label:'Team 2 — D', team:2},
   ];
 
-  // Calculate playing handicaps
+  // Step 1: Course handicaps
   players.forEach(function(p) {
     p.chRaw = courseHcpRaw(p.hi, p.tee);
-    p.ph    = Math.round(p.chRaw * allow);
-    p.eq    = 0;
+    p.ch    = Math.round(p.chRaw);
   });
 
-  // Mixed tees: equalise each player against the lowest CR tee in the group
+  // Step 2: Find lowest course handicap across all 4
+  var lowestCH = Math.min.apply(null, players.map(function(p){ return p.ch; }));
+  var lowestPlayer = players.filter(function(p){ return p.ch === lowestCH; })[0];
+
+  // Step 3: Each player's shots received = round((their CH - lowestCH) × allow)
+  players.forEach(function(p) {
+    var diff = p.ch - lowestCH;
+    p.shotsFromDiff = Math.round(diff * allow);
+    p.eq = 0;
+  });
+
+  // Step 4: Equalisation — each player vs lowest CR tee in group
   if (isMixed) {
     var allCRs = players.map(function(p){ return COURSE.ratings[p.tee].cr; });
     var minCR  = Math.min.apply(null, allCRs);
     players.forEach(function(p) {
-      var cr = COURSE.ratings[p.tee].cr;
-      p.eq   = Math.round(cr - minCR);
+      p.eq = Math.round(COURSE.ratings[p.tee].cr - minCR);
     });
   }
 
-  players.forEach(function(p){ p.final = p.ph + p.eq; });
-
-  // In fourball matchplay, team handicap = lower of the two players' final ph
-  // Difference = team1_lower vs team2_lower, higher team gets the difference
-  var t1 = players.filter(function(p){return p.team===1;});
-  var t2 = players.filter(function(p){return p.team===2;});
-  var t1ph = Math.min(t1[0].final, t1[1].final);
-  var t2ph = Math.min(t2[0].final, t2[1].final);
-  var diff  = t1ph - t2ph;
-  var higherTeam = diff > 0 ? 'Team 1' : diff < 0 ? 'Team 2' : null;
-  var absDiff = Math.abs(diff);
-  var gender = teeA.endsWith('_f') ? 'f' : 'm';
-  var holes  = getStrokeHoles(absDiff, gender);
-
-  var out = colHeaders();
-  players.forEach(function(p){
-    out += playerSummaryRow(p.label, p.hi, p.tee, p.ph, p.eq, p.final);
+  // Final shots received by each player
+  players.forEach(function(p) {
+    p.finalShots = p.shotsFromDiff + p.eq;
   });
-  out += '<div style="font-size:.68rem;color:rgba(255,255,255,.45);padding:6px 10px;line-height:1.6;border-top:1px solid rgba(255,255,255,.07);margin-top:4px;">'
-    + 'Fourball: lower handicap of each team compared · '
-    + 'Team 1 lower = <strong>' + t1ph + '</strong> · Team 2 lower = <strong>' + t2ph + '</strong></div>';
-  out += strokeDiffBlock(higherTeam||'neither', absDiff, holes);
+
+  // Build result
+  var out = '<div style="font-size:.62rem;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.35);margin-bottom:6px;padding:0 2px;">'
+    + 'Lowest C.HCP in group: <strong style="color:#f0c040;">' + lowestPlayer.label + ' (' + lowestCH + ')</strong> — plays off scratch</div>';
+
+  // Column headers
+  out += '<div style="display:grid;grid-template-columns:1fr 44px 44px 44px 54px;gap:4px;padding:4px 10px;font-size:.53rem;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.35);margin-bottom:4px;">'
+    + '<div>Player</div><div style="text-align:right">C.HCP</div><div style="text-align:right">Diff</div><div style="text-align:right">Eq</div><div style="text-align:right">Shots Rcvd</div></div>';
+
+  players.forEach(function(p) {
+    var isLowest = p.ch === lowestCH;
+    var bg = p.team === 1 ? 'rgba(26,58,107,.2)' : 'rgba(45,110,78,.15)';
+    var borderCol = p.team === 1 ? 'rgba(26,58,107,.4)' : 'rgba(45,110,78,.3)';
+    out += '<div style="display:grid;grid-template-columns:1fr 44px 44px 44px 54px;gap:4px;padding:8px 10px;background:' + bg + ';border:1px solid ' + borderCol + ';border-radius:7px;margin-bottom:5px;font-size:.78rem;align-items:center;">'
+      + '<div style="color:#fff;">' + p.label + (isLowest?' <span style="font-size:.58rem;background:rgba(212,160,23,.3);color:#f0c040;border-radius:3px;padding:1px 4px;">Scratch</span>':'') + '</div>'
+      + '<div style="text-align:right;font-family:monospace;">' + p.ch + '</div>'
+      + '<div style="text-align:right;font-family:monospace;color:rgba(255,255,255,.55);">' + (p.ch - lowestCH) + '</div>'
+      + '<div style="text-align:right;font-family:monospace;color:rgba(212,160,23,.7);">' + (p.eq > 0 ? '+'+p.eq : p.eq === 0 ? '—' : p.eq) + '</div>'
+      + '<div style="text-align:right;font-family:monospace;font-size:.95rem;font-weight:600;color:' + (p.finalShots > 0 ? '#f0c040' : 'rgba(255,255,255,.4)') + ';">'
+      + (p.finalShots > 0 ? p.finalShots + ' shot' + (p.finalShots!==1?'s':'') : 'Scratch') + '</div>'
+      + '</div>';
+  });
+
+  // Show which holes each player (non-scratch) gets their shots on
+  var nonScratch = players.filter(function(p){ return p.finalShots > 0; });
+  if (nonScratch.length > 0) {
+    out += '<div style="margin-top:10px;">';
+    nonScratch.forEach(function(p) {
+      var gender = p.tee.endsWith('_f') ? 'f' : 'm';
+      var holes  = getStrokeHoles(p.finalShots, gender);
+      var teamCol = p.team === 1 ? '#a8c4f0' : '#8ee0b4';
+      out += '<div style="background:rgba(212,160,23,.1);border:1px solid rgba(212,160,23,.2);border-radius:8px;padding:10px 12px;margin-bottom:8px;">'
+        + '<div style="font-size:.65rem;letter-spacing:.08em;text-transform:uppercase;color:rgba(212,160,23,.7);margin-bottom:4px;">' + p.label + ' — receives ' + p.finalShots + ' stroke' + (p.finalShots!==1?'s':'') + '</div>'
+        + '<div style="font-size:.7rem;color:rgba(255,255,255,.6);line-height:1.8;">'
+        + holes.map(function(h){ return 'Hole ' + h.hole + ' (SI ' + h.si + ')'; }).join(' &nbsp;·&nbsp; ')
+        + '</div></div>';
+    });
+    out += '</div>';
+  }
+
+  if (isMixed) {
+    var allCRs2 = players.map(function(p){ return COURSE.ratings[p.tee].cr; });
+    var minCR2  = Math.min.apply(null, allCRs2);
+    var minTee  = players.filter(function(p){ return COURSE.ratings[p.tee].cr === minCR2; })[0];
+    out += '<div style="font-size:.67rem;color:rgba(255,255,255,.4);padding:8px 10px;line-height:1.7;border-top:1px solid rgba(255,255,255,.07);margin-top:6px;">'
+      + 'Mixed tees: equalisation applied vs lowest CR tee (' + COURSE.ratings[minTee.tee].name + ', CR ' + minCR2 + ')</div>';
+  }
+
   return out;
 }
 
