@@ -108,7 +108,8 @@ h1 em::after{content:'';position:absolute;bottom:2px;left:0;right:0;height:2px;b
 .pts-counter{animation:count-up .8s ease both;}
 @keyframes count-up{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:translateY(0);}}
 /* Floating badges */
-.float-badge{position:absolute;background:rgba(15,35,71,.95);border:1px solid rgba(212,160,23,.25);border-radius:12px;padding:10px 14px;display:flex;align-items:center;gap:9px;box-shadow:0 8px 32px rgba(0,0,0,.35);white-space:nowrap;}
+.float-badge{position:absolute;background:rgba(15,35,71,.95);border:1px solid rgba(212,160,23,.4);border-radius:12px;padding:11px 16px;display:flex;align-items:center;gap:10px;box-shadow:0 8px 40px rgba(0,0,0,.5),0 0 0 1px rgba(212,160,23,.1);white-space:nowrap;}
+.fb-txt strong{color:#f0c040;}
 .fb-right{right:-24px;bottom:30px;animation:float-badge-r 7s ease-in-out infinite;}
 .fb-left{left:-24px;top:30px;animation:float-badge-l 7s ease-in-out infinite 1s;}
 @keyframes float-badge-r{0%,100%{transform:translateY(0);}50%{transform:translateY(-8px);}}
@@ -240,10 +241,7 @@ footer strong{color:var(--gold-lt);}
     </div>
     <div class="hero-visual">
       <div class="mock-wrap reveal-right delay-2">
-        <div class="float-badge fb-left">
-          <div class="fb-ico">📱</div>
-          <div class="fb-txt"><strong>Score Entry</strong>No app needed</div>
-        </div>
+
         <div class="mock-card">
           <div class="mock-hdr">
             <div class="mock-title">🏆 Live Leaderboard</div>
@@ -275,9 +273,9 @@ footer strong{color:var(--gold-lt);}
             <div class="mock-pts" style="color:rgba(255,255,255,.4)">19</div>
           </div>
         </div>
-        <div class="float-badge fb-right">
+        <div class="float-badge fb-right" style="background:rgba(26,58,107,.95);border:1px solid rgba(212,160,23,.45);box-shadow:0 8px 32px rgba(0,0,0,.5);">
           <div class="fb-ico">🔄</div>
-          <div class="fb-txt"><strong>Auto-refresh</strong>Every 15 seconds</div>
+          <div class="fb-txt"><strong style="color:#f0c040;">Auto-refresh</strong>Every 15 seconds</div>
         </div>
       </div>
     </div>
@@ -313,6 +311,7 @@ footer strong{color:var(--gold-lt);}
 
 <!-- APPS -->
 <section class="apps" id="apps">
+  <div class="particles" id="appsParticles" style="position:absolute;inset:0;pointer-events:none;overflow:hidden;"></div>
   <div style="text-align:center;position:relative;z-index:1;">
     <span class="eyebrow reveal" style="color:var(--gold-lt)">The system</span>
     <h2 class="reveal delay-1" style="color:var(--white)">Five apps, one link</h2>
@@ -351,7 +350,9 @@ footer strong{color:var(--gold-lt);}
     <span class="eyebrow reveal">Get started</span>
     <h2 class="reveal delay-1">Ready to play?</h2>
     <p class="sub reveal delay-2">Open the hub to access all five apps. No login required for players.</p>
-    <div class="cta-box reveal delay-3">
+    <div class="cta-box reveal delay-3" style="position:relative;overflow:hidden;">
+      <div class="particles" id="ctaParticles" style="position:absolute;inset:0;pointer-events:none;z-index:0;"></div>
+      <div style="position:relative;z-index:1;">
       <div class="cta-title">Open the Stanmore Hub</div>
       <div class="cta-sub">Everything lives here — share this link and you're set.</div>
       <div class="cta-links">
@@ -359,6 +360,7 @@ footer strong{color:var(--gold-lt);}
         <a href="stanmore-player-scoring.html" class="cta-link"><span>📱 Score Entry</span><span class="cta-link-arrow">→</span></a>
         <a href="stanmore-leaderboard-live.html" class="cta-link"><span>🏆 Live Leaderboard</span><span class="cta-link-arrow">→</span></a>
         <a href="stanmore-course-guide.html" class="cta-link"><span>📋 Course Guide</span><span class="cta-link-arrow">→</span></a>
+      </div>
       </div>
     </div>
   </div>
@@ -385,17 +387,67 @@ window.addEventListener('scroll', function() {
 // ── Particles ──
 (function() {
   var container = document.getElementById('particles');
-  for (var i = 0; i < 20; i++) {
+  for (var i = 0; i < 40; i++) {
     var p = document.createElement('div');
-    p.className = 'particle';
+    var isLarge = Math.random() > 0.65;
+    var size    = isLarge ? (8 + Math.random()*14) : (2 + Math.random()*3.5);
+    var alpha   = isLarge ? (0.12 + Math.random()*.14) : (0.35 + Math.random()*.45);
+    var dur     = isLarge ? (12 + Math.random()*10) : (6 + Math.random()*7);
     p.style.cssText = [
+      'position:absolute',
+      'border-radius:50%',
+      'background:rgba(212,160,23,' + alpha + ')',
+      'width:' + size + 'px',
+      'height:' + size + 'px',
       'left:' + Math.random()*100 + '%',
-      'top:' + Math.random()*100 + '%',
-      'animation-duration:' + (8 + Math.random()*12) + 's',
-      'animation-delay:-' + Math.random()*15 + 's',
-      'opacity:' + (0.2 + Math.random()*0.5),
-      'width:' + (1 + Math.random()*2) + 'px',
-      'height:' + (1 + Math.random()*2) + 'px',
+      'top:' + (30 + Math.random()*70) + '%',
+      'animation:float-up ' + dur + 's linear -' + (Math.random()*dur) + 's infinite',
+    ].join(';');
+    container.appendChild(p);
+  }
+})();
+
+// ── CTA box particles ──
+(function() {
+  var container = document.getElementById('ctaParticles');
+  for (var i = 0; i < 30; i++) {
+    var p = document.createElement('div');
+    var isLarge = Math.random() > 0.65;
+    var size    = isLarge ? (6 + Math.random()*10) : (2 + Math.random()*3);
+    var alpha   = isLarge ? (0.08 + Math.random()*.10) : (0.2 + Math.random()*.3);
+    var dur     = isLarge ? (12 + Math.random()*10) : (6 + Math.random()*7);
+    p.style.cssText = [
+      'position:absolute',
+      'border-radius:50%',
+      'background:rgba(212,160,23,' + alpha + ')',
+      'width:' + size + 'px',
+      'height:' + size + 'px',
+      'left:' + Math.random()*100 + '%',
+      'top:' + (10 + Math.random()*90) + '%',
+      'animation:float-up ' + dur + 's linear -' + (Math.random()*dur) + 's infinite',
+    ].join(';');
+    container.appendChild(p);
+  }
+})();
+
+// ── Apps section particles ──
+(function() {
+  var container = document.getElementById('appsParticles');
+  for (var i = 0; i < 40; i++) {
+    var p = document.createElement('div');
+    var isLarge = Math.random() > 0.65;
+    var size    = isLarge ? (8 + Math.random()*14) : (2 + Math.random()*3.5);
+    var alpha   = isLarge ? (0.10 + Math.random()*.12) : (0.25 + Math.random()*.35);
+    var dur     = isLarge ? (12 + Math.random()*10) : (6 + Math.random()*7);
+    p.style.cssText = [
+      'position:absolute',
+      'border-radius:50%',
+      'background:rgba(212,160,23,' + alpha + ')',
+      'width:' + size + 'px',
+      'height:' + size + 'px',
+      'left:' + Math.random()*100 + '%',
+      'top:' + (10 + Math.random()*90) + '%',
+      'animation:float-up ' + dur + 's linear -' + (Math.random()*dur) + 's infinite',
     ].join(';');
     container.appendChild(p);
   }
