@@ -379,6 +379,10 @@ function startRound(){
   // Get format info from active competition
   var _fmt = window._activeFmt || {};
   var allow = parseFloat(document.getElementById('pFormat').value) || 1.00;
+  // Also use comp's stored allowance if available (overrides pFormat for 9-hole etc)
+  if (window._activeComp && window._activeComp.allowance != null) {
+    allow = window._activeComp.allowance;
+  }
 
   // For 9-hole: halve the playing handicap
   var fullPH = calcPlayingHcp(hi, R.teeKey, allow);
@@ -536,22 +540,44 @@ function showScr(id){document.querySelectorAll('.screen').forEach(s=>s.classList
 window.addEventListener('load', loadAdminSettings);
 
 // ── FORMAT & TEE LOOKUPS ──
+// FORMAT_MAP covers both old keys (backwards compat) and new admin keys
 var FORMAT_MAP = {
-  'general_100':   {label:'General Play (18)',         allowance:1.00, holes:18, matchplay:false, nineHole:null},
-  'stableford_95': {label:'Stableford (18)',           allowance:0.95, holes:18, matchplay:false, nineHole:null},
-  'strokeplay_95': {label:'Stroke Play Nett (18)',     allowance:0.95, holes:18, matchplay:false, nineHole:null},
-  'matchplay_100': {label:'Singles Matchplay (18)',    allowance:1.00, holes:18, matchplay:true,  nineHole:null},
-  'fourball_90':   {label:'Four-ball Betterball (18)', allowance:0.90, holes:18, matchplay:true,  nineHole:null},
-  'foursomes_50':  {label:'Foursomes (18)',            allowance:0.50, holes:18, matchplay:true,  nineHole:null},
-  'stableford_9f': {label:'Stableford - Front 9',     allowance:0.95, holes:9,  matchplay:false, nineHole:'front'},
-  'strokeplay_9f': {label:'Stroke Play - Front 9',    allowance:0.95, holes:9,  matchplay:false, nineHole:'front'},
-  'general_9f':    {label:'General Play - Front 9',   allowance:1.00, holes:9,  matchplay:false, nineHole:'front'},
-  'matchplay_9f':  {label:'Matchplay - Front 9',      allowance:1.00, holes:9,  matchplay:true,  nineHole:'front'},
-  'stableford_9b': {label:'Stableford - Back 9',      allowance:0.95, holes:9,  matchplay:false, nineHole:'back'},
-  'strokeplay_9b': {label:'Stroke Play - Back 9',     allowance:0.95, holes:9,  matchplay:false, nineHole:'back'},
-  'general_9b':    {label:'General Play - Back 9',    allowance:1.00, holes:9,  matchplay:false, nineHole:'back'},
-  'matchplay_9b':  {label:'Matchplay - Back 9',       allowance:1.00, holes:9,  matchplay:true,  nineHole:'back'},
+  // New admin keys
+  'ind_stableford':    {label:'Stableford',           allowance:0.95, holes:18, matchplay:false, nineHole:null},
+  'ind_strokeplay':    {label:'Stroke Play',           allowance:0.95, holes:18, matchplay:false, nineHole:null},
+  'ind_parbogey':      {label:'Par / Bogey',           allowance:0.95, holes:18, matchplay:false, nineHole:null},
+  'ind_maxscore':      {label:'Maximum Score',         allowance:0.95, holes:18, matchplay:false, nineHole:null},
+  'ind_matchplay':     {label:'Singles Matchplay',     allowance:1.00, holes:18, matchplay:true,  nineHole:null},
+  'team_fourball_sf':  {label:'Fourball Stableford',   allowance:0.85, holes:18, matchplay:false, nineHole:null},
+  'team_fourball_sp':  {label:'Fourball Stroke Play',  allowance:0.85, holes:18, matchplay:false, nineHole:null},
+  'team_fourball_pb':  {label:'Fourball Par/Bogey',    allowance:0.90, holes:18, matchplay:false, nineHole:null},
+  'team_foursomes':    {label:'Foursomes',             allowance:0.50, holes:18, matchplay:false, nineHole:null},
+  'team_greensomes':   {label:'Greensomes',            allowance:null, holes:18, matchplay:false, nineHole:null},
+  'team_matchplay_fb': {label:'Fourball Matchplay',    allowance:0.90, holes:18, matchplay:true,  nineHole:null},
+  'team_matchplay_fs': {label:'Foursomes Matchplay',   allowance:0.50, holes:18, matchplay:true,  nineHole:null},
+  // Legacy keys (backwards compatibility)
+  'general_100':   {label:'General Play',   allowance:1.00, holes:18, matchplay:false, nineHole:null},
+  'stableford_95': {label:'Stableford',     allowance:0.95, holes:18, matchplay:false, nineHole:null},
+  'strokeplay_95': {label:'Stroke Play',    allowance:0.95, holes:18, matchplay:false, nineHole:null},
+  'matchplay_100': {label:'Matchplay',      allowance:1.00, holes:18, matchplay:true,  nineHole:null},
+  'fourball_90':   {label:'4BBB',           allowance:0.90, holes:18, matchplay:true,  nineHole:null},
+  'foursomes_50':  {label:'Foursomes',      allowance:0.50, holes:18, matchplay:true,  nineHole:null},
+  'stableford_9f': {label:'Stableford F9',  allowance:0.95, holes:9,  matchplay:false, nineHole:'front'},
+  'strokeplay_9f': {label:'Stroke Play F9', allowance:0.95, holes:9,  matchplay:false, nineHole:'front'},
+  'general_9f':    {label:'General F9',     allowance:1.00, holes:9,  matchplay:false, nineHole:'front'},
+  'matchplay_9f':  {label:'Matchplay F9',   allowance:1.00, holes:9,  matchplay:true,  nineHole:'front'},
+  'stableford_9b': {label:'Stableford B9',  allowance:0.95, holes:9,  matchplay:false, nineHole:'back'},
+  'strokeplay_9b': {label:'Stroke Play B9', allowance:0.95, holes:9,  matchplay:false, nineHole:'back'},
+  'general_9b':    {label:'General B9',     allowance:1.00, holes:9,  matchplay:false, nineHole:'back'},
+  'matchplay_9b':  {label:'Matchplay B9',   allowance:1.00, holes:9,  matchplay:true,  nineHole:'back'},
 };
+
+// Resolve allowance from competition object - uses stored allowance first, then FORMAT_MAP
+function resolveAllowance(comp) {
+  if (comp.allowance !== undefined && comp.allowance !== null) return comp.allowance;
+  var fmt = FORMAT_MAP[comp.format] || {};
+  return fmt.allowance || 0.95;
+}
 var TEE_LABELS = {
   'yellow_m':'Yellow (Men)','white_m':'White (Men)','red_m':'Red (Men)',
   'red_f':'Red (Women)','yellow_f':'Yellow (Women)','white_f':'White (Women)',
