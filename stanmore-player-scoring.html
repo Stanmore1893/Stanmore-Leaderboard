@@ -384,18 +384,23 @@ function startRound(){
     allow = window._activeComp.allowance;
   }
 
+  // Read holes/nineHole from competition object first, then fall back to format map
+  var _comp = window._activeComp || {};
+  var compHoles    = _comp.holes    || _fmt.holes    || 18;
+  var compNineHole = _comp.nineHole || _fmt.nineHole || null;
+
   // For 9-hole: halve the playing handicap
   var fullPH = calcPlayingHcp(hi, R.teeKey, allow);
-  R.ph       = _fmt.holes === 9 ? Math.round(fullPH / 2) : fullPH;
-  R.holes    = _fmt.holes    || 18;
-  R.nineHole = _fmt.nineHole || null;
-  R.matchplay= _fmt.matchplay|| false;
+  R.ph       = compHoles === 9 ? Math.round(fullPH / 2) : fullPH;
+  R.holes    = compHoles;
+  R.nineHole = compNineHole;
+  R.matchplay= _fmt.matchplay || _comp.matchplay || false;
 
   // Build ordered list of hole indexes to play
   if (R.nineHole === 'front') {
-    R.holeIndexes = [0,1,2,3,4,5,6,7,8];
+    R.holeIndexes = [0,1,2,3,4,5,6,7,8];   // holes 1-9
   } else if (R.nineHole === 'back') {
-    R.holeIndexes = [9,10,11,12,13,14,15,16,17];
+    R.holeIndexes = [9,10,11,12,13,14,15,16,17]; // holes 10-18
   } else {
     var startIdx = parseInt(document.getElementById('pStart').value) || 0;
     R.holeIndexes = [];
@@ -410,7 +415,8 @@ function startRound(){
   var _selIdx = parseInt(document.getElementById('compPicker') ? document.getElementById('compPicker').value : -1);
   var _comp = (!isNaN(_selIdx) && _competitions[_selIdx]) ? _competitions[_selIdx] : null;
   var fmtLabel = _comp ? (_fmt.label || _comp.format) : 'General Play';
-  document.getElementById('pbMeta').textContent='HI '+hi.toFixed(1)+' · Playing HCP '+R.ph+' · '+fmtLabel+(R.holes===9?' · '+( R.nineHole==='front'?'Front 9':'Back 9'):'');
+  var nineStr = R.nineHole==='front'?' · Front 9':R.nineHole==='back'?' · Back 9':'';
+  document.getElementById('pbMeta').textContent='HI '+hi.toFixed(1)+' · Playing HCP '+R.ph+' · '+fmtLabel+(R.holes===9?nineStr:'');
   showScr('scrCard'); renderHole();
 }
 function getPar(i){return R.gender==='f'?COURSE.par_women[i]:COURSE.par_men[i];}
