@@ -15,7 +15,9 @@
 html,body{min-height:100%;background:linear-gradient(160deg,#09132a 0%,var(--navy) 55%,#0c2416 100%);font-family:'DM Sans',sans-serif;color:var(--text);position:relative;}
 
 /* HEADER */
-.hero{padding:36px 20px 28px;text-align:center;border-bottom:1px solid rgba(212,160,23,.2);}
+.hero{padding:36px 20px 28px;text-align:center;border-bottom:1px solid rgba(212,160,23,.2);position:relative;overflow:hidden;}
+.hero *{position:relative;z-index:2;}
+@keyframes hub-float{0%{opacity:0;transform:translateY(0);}10%{opacity:1;}85%{opacity:.6;}100%{opacity:0;transform:translateY(-110%);}}
 .hero-logo{width:110px;height:110px;object-fit:contain;margin-bottom:14px;filter:drop-shadow(0 4px 24px rgba(212,160,23,.35));}
 .hero-club{font-family:'Cormorant Garamond',serif;font-size:2.2rem;font-weight:700;color:var(--gold-lt);letter-spacing:.03em;line-height:1.1;margin-bottom:6px;}
 .hero-comp{font-size:.82rem;color:var(--gold-pale);letter-spacing:.18em;text-transform:uppercase;margin-bottom:8px;}
@@ -108,14 +110,6 @@ html,body{min-height:100%;background:linear-gradient(160deg,#09132a 0%,var(--nav
 .sgc-burger{position:fixed;top:12px;right:12px;left:auto;z-index:499;width:42px;height:42px;background:#1a3a6b;border:1.5px solid rgba(212,160,23,.5);border-radius:9px;display:flex;align-items:center;justify-content:center;cursor:pointer;box-shadow:0 2px 12px rgba(0,0,0,.5);color:#fff;font-size:1.3rem;line-height:1;}
 .sgc-burger:active{background:rgba(212,160,23,.3);}
 
-/* ── PARTICLES ── */
-.hub-particles{position:fixed;inset:0;pointer-events:none;z-index:1;overflow:hidden;}
-@keyframes hub-float{
-  0%{opacity:0;transform:translateY(0);}
-  10%{opacity:1;}
-  85%{opacity:.6;}
-  100%{opacity:0;transform:translateY(-100vh);}
-}
 </style>
 </head>
 <body>
@@ -146,6 +140,7 @@ html,body{min-height:100%;background:linear-gradient(160deg,#09132a 0%,var(--nav
 
 
 <div class="hero">
+  <div id="hubParticles" style="position:absolute;inset:0;pointer-events:none;z-index:1;overflow:hidden;"></div>
   <img class="hero-logo" src="club-logo.png" alt="Stanmore Golf Club">
   <div class="hero-club">Stanmore Golf Club</div>
   <div class="hero-comp">Golf Club Hub</div>
