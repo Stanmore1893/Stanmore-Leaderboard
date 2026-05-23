@@ -9,20 +9,20 @@
 <style>
 :root{--navy:#1a3a6b;--navy-dk:#0f2347;--gold:#d4a017;--gold-lt:#f0c040;--gold-pale:#faf0d0;--red:#c0392b;--cream:#f8f5ef;--text:#141e30;--grey:#8896a8;--green:#2d6e4e;--green-lt:#3fa06e;--white:#fff;}
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
-html,body{min-height:100%;background:var(--cream);font-family:'DM Sans',sans-serif;color:var(--text);}
+html,body{min-height:100%;background:var(--cream);font-family:sans-serif;color:var(--text);}
 .hdr{background:linear-gradient(to right,var(--navy-dk),var(--navy));padding:13px 16px 0;position:sticky;top:0;z-index:20;}
 .hdr::after{content:'';display:block;height:3px;background:linear-gradient(to right,var(--gold),var(--gold-lt),var(--gold));margin-top:9px;}
 .hdr-row{display:flex;align-items:center;justify-content:space-between;}
 .brand{display:flex;align-items:center;gap:10px;}
 .logo{width:40px;height:40px;object-fit:contain;}
-.club-name{font-family:'Cormorant Garamond',serif;font-size:1.1rem;font-weight:700;color:var(--white);}
+.club-name{font-family:Georgia,serif;font-size:1.1rem;font-weight:700;color:var(--white);}
 .club-sub{font-size:.58rem;color:var(--gold-lt);letter-spacing:.18em;text-transform:uppercase;}
 .tab-nav{display:flex;background:var(--white);border-bottom:1px solid rgba(26,58,107,.1);}
 .tnav{flex:1;padding:11px 4px;text-align:center;font-size:.63rem;font-weight:600;letter-spacing:.07em;text-transform:uppercase;color:var(--grey);cursor:pointer;border-bottom:2px solid transparent;transition:all .2s;}
 .tnav.active{color:var(--navy);border-bottom-color:var(--gold);}
 .page{display:none;padding:14px 13px 40px;}
 .page.active{display:block;}
-.sec-title{font-family:'Cormorant Garamond',serif;font-size:1.3rem;font-weight:700;color:var(--navy-dk);margin-bottom:3px;margin-top:4px;}
+.sec-title{font-family:Georgia,serif;font-size:1.3rem;font-weight:700;color:var(--navy-dk);margin-bottom:3px;margin-top:4px;}
 .sec-sub{font-size:.72rem;color:var(--grey);margin-bottom:14px;line-height:1.5;}
 
 /* TEE CARDS */
@@ -31,22 +31,23 @@ html,body{min-height:100%;background:var(--cream);font-family:'DM Sans',sans-ser
 .tee-head.wh{background:linear-gradient(to right,#c8c8c8,#e4e4e4);color:var(--navy-dk);}
 .tee-head.ye{background:linear-gradient(to right,#c8a800,#f0c840);color:var(--navy-dk);}
 .tee-head.re{background:linear-gradient(to right,#a01818,#d43020);color:var(--white);}
-.tee-name{font-family:'Cormorant Garamond',serif;font-size:1.05rem;font-weight:700;}
-.tee-yds{font-family:'DM Mono',monospace;font-size:.85rem;font-weight:500;}
+.tee-name{font-family:Georgia,serif;font-size:1.05rem;font-weight:700;}
+.tee-yds{font-family:monospace;font-size:.85rem;font-weight:500;}
 .tee-body{background:var(--white);padding:10px 15px;display:grid;grid-template-columns:1fr 1fr;gap:6px 20px;}
 .ts{display:flex;flex-direction:column;}
 .ts-lbl{font-size:.55rem;letter-spacing:.13em;text-transform:uppercase;color:var(--grey);margin-bottom:2px;}
-.ts-val{font-family:'DM Mono',monospace;font-size:.95rem;font-weight:500;color:var(--navy-dk);}
+.ts-val{font-family:monospace;font-size:.95rem;font-weight:500;color:var(--navy-dk);}
 .ts-gen{font-size:.62rem;color:var(--grey);}
 
 /* ALLOWANCES */
-.allow-table{background:var(--white);border-radius:12px;border:1px solid rgba(26,58,107,.1);overflow:hidden;margin-bottom:14px;}
-.at-head{background:var(--navy);padding:9px 13px;font-size:.6rem;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:rgba(212,160,23,.8);}
-.at-row{display:grid;grid-template-columns:1.4fr .6fr 1fr;padding:9px 13px;border-bottom:1px solid rgba(26,58,107,.06);font-size:.76rem;}
+.allow-table{background:var(--white);border-radius:10px;border:1px solid rgba(26,58,107,.1);overflow:hidden;}
+.at-head-row{display:grid;grid-template-columns:1.6fr .7fr .8fr;padding:7px 12px;background:var(--navy);font-size:.57rem;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:rgba(212,160,23,.8);}
+.at-row{display:grid;grid-template-columns:1.6fr .7fr .8fr;padding:9px 12px;border-bottom:1px solid rgba(26,58,107,.06);font-size:.78rem;}
 .at-row:last-child{border-bottom:none;}
-.at-row:nth-child(even){background:rgba(248,245,239,.7);}
+.at-row:nth-child(odd){background:rgba(248,245,239,.6);}
 .at-type{font-weight:600;color:var(--navy-dk);}
-.at-pct{font-family:'DM Mono',monospace;}
+.at-sub{font-size:.68rem;color:var(--grey);}
+.at-pct{font-family:monospace;font-weight:500;color:var(--navy);text-align:right;}
 .at-note{font-size:.66rem;color:var(--grey);}
 
 /* SCORECARD */
@@ -70,26 +71,26 @@ tbody tr{border-bottom:1px solid rgba(26,58,107,.06);}
 tbody tr:nth-child(even){background:rgba(248,245,239,.7);}
 tr.nine-tot{background:rgba(26,58,107,.07);border-top:2px solid rgba(26,58,107,.18);}
 tr.grand-tot{background:linear-gradient(to right,rgba(212,160,23,.12),rgba(248,245,239,.5));border-top:2px solid var(--gold);}
-td{padding:8px 5px;font-family:'DM Mono',monospace;font-size:.79rem;text-align:center;color:var(--text);}
+td{padding:8px 5px;font-family:monospace;font-size:.79rem;text-align:center;color:var(--text);}
 td.hn{font-weight:600;color:var(--navy);font-size:.77rem;}
 td.pc{color:var(--navy-dk);}
 td.sc{color:var(--grey);font-size:.71rem;}
-td.lbl{font-family:'DM Sans',sans-serif;font-weight:600;font-size:.72rem;text-align:left;padding-left:10px;color:var(--navy-dk);}
+td.lbl{font-family:sans-serif;font-weight:600;font-size:.72rem;text-align:left;padding-left:10px;color:var(--navy-dk);}
 .p3 td.pc{color:var(--green);}
 .p5 td.pc{color:var(--navy-mid,#1e4480);}
 .sc-note{font-size:.65rem;color:var(--grey);text-align:center;margin-top:6px;}
 
 /* HANDICAP CALC */
 .calc-card{background:var(--white);border-radius:14px;border:1px solid rgba(26,58,107,.1);padding:16px 15px;margin-bottom:13px;}
-.calc-title{font-family:'Cormorant Garamond',serif;font-size:1.1rem;font-weight:600;color:var(--navy-dk);margin-bottom:12px;}
+.calc-title{font-family:Georgia,serif;font-size:1.1rem;font-weight:600;color:var(--navy-dk);margin-bottom:12px;}
 .frow{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:11px;}
 .frow.one{grid-template-columns:1fr;}
 .fld{display:flex;flex-direction:column;gap:5px;}
 .flbl{font-size:.6rem;letter-spacing:.14em;text-transform:uppercase;color:var(--grey);}
-.finp{background:var(--cream);border:1.5px solid rgba(26,58,107,.15);border-radius:8px;padding:11px 12px;font-family:'DM Mono',monospace;font-size:.9rem;color:var(--text);outline:none;width:100%;transition:border-color .2s;-webkit-appearance:none;}
+.finp{background:var(--cream);border:1.5px solid rgba(26,58,107,.15);border-radius:8px;padding:11px 12px;font-family:monospace;font-size:.9rem;color:var(--text);outline:none;width:100%;transition:border-color .2s;-webkit-appearance:none;}
 .finp:focus{border-color:var(--navy);}
 .finp option{background:var(--white);}
-.cbtn{width:100%;background:var(--navy);color:var(--white);border:none;border-radius:10px;padding:13px;font-family:'DM Sans',sans-serif;font-size:.9rem;font-weight:600;cursor:pointer;letter-spacing:.04em;transition:all .2s;margin-top:3px;}
+.cbtn{width:100%;background:var(--navy);color:var(--white);border:none;border-radius:10px;padding:13px;font-family:sans-serif;font-size:.9rem;font-weight:600;cursor:pointer;letter-spacing:.04em;transition:all .2s;margin-top:3px;}
 .cbtn:active{transform:scale(.98);}
 .formula-box{background:rgba(26,58,107,.06);border:1px solid rgba(26,58,107,.12);border-radius:10px;padding:13px 15px;margin-bottom:13px;}
 .formula-title{font-size:.63rem;letter-spacing:.14em;text-transform:uppercase;color:var(--navy);font-weight:600;margin-bottom:8px;}
@@ -98,12 +99,12 @@ td.lbl{font-family:'DM Sans',sans-serif;font-weight:600;font-size:.72rem;text-al
 .snum{background:var(--navy);color:var(--white);border-radius:50%;width:19px;height:19px;display:flex;align-items:center;justify-content:center;font-size:.63rem;font-weight:600;flex-shrink:0;margin-top:1px;}
 .result-card{background:linear-gradient(135deg,var(--navy-dk),var(--navy));border-radius:14px;padding:18px 15px;margin-bottom:13px;display:none;}
 .result-card.show{display:block;}
-.res-title{font-family:'Cormorant Garamond',serif;font-size:1rem;font-weight:600;color:var(--gold-lt);margin-bottom:13px;}
+.res-title{font-family:Georgia,serif;font-size:1rem;font-weight:600;color:var(--gold-lt);margin-bottom:13px;}
 .res-grid{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-bottom:13px;}
 .ri{background:rgba(255,255,255,.07);border-radius:10px;padding:11px 13px;}
 .ri.hi{background:rgba(212,160,23,.2);border:1px solid rgba(212,160,23,.3);}
 .ri-lbl{font-size:.55rem;letter-spacing:.13em;text-transform:uppercase;color:var(--grey);margin-bottom:3px;}
-.ri-val{font-family:'DM Mono',monospace;font-size:1.35rem;font-weight:500;color:var(--white);}
+.ri-val{font-family:monospace;font-size:1.35rem;font-weight:500;color:var(--white);}
 .ri.hi .ri-val{color:var(--gold-lt);font-size:1.55rem;}
 .res-note{font-size:.7rem;color:rgba(255,255,255,.5);line-height:1.6;border-top:1px solid rgba(255,255,255,.1);padding-top:11px;}
 
@@ -116,10 +117,10 @@ td.lbl{font-family:'DM Sans',sans-serif;font-weight:600;font-size:.72rem;text-al
 .nav-drawer.open{transform:translateX(0);}
 .nav-head{padding:22px 18px 16px;border-bottom:1px solid rgba(212,160,23,.25);display:flex;align-items:center;gap:12px;background:rgba(0,0,0,.3);}
 .nav-logo{width:46px;height:46px;object-fit:contain;flex-shrink:0;}
-.nav-club-name{font-family:'Cormorant Garamond',serif;font-size:1.1rem;font-weight:700;color:#fff;line-height:1.2;}
+.nav-club-name{font-family:Georgia,serif;font-size:1.1rem;font-weight:700;color:#fff;line-height:1.2;}
 .nav-club-sub{font-size:.62rem;color:rgba(212,160,23,.85);letter-spacing:.18em;text-transform:uppercase;margin-top:3px;}
 .nav-items{flex:1;padding:12px 0;overflow-y:auto;}
-.nav-item{display:flex;align-items:center;gap:14px;padding:16px 20px;text-decoration:none;color:#ffffff;font-family:'DM Sans',sans-serif;font-size:1rem;font-weight:500;transition:all .2s;border-right:3px solid transparent;letter-spacing:.01em;}
+.nav-item{display:flex;align-items:center;gap:14px;padding:16px 20px;text-decoration:none;color:#ffffff;font-family:sans-serif;font-size:1rem;font-weight:500;transition:all .2s;border-right:3px solid transparent;letter-spacing:.01em;}
 .nav-item:active{background:rgba(255,255,255,.08);color:#fff;}
 .nav-item.active{background:rgba(212,160,23,.15);color:#f0c040;border-right-color:#d4a017;font-weight:600;}
 .nav-icon{font-size:1.3rem;width:30px;text-align:center;flex-shrink:0;}
@@ -127,8 +128,8 @@ td.lbl{font-family:'DM Sans',sans-serif;font-weight:600;font-size:.72rem;text-al
 .nav-desc{font-size:.72rem;color:rgba(255,255,255,.55);display:block;margin-top:2px;font-weight:400;}
 .nav-item.active .nav-desc{color:rgba(212,160,23,.65);}
 .nav-div{height:1px;background:rgba(255,255,255,.1);margin:6px 18px;}
-.nav-sec{font-size:.65rem;letter-spacing:.16em;text-transform:uppercase;color:rgba(255,255,255,.4);padding:10px 20px 4px;font-family:'DM Sans',sans-serif;font-weight:600;}
-.nav-foot{padding:14px 18px;border-top:1px solid rgba(255,255,255,.1);font-size:.68rem;color:rgba(255,255,255,.3);font-family:'DM Mono',monospace;line-height:1.7;}
+.nav-sec{font-size:.65rem;letter-spacing:.16em;text-transform:uppercase;color:rgba(255,255,255,.4);padding:10px 20px 4px;font-family:sans-serif;font-weight:600;}
+.nav-foot{padding:14px 18px;border-top:1px solid rgba(255,255,255,.1);font-size:.68rem;color:rgba(255,255,255,.3);font-family:monospace;line-height:1.7;}
 .sgc-burger{position:fixed;top:12px;right:12px;left:auto;z-index:499;width:42px;height:42px;background:#1a3a6b;border:1.5px solid rgba(212,160,23,.5);border-radius:9px;display:flex;align-items:center;justify-content:center;cursor:pointer;box-shadow:0 2px 12px rgba(0,0,0,.5);color:#fff;font-size:1.3rem;line-height:1;}
 .sgc-burger:active{background:rgba(212,160,23,.3);}
 </style>
@@ -201,20 +202,48 @@ td.lbl{font-family:'DM Sans',sans-serif;font-weight:600;font-size:.72rem;text-al
       <div class="ts"><div class="ts-lbl">Slope Rating</div><div class="ts-val">127</div><div class="ts-gen">Women</div></div>
     </div>
   </div>
-  <div class="sec-title" style="margin-top:6px">Stroke Allowances</div>
-  <div class="sec-sub">Applied to Course Handicap to get Playing Handicap</div>
-  <div class="allow-table">
-    <div class="at-head">Competition Format → Stroke Allowance</div>
-    <div class="at-row" style="background:rgba(26,58,107,.07);font-size:.62rem;text-transform:uppercase;letter-spacing:.1em;color:var(--grey);"><div>Format</div><div>Allowance</div><div>Notes</div></div>
-    <div class="at-row"><div class="at-type">General Play</div><div class="at-pct">100%</div><div class="at-note">Casual rounds</div></div>
-    <div class="at-row"><div class="at-type">Stableford</div><div class="at-pct">95%</div><div class="at-note">Weekly comps</div></div>
-    <div class="at-row"><div class="at-type">Strokeplay (Nett)</div><div class="at-pct">95%</div><div class="at-note">Medal rounds</div></div>
-    <div class="at-row"><div class="at-type">Par / Bogey</div><div class="at-pct">95%</div><div class="at-note">vs course</div></div>
-    <div class="at-row"><div class="at-type">Singles Matchplay</div><div class="at-pct">100%</div><div class="at-note">Full diff</div></div>
-    <div class="at-row"><div class="at-type">Four-ball Betterball</div><div class="at-pct">90%</div><div class="at-note">Better ball</div></div>
-    <div class="at-row"><div class="at-type">Greensomes</div><div class="at-pct">60% low + 40% high</div><div class="at-note">Combined</div></div>
-    <div class="at-row"><div class="at-type">Foursomes</div><div class="at-pct">50%</div><div class="at-note">Combined</div></div>
-    <div class="at-row"><div class="at-type">Texas Scramble</div><div class="at-pct">25% team avg</div><div class="at-note">Scramble</div></div>
+  <div class="sec-title" style="margin-top:8px">Playing Handicap Allowances</div>
+  <div class="sec-sub">England Golf mandatory allowances — World Handicap System</div>
+
+  <!-- INDIVIDUAL -->
+  <div style="margin-bottom:14px;">
+    <div style="font-size:.65rem;font-weight:600;letter-spacing:.15em;text-transform:uppercase;color:var(--navy);padding:8px 0 6px;">Individual</div>
+    <div class="allow-table">
+      <div class="at-head" style="display:grid;grid-template-columns:1fr auto;"><div>Format</div><div>Allowance</div></div>
+      <div class="at-row"><div class="at-type">Stableford</div><div class="at-pct">95%</div></div>
+      <div class="at-row"><div class="at-type">Strokeplay (Nett)</div><div class="at-pct">95%</div></div>
+      <div class="at-row"><div class="at-type">Par / Bogey</div><div class="at-pct">95%</div></div>
+      <div class="at-row"><div class="at-type">Maximum Score</div><div class="at-pct">95%</div></div>
+    </div>
+  </div>
+
+  <!-- MATCHPLAY -->
+  <div style="margin-bottom:14px;">
+    <div style="font-size:.65rem;font-weight:600;letter-spacing:.15em;text-transform:uppercase;color:var(--navy);padding:8px 0 6px;">Matchplay</div>
+    <div class="allow-table">
+      <div class="at-head" style="display:grid;grid-template-columns:1fr auto;"><div>Format</div><div>Allowance</div></div>
+      <div class="at-row"><div class="at-type">Individual</div><div class="at-pct">100%</div></div>
+      <div class="at-row"><div class="at-type">Fourball</div><div class="at-pct">90%</div></div>
+    </div>
+  </div>
+
+  <!-- TEAM STROKEPLAY -->
+  <div style="margin-bottom:14px;">
+    <div style="font-size:.65rem;font-weight:600;letter-spacing:.15em;text-transform:uppercase;color:var(--navy);padding:8px 0 6px;">Team / Pairs (Strokeplay)</div>
+    <div class="allow-table">
+      <div class="at-head" style="display:grid;grid-template-columns:1fr auto;"><div>Format</div><div>Allowance</div></div>
+      <div class="at-row"><div class="at-type">Fourball Stableford</div><div class="at-pct">85%</div></div>
+      <div class="at-row"><div class="at-type">Fourball Strokeplay</div><div class="at-pct">85%</div></div>
+      <div class="at-row"><div class="at-type">Fourball Par / Bogey</div><div class="at-pct">90%</div></div>
+      <div class="at-row"><div class="at-type">Foursomes</div><div class="at-pct">50% combined</div></div>
+      <div class="at-row"><div class="at-type">Greensomes</div><div class="at-pct">60% low + 40% high</div></div>
+      <div class="at-row"><div class="at-type">Scramble (4 players)</div><div class="at-pct">25/20/15/10% low→high</div></div>
+      <div class="at-row"><div class="at-type">Scramble (2 players)</div><div class="at-pct">35% low + 15% high</div></div>
+    </div>
+  </div>
+
+  <div style="font-size:.68rem;color:var(--grey);text-align:center;padding-bottom:4px;">
+    Source: England Golf · World Handicap System mandatory allowances
   </div>
 </div>
 
@@ -241,31 +270,44 @@ td.lbl{font-family:'DM Sans',sans-serif;font-weight:600;font-size:.72rem;text-al
 <div class="page" id="pgH">
   <div class="sec-title">Handicap Calculator</div>
   <div class="sec-sub">WHS: Handicap Index → Course Handicap → Playing Handicap</div>
+
+  <!-- FORMULA -->
   <div class="formula-box">
     <div class="formula-title">WHS Formula</div>
     <div class="fstep"><div class="snum">1</div><div><strong>Course Handicap</strong> = HI × (Slope ÷ 113) + (Course Rating − Par)</div></div>
-    <div class="fstep"><div class="snum">2</div><div><strong>Playing Handicap</strong> = Course Handicap × Stroke Allowance % (rounded)</div></div>
+    <div class="fstep"><div class="snum">2</div><div><strong>Playing Handicap</strong> = Round( <em>unrounded</em> Course HCP × Allowance% )</div></div>
+    <div class="fstep"><div class="snum">3</div><div><strong>Matchplay strokes</strong> = Difference in Course Handicaps × Allowance%</div></div>
   </div>
+
+  <!-- ── INDIVIDUAL CALCULATOR ── -->
   <div class="calc-card">
-    <div class="calc-title">Single Player</div>
-    <div class="frow"><div class="fld"><div class="flbl">WHS Handicap Index</div><input class="finp" id="hiIn" type="number" placeholder="e.g. 14.2" step="0.1" min="0" max="54"></div>
-    <div class="fld"><div class="flbl">Gender</div><select class="finp" id="genIn"><option value="m">Male</option><option value="f">Female</option></select></div></div>
-    <div class="frow"><div class="fld"><div class="flbl">Tee</div><select class="finp" id="teeIn">
-      <option value="white_m">White (Men)</option><option value="white_f">White (Women)</option>
-      <option value="yellow_m">Yellow (Men)</option><option value="yellow_f">Yellow (Women)</option>
-      <option value="red_m">Red (Men)</option><option value="red_f">Red (Women)</option>
-    </select></div>
-    <div class="fld"><div class="flbl">Format</div><select class="finp" id="fmtIn">
-      <option value="1.00">General Play (100%)</option>
-      <option value="0.95">Stableford (95%)</option>
-      <option value="0.95">Strokeplay (95%)</option>
-      <option value="0.95">Par/Bogey (95%)</option>
-      <option value="1.00">Matchplay (100%)</option>
-      <option value="0.90">4BBB (90%)</option>
-      <option value="0.50">Foursomes (50%)</option>
-    </select></div></div>
+    <div class="calc-title">Individual Playing Handicap</div>
+    <div class="frow">
+      <div class="fld"><div class="flbl">Handicap Index</div><input class="finp" id="hiIn" type="number" placeholder="e.g. 14.2" step="0.1" min="0" max="54"></div>
+      <div class="fld"><div class="flbl">Gender</div><select class="finp" id="genIn"><option value="m">Male</option><option value="f">Female</option></select></div>
+    </div>
+    <div class="frow">
+      <div class="fld"><div class="flbl">Tee</div><select class="finp" id="teeIn">
+        <option value="white_m">White (Men)</option><option value="white_f">White (Women)</option>
+        <option value="yellow_m">Yellow (Men)</option><option value="yellow_f">Yellow (Women)</option>
+        <option value="red_m">Red (Men)</option><option value="red_f">Red (Women)</option>
+      </select></div>
+      <div class="fld"><div class="flbl">Format</div><select class="finp" id="fmtIn">
+        <option value="0.95">Stableford (95%)</option>
+        <option value="0.95">Stroke Play (95%)</option>
+        <option value="0.95">Par/Bogey (95%)</option>
+        <option value="1.00">Singles Matchplay (100%)</option>
+        <option value="0.85">Fourball Stableford (85%)</option>
+        <option value="0.85">Fourball Stroke Play (85%)</option>
+        <option value="0.90">Fourball Par/Bogey (90%)</option>
+        <option value="0.50">Foursomes (50%)</option>
+        <option value="0.90">Fourball Matchplay (90%)</option>
+      </select></div>
+    </div>
     <button class="cbtn" onclick="calcSingle()">Calculate</button>
   </div>
+
+  <!-- Result -->
   <div class="result-card" id="resCard">
     <div class="res-title" id="resTitle">Playing Handicap</div>
     <div class="res-grid">
@@ -277,73 +319,84 @@ td.lbl{font-family:'DM Sans',sans-serif;font-weight:600;font-size:.72rem;text-al
     </div>
     <div class="res-note" id="resNote"></div>
   </div>
+
+  <!-- ── BATCH CALCULATOR ── -->
   <div class="calc-card">
     <div class="calc-title">Batch — Full Field</div>
-    <div style="font-size:.74rem;color:var(--grey);margin-bottom:11px;line-height:1.6;">Paste all Handicap Indexes separated by commas to get Playing Handicaps for the full field at once.</div>
-    <div class="frow one"><div class="fld"><div class="flbl">Handicap Indexes</div><input class="finp" id="batchIn" type="text" placeholder="14.2, 7.4, 22.1, 5.0, 18.6…"></div></div>
-    <div class="frow"><div class="fld"><div class="flbl">Tee</div><select class="finp" id="bTee">
-      <option value="white_m">White (Men)</option><option value="yellow_m">Yellow (Men)</option>
-      <option value="red_m">Red (Men)</option><option value="yellow_f">Yellow (Women)</option>
-      <option value="red_f">Red (Women)</option>
-    </select></div>
-    <div class="fld"><div class="flbl">Format</div><select class="finp" id="bFmt">
-      <option value="1.00">General Play (100%)</option>
-      <option value="0.95">Stableford (95%)</option>
-      <option value="0.95">Strokeplay (95%)</option>
-      <option value="1.00">Matchplay (100%)</option>
-      <option value="0.90">4BBB (90%)</option>
-      <option value="0.50">Foursomes (50%)</option>
-    </select></div></div>
+    <div style="font-size:.74rem;color:var(--grey);margin-bottom:11px;line-height:1.6;">Paste Handicap Indexes separated by commas to get Playing Handicaps for the full field.</div>
+    <div class="frow one"><div class="fld"><div class="flbl">Handicap Indexes</div><input class="finp" id="batchIn" type="text" placeholder="14.2, 7.4, 22.1, 5.0…"></div></div>
+    <div class="frow">
+      <div class="fld"><div class="flbl">Tee</div><select class="finp" id="bTee">
+        <option value="white_m">White (Men)</option><option value="yellow_m">Yellow (Men)</option>
+        <option value="red_m">Red (Men)</option><option value="yellow_f">Yellow (Women)</option>
+        <option value="red_f">Red (Women)</option>
+      </select></div>
+      <div class="fld"><div class="flbl">Format</div><select class="finp" id="bFmt">
+        <option value="0.95">Stableford (95%)</option>
+        <option value="0.95">Stroke Play (95%)</option>
+        <option value="1.00">Matchplay (100%)</option>
+        <option value="0.85">Fourball Stableford (85%)</option>
+        <option value="0.90">Fourball Par/Bogey (90%)</option>
+        <option value="0.50">Foursomes (50%)</option>
+      </select></div>
+    </div>
     <button class="cbtn" onclick="calcBatch()">Calculate All</button>
     <div id="bRes" style="margin-top:13px;"></div>
   </div>
 
-  <!-- MATCHPLAY HANDICAP DIFFERENCE CALCULATOR -->
+  <!-- ── MATCHPLAY STROKE DIFFERENCE ── -->
   <div class="calc-card">
-    <div class="calc-title">Matchplay / Fourball / Foursomes — Stroke Difference</div>
-    <div style="font-size:.75rem;color:var(--grey);margin-bottom:12px;line-height:1.6;">
-      In matchplay formats, the higher-handicap player receives the <strong>difference</strong> in Course Handicaps. 
-      Enter both players' Handicap Indexes and tee to calculate who receives strokes and on which holes.
+    <div class="calc-title">Matchplay — Stroke Difference</div>
+    <div style="font-size:.74rem;color:var(--grey);margin-bottom:12px;line-height:1.6;">
+      In matchplay the higher-handicap player receives the <strong>difference</strong> in Playing Handicaps.
+      Enter both players' Handicap Indexes to see who receives strokes and on which holes.
     </div>
     <div class="frow">
-      <div class="fld">
-        <div class="flbl">Player A — Handicap Index</div>
-        <input class="finp" id="mpA_hi" type="number" placeholder="e.g. 5.1" step="0.1" min="0" max="54">
-      </div>
-      <div class="fld">
-        <div class="flbl">Player B — Handicap Index</div>
-        <input class="finp" id="mpB_hi" type="number" placeholder="e.g. 14.2" step="0.1" min="0" max="54">
-      </div>
+      <div class="fld"><div class="flbl">Player A — HI</div><input class="finp" id="mpA_hi" type="number" placeholder="e.g. 5.1" step="0.1" min="0" max="54"></div>
+      <div class="fld"><div class="flbl">Player B — HI</div><input class="finp" id="mpB_hi" type="number" placeholder="e.g. 14.2" step="0.1" min="0" max="54"></div>
     </div>
     <div class="frow">
-      <div class="fld">
-        <div class="flbl">Tee</div>
-        <select class="finp" id="mpTee">
-          <option value="yellow_m">Yellow (Men)</option>
-          <option value="white_m">White (Men)</option>
-          <option value="red_m">Red (Men)</option>
-          <option value="red_f">Red (Women)</option>
-          <option value="yellow_f">Yellow (Women)</option>
-        </select>
-      </div>
-      <div class="fld">
-        <div class="flbl">Format</div>
-        <select class="finp" id="mpFmt">
-          <option value="singles">Singles Matchplay (100%)</option>
-          <option value="fourball">Four-ball Betterball (90%)</option>
-          <option value="foursomes">Foursomes (50%)</option>
-        </select>
-      </div>
+      <div class="fld"><div class="flbl">Tee</div><select class="finp" id="mpTee">
+        <option value="yellow_m">Yellow (Men)</option><option value="white_m">White (Men)</option>
+        <option value="red_m">Red (Men)</option><option value="red_f">Red (Women)</option>
+        <option value="yellow_f">Yellow (Women)</option>
+      </select></div>
+      <div class="fld"><div class="flbl">Format</div><select class="finp" id="mpFmt">
+        <option value="singles_100">Singles Matchplay (100%)</option>
+        <option value="fourball_90">Fourball Matchplay (90%)</option>
+        <option value="foursomes_50">Foursomes Matchplay (50%)</option>
+      </select></div>
     </div>
     <button class="cbtn" onclick="calcMatchplay()">Calculate Strokes</button>
     <div id="mpResult" style="margin-top:13px;"></div>
   </div>
 
-</div>
+  <!-- ── GREENSOMES CALCULATOR ── -->
+  <div class="calc-card">
+    <div class="calc-title">Greensomes / Foursomes — Combined Handicap</div>
+    <div style="font-size:.74rem;color:var(--grey);margin-bottom:12px;line-height:1.6;">
+      Greensomes: 60% of lower + 40% of higher Course Handicap.<br>
+      Foursomes: 50% of each player's Course Handicap combined.
+    </div>
+    <div class="frow">
+      <div class="fld"><div class="flbl">Player A — HI</div><input class="finp" id="gsA_hi" type="number" placeholder="e.g. 8.4" step="0.1" min="0" max="54"></div>
+      <div class="fld"><div class="flbl">Player B — HI</div><input class="finp" id="gsB_hi" type="number" placeholder="e.g. 15.2" step="0.1" min="0" max="54"></div>
+    </div>
+    <div class="frow one">
+      <div class="fld"><div class="flbl">Tee</div><select class="finp" id="gsTee">
+        <option value="yellow_m">Yellow (Men)</option><option value="white_m">White (Men)</option>
+        <option value="red_m">Red (Men)</option><option value="red_f">Red (Women)</option>
+      </select></div>
+    </div>
+    <button class="cbtn" onclick="calcTeam()">Calculate Team Handicap</button>
+    <div id="gsResult" style="margin-top:13px;"></div>
+  </div>
 
+</div>
 <script>
 
-const COURSE = {
+// ── COURSE DATA (from official Stanmore GC scorecard) ──
+var COURSE = {
   holes:[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18],
   par_men:  [4,4,4,3,4,3,4,3,4,3,5,4,4,4,4,4,3,5],
   par_women:[4,5,4,3,4,3,4,3,4,3,5,4,5,4,5,4,3,5],
@@ -353,187 +406,227 @@ const COURSE = {
   yellow:   [328,384,400,119,374,115,328,158,371,147,506,392,407,294,397,369,191,478],
   red:      [265,408,389,111,350,108,307,149,355,122,425,379,395,272,375,344,177,454],
   ratings:{
-    white_m: {cr:69.7,slope:129,par:69,name:'White (Men)'},
-    white_f: {cr:73.9,slope:130,par:72,name:'White (Women)'},
-    yellow_m:{cr:68.8,slope:127,par:69,name:'Yellow (Men)'},
-    yellow_f:{cr:74.3,slope:133,par:72,name:'Yellow (Women)'},
-    red_m:   {cr:66.8,slope:121,par:69,name:'Red (Men)'},
-    red_f:   {cr:72.1,slope:127,par:72,name:'Red (Women)'},
+    white_m: {cr:69.7, slope:129, par:69, name:'White (Men)'},
+    white_f: {cr:73.9, slope:130, par:72, name:'White (Women)'},
+    yellow_m:{cr:68.8, slope:127, par:69, name:'Yellow (Men)'},
+    yellow_f:{cr:74.3, slope:133, par:72, name:'Yellow (Women)'},
+    red_m:   {cr:66.8, slope:121, par:69, name:'Red (Men)'},
+    red_f:   {cr:72.1, slope:127, par:72, name:'Red (Women)'},
   }
 };
-function strokesOnHole(ph,si){if(ph<=0)return 0;let s=Math.floor(ph/18);if(si<=(ph%18))s++;return s;}
-function stablefordPts(gross,par,ph,si){if(!gross||gross<=0)return 0;const n=gross-strokesOnHole(ph,si);return Math.max(0,(par-n)+2);}
-// WHS correct: allowance on unrounded course handicap
-function courseHcpRaw(hi,teeKey){const t=COURSE.ratings[teeKey];return hi*(t.slope/113)+(t.cr-t.par);}
-function calcCourseHcp(hi,teeKey){return Math.round(courseHcpRaw(hi,teeKey));}
-function calcPlayingHcp(hi,teeKey,allowance){return Math.round(courseHcpRaw(hi,teeKey)*allowance);}
-function totalStableford(scores,ph,gender){
-  const par=gender==='f'?COURSE.par_women:COURSE.par_men;
-  const si=gender==='f'?COURSE.si_women:COURSE.si_men;
-  return scores.reduce((sum,g,i)=>sum+stablefordPts(g,par[i],ph,si[i]),0);
+
+// ── WHS HANDICAP FUNCTIONS ──
+function courseHcpRaw(hi, teeKey) {
+  var t = COURSE.ratings[teeKey];
+  return hi * (t.slope / 113) + (t.cr - t.par);
 }
-function totalNett(scores,ph){return scores.reduce((s,g)=>s+(g||0),0)-ph;}
-
-
-let scTee='white', scGender='m';
-
-function setGender(g,el){scGender=g;document.querySelectorAll('.gbtn').forEach(b=>b.classList.remove('active'));el.classList.add('active');renderSC();}
-function setTee(t,el){scTee=t;document.querySelectorAll('.tbtn').forEach(b=>b.classList.remove('active'));el.classList.add('active');const m={white:'⚪ White · Yds',yellow:'🟡 Yellow · Yds',red:'🔴 Red · Yds'};document.getElementById('yHdr').textContent=m[t];renderSC();}
-
-function renderSC(){
-  const body=document.getElementById('scBody');
-  body.innerHTML='';
-  const yds=COURSE[scTee];
-  const par=scGender==='f'?COURSE.par_women:COURSE.par_men;
-  const si=scGender==='f'?COURSE.si_women:COURSE.si_men;
-  let op=0,oy=0,ip=0,iy=0;
-  for(let i=0;i<18;i++){
-    const back=i>=9;
-    if(!back){op+=par[i];oy+=yds[i];}else{ip+=par[i];iy+=yds[i];}
-    const cls=par[i]===3?'p3':par[i]===5?'p5':'';
-    const tr=document.createElement('tr');
-    tr.className=cls;
-    tr.innerHTML=`<td class="hn">${i+1}</td><td class="pc">${par[i]}</td><td class="sc">${si[i]}</td><td>${yds[i]}</td>`;
-    body.appendChild(tr);
-    if(i===8){const r=document.createElement('tr');r.className='nine-tot';r.innerHTML=`<td class="lbl">OUT</td><td class="pc" style="font-weight:600">${op}</td><td class="sc">—</td><td style="font-weight:600">${oy}</td>`;body.appendChild(r);}
-  }
-  const tot=document.createElement('tr');tot.className='grand-tot';
-  tot.innerHTML=`<td class="lbl">TOTAL</td><td class="pc" style="font-weight:700;font-size:.88rem">${op+ip}</td><td class="sc">—</td><td style="font-weight:700;font-size:.88rem">${oy+iy}</td>`;
-  body.appendChild(tot);
+function calcCourseHcp(hi, teeKey) {
+  return Math.round(courseHcpRaw(hi, teeKey));
+}
+function calcPlayingHcp(hi, teeKey, allowance) {
+  return Math.round(courseHcpRaw(hi, teeKey) * allowance);
 }
 
 function calcSingle(){
-  const hi=parseFloat(document.getElementById('hiIn').value);
-  const teeKey=document.getElementById('teeIn').value;
-  const allow=parseFloat(document.getElementById('fmtIn').value);
+  var hi=parseFloat(document.getElementById('hiIn').value);
+  var teeKey=document.getElementById('teeIn').value;
+  var allow=parseFloat(document.getElementById('fmtIn').value);
   if(isNaN(hi)||hi<0){alert('Please enter a valid Handicap Index');return;}
-  const t=COURSE.ratings[teeKey];
-  const ch=calcCourseHcp(hi,teeKey);
-  const ph=calcPlayingHcp(hi,teeKey,allow);
+  var t=COURSE.ratings[teeKey];
+  var ch=calcCourseHcp(hi,teeKey);
+  var ph=calcPlayingHcp(hi,teeKey,allow);
+  var chRaw=(hi*(t.slope/113)+(t.cr-t.par)).toFixed(2);
   document.getElementById('rHI').textContent=hi.toFixed(1);
   document.getElementById('rCH').textContent=ch;
   document.getElementById('rPH').textContent=ph;
   document.getElementById('rSl').textContent=t.slope;
   document.getElementById('rCR').textContent=t.cr;
   document.getElementById('resTitle').textContent='Playing Handicap — '+t.name;
-  const chRaw=(hi*(t.slope/113)+(t.cr-t.par)).toFixed(2);
   document.getElementById('resNote').innerHTML=
-    `HI ${hi.toFixed(1)} × (${t.slope}÷113) + (${t.cr}−${t.par}) = ${chRaw} → Course HCP <strong>${ch}</strong><br>`+
-    `Playing HCP = ${ch} × ${Math.round(allow*100)}% = <strong>${ph}</strong>`;
+    'HI '+hi.toFixed(1)+' × ('+t.slope+'÷113) + ('+t.cr+'−'+t.par+') = '+chRaw+' → Course HCP <strong>'+ch+'</strong><br>'+
+    'Playing HCP = '+ch+' × '+Math.round(allow*100)+'% = <strong>'+ph+'</strong>';
   document.getElementById('resCard').classList.add('show');
 }
 
 function calcBatch(){
-  const raw=document.getElementById('batchIn').value;
-  const teeKey=document.getElementById('bTee').value;
-  const allow=parseFloat(document.getElementById('bFmt').value);
-  const t=COURSE.ratings[teeKey];
-  const idxs=raw.split(',').map(s=>parseFloat(s.trim())).filter(n=>!isNaN(n));
+  var raw=document.getElementById('batchIn').value;
+  var teeKey=document.getElementById('bTee').value;
+  var allow=parseFloat(document.getElementById('bFmt').value);
+  var t=COURSE.ratings[teeKey];
+  var idxs=raw.split(',').map(function(s){return parseFloat(s.trim());}).filter(function(n){return !isNaN(n);});
   if(!idxs.length){alert('Enter at least one Handicap Index');return;}
-  const rows=idxs.map(hi=>({hi,ch:calcCourseHcp(hi,teeKey),ph:calcPlayingHcp(hi,teeKey,allow)})).sort((a,b)=>a.ph-b.ph);
-  const pct=Math.round(allow*100);
-  let h=`<div style="font-size:.63rem;letter-spacing:.11em;text-transform:uppercase;color:var(--grey);margin-bottom:7px;">${t.name} · ${pct}% Allowance · ${rows.length} players</div>`;
+  var rows=idxs.map(function(hi){return{hi:hi,ch:calcCourseHcp(hi,teeKey),ph:calcPlayingHcp(hi,teeKey,allow)};}).sort(function(a,b){return a.ph-b.ph;});
+  var pct=Math.round(allow*100);
+  var h='<div style="font-size:.63rem;letter-spacing:.11em;text-transform:uppercase;color:var(--grey);margin-bottom:7px;">'+t.name+' · '+pct+'% · '+rows.length+' players</div>';
   h+='<div style="background:var(--white);border-radius:10px;border:1px solid rgba(26,58,107,.1);overflow:hidden;">';
-  h+='<div style="display:grid;grid-template-columns:1fr 56px 56px 64px;padding:7px 12px;background:var(--navy);font-size:.54rem;letter-spacing:.11em;text-transform:uppercase;color:rgba(212,160,23,.8);">'
-    +'<div>HI</div><div style="text-align:right">C.HCP</div><div style="text-align:right">P.HCP</div><div style="text-align:right">Strokes</div></div>';
-  rows.forEach((r,i)=>{
-    const bg=i%2===0?'':'background:rgba(248,245,239,.7)';
-    h+=`<div style="${bg};display:grid;grid-template-columns:1fr 56px 56px 64px;padding:9px 12px;border-top:1px solid rgba(26,58,107,.06);font-family:'DM Mono',monospace;font-size:.8rem;">
-      <div>${r.hi.toFixed(1)}</div><div style="text-align:right;color:var(--grey)">${r.ch}</div>
-      <div style="text-align:right;font-weight:500;color:var(--navy-dk)">${r.ph}</div>
-      <div style="text-align:right;color:var(--gold)">${r.ph}</div></div>`;
+  h+='<div style="display:grid;grid-template-columns:1fr 56px 56px;padding:7px 12px;background:var(--navy);font-size:.54rem;letter-spacing:.11em;text-transform:uppercase;color:rgba(212,160,23,.8);">'
+    +'<div>HI</div><div style="text-align:right">C.HCP</div><div style="text-align:right">P.HCP</div></div>';
+  rows.forEach(function(r,i){
+    var bg=i%2===0?'':'background:rgba(248,245,239,.7)';
+    h+='<div style="'+bg+';display:grid;grid-template-columns:1fr 56px 56px;padding:9px 12px;border-top:1px solid rgba(26,58,107,.06);font-family:monospace;font-size:.8rem;">'
+      +'<div>'+r.hi.toFixed(1)+'</div><div style="text-align:right;color:var(--grey)">'+r.ch+'</div>'
+      +'<div style="text-align:right;font-weight:500;color:var(--navy-dk)">'+r.ph+'</div></div>';
   });
   h+='</div>';
   document.getElementById('bRes').innerHTML=h;
 }
 
 function calcMatchplay(){
-  var hiA = parseFloat(document.getElementById('mpA_hi').value);
-  var hiB = parseFloat(document.getElementById('mpB_hi').value);
-  var teeKey = document.getElementById('mpTee').value;
-  var fmt    = document.getElementById('mpFmt').value;
-
+  var hiA=parseFloat(document.getElementById('mpA_hi').value);
+  var hiB=parseFloat(document.getElementById('mpB_hi').value);
+  var teeKey=document.getElementById('mpTee').value;
+  var fmtVal=document.getElementById('mpFmt').value;
   if(isNaN(hiA)||isNaN(hiB)){alert('Please enter both Handicap Indexes');return;}
 
-  // Course handicaps (unrounded for allowance, rounded for display)
-  var chA_raw = courseHcpRaw(hiA, teeKey);
-  var chB_raw = courseHcpRaw(hiB, teeKey);
-  var chA = Math.round(chA_raw);
-  var chB = Math.round(chB_raw);
+  var allowMap={'singles_100':1.00,'fourball_90':0.90,'foursomes_50':0.50};
+  var fmtLabelMap={'singles_100':'Singles Matchplay','fourball_90':'Fourball Matchplay','foursomes_50':'Foursomes Matchplay'};
+  var allow=allowMap[fmtVal]||1.00;
+  var fmtLabel=fmtLabelMap[fmtVal]||'Matchplay';
 
-  // Playing handicaps based on format allowance
-  var allowMap = {singles:1.00, fourball:0.90, foursomes:0.50};
-  var allow = allowMap[fmt] || 1.00;
-  var phA = Math.round(chA_raw * allow);
-  var phB = Math.round(chB_raw * allow);
+  var chA_raw=courseHcpRaw(hiA,teeKey);
+  var chB_raw=courseHcpRaw(hiB,teeKey);
+  var chA=Math.round(chA_raw);
+  var chB=Math.round(chB_raw);
+  var phA=Math.round(chA_raw*allow);
+  var phB=Math.round(chB_raw*allow);
+  var diff=Math.abs(phA-phB);
+  var higher=phA>phB?'Player A (HI '+hiA.toFixed(1)+')':phB>phA?'Player B (HI '+hiB.toFixed(1)+')':null;
+  var t=COURSE.ratings[teeKey];
+  var gender=teeKey.endsWith('_f')?'f':'m';
+  var si=gender==='f'?COURSE.si_women:COURSE.si_men;
+  var par=gender==='f'?COURSE.par_women:COURSE.par_men;
 
-  // Difference — higher handicap player receives strokes
-  var diff = Math.abs(phA - phB);
-  var higherPlayer = phA > phB ? 'Player A' : (phB > phA ? 'Player B' : null);
-  var t = COURSE.ratings[teeKey];
-
-  // Find which holes the higher handicap player receives strokes on
-  var gender = teeKey.endsWith('_f') ? 'f' : 'm';
-  var si = gender === 'f' ? COURSE.si_women : COURSE.si_men;
-  var par = gender === 'f' ? COURSE.par_women : COURSE.par_men;
-  var strokeHoles = [];
-  for(var h=0; h<18; h++){
-    var strokes = Math.floor(diff/18) + (si[h] <= (diff%18) ? 1 : 0);
-    if(strokes > 0) strokeHoles.push({hole:h+1, si:si[h], par:par[h], strokes:strokes});
+  // Which holes get strokes
+  var strokeHoles=[];
+  for(var h=0;h<18;h++){
+    var s=Math.floor(diff/18)+(si[h]<=(diff%18)?1:0);
+    if(s>0) strokeHoles.push({hole:h+1,si:si[h],par:par[h],strokes:s});
   }
   strokeHoles.sort(function(a,b){return a.si-b.si;});
 
-  var fmtLabel = fmt==='singles'?'Singles Matchplay':fmt==='fourball'?'Four-ball Betterball':'Foursomes';
-
-  var html = '<div style="background:linear-gradient(135deg,var(--navy-dk),var(--navy));border-radius:12px;padding:16px;color:#fff;">';
-  html += '<div style="font-family:Cormorant Garamond,serif;font-size:1rem;color:var(--gold-lt,#f0c040);margin-bottom:12px;">'+fmtLabel+' · '+t.name+'</div>';
-
-  // Summary grid
-  html += '<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:12px;">';
-  html += '<div style="background:rgba(255,255,255,.07);border-radius:8px;padding:10px;text-align:center;"><div style="font-size:.55rem;letter-spacing:.12em;text-transform:uppercase;color:var(--grey,#8896a8);margin-bottom:3px;">Player A Course HCP</div><div style="font-family:DM Mono,monospace;font-size:1.2rem;">'+chA+'</div></div>';
-  html += '<div style="background:rgba(255,255,255,.07);border-radius:8px;padding:10px;text-align:center;"><div style="font-size:.55rem;letter-spacing:.12em;text-transform:uppercase;color:var(--grey,#8896a8);margin-bottom:3px;">Player B Course HCP</div><div style="font-family:DM Mono,monospace;font-size:1.2rem;">'+chB+'</div></div>';
-  html += '<div style="background:rgba(212,160,23,.2);border:1px solid rgba(212,160,23,.3);border-radius:8px;padding:10px;text-align:center;"><div style="font-size:.55rem;letter-spacing:.12em;text-transform:uppercase;color:rgba(212,160,23,.7);margin-bottom:3px;">Stroke Difference</div><div style="font-family:DM Mono,monospace;font-size:1.4rem;color:#f0c040;">'+diff+'</div></div>';
-  html += '</div>';
-
-  if(diff === 0){
-    html += '<div style="background:rgba(255,255,255,.07);border-radius:8px;padding:12px;text-align:center;font-size:.85rem;color:rgba(255,255,255,.7);">Both players have equal handicaps — no strokes given.</div>';
+  var out='<div style="background:linear-gradient(135deg,var(--navy-dk),var(--navy));border-radius:12px;padding:16px;color:#fff;">';
+  out+='<div style="font-family:Georgia,serif;font-size:1rem;color:var(--gold-lt,#f0c040);margin-bottom:12px;">'+fmtLabel+' · '+t.name+'</div>';
+  out+='<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:12px;">';
+  out+='<div style="background:rgba(255,255,255,.07);border-radius:8px;padding:10px;text-align:center;"><div style="font-size:.55rem;letter-spacing:.1em;text-transform:uppercase;color:var(--grey,#8896a8);margin-bottom:3px;">Player A C.HCP</div><div style="font-family:monospace;font-size:1.2rem;">'+chA+'</div></div>';
+  out+='<div style="background:rgba(255,255,255,.07);border-radius:8px;padding:10px;text-align:center;"><div style="font-size:.55rem;letter-spacing:.1em;text-transform:uppercase;color:var(--grey,#8896a8);margin-bottom:3px;">Player B C.HCP</div><div style="font-family:monospace;font-size:1.2rem;">'+chB+'</div></div>';
+  out+='<div style="background:rgba(212,160,23,.2);border:1px solid rgba(212,160,23,.3);border-radius:8px;padding:10px;text-align:center;"><div style="font-size:.55rem;letter-spacing:.1em;text-transform:uppercase;color:rgba(212,160,23,.7);margin-bottom:3px;">Strokes Given</div><div style="font-family:monospace;font-size:1.4rem;color:#f0c040;">'+diff+'</div></div>';
+  out+='</div>';
+  if(diff===0){
+    out+='<div style="background:rgba(255,255,255,.07);border-radius:8px;padding:12px;text-align:center;font-size:.85rem;color:rgba(255,255,255,.7);">Equal handicaps — no strokes given.</div>';
   } else {
-    html += '<div style="background:rgba(255,255,255,.07);border-radius:8px;padding:12px;margin-bottom:10px;font-size:.82rem;color:rgba(255,255,255,.8);line-height:1.6;">';
-    html += '<strong style="color:#f0c040;">'+higherPlayer+'</strong> receives <strong style="color:#f0c040;">'+diff+' stroke'+(diff!==1?'s':''+'</strong>')+' on the following holes:</div>';
-
-    // Holes table
-    html += '<div style="background:rgba(0,0,0,.2);border-radius:8px;overflow:hidden;">';
-    html += '<div style="display:grid;grid-template-columns:50px 50px 50px 1fr;padding:7px 12px;background:rgba(0,0,0,.2);font-size:.55rem;letter-spacing:.12em;text-transform:uppercase;color:rgba(212,160,23,.7);">';
-    html += '<div>Hole</div><div>Par</div><div>SI</div><div>Strokes Given</div></div>';
+    out+='<div style="background:rgba(255,255,255,.07);border-radius:8px;padding:12px;margin-bottom:10px;font-size:.82rem;color:rgba(255,255,255,.8);line-height:1.6;"><strong style="color:#f0c040;">'+higher+'</strong> receives <strong style="color:#f0c040;">'+diff+' stroke'+(diff!==1?'s':'')+'</strong> on these holes:</div>';
+    out+='<div style="background:rgba(0,0,0,.2);border-radius:8px;overflow:hidden;">';
+    out+='<div style="display:grid;grid-template-columns:50px 44px 44px 1fr;padding:6px 12px;background:rgba(0,0,0,.2);font-size:.55rem;letter-spacing:.1em;text-transform:uppercase;color:rgba(212,160,23,.7);"><div>Hole</div><div>Par</div><div>SI</div><div>Strokes</div></div>';
     strokeHoles.forEach(function(h){
-      html += '<div style="display:grid;grid-template-columns:50px 50px 50px 1fr;padding:9px 12px;border-top:1px solid rgba(255,255,255,.05);font-family:DM Mono,monospace;font-size:.82rem;">';
-      html += '<div>'+h.hole+'</div><div>'+h.par+'</div><div>'+h.si+'</div>';
-      html += '<div>'+(h.strokes===1?'1 stroke':'2 strokes')+'</div></div>';
+      out+='<div style="display:grid;grid-template-columns:50px 44px 44px 1fr;padding:8px 12px;border-top:1px solid rgba(255,255,255,.05);font-family:monospace;font-size:.8rem;">';
+      out+='<div>'+h.hole+'</div><div>'+h.par+'</div><div>'+h.si+'</div><div>+'+(h.strokes===1?'1':'+2')+'</div></div>';
     });
-    html += '</div>';
+    out+='</div>';
   }
-  html += '</div>';
-  document.getElementById('mpResult').innerHTML = html;
+  out+='</div>';
+  document.getElementById('mpResult').innerHTML=out;
+}
+
+function calcTeam(){
+  var hiA=parseFloat(document.getElementById('gsA_hi').value);
+  var hiB=parseFloat(document.getElementById('gsB_hi').value);
+  var teeKey=document.getElementById('gsTee').value;
+  if(isNaN(hiA)||isNaN(hiB)){alert('Please enter both Handicap Indexes');return;}
+
+  var chA_raw=courseHcpRaw(hiA,teeKey);
+  var chB_raw=courseHcpRaw(hiB,teeKey);
+  var chA=Math.round(chA_raw);
+  var chB=Math.round(chB_raw);
+  var low=Math.min(chA,chB);
+  var high=Math.max(chA,chB);
+
+  // Greensomes: 60% low + 40% high
+  var gsHcp=Math.round(low*0.60 + high*0.40);
+  // Foursomes: 50% each combined
+  var fsHcp=Math.round((chA+chB)*0.50);
+  // Fourball: each player gets their own allowance separately
+
+  var t=COURSE.ratings[teeKey];
+  var out='<div style="background:linear-gradient(135deg,var(--navy-dk),var(--navy));border-radius:12px;padding:16px;color:#fff;">';
+  out+='<div style="font-family:Georgia,serif;font-size:1rem;color:var(--gold-lt,#f0c040);margin-bottom:12px;">Team Handicaps · '+t.name+'</div>';
+  out+='<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px;">';
+  out+='<div style="background:rgba(255,255,255,.07);border-radius:8px;padding:10px;text-align:center;"><div style="font-size:.55rem;letter-spacing:.1em;text-transform:uppercase;color:var(--grey,#8896a8);margin-bottom:3px;">Player A C.HCP</div><div style="font-family:monospace;font-size:1.15rem;">'+chA+'</div></div>';
+  out+='<div style="background:rgba(255,255,255,.07);border-radius:8px;padding:10px;text-align:center;"><div style="font-size:.55rem;letter-spacing:.1em;text-transform:uppercase;color:var(--grey,#8896a8);margin-bottom:3px;">Player B C.HCP</div><div style="font-family:monospace;font-size:1.15rem;">'+chB+'</div></div>';
+  out+='</div>';
+  out+='<div style="display:flex;flex-direction:column;gap:8px;">';
+  out+='<div style="background:rgba(212,160,23,.15);border:1px solid rgba(212,160,23,.3);border-radius:8px;padding:12px;display:flex;justify-content:space-between;align-items:center;">'
+    +'<div><div style="font-size:.65rem;letter-spacing:.1em;text-transform:uppercase;color:rgba(212,160,23,.7);">Greensomes</div><div style="font-size:.7rem;color:rgba(255,255,255,.5);margin-top:2px;">60% × '+low+' + 40% × '+high+'</div></div>'
+    +'<div style="font-family:monospace;font-size:1.5rem;color:#f0c040;font-weight:500;">'+gsHcp+'</div></div>';
+  out+='<div style="background:rgba(45,110,78,.15);border:1px solid rgba(45,110,78,.3);border-radius:8px;padding:12px;display:flex;justify-content:space-between;align-items:center;">'
+    +'<div><div style="font-size:.65rem;letter-spacing:.1em;text-transform:uppercase;color:#8ee0b4;">Foursomes</div><div style="font-size:.7rem;color:rgba(255,255,255,.5);margin-top:2px;">50% × ('+chA+' + '+chB+')</div></div>'
+    +'<div style="font-family:monospace;font-size:1.5rem;color:#8ee0b4;font-weight:500;">'+fsHcp+'</div></div>';
+  out+='<div style="background:rgba(26,58,107,.3);border:1px solid rgba(26,68,128,.5);border-radius:8px;padding:12px;">'
+    +'<div style="font-size:.65rem;letter-spacing:.1em;text-transform:uppercase;color:#a8c4f0;margin-bottom:6px;">Fourball — Individual Allowances (90%)</div>'
+    +'<div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;">'
+    +'<div style="text-align:center;font-family:monospace;font-size:1.1rem;color:#fff;">'+Math.round(chA_raw*0.9)+'<div style="font-size:.6rem;color:rgba(255,255,255,.4);margin-top:1px;">Player A</div></div>'
+    +'<div style="text-align:center;font-family:monospace;font-size:1.1rem;color:#fff;">'+Math.round(chB_raw*0.9)+'<div style="font-size:.6rem;color:rgba(255,255,255,.4);margin-top:1px;">Player B</div></div>'
+    +'</div></div>';
+  out+='</div></div>';
+  document.getElementById('gsResult').innerHTML=out;
 }
 
 function showPage(id,el){
-  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
-  document.querySelectorAll('.tnav').forEach(t=>t.classList.remove('active'));
-  document.getElementById(id).classList.add('active');el.classList.add('active');window.scrollTo(0,0);
+  document.querySelectorAll('.page').forEach(function(p){p.classList.remove('active');});
+  document.querySelectorAll('.tnav').forEach(function(t){t.classList.remove('active');});
+  document.getElementById(id).classList.add('active');
+  el.classList.add('active');
+  window.scrollTo(0,0);
 }
-renderSC();
+// ── SCORECARD FUNCTIONS ──
+var scTee = 'white', scGender = 'm';
 
-function openNav(){
-  document.getElementById('sgcNavDrawer').classList.add('open');
-  document.getElementById('sgcNavOverlay').classList.add('open');
-  document.body.style.overflow='hidden';
+function setGender(g, el) {
+  scGender = g;
+  document.querySelectorAll('.gbtn').forEach(function(b){ b.classList.remove('active'); });
+  el.classList.add('active');
+  renderSC();
 }
-function closeNav(){
-  document.getElementById('sgcNavDrawer').classList.remove('open');
-  document.getElementById('sgcNavOverlay').classList.remove('open');
-  document.body.style.overflow='';
+
+function setTee(t, el) {
+  scTee = t;
+  document.querySelectorAll('.tbtn').forEach(function(b){ b.classList.remove('active'); });
+  el.classList.add('active');
+  var labels = {white:'⚪ White · Yds', yellow:'🟡 Yellow · Yds', red:'🔴 Red · Yds'};
+  document.getElementById('yHdr').textContent = labels[t] || 'Yds';
+  renderSC();
 }
-document.addEventListener('keydown',function(e){if(e.key==='Escape')closeNav();});
+
+function renderSC() {
+  var body = document.getElementById('scBody');
+  if (!body) return;
+  body.innerHTML = '';
+  var yds = COURSE[scTee];
+  var par = scGender === 'f' ? COURSE.par_women : COURSE.par_men;
+  var si  = scGender === 'f' ? COURSE.si_women  : COURSE.si_men;
+  var op=0, oy=0, ip=0, iy=0;
+  for (var i=0; i<18; i++) {
+    var back = i >= 9;
+    if (!back){ op+=par[i]; oy+=yds[i]; } else { ip+=par[i]; iy+=yds[i]; }
+    var cls = par[i]===3 ? 'p3' : par[i]===5 ? 'p5' : '';
+    var tr = document.createElement('tr');
+    tr.className = cls;
+    tr.innerHTML = '<td class="hn">'+(i+1)+'</td><td class="pc">'+par[i]+'</td><td class="sc">'+si[i]+'</td><td>'+yds[i]+'</td>';
+    body.appendChild(tr);
+    if (i===8) {
+      var r = document.createElement('tr');
+      r.className = 'nine-tot';
+      r.innerHTML = '<td class="lbl">OUT</td><td class="pc" style="font-weight:600">'+op+'</td><td class="sc">—</td><td style="font-weight:600">'+oy+'</td>';
+      body.appendChild(r);
+    }
+  }
+  var tot = document.createElement('tr');
+  tot.className = 'grand-tot';
+  tot.innerHTML = '<td class="lbl">TOTAL</td><td class="pc" style="font-weight:700;font-size:.88rem">'+(op+ip)+'</td><td class="sc">—</td><td style="font-weight:700;font-size:.88rem">'+(oy+iy)+'</td>';
+  body.appendChild(tot);
+}
+
+
+renderSC();
 </script>
 </body>
 </html>
