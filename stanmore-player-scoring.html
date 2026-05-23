@@ -177,7 +177,7 @@ html,body{min-height:100%;background:var(--cream);font-family:'DM Sans',sans-ser
         <option value="white_f">White (Women)</option>
       </select>
     </div>
-    <div><label class="flbl">Starting Hole</label><select class="finp" id="pStart">
+    <div id="pStartWrap"><label class="flbl">Starting Hole</label><select class="finp" id="pStart">
       <option value="0">Hole 1</option><option value="9">Hole 10</option>
     </select></div>
   </div>
@@ -675,6 +675,27 @@ function onCompSelect() {
       '📋 ' + fmt.label + ' &nbsp;·&nbsp; 🏌️ ' + teeLabel +
       (comp.date ? ' &nbsp;·&nbsp; 📅 ' + comp.date : '') +
       (comp.notes ? '<br><span style="color:var(--grey)">' + comp.notes + '</span>' : '');
+  }
+
+  // Lock start hole based on 9-hole format
+  var compNineHole = comp.nineHole || fmt.nineHole || null;
+  var startEl = document.getElementById('pStart');
+  if (startEl) {
+    if (compNineHole === 'back') {
+      startEl.value = '9';
+      startEl.disabled = true;
+    } else if (compNineHole === 'front') {
+      startEl.value = '0';
+      startEl.disabled = true;
+    } else {
+      startEl.disabled = false;
+    }
+  }
+
+  // Hide the starting hole selector entirely for 9-hole — no choice needed
+  var startWrap = document.getElementById('pStartWrap');
+  if (startWrap) {
+    startWrap.style.display = compNineHole ? 'none' : 'block';
   }
 
   // Store for startRound to use
