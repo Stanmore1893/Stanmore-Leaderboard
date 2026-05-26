@@ -30,19 +30,19 @@ body{font-family:'DM Sans',sans-serif;color:var(--text);background:var(--white);
 .delay-5{transition-delay:.5s;}
 
 /* ── NAV ── */
-nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:0 32px;transition:all .4s;}
-nav.scrolled{background:rgba(9,19,42,.92);backdrop-filter:blur(16px);border-bottom:1px solid rgba(212,160,23,.15);}
-.nav-inner{max-width:1100px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;height:68px;}
-.nav-brand{display:flex;align-items:center;gap:12px;text-decoration:none;}
-.nav-logo{width:38px;height:38px;object-fit:contain;transition:transform .3s;}
+nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:0 36px;transition:all .4s;}
+nav.scrolled{background:rgba(9,19,42,.95);backdrop-filter:blur(16px);border-bottom:1px solid rgba(212,160,23,.2);}
+.nav-inner{max-width:1100px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;height:80px;}
+.nav-brand{display:flex;align-items:center;gap:14px;text-decoration:none;}
+.nav-logo{width:48px;height:48px;object-fit:contain;transition:transform .3s;}
 .nav-brand:hover .nav-logo{transform:rotate(-8deg);}
-.nav-name{font-family:'Cormorant Garamond',serif;font-size:1.1rem;font-weight:700;color:var(--white);}
-.nav-links{display:flex;gap:28px;align-items:center;}
-.nav-link{color:rgba(255,255,255,.55);text-decoration:none;font-size:.85rem;transition:color .2s;position:relative;}
+.nav-name{font-family:'Cormorant Garamond',serif;font-size:1.35rem;font-weight:700;color:var(--white);}
+.nav-links{display:flex;gap:32px;align-items:center;}
+.nav-link{color:rgba(255,255,255,.7);text-decoration:none;font-size:1rem;transition:color .2s;position:relative;}
 .nav-link::after{content:'';position:absolute;bottom:-4px;left:0;width:0;height:1.5px;background:var(--gold);transition:width .3s;}
 .nav-link:hover{color:var(--white);}
 .nav-link:hover::after{width:100%;}
-.nav-cta{background:var(--gold);color:var(--navy-dk);border:none;border-radius:8px;padding:9px 20px;font-family:'DM Sans',sans-serif;font-size:.82rem;font-weight:700;cursor:pointer;text-decoration:none;letter-spacing:.04em;transition:all .3s;position:relative;overflow:hidden;}
+.nav-cta{background:var(--gold);color:var(--navy-dk);border:none;border-radius:9px;padding:12px 24px;font-family:'DM Sans',sans-serif;font-size:.95rem;font-weight:700;cursor:pointer;text-decoration:none;letter-spacing:.04em;transition:all .3s;position:relative;overflow:hidden;}
 .nav-cta::after{content:'';position:absolute;inset:0;background:rgba(255,255,255,.2);transform:translateX(-100%);transition:transform .3s;}
 .nav-cta:hover::after{transform:translateX(0);}
 
@@ -203,7 +203,16 @@ footer strong{color:var(--gold-lt);}
   .apps-grid{grid-template-columns:repeat(2,1fr);}
   .cta-box{padding:36px 24px;}
 }
-</style>
+
+@keyframes logo-entrance{
+  0%{opacity:0;transform:translateY(-20px) scale(.8);}
+  60%{transform:translateY(4px) scale(1.06);}
+  100%{opacity:1;transform:translateY(0) scale(1);}
+}
+@keyframes logo-glow{
+  0%,100%{filter:drop-shadow(0 4px 16px rgba(212,160,23,.3));}
+  50%{filter:drop-shadow(0 6px 32px rgba(212,160,23,.7)) drop-shadow(0 0 50px rgba(212,160,23,.2));}
+}</style>
 </head>
 <body>
 
@@ -231,10 +240,15 @@ footer strong{color:var(--gold-lt);}
   <div class="orb orb-3"></div>
   <div class="hero-inner">
     <div class="hero-text">
-      <div class="hero-eyebrow reveal"><div class="live-dot"></div>Live Competition System</div>
-      <h1 class="reveal delay-1">Golf competitions,<br><em>run digitally</em></h1>
-      <p class="hero-desc reveal delay-2">Live leaderboards, digital scorecards and WHS handicap calculations — all from a single link. No app downloads. Works on any phone.</p>
-      <div class="hero-actions reveal delay-3">
+      <div class="reveal" style="margin-bottom:20px;">
+        <img src="club-logo.png" alt="Stanmore Golf Club" style="width:100px;height:100px;object-fit:contain;display:block;margin-bottom:14px;animation:logo-entrance 1s ease both,logo-glow 3s ease-in-out 1s infinite;">
+        <div style="font-family:'Cormorant Garamond',serif;font-size:2rem;font-weight:700;color:var(--white);letter-spacing:.04em;margin-bottom:4px;">Stanmore Golf Club</div>
+        <div style="font-size:.75rem;color:rgba(212,160,23,.75);letter-spacing:.22em;text-transform:uppercase;">Est. 1893 · Middlesex</div>
+      </div>
+      <div class="hero-eyebrow reveal delay-1"><div class="live-dot"></div>Digital Competition Hub</div>
+      <h1 class="reveal delay-2">Golf competitions,<br><em>run digitally</em></h1>
+      <p class="hero-desc reveal delay-3">Live leaderboards, digital scorecards and WHS handicap calculations — all from a single link. No app downloads. Works on any phone.</p>
+      <div class="hero-actions reveal delay-4">
         <a href="stanmore-hub.html" class="btn-gold">⛳ Open the Hub</a>
         <a href="#features" class="btn-ghost">See what it does ↓</a>
       </div>
