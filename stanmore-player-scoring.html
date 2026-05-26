@@ -404,9 +404,13 @@ function startRound(){
 
   // Build ordered list of hole indexes to play
   if (R.nineHole === 'front') {
-    R.holeIndexes = [0,1,2,3,4,5,6,7,8];   // holes 1-9
+    R.holeIndexes = [0,1,2,3,4,5,6,7,8];           // holes 1-9
   } else if (R.nineHole === 'back') {
-    R.holeIndexes = [9,10,11,12,13,14,15,16,17]; // holes 10-18
+    R.holeIndexes = [9,10,11,12,13,14,15,16,17];   // holes 10-18
+  } else if (R.nineHole === 'custom10') {
+    R.holeIndexes = [0,1,2,3,4,5,6,7,8,9];         // holes 1-10
+  } else if (R.nineHole === 'custom12') {
+    R.holeIndexes = [0,1,2,3,4,5,6,7,8,9,10,11];  // holes 1-12
   } else {
     var startIdx = parseInt(document.getElementById('pStart').value) || 0;
     R.holeIndexes = [];
@@ -696,7 +700,7 @@ function onCompSelect() {
     if (compNineHole === 'back') {
       startEl.value = '9';
       startEl.disabled = true;
-    } else if (compNineHole === 'front') {
+    } else if (compNineHole === 'front' || compNineHole === 'custom10' || compNineHole === 'custom12') {
       startEl.value = '0';
       startEl.disabled = true;
     } else {
@@ -704,7 +708,7 @@ function onCompSelect() {
     }
   }
 
-  // Hide the starting hole selector entirely for 9-hole — no choice needed
+  // Hide starting hole for any fixed-hole format
   var startWrap = document.getElementById('pStartWrap');
   if (startWrap) {
     startWrap.style.display = compNineHole ? 'none' : 'block';

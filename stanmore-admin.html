@@ -263,10 +263,14 @@ html,body{min-height:100%;background:linear-gradient(160deg,#09132a 0%,var(--nav
         <div id="fmtHint" style="font-size:.68rem;color:rgba(212,160,23,.65);margin-top:6px;margin-bottom:12px;font-family:'DM Mono',monospace;padding:5px 8px;background:rgba(212,160,23,.08);border-radius:6px;"></div>
 
         <label class="slabel" style="margin-top:12px">Holes</label>
-        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:12px;">
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:6px;">
           <button type="button" class="holes-btn active" id="holes18Btn" onclick="setHoles('18')">18 Holes</button>
           <button type="button" class="holes-btn" id="holes9fBtn" onclick="setHoles('front9')">Front 9</button>
           <button type="button" class="holes-btn" id="holes9bBtn" onclick="setHoles('back9')">Back 9</button>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px;">
+          <button type="button" class="holes-btn" id="holes10Btn" onclick="setHoles('10')">10 Holes</button>
+          <button type="button" class="holes-btn" id="holes12Btn" onclick="setHoles('12')">12 Holes</button>
         </div>
 
         <label class="slabel">Tee</label>
@@ -508,7 +512,11 @@ function renderCompList() {
     // Show custom allowance if set, otherwise use format default
   var dispAllowance = c.allowance !== undefined ? c.allowance : fmt.allowance;
   var pct = c.customAllowance==='greensomes'?'60/40%' : (dispAllowance ? Math.round(dispAllowance*100)+'%' : '—');
-    var holes=c.nineHole==='front'?'Front 9':c.nineHole==='back'?'Back 9':'18 holes';
+    var holes = c.nineHole==='front'?'Front 9'
+    :c.nineHole==='back'?'Back 9'
+    :c.nineHole==='custom10'?'10 Holes'
+    :c.nineHole==='custom12'?'12 Holes'
+    :(c.holes||18)+' holes';
     var div=document.createElement('div');
     div.className='comp-item'+(c.active?' active-comp':'');
     div.innerHTML='<div style="flex:1;">'
