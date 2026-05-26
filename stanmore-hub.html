@@ -18,7 +18,7 @@ html,body{min-height:100%;background:linear-gradient(175deg,#060e1e 0%,#0f2347 1
 .hero{padding:36px 20px 28px;text-align:center;border-bottom:1px solid rgba(212,160,23,.2);}
 
 10%{opacity:1;}85%{opacity:.6;}100%{opacity:0;transform:translateY(-110%);}}
-.hero-logo{width:52px !important;height:52px !important;max-width:52px !important;object-fit:contain;margin-bottom:10px;filter:drop-shadow(0 4px 16px rgba(212,160,23,.3));display:block;margin-left:auto;margin-right:auto;}
+.hero-logo{width:82px;height:82px;max-width:82px;object-fit:contain;margin-bottom:14px;display:block;margin-left:auto;margin-right:auto;animation:logo-entrance 1s ease both,logo-glow 3s ease-in-out 1s infinite;cursor:pointer;transition:transform .3s;}
 .hero-club{font-family:'Cormorant Garamond',serif;font-size:2.2rem;font-weight:700;color:var(--gold-lt);letter-spacing:.03em;line-height:1.1;margin-bottom:6px;}
 .hero-comp{font-size:.92rem;color:var(--gold-pale);letter-spacing:.18em;text-transform:uppercase;margin-bottom:8px;}
 .hero-date{font-size:.95rem;color:rgba(212,160,23,.75);font-family:'DM Mono',monospace;}
@@ -110,6 +110,17 @@ html,body{min-height:100%;background:linear-gradient(175deg,#060e1e 0%,#0f2347 1
 .sgc-burger{position:fixed;top:12px;right:12px;left:auto;z-index:499;width:42px;height:42px;background:#1a3a6b;border:1.5px solid rgba(212,160,23,.5);border-radius:9px;display:flex;align-items:center;justify-content:center;cursor:pointer;box-shadow:0 2px 12px rgba(0,0,0,.5);color:#fff;font-size:1.3rem;line-height:1;}
 .sgc-burger:active{background:rgba(212,160,23,.3);}
 
+
+/* ── LOGO ANIMATIONS ── */
+@keyframes logo-entrance{
+  0%{opacity:0;transform:translateY(-20px) scale(.8);}
+  60%{transform:translateY(4px) scale(1.05);}
+  100%{opacity:1;transform:translateY(0) scale(1);}
+}
+@keyframes logo-glow{
+  0%,100%{filter:drop-shadow(0 4px 16px rgba(212,160,23,.3));}
+  50%{filter:drop-shadow(0 6px 28px rgba(212,160,23,.7)) drop-shadow(0 0 40px rgba(212,160,23,.2));}
+}
 </style>
 </head>
 <body>
@@ -140,7 +151,7 @@ html,body{min-height:100%;background:linear-gradient(175deg,#060e1e 0%,#0f2347 1
 
 
 <div class="hero">
-  <img class="hero-logo" src="club-logo.png" alt="Stanmore Golf Club" style="width:52px;height:52px;max-width:52px;">
+  <img class="hero-logo" src="club-logo.png" alt="Stanmore Golf Club" onmouseover="this.style.transform='scale(1.08) rotate(-4deg)'" onmouseout="this.style.transform=''">
   <div class="hero-club">Stanmore Golf Club</div>
   <div class="hero-comp">Golf Club Hub</div>
   <div class="hero-date" id="heroDate">Loading…</div>
