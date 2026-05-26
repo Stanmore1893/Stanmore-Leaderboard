@@ -374,9 +374,22 @@ function onProChange() {
 }
 
 function previewHcp(){
-  const hi=parseFloat(document.getElementById('pHI').value);
+  const isPro = document.getElementById('pPro') && document.getElementById('pPro').checked;
   const teeKey=document.getElementById('pTee').value;
   const fmtEl=document.getElementById('pFormat'); const allow=parseFloat(fmtEl?fmtEl.value:'1.00')||1.00;
+  if(isPro){
+    const t=COURSE.ratings[teeKey];
+    var _selIdx2 = parseInt(document.getElementById('compPicker') ? document.getElementById('compPicker').value : -1);
+    var _comp2 = (!isNaN(_selIdx2) && _competitions[_selIdx2]) ? _competitions[_selIdx2] : null;
+    var _fmtMap2 = {'general_100':'General Play (100%)','stableford_95':'Stableford (95%)','strokeplay_95':'Stroke Play (95%)','matchplay_100':'Matchplay (100%)','fourball_90':'4BBB (90%)','foursomes_50':'Foursomes (50%)'};
+    var fmtLabel2 = _comp2 ? (_fmtMap2[_comp2.format] || _comp2.format) : 'General Play (100%)';
+    document.getElementById('hcpPreview').style.display='block';
+    document.getElementById('hcpPreview').innerHTML=
+      '📊 <strong>Course HCP:</strong> 0 &nbsp;|&nbsp; <strong>Playing HCP:</strong> 0<br>'+
+      '<span style="font-size:.7rem;color:var(--grey)">'+t.name+' · CR '+t.cr+' · Slope '+t.slope+' · Par '+t.par+' · Professional</span>';
+    return;
+  }
+  const hi=parseFloat(document.getElementById('pHI').value);
   if(isNaN(hi)||hi<-5||hi>54){document.getElementById('hcpPreview').style.display='none';return;}
   const ch=calcCourseHcp(hi,teeKey);
   const ph=calcPlayingHcp(hi,teeKey,allow);
@@ -388,7 +401,7 @@ function previewHcp(){
   const fmtLabel = _comp ? (_fmtMap[_comp.format] || _comp.format) : 'General Play (100%)';
   document.getElementById('hcpPreview').style.display='block';
   document.getElementById('hcpPreview').innerHTML=
-    `📊 <strong>Course HCP:</strong> ${ch} &nbsp;|&nbsp; <strong>Playing HCP (${fmtLabel}):</strong> ${ph}<br>`+
+    `📊 <strong>Course HCP:</strong> ${ch} &nbsp;|&nbsp; <strong>Playing HCP:</strong> ${ph}<br>`+
     `<span style="font-size:.7rem;color:var(--grey)">${t.name} · CR ${t.cr} · Slope ${t.slope} · Par ${t.par}</span>`;
 }
 
