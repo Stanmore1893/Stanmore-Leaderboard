@@ -607,7 +607,11 @@ async function loadAdminSettings() {
   try {
     var c = await SGC.get('competitions');
     _competitions = Array.isArray(c) ? c : [];
-  } catch(e) { _competitions = []; }
+    console.log('SGC competitions loaded:', _competitions.length, JSON.stringify(_competitions));
+  } catch(e) { 
+    console.warn('loadAdminSettings error:', e.message);
+    _competitions = []; 
+  }
   populateCompPicker();
 
   // 2. Load general settings (name, ticker)
