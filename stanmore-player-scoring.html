@@ -165,6 +165,10 @@ html,body{min-height:100%;background:var(--cream);font-family:'DM Sans',sans-ser
     <div><label class="flbl">WHS Handicap Index</label><input class="finp" id="pHI" type="number" placeholder="e.g. 14.2 or +2 (enter -2)" step="0.1" min="-5" max="54" oninput="previewHcp()"></div>
     <div><label class="flbl">Gender</label><select class="finp" id="pGender" onchange="previewHcp()"><option value="m">Male</option><option value="f">Female</option></select></div>
   </div>
+  <label style="display:flex;align-items:center;gap:10px;padding:11px 13px;background:rgba(212,160,23,.1);border:1px solid rgba(212,160,23,.25);border-radius:9px;cursor:pointer;margin-bottom:10px;font-size:.88rem;color:rgba(255,255,255,.85);">
+    <input type="checkbox" id="pPro" style="width:17px;height:17px;accent-color:#d4a017;flex-shrink:0;" onchange="onProChange()">
+    <span>🏆 <strong style="color:var(--gold-lt,#f0c040);">Professional player</strong> — Playing off scratch (Handicap 0 from any tee)</span>
+  </label>
   <div class="frow2">
     <div>
       <label class="flbl">Tee Colour <span id="teeLockLabel" style="color:rgba(212,160,23,.7);font-size:.55rem;">(set by competition)</span></label>
@@ -354,6 +358,21 @@ function totalNett(scores,ph){return scores.reduce((s,g)=>s+(g||0),0)-ph;}
 
 const R = { name:'', hi:0, teeKey:'yellow_m', gender:'m', ph:0, startIdx:0, scores:new Array(18).fill(null), curIdx:0 };
 
+function onProChange() {
+  var isPro = document.getElementById('pPro').checked;
+  var hiInput = document.getElementById('pHI');
+  if (isPro) {
+    hiInput.value = '0';
+    hiInput.disabled = true;
+    hiInput.style.opacity = '.4';
+  } else {
+    hiInput.disabled = false;
+    hiInput.style.opacity = '1';
+    hiInput.value = '';
+  }
+  previewHcp();
+}
+
 function previewHcp(){
   const hi=parseFloat(document.getElementById('pHI').value);
   const teeKey=document.getElementById('pTee').value;
@@ -375,9 +394,10 @@ function previewHcp(){
 
 function startRound(){
   const name=document.getElementById('pName').value.trim();
-  const hi=parseFloat(document.getElementById('pHI').value);
+  const isPro = document.getElementById('pPro').checked;
+  const hi = isPro ? 0 : parseFloat(document.getElementById('pHI').value);
   if(!name){alert('Please enter your name');return;}
-  if(isNaN(hi)||hi<-5){alert('Please enter your Handicap Index');return;}
+  if(!isPro && (isNaN(hi)||hi<-5)){alert('Please enter your Handicap Index');return;}
   R.name=name; R.hi=hi;
   R.teeKey=document.getElementById('pTee').value;
   R.gender=document.getElementById('pGender').value;
@@ -395,9 +415,10 @@ function startRound(){
   var compHoles    = _comp.holes    || _fmt.holes    || 18;
   var compNineHole = _comp.nineHole || _fmt.nineHole || null;
 
-  // Proportion playing handicap for shorter rounds
-  var fullPH = calcPlayingHcp(hi, R.teeKey, allow);
-  R.ph = compHoles < 18 ? Math.round(fullPH * compHoles / 18) : fullPH;
+  // Pros play off scratch regardless of tee
+  var fullPH = isPro ? 0 : calcPlayingHcp(hi, R.teeKey, allow);
+  R.ph = (!isPro && compHoles < 18) ? Math.round(fullPH * compHoles / 18) : fullPH;
+  R.isPro = isPro;
   R.holes    = compHoles;
   R.nineHole = compNineHole;
   R.matchplay= _fmt.matchplay || _comp.matchplay || false;
@@ -420,7 +441,7 @@ function startRound(){
   R.curIdx   = R.holeIndexes[0];
   R.scores   = new Array(18).fill(null);
 
-  document.getElementById('pbName').textContent=name;
+  document.getElementById('pbName').textContent=name+(isPro?' 🏆':'');
   const t=COURSE.ratings[R.teeKey];
   var _selIdx = parseInt(document.getElementById('compPicker') ? document.getElementById('compPicker').value : -1);
   var _comp = (!isNaN(_selIdx) && _competitions[_selIdx]) ? _competitions[_selIdx] : null;
