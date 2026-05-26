@@ -395,9 +395,9 @@ function startRound(){
   var compHoles    = _comp.holes    || _fmt.holes    || 18;
   var compNineHole = _comp.nineHole || _fmt.nineHole || null;
 
-  // For 9-hole: halve the playing handicap
+  // Proportion playing handicap for shorter rounds
   var fullPH = calcPlayingHcp(hi, R.teeKey, allow);
-  R.ph       = compHoles === 9 ? Math.round(fullPH / 2) : fullPH;
+  R.ph = compHoles < 18 ? Math.round(fullPH * compHoles / 18) : fullPH;
   R.holes    = compHoles;
   R.nineHole = compNineHole;
   R.matchplay= _fmt.matchplay || _comp.matchplay || false;

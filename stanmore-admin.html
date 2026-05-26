@@ -476,12 +476,17 @@ function setCompType(type) {
   onFmtChange();
 }
 function setHoles(val) {
-  ['18','front9','back9'].forEach(function(v){
-    var id='holes'+(v==='18'?'18':v==='front9'?'9f':'9b')+'Btn';
-    var el=document.getElementById(id); if(el) el.classList.toggle('active',v===val);
+  var idMap = {'18':'holes18Btn','front9':'holes9fBtn','back9':'holes9bBtn','10':'holes10Btn','12':'holes12Btn'};
+  Object.keys(idMap).forEach(function(v) {
+    var el = document.getElementById(idMap[v]);
+    if (el) el.classList.toggle('active', v === val);
   });
-  document.getElementById('ncHoles').value=val==='18'?'18':'9';
-  document.getElementById('ncNineHole').value=val==='front9'?'front':val==='back9'?'back':'';
+  // Set hole count — 10 and 12 start from hole 1
+  var holeCount = val==='18'?18:val==='front9'?9:val==='back9'?9:val==='10'?10:12;
+  document.getElementById('ncHoles').value = holeCount;
+  // Set nineHole descriptor so scoring app knows which holes to play
+  var descriptor = val==='front9'?'front':val==='back9'?'back':val==='10'?'custom10':val==='12'?'custom12':'';
+  document.getElementById('ncNineHole').value = descriptor;
 }
 function setTee(base) {
   _ncTeeBase=base;
