@@ -406,13 +406,22 @@ function previewHcp(){
 }
 
 // ── NAME VALIDATION ──
-var BANNED_WORDS = [
+var DEFAULT_BANNED_WORDS = [
   'fuck','shit','cunt','bastard','wanker','twat','piss','cock','dick','arse',
   'arsehole','asshole','ass','bitch','bollocks','bugger','damn','shite','slag',
   'whore','prick','bellend','knob','tosser','muppet','idiot','stupid','loser',
   'penis','vagina','naked','sex','porn','drugs','hitler','racist','nigger',
   'faggot','retard'
 ];
+
+function getBannedWords() {
+  try {
+    var stored = localStorage.getItem('sgc_banned_words');
+    return stored ? JSON.parse(stored) : DEFAULT_BANNED_WORDS;
+  } catch(e) {
+    return DEFAULT_BANNED_WORDS;
+  }
+}
 
 function validateName(name) {
   var trimmed = name.trim();
@@ -438,10 +447,11 @@ function validateName(name) {
     return 'Please enter your first and last name.';
   }
 
-  // Check against profanity list
+  // Check against profanity list (includes any custom words added in admin)
   var lower = trimmed.toLowerCase();
-  for (var i = 0; i < BANNED_WORDS.length; i++) {
-    if (lower.indexOf(BANNED_WORDS[i]) !== -1) {
+  var banned = getBannedWords();
+  for (var i = 0; i < banned.length; i++) {
+    if (lower.indexOf(banned[i]) !== -1) {
       return 'Please enter your real name to continue.';
     }
   }

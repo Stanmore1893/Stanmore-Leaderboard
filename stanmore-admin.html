@@ -316,6 +316,16 @@ html,body{min-height:100%;background:linear-gradient(160deg,#09132a 0%,var(--nav
 
 
 
+    <!-- PROFANITY FILTER -->
+    <div class="sec">
+      <div class="sec-title">&#128683; Name Filter</div>
+      <div class="sec-desc">Add words to block from the score entry name field. One word per line. Works across any language — add words as you spot them.</div>
+      <textarea class="finp" id="profanityList" rows="8" placeholder="Add blocked words here, one per line&#10;e.g.&#10;merde&#10;scheisse&#10;idiot" style="font-family:'DM Mono',monospace;font-size:.82rem;resize:vertical;line-height:1.7;"></textarea>
+      <div class="info-box info-amber" style="margin-top:8px;margin-bottom:10px;">&#9888;&#65039; Words are saved to this device only. The score entry app loads the base list automatically — custom words apply when players use the same device as admin, or share the same browser storage.</div>
+      <button class="save-btn" onclick="saveProfanityList()">&#128683; Save Word List</button>
+      <button class="cancel-btn" onclick="resetProfanityList()">Reset to defaults</button>
+    </div>
+
     <!-- PASSWORD -->
     <div class="sec">
       <div class="sec-title">Change Password</div>
@@ -701,6 +711,43 @@ function copyEmbed(){
   if(navigator.clipboard) navigator.clipboard.writeText(code).then(function(){toast('Embed code copied');});
 }
 
+// ── PROFANITY FILTER MANAGER ──
+var DEFAULT_BANNED = [
+  'fuck','shit','cunt','bastard','wanker','twat','piss','cock','dick','arse',
+  'arsehole','asshole','ass','bitch','bollocks','bugger','damn','shite','slag',
+  'whore','prick','bellend','knob','tosser','muppet','idiot','stupid','loser',
+  'penis','vagina','naked','sex','porn','drugs','hitler','racist','nigger',
+  'faggot','retard'
+];
+
+function loadProfanityList() {
+  try {
+    var stored = localStorage.getItem('sgc_banned_words');
+    var words = stored ? JSON.parse(stored) : DEFAULT_BANNED;
+    document.getElementById('profanityList').value = words.join(String.fromCharCode(10));
+  } catch(e) {
+    document.getElementById('profanityList').value = DEFAULT_BANNED.join(String.fromCharCode(10));
+  }
+}
+function saveProfanityList() {
+  var raw = document.getElementById('profanityList').value;
+  var words = raw.split(String.fromCharCode(10))
+    .map(function(w){ return w.trim().toLowerCase(); })
+    .filter(function(w){ return w.length > 0; });
+  try {
+    localStorage.setItem('sgc_banned_words', JSON.stringify(words));
+    toast('Word list saved — ' + words.length + ' words active');
+  } catch(e) {
+    toast('Could not save — check browser storage');
+  }
+}
+function resetProfanityList() {
+  try {
+    localStorage.removeItem('sgc_banned_words');
+    document.getElementById('profanityList').value = DEFAULT_BANNED.join(String.fromCharCode(10));
+    toast('Reset to default word list');
+  } catch(e) {}
+}
 // ── NAV ──
 function openNav(){document.getElementById('sgcNavDrawer').classList.add('open');document.getElementById('sgcNavOverlay').classList.add('open');document.body.style.overflow='hidden';}
 function closeNav(){document.getElementById('sgcNavDrawer').classList.remove('open');document.getElementById('sgcNavOverlay').classList.remove('open');document.body.style.overflow='';}
@@ -714,7 +761,7 @@ function toast(msg){
 }
 
 // ── INIT ──
-function onAdminLoad(){ loadLocalSettings(); loadScores(); loadCompetitions(); }
+function onAdminLoad(){ loadLocalSettings(); loadScores(); loadCompetitions(); loadProfanityList(); }
 </script>
   <div style="text-align:center;padding:14px 16px;border-top:1px solid rgba(212,160,23,.15);">
     <div style="display:inline-flex;align-items:center;gap:10px;">
