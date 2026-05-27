@@ -241,9 +241,9 @@ html,body{min-height:100%;background:var(--cream);font-family:'DM Sans',sans-ser
     <div class="hc-head">
       <div style="display:flex;align-items:center;flex-wrap:wrap;gap:6px;margin-bottom:4px;">
         <div class="hc-num" id="hcNum">Hole 1</div>
-        <span id="ntpFlag"  style="display:none;background:rgba(212,160,23,.15);border:1px solid rgba(212,160,23,.3);border-radius:6px;padding:3px 8px;font-size:.72rem;color:var(--gold-lt,#f0c040);animation:flag-pulse 2s ease-in-out infinite;">📍 Nearest Pin</span>
-        <span id="ntp2Flag" style="display:none;background:rgba(45,110,78,.15);border:1px solid rgba(45,110,78,.3);border-radius:6px;padding:3px 8px;font-size:.72rem;color:#8ee0b4;animation:flag-pulse 2s ease-in-out infinite;">📍 Nearest Pin in 2</span>
-        <span id="ldFlag"   style="display:none;background:rgba(26,58,107,.25);border:1px solid rgba(26,58,107,.5);border-radius:6px;padding:3px 8px;font-size:.72rem;color:#a8c4f0;animation:flag-pulse 2s ease-in-out infinite;">🏌️ Long Drive</span>
+        <span id="ntpFlag"  style="display:none;background:rgba(212,160,23,.2);border:2px solid rgba(212,160,23,.6);border-radius:8px;padding:6px 12px;font-size:.88rem;font-weight:700;color:#f0c040;animation:flag-pulse 1.5s ease-in-out infinite;box-shadow:0 0 12px rgba(212,160,23,.3);">📍 Nearest Pin</span>
+        <span id="ntp2Flag" style="display:none;background:rgba(45,110,78,.2);border:2px solid rgba(45,110,78,.5);border-radius:8px;padding:6px 12px;font-size:.88rem;font-weight:700;color:#8ee0b4;animation:flag-pulse 1.5s ease-in-out infinite;box-shadow:0 0 12px rgba(45,110,78,.25);">📍 Nearest Pin in 2</span>
+        <span id="ldFlag"   style="display:none;background:rgba(26,58,107,.3);border:2px solid rgba(26,58,107,.7);border-radius:8px;padding:6px 12px;font-size:.88rem;font-weight:700;color:#a8c4f0;animation:flag-pulse 1.5s ease-in-out infinite;box-shadow:0 0 12px rgba(26,58,107,.3);">🏌️ Long Drive</span>
       </div>
       <div class="hc-info" id="hcInfo">Par 4 · SI 14</div>
     </div>
@@ -753,6 +753,90 @@ async function saveProgress(){
   }catch(e){}
 }
 
+// ── PRIZE CLAIMING ──
+async function claimPrize(type) {
+  var holeNum = R.curIdx + 1;
+  var btnId  = type==='ntp' ? 'ntpBtn' : type==='ntp2' ? 'ntp2Btn' : 'ldBtn';
+  var statId = type==='ntp' ? 'ntpStatus' : type==='ntp2' ? 'ntp2Status' : 'ldStatus';
+  var btn    = document.getElementById(btnId);
+  var stat   = document.getElementById(statId);
+  if (btn) { btn.disabled=true; btn.style.opacity='.6'; btn.textContent='Saving…'; }
+
+  if (!R.prizeClaims) R.prizeClaims = {ntp:[],ntp2:[],ld:[]};
+  if (!R.prizeClaims[type]) R.prizeClaims[type] = [];
+  if (R.prizeClaims[type].indexOf(holeNum) < 0) R.prizeClaims[type].push(holeNum);
+
+  try {
+    var record = await SGC._read();
+    if (!record.prizes) record.prizes = {ntp:{},ntp2:{},ld:{}};
+    if (!record.prizes[type]) record.prizes[type] = {};
+    var hKey = 'h'+holeNum;
+    if (!record.prizes[type][hKey]) record.prizes[type][hKey] = {current:null,history:[]};
+    record.prizes[type][hKey].current = R.name;
+    record.prizes[type][hKey].history.push({name:R.name,ts:Date.now()});
+    await SGC._write(record);
+    if (btn)  { btn.style.background='rgba(45,110,78,.3)'; btn.style.borderColor='rgba(45,110,78,.6)'; btn.style.color='#8ee0b4'; btn.textContent='✓ Claimed!'; }
+    if (stat) stat.textContent='You are currently leading on hole '+holeNum;
+  } catch(e) {
+    if (btn)  { btn.disabled=false; btn.style.opacity='1'; btn.textContent='📍 Try again'; }
+    if (stat) stat.textContent='Could not save — please try again';
+  }
+}
+
+function getPrizeClaims() {
+  var claims = {ntp:[],ntp2:[],ld:[]};
+  var comp = window._activeComp || {};
+  ['ntp','ntp2','ld'].forEach(function(type) {
+    var holes = type==='ntp' ? (comp.ntpHoles||[]) : type==='ntp2' ? (comp.ntp2Holes||[]) : (comp.ldHoles||[]);
+    holes.forEach(function(h) {
+      if (R.prizeClaims && R.prizeClaims[type] && R.prizeClaims[type].indexOf(h)>=0) claims[type].push(h);
+    });
+  });
+  return claims;
+}
+
+// ── HOLE BY HOLE SCORECARD ──
+function buildAndShowScorecard() {
+  var gender = R.gender||'m';
+  var par    = gender==='f' ? COURSE.par_women : COURSE.par_men;
+  var si     = gender==='f' ? COURSE.si_women  : COURSE.si_men;
+  var t      = COURSE.ratings[R.teeKey]||{};
+  document.getElementById('sc2Header').innerHTML =
+    '<strong style="color:#fff;">'+R.name+'</strong> &nbsp;·&nbsp; HI '+(R.hi||0).toFixed(1)+' &nbsp;·&nbsp; Playing HCP '+(R.ph||0)+'<br>'
+    +(t.name||'')+' &nbsp;·&nbsp; '+(R.competition||'')+' &nbsp;·&nbsp; '+new Date().toLocaleDateString('en-GB',{weekday:'short',day:'numeric',month:'short',year:'numeric'});
+  var tbody=document.getElementById('sc2Body'); tbody.innerHTML='';
+  var outG=0,outN=0,outP=0,inG=0,inN=0,inP=0;
+  R.holeIndexes.forEach(function(hIdx,step) {
+    var gross=R.scores[hIdx]; if(!gross) return;
+    var holePar=par[hIdx]; var holeSI=si[hIdx];
+    var strokes=strokesOnHole(R.ph,holeSI);
+    var nett=gross-strokes; var pts=stablefordPts(gross,holePar,R.ph,holeSI);
+    var diff=nett-holePar;
+    var cls=diff<=-2?'eagle':diff===-1?'birdie':diff===0?'par-score':diff===1?'bogey':'double';
+    var tr=document.createElement('tr');
+    tr.innerHTML='<td class="hole-num">'+(hIdx+1)+'</td><td>'+holePar+'</td><td style="color:rgba(255,255,255,.4)">'+holeSI+'</td><td style="color:rgba(212,160,23,.6)">'+strokes+'</td><td class="gross-score '+cls+'">'+gross+'</td><td style="font-family:monospace">'+nett+'</td><td class="pts-cell">'+pts+'</td>';
+    tbody.appendChild(tr);
+    if(hIdx<9){outG+=gross;outN+=nett;outP+=pts;}else{inG+=gross;inN+=nett;inP+=pts;}
+    if(hIdx===8&&R.holeIndexes.length>9){var r9=document.createElement('tr');r9.className='sc-nine-row';r9.innerHTML='<td colspan="4">OUT</td><td>'+outG+'</td><td>'+outN+'</td><td>'+outP+'</td>';tbody.appendChild(r9);}
+  });
+  var rTot=document.createElement('tr'); rTot.className='sc-total-row';
+  rTot.innerHTML='<td colspan="4">TOTAL</td><td>'+(outG+inG)+'</td><td>'+(outN+inN)+'</td><td>'+(outP+inP)+'</td>';
+  tbody.appendChild(rTot);
+  showScr('scrCard2');
+}
+
+function shareScorecard() {
+  var t=COURSE.ratings[R.teeKey]||{};
+  var ptsEl=document.getElementById('donePts');
+  var grossEl=document.getElementById('doneGross');
+  var nettEl=document.getElementById('doneNett');
+  var msg='⛳ '+R.name+' — '+(R.competition||'Golf')+'\n'
+    +'🏆 '+(ptsEl?ptsEl.textContent:'0')+' pts | Gross: '+(grossEl?grossEl.textContent:'0')+' | Nett: '+(nettEl?nettEl.textContent:'0')+'\n'
+    +'📍 '+(t.name||'')+' | Playing HCP '+(R.ph||0)+'\n'
+    +'🔗 View leaderboard: '+window.location.origin+'/Stanmore-Leaderboard/stanmore-leaderboard-live.html';
+  window.open('https://wa.me/?text='+encodeURIComponent(msg),'_blank');
+}
+
 function showScr(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active');window.scrollTo(0,0);}
 
 window.addEventListener('load', loadAdminSettings);
@@ -936,6 +1020,90 @@ function onCompSelect() {
   window._activeComp = comp;
   window._activeFmt  = fmt;
   previewHcp();
+}
+
+// ── PRIZE CLAIMING ──
+async function claimPrize(type) {
+  var holeNum = R.curIdx + 1;
+  var btnId  = type==='ntp' ? 'ntpBtn' : type==='ntp2' ? 'ntp2Btn' : 'ldBtn';
+  var statId = type==='ntp' ? 'ntpStatus' : type==='ntp2' ? 'ntp2Status' : 'ldStatus';
+  var btn    = document.getElementById(btnId);
+  var stat   = document.getElementById(statId);
+  if (btn) { btn.disabled=true; btn.style.opacity='.6'; btn.textContent='Saving…'; }
+
+  if (!R.prizeClaims) R.prizeClaims = {ntp:[],ntp2:[],ld:[]};
+  if (!R.prizeClaims[type]) R.prizeClaims[type] = [];
+  if (R.prizeClaims[type].indexOf(holeNum) < 0) R.prizeClaims[type].push(holeNum);
+
+  try {
+    var record = await SGC._read();
+    if (!record.prizes) record.prizes = {ntp:{},ntp2:{},ld:{}};
+    if (!record.prizes[type]) record.prizes[type] = {};
+    var hKey = 'h'+holeNum;
+    if (!record.prizes[type][hKey]) record.prizes[type][hKey] = {current:null,history:[]};
+    record.prizes[type][hKey].current = R.name;
+    record.prizes[type][hKey].history.push({name:R.name,ts:Date.now()});
+    await SGC._write(record);
+    if (btn)  { btn.style.background='rgba(45,110,78,.3)'; btn.style.borderColor='rgba(45,110,78,.6)'; btn.style.color='#8ee0b4'; btn.textContent='✓ Claimed!'; }
+    if (stat) stat.textContent='You are currently leading on hole '+holeNum;
+  } catch(e) {
+    if (btn)  { btn.disabled=false; btn.style.opacity='1'; btn.textContent='📍 Try again'; }
+    if (stat) stat.textContent='Could not save — please try again';
+  }
+}
+
+function getPrizeClaims() {
+  var claims = {ntp:[],ntp2:[],ld:[]};
+  var comp = window._activeComp || {};
+  ['ntp','ntp2','ld'].forEach(function(type) {
+    var holes = type==='ntp' ? (comp.ntpHoles||[]) : type==='ntp2' ? (comp.ntp2Holes||[]) : (comp.ldHoles||[]);
+    holes.forEach(function(h) {
+      if (R.prizeClaims && R.prizeClaims[type] && R.prizeClaims[type].indexOf(h)>=0) claims[type].push(h);
+    });
+  });
+  return claims;
+}
+
+// ── HOLE BY HOLE SCORECARD ──
+function buildAndShowScorecard() {
+  var gender = R.gender||'m';
+  var par    = gender==='f' ? COURSE.par_women : COURSE.par_men;
+  var si     = gender==='f' ? COURSE.si_women  : COURSE.si_men;
+  var t      = COURSE.ratings[R.teeKey]||{};
+  document.getElementById('sc2Header').innerHTML =
+    '<strong style="color:#fff;">'+R.name+'</strong> &nbsp;·&nbsp; HI '+(R.hi||0).toFixed(1)+' &nbsp;·&nbsp; Playing HCP '+(R.ph||0)+'<br>'
+    +(t.name||'')+' &nbsp;·&nbsp; '+(R.competition||'')+' &nbsp;·&nbsp; '+new Date().toLocaleDateString('en-GB',{weekday:'short',day:'numeric',month:'short',year:'numeric'});
+  var tbody=document.getElementById('sc2Body'); tbody.innerHTML='';
+  var outG=0,outN=0,outP=0,inG=0,inN=0,inP=0;
+  R.holeIndexes.forEach(function(hIdx,step) {
+    var gross=R.scores[hIdx]; if(!gross) return;
+    var holePar=par[hIdx]; var holeSI=si[hIdx];
+    var strokes=strokesOnHole(R.ph,holeSI);
+    var nett=gross-strokes; var pts=stablefordPts(gross,holePar,R.ph,holeSI);
+    var diff=nett-holePar;
+    var cls=diff<=-2?'eagle':diff===-1?'birdie':diff===0?'par-score':diff===1?'bogey':'double';
+    var tr=document.createElement('tr');
+    tr.innerHTML='<td class="hole-num">'+(hIdx+1)+'</td><td>'+holePar+'</td><td style="color:rgba(255,255,255,.4)">'+holeSI+'</td><td style="color:rgba(212,160,23,.6)">'+strokes+'</td><td class="gross-score '+cls+'">'+gross+'</td><td style="font-family:monospace">'+nett+'</td><td class="pts-cell">'+pts+'</td>';
+    tbody.appendChild(tr);
+    if(hIdx<9){outG+=gross;outN+=nett;outP+=pts;}else{inG+=gross;inN+=nett;inP+=pts;}
+    if(hIdx===8&&R.holeIndexes.length>9){var r9=document.createElement('tr');r9.className='sc-nine-row';r9.innerHTML='<td colspan="4">OUT</td><td>'+outG+'</td><td>'+outN+'</td><td>'+outP+'</td>';tbody.appendChild(r9);}
+  });
+  var rTot=document.createElement('tr'); rTot.className='sc-total-row';
+  rTot.innerHTML='<td colspan="4">TOTAL</td><td>'+(outG+inG)+'</td><td>'+(outN+inN)+'</td><td>'+(outP+inP)+'</td>';
+  tbody.appendChild(rTot);
+  showScr('scrCard2');
+}
+
+function shareScorecard() {
+  var t=COURSE.ratings[R.teeKey]||{};
+  var ptsEl=document.getElementById('donePts');
+  var grossEl=document.getElementById('doneGross');
+  var nettEl=document.getElementById('doneNett');
+  var msg='⛳ '+R.name+' — '+(R.competition||'Golf')+'\n'
+    +'🏆 '+(ptsEl?ptsEl.textContent:'0')+' pts | Gross: '+(grossEl?grossEl.textContent:'0')+' | Nett: '+(nettEl?nettEl.textContent:'0')+'\n'
+    +'📍 '+(t.name||'')+' | Playing HCP '+(R.ph||0)+'\n'
+    +'🔗 View leaderboard: '+window.location.origin+'/Stanmore-Leaderboard/stanmore-leaderboard-live.html';
+  window.open('https://wa.me/?text='+encodeURIComponent(msg),'_blank');
 }
 
 function showScr(id) {
