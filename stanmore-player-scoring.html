@@ -612,16 +612,20 @@ function renderHole(){
   var ntpHoles = comp.ntpHoles || [];
   var ldHoles  = comp.ldHoles  || [];
   var holeNum  = R.curIdx + 1;
-  var isNtp = ntpHoles.indexOf(holeNum) >= 0;
-  var isLd  = ldHoles.indexOf(holeNum)  >= 0;
-  document.getElementById('ntpFlag').style.display  = isNtp ? 'inline-flex' : 'none';
-  document.getElementById('ldFlag').style.display   = isLd  ? 'inline-flex' : 'none';
-  document.getElementById('ntpClaim').style.display = isNtp ? 'block' : 'none';
-  document.getElementById('ldClaim').style.display  = isLd  ? 'block' : 'none';
-  document.getElementById('prizeClaim').style.display = (isNtp || isLd) ? 'block' : 'none';
-  // Reset checkboxes on new hole
-  if (document.getElementById('ntpCheck')) document.getElementById('ntpCheck').checked = false;
-  if (document.getElementById('ldCheck'))  document.getElementById('ldCheck').checked  = false;
+  var ntp2Holes = comp.ntp2Holes || [];
+  var isNtp  = ntpHoles.indexOf(holeNum)  >= 0;
+  var isNtp2 = ntp2Holes.indexOf(holeNum) >= 0;
+  var isLd   = ldHoles.indexOf(holeNum)   >= 0;
+  document.getElementById('ntpFlag').style.display   = isNtp  ? 'inline-flex' : 'none';
+  document.getElementById('ntp2Flag').style.display  = isNtp2 ? 'inline-flex' : 'none';
+  document.getElementById('ldFlag').style.display    = isLd   ? 'inline-flex' : 'none';
+  document.getElementById('ntpClaim').style.display  = isNtp  ? 'block' : 'none';
+  document.getElementById('ntp2Claim').style.display = isNtp2 ? 'block' : 'none';
+  document.getElementById('ldClaim').style.display   = isLd   ? 'block' : 'none';
+  document.getElementById('prizeClaim').style.display = (isNtp || isNtp2 || isLd) ? 'block' : 'none';
+  if (document.getElementById('ntpCheck'))  document.getElementById('ntpCheck').checked  = false;
+  if (document.getElementById('ntp2Check')) document.getElementById('ntp2Check').checked = false;
+  if (document.getElementById('ldCheck'))   document.getElementById('ldCheck').checked   = false;
   const isLast=(R.startIdx===0&&i===17)||(R.startIdx===9&&i===8);
   document.getElementById('nextBtn').textContent=isLast?'Finish ✓':'Next →';
   renderDone();
@@ -691,8 +695,11 @@ function nextHole(){
   var holeNum = R.curIdx + 1;
   var ntpEl = document.getElementById('ntpCheck');
   var ldEl  = document.getElementById('ldCheck');
-  if (ntpEl && ntpEl.checked && R.prizeClaims.ntp.indexOf(holeNum) < 0) R.prizeClaims.ntp.push(holeNum);
-  if (ldEl  && ldEl.checked  && R.prizeClaims.ld.indexOf(holeNum)  < 0) R.prizeClaims.ld.push(holeNum);
+  if (ntpEl  && ntpEl.checked  && R.prizeClaims.ntp.indexOf(holeNum)  < 0) R.prizeClaims.ntp.push(holeNum);
+  var ntp2El = document.getElementById('ntp2Check');
+  if (!R.prizeClaims.ntp2) R.prizeClaims.ntp2 = [];
+  if (ntp2El && ntp2El.checked && R.prizeClaims.ntp2.indexOf(holeNum) < 0) R.prizeClaims.ntp2.push(holeNum);
+  if (ldEl   && ldEl.checked   && R.prizeClaims.ld.indexOf(holeNum)   < 0) R.prizeClaims.ld.push(holeNum);
 
   if(R.holeStep >= R.holeIndexes.length - 1){finishRound();return;}
   R.holeStep++;

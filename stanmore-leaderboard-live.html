@@ -580,6 +580,7 @@ function renderTeams() {
 // ── PRIZES LEADERBOARD ──
 function renderPrizes() {
   renderNTP();
+  renderNTP2();
   renderLD();
 }
 
@@ -604,6 +605,25 @@ function renderNTP() {
       } else {
         html += '<div class="prize-none">No claims yet</div>';
       }
+      html += '</div><span class="prize-hole">Hole '+hole+'</span></div>';
+    });
+  }
+  body.innerHTML = html;
+}
+
+function renderNTP2() {
+  var body = document.getElementById('ntp2Body');
+  if (!body) return;
+  var activeComp = _competitions && _competitions.find ? _competitions.find(function(c){return c.active;}) : null;
+  var ntp2Holes = activeComp && activeComp.ntp2Holes ? activeComp.ntp2Holes : [];
+  var html = '<div class="prize-section-title">📍 Nearest the Pin in 2</div>';
+  if (!ntp2Holes.length) {
+    html += '<div class="prize-none">No nearest the pin in 2 holes set.</div>';
+  } else {
+    ntp2Holes.forEach(function(hole) {
+      var claimants = players.filter(function(p){ return p.ntp2Claims && p.ntp2Claims.indexOf(hole) >= 0; });
+      html += '<div class="prize-card"><div><div style="font-size:.85rem;font-weight:600;color:var(--white);">Hole '+hole+'</div>';
+      html += claimants.length ? '<div class="prize-claimants">'+claimants.map(function(p){return p.name;}).join(', ')+'</div>' : '<div class="prize-none">No claims yet</div>';
       html += '</div><span class="prize-hole">Hole '+hole+'</span></div>';
     });
   }
@@ -796,6 +816,7 @@ function exportPDF() {
 <div id="prizesSection" style="display:none;padding:0 14px 14px;">
   <div style="font-size:.65rem;letter-spacing:.14em;text-transform:uppercase;color:var(--grey);padding:10px 0 8px;">🎯 Special Prizes</div>
   <div id="ntpBody" style="margin-bottom:12px;"></div>
+  <div id="ntp2Body" style="margin-bottom:12px;"></div>
   <div id="ldBody"></div>
 </div>
 

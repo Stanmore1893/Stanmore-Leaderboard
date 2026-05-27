@@ -295,14 +295,81 @@ html,body{min-height:100%;background:linear-gradient(160deg,#09132a 0%,var(--nav
 
         <label class="slabel">🎯 Special Prizes (optional)</label>
         <div style="background:rgba(0,0,0,.15);border:1px solid rgba(255,255,255,.07);border-radius:10px;padding:12px;margin-bottom:12px;">
-          <div style="font-size:.72rem;color:var(--grey);margin-bottom:10px;line-height:1.6;">Select which holes have special prizes. Players will see a flag icon on those holes and can mark if they think they won.</div>
-          <div style="margin-bottom:10px;">
-            <label class="slabel" style="margin-bottom:6px;">📍 Nearest the Pin — select holes</label>
-            <div id="ntpHoles" style="display:flex;flex-wrap:wrap;gap:6px;"></div>
+          <div style="font-size:.72rem;color:var(--grey);margin-bottom:12px;line-height:1.6;">Select holes for each special prize category. Players see a flag on those holes during scoring.</div>
+
+          <div style="margin-bottom:12px;">
+            <label class="slabel" style="margin-bottom:6px;">📍 Nearest the Pin</label>
+            <select class="finp" id="ntpSelect" multiple size="5" style="height:auto;padding:8px;font-family:'DM Mono',monospace;font-size:.82rem;background:rgba(0,0,0,.3);">
+              <option value="4">Hole 4 (Par 3)</option>
+              <option value="6">Hole 6 (Par 3)</option>
+              <option value="8">Hole 8 (Par 3)</option>
+              <option value="10">Hole 10 (Par 3)</option>
+              <option value="17">Hole 17 (Par 3)</option>
+              <option value="1">Hole 1</option>
+              <option value="2">Hole 2</option>
+              <option value="3">Hole 3</option>
+              <option value="5">Hole 5</option>
+              <option value="7">Hole 7</option>
+              <option value="9">Hole 9</option>
+              <option value="11">Hole 11</option>
+              <option value="12">Hole 12</option>
+              <option value="13">Hole 13</option>
+              <option value="14">Hole 14</option>
+              <option value="15">Hole 15</option>
+              <option value="16">Hole 16</option>
+              <option value="18">Hole 18</option>
+            </select>
+            <div style="font-size:.68rem;color:var(--grey);margin-top:4px;">Hold Ctrl/Cmd to select multiple holes</div>
           </div>
+
+          <div style="margin-bottom:12px;">
+            <label class="slabel" style="margin-bottom:6px;">📍 Nearest the Pin in 2</label>
+            <select class="finp" id="ntp2Select" multiple size="3" style="height:auto;padding:8px;font-family:'DM Mono',monospace;font-size:.82rem;background:rgba(0,0,0,.3);">
+              <option value="7">Hole 7</option>
+              <option value="14">Hole 14</option>
+              <option value="1">Hole 1</option>
+              <option value="2">Hole 2</option>
+              <option value="3">Hole 3</option>
+              <option value="4">Hole 4</option>
+              <option value="5">Hole 5</option>
+              <option value="6">Hole 6</option>
+              <option value="8">Hole 8</option>
+              <option value="9">Hole 9</option>
+              <option value="10">Hole 10</option>
+              <option value="11">Hole 11</option>
+              <option value="12">Hole 12</option>
+              <option value="13">Hole 13</option>
+              <option value="15">Hole 15</option>
+              <option value="16">Hole 16</option>
+              <option value="17">Hole 17</option>
+              <option value="18">Hole 18</option>
+            </select>
+            <div style="font-size:.68rem;color:var(--grey);margin-top:4px;">Hold Ctrl/Cmd to select multiple holes</div>
+          </div>
+
           <div>
-            <label class="slabel" style="margin-bottom:6px;">🏌️ Longest Drive — select holes</label>
-            <div id="ldHoles" style="display:flex;flex-wrap:wrap;gap:6px;"></div>
+            <label class="slabel" style="margin-bottom:6px;">🏌️ Longest Drive</label>
+            <select class="finp" id="ldSelect" multiple size="3" style="height:auto;padding:8px;font-family:'DM Mono',monospace;font-size:.82rem;background:rgba(0,0,0,.3);">
+              <option value="11">Hole 11</option>
+              <option value="18">Hole 18</option>
+              <option value="1">Hole 1</option>
+              <option value="2">Hole 2</option>
+              <option value="3">Hole 3</option>
+              <option value="4">Hole 4</option>
+              <option value="5">Hole 5</option>
+              <option value="6">Hole 6</option>
+              <option value="7">Hole 7</option>
+              <option value="8">Hole 8</option>
+              <option value="9">Hole 9</option>
+              <option value="10">Hole 10</option>
+              <option value="12">Hole 12</option>
+              <option value="13">Hole 13</option>
+              <option value="14">Hole 14</option>
+              <option value="15">Hole 15</option>
+              <option value="16">Hole 16</option>
+              <option value="17">Hole 17</option>
+            </select>
+            <div style="font-size:.68rem;color:var(--grey);margin-top:4px;">Hold Ctrl/Cmd to select multiple holes</div>
           </div>
         </div>
 
@@ -506,42 +573,18 @@ function setCompType(type) {
   onFmtChange();
 }
 // ── SPECIAL PRIZES HOLE SELECTOR ──
-var _ntpHoles = []; // selected nearest the pin holes
-var _ldHoles  = []; // selected longest drive holes
-
-function initPrizeHoles() {
-  ['ntpHoles','ldHoles'].forEach(function(containerId) {
-    var isNtp = containerId === 'ntpHoles';
-    var container = document.getElementById(containerId);
-    if (!container) return;
-    container.innerHTML = '';
-    for (var h = 1; h <= 18; h++) {
-      var btn = document.createElement('button');
-      btn.type = 'button';
-      btn.className = 'prize-hole-btn';
-      btn.textContent = h;
-      btn.dataset.hole = h;
-      btn.dataset.type = isNtp ? 'ntp' : 'ld';
-      btn.onclick = togglePrizeHole;
-      container.appendChild(btn);
-    }
-  });
+function getSelectValues(id) {
+  var sel = document.getElementById(id);
+  if (!sel) return [];
+  return Array.from(sel.selectedOptions).map(function(o){ return parseInt(o.value); });
 }
 
-function togglePrizeHole() {
-  var hole = parseInt(this.dataset.hole);
-  var type = this.dataset.type;
-  var arr  = type === 'ntp' ? _ntpHoles : _ldHoles;
-  var cls  = type === 'ntp' ? 'active-ntp' : 'active-ld';
-  var idx  = arr.indexOf(hole);
-  if (idx >= 0) { arr.splice(idx,1); this.classList.remove(cls); }
-  else          { arr.push(hole);    this.classList.add(cls); }
-}
+function initPrizeHoles() {} // no longer needed - using select elements
 
 function resetPrizeHoles() {
-  _ntpHoles = []; _ldHoles = [];
-  document.querySelectorAll('.prize-hole-btn').forEach(function(b){
-    b.classList.remove('active-ntp','active-ld');
+  ['ntpSelect','ntp2Select','ldSelect'].forEach(function(id) {
+    var el = document.getElementById(id);
+    if (el) Array.from(el.options).forEach(function(o){ o.selected = false; });
   });
 }
 
@@ -827,7 +870,7 @@ function toast(msg){
 }
 
 // ── INIT ──
-function onAdminLoad(){ loadLocalSettings(); loadScores(); loadCompetitions(); loadProfanityList(); initPrizeHoles(); }
+function onAdminLoad(){ loadLocalSettings(); loadScores(); loadCompetitions(); loadProfanityList(); }
 </script>
   <div style="text-align:center;padding:14px 16px;border-top:1px solid rgba(212,160,23,.15);">
     <div style="display:inline-flex;align-items:center;gap:10px;">
