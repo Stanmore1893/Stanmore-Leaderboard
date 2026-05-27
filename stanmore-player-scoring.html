@@ -405,11 +405,82 @@ function previewHcp(){
     `<span style="font-size:.7rem;color:var(--grey)">${t.name} · CR ${t.cr} · Slope ${t.slope} · Par ${t.par}</span>`;
 }
 
+// ── NAME VALIDATION ──
+var BANNED_WORDS = [
+  'fuck','shit','cunt','bastard','wanker','twat','piss','cock','dick','arse',
+  'arsehole','asshole','ass','bitch','bollocks','bugger','damn','shite','slag',
+  'whore','prick','bellend','knob','tosser','muppet','idiot','stupid','loser',
+  'penis','vagina','naked','sex','porn','drugs','hitler','racist','nigger',
+  'faggot','retard'
+];
+
+function validateName(name) {
+  var trimmed = name.trim();
+
+  // Must be at least 2 characters
+  if (trimmed.length < 2) {
+    return 'Please enter your full name to continue.';
+  }
+
+  // Must contain only letters, spaces, hyphens and apostrophes (real name characters)
+  if (!/^[a-zA-ZÀ-ÿ\s'\-\.]+$/.test(trimmed)) {
+    return 'Your name can only contain letters — please enter your real name.';
+  }
+
+  // Must contain at least one space (first + last name)
+  if (trimmed.indexOf(' ') === -1) {
+    return 'Please enter your first and last name.';
+  }
+
+  // Each part must be at least 1 character after splitting
+  var parts = trimmed.split(/\s+/).filter(function(p){ return p.length > 0; });
+  if (parts.length < 2) {
+    return 'Please enter your first and last name.';
+  }
+
+  // Check against profanity list
+  var lower = trimmed.toLowerCase();
+  for (var i = 0; i < BANNED_WORDS.length; i++) {
+    if (lower.indexOf(BANNED_WORDS[i]) !== -1) {
+      return 'Please enter your real name to continue.';
+    }
+  }
+
+  // Looks good
+  return null;
+}
+
 function startRound(){
   const name=document.getElementById('pName').value.trim();
   const isPro = document.getElementById('pPro').checked;
   const hi = isPro ? 0 : parseFloat(document.getElementById('pHI').value);
-  if(!name){alert('Please enter your name');return;}
+
+  // Validate name
+  var nameError = validateName(name);
+  if (nameError) {
+    // Show error inline rather than an alert
+    var nameInput = document.getElementById('pName');
+    nameInput.style.borderColor = 'rgba(192,57,43,.8)';
+    nameInput.style.background  = 'rgba(192,57,43,.08)';
+    var errEl = document.getElementById('nameError');
+    if (!errEl) {
+      errEl = document.createElement('div');
+      errEl.id = 'nameError';
+      errEl.style.cssText = 'color:#e87878;font-size:.78rem;margin-top:-8px;margin-bottom:8px;padding:6px 10px;background:rgba(192,57,43,.1);border-radius:6px;border:1px solid rgba(192,57,43,.2);';
+      nameInput.parentNode.insertBefore(errEl, nameInput.nextSibling);
+    }
+    errEl.textContent = '⚠ ' + nameError;
+    errEl.style.display = 'block';
+    nameInput.focus();
+    return;
+  }
+
+  // Clear any previous error
+  var errEl = document.getElementById('nameError');
+  if (errEl) errEl.style.display = 'none';
+  document.getElementById('pName').style.borderColor = '';
+  document.getElementById('pName').style.background  = '';
+
   if(!isPro && (isNaN(hi)||hi<-5)){alert('Please enter your Handicap Index');return;}
   R.name=name; R.hi=hi;
   R.teeKey=document.getElementById('pTee').value;
