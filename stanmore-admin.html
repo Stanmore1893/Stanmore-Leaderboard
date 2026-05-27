@@ -154,6 +154,7 @@ html,body{min-height:100%;background:linear-gradient(160deg,#09132a 0%,var(--nav
     <div class="nav-sec">Competition</div>
     <a class="nav-item" href="stanmore-player-scoring.html"><span class="nav-icon">&#9971;</span><span class="nav-lbl">Score Entry<span class="nav-desc">Enter your round scores</span></span></a>
     <a class="nav-item" href="stanmore-leaderboard-live.html"><span class="nav-icon">&#127942;</span><span class="nav-lbl">Live Leaderboard<span class="nav-desc">Live standings</span></span></a>
+    <a class="nav-item" href="stanmore-results.html"><span class="nav-icon">&#127941;</span><span class="nav-lbl">Results<span class="nav-desc">Final prize list</span></span></a>
     <div class="nav-div"></div>
     <div class="nav-sec">Reference</div>
     <a class="nav-item" href="stanmore-course-guide.html"><span class="nav-icon">&#128203;</span><span class="nav-lbl">Course Guide<span class="nav-desc">Scorecard &amp; handicap calc</span></span></a>
@@ -194,12 +195,18 @@ html,body{min-height:100%;background:linear-gradient(160deg,#09132a 0%,var(--nav
     <!-- QUICK SETTINGS -->
     <div class="sec" style="border-color:rgba(212,160,23,.4);background:rgba(212,160,23,.06);">
       <div class="sec-title" style="color:var(--gold-lt)">&#9889; Quick Settings</div>
-      <div class="sec-desc">Changes here update the competition name shown across all apps.</div>
+      <div class="sec-desc">Push announcements appear as banners on the leaderboard and score entry pages instantly.</div>
       <label class="slabel">Competition Name</label>
       <input class="finp" id="quickName" type="text" placeholder="e.g. Seniors Open 2025">
-      <label class="slabel">Announcement / Ticker</label>
-      <input class="finp" id="quickTicker" type="text" placeholder="e.g. Prize presentation at 6:30 PM">
-      <button class="save-btn" onclick="saveQuick()">&#9889; Apply Changes</button>
+      <label class="slabel">&#128226; Push Announcement</label>
+      <input class="finp" id="quickTicker" type="text" placeholder="e.g. ⚠️ Tee times delayed 30 mins">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+        <button class="save-btn" onclick="saveQuick()">&#9889; Push Live</button>
+        <button class="save-btn" style="background:rgba(192,57,43,.6);" onclick="clearAnnouncement()">&#10005; Clear</button>
+      </div>
+      <div class="info-box info-blue" style="margin-top:10px;font-size:.72rem;">
+        &#128276; Announcement shows as a banner on all pages. Clear it when done.
+      </div>
     </div>
 
     <!-- COMPETITIONS -->
@@ -625,6 +632,12 @@ function addComp() {
 }
 
 // ── QUICK SETTINGS ──
+async function clearAnnouncement(){
+  document.getElementById('quickTicker').value = '';
+  await saveQuick();
+  toast('Announcement cleared');
+}
+
 async function saveQuick(){
   var name=document.getElementById('quickName').value.trim();
   var ticker=document.getElementById('quickTicker').value.trim();

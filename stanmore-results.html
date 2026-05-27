@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Stanmore GC · Results</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600;700&family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--navy:#1a3a6b;--navy-dk:#0f2347;--gold:#d4a017;--gold-lt:#f0c040;--cream:#f8f5ef;--text:#141e30;--grey:#8896a8;--green:#2d6e4e;--white:#fff;}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'DM Sans',sans-serif;background:linear-gradient(175deg,#060e1e 0%,#0f2347 18%,#1a3a6b 38%,#162d5c 55%,#1e4a8a 68%,#0f2347 82%,#060e1e 100%);min-height:100vh;color:var(--white);}
+
+/* HEADER */
+.hdr{background:linear-gradient(to right,var(--navy-dk),var(--navy));padding:14px 16px;border-bottom:3px solid var(--gold);}
+.hdr-row{display:flex;align-items:center;justify-content:space-between;max-width:700px;margin:0 auto;}
+.brand{display:flex;align-items:center;gap:10px;}
+.logo-sm{width:38px;height:38px;object-fit:contain;}
+.brand-name{font-family:'Cormorant Garamond',serif;font-size:1.1rem;font-weight:700;color:var(--white);}
+.brand-sub{font-size:.58rem;color:var(--gold-lt);letter-spacing:.14em;text-transform:uppercase;}
+.hdr-btns{display:flex;gap:8px;}
+.hbtn{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.14);color:rgba(255,255,255,.8);border-radius:8px;padding:7px 12px;font-size:.72rem;cursor:pointer;font-family:'DM Sans',sans-serif;}
+
+/* CONTENT */
+.content{max-width:700px;margin:0 auto;padding:16px 15px 60px;}
+
+/* COMP HEADER */
+.comp-hdr{background:rgba(212,160,23,.08);border:1px solid rgba(212,160,23,.2);border-radius:14px;padding:20px 18px;margin-bottom:16px;text-align:center;}
+.comp-name{font-family:'Cormorant Garamond',serif;font-size:1.8rem;font-weight:700;color:var(--gold-lt);margin-bottom:4px;}
+.comp-meta{font-size:.78rem;color:rgba(255,255,255,.55);font-family:'DM Mono',monospace;}
+.comp-date{font-size:.75rem;color:rgba(212,160,23,.6);margin-top:4px;}
+
+/* PODIUM */
+.podium{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:20px;}
+.podium-card{border-radius:14px;padding:16px 12px;text-align:center;position:relative;}
+.podium-card.p1{background:linear-gradient(135deg,rgba(212,160,23,.25),rgba(212,160,23,.1));border:2px solid rgba(212,160,23,.5);}
+.podium-card.p2{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.15);}
+.podium-card.p3{background:rgba(180,100,0,.1);border:1px solid rgba(180,100,0,.25);}
+.pod-trophy{font-size:1.8rem;margin-bottom:6px;}
+.pod-name{font-family:'Cormorant Garamond',serif;font-size:.95rem;font-weight:700;color:var(--white);margin-bottom:3px;line-height:1.2;}
+.pod-pts{font-family:'DM Mono',monospace;font-size:1.5rem;font-weight:500;color:var(--gold-lt);}
+.pod-lbl{font-size:.6rem;color:rgba(255,255,255,.4);text-transform:uppercase;letter-spacing:.1em;}
+.pod-detail{font-size:.68rem;color:rgba(255,255,255,.45);margin-top:4px;font-family:'DM Mono',monospace;}
+
+/* FULL TABLE */
+.results-table{width:100%;border-collapse:collapse;}
+.results-table th{background:var(--navy-dk);color:rgba(212,160,23,.8);font-size:.6rem;letter-spacing:.12em;text-transform:uppercase;padding:9px 10px;text-align:left;}
+.results-table th.r{text-align:right;}
+.results-table td{padding:11px 10px;border-bottom:1px solid rgba(255,255,255,.05);font-size:.85rem;}
+.results-table td.r{text-align:right;font-family:'DM Mono',monospace;}
+.results-table td.nm{font-family:'Cormorant Garamond',serif;font-size:1rem;color:var(--white);}
+.results-table tr:hover td{background:rgba(255,255,255,.03);}
+.pos-badge{display:inline-flex;align-items:center;justify-content:center;width:26px;height:26px;border-radius:50%;font-size:.72rem;font-weight:700;font-family:'DM Mono',monospace;}
+.pos-1{background:rgba(212,160,23,.3);color:var(--gold-lt);}
+.pos-2{background:rgba(180,180,180,.2);color:#d0d0d0;}
+.pos-3{background:rgba(180,100,0,.25);color:#e8a060;}
+.pos-n{background:rgba(255,255,255,.06);color:rgba(255,255,255,.5);}
+.pts-highlight{color:var(--gold-lt);font-weight:700;font-size:1rem;}
+
+/* STATS */
+.stats-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px;}
+.stat-card{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:10px;padding:14px 13px;}
+.stat-label{font-size:.6rem;letter-spacing:.14em;text-transform:uppercase;color:var(--grey);margin-bottom:5px;}
+.stat-val{font-family:'Cormorant Garamond',serif;font-size:1.3rem;font-weight:700;color:var(--white);}
+.stat-sub{font-size:.68rem;color:var(--grey);margin-top:2px;font-family:'DM Mono',monospace;}
+
+/* EXPORT BTNS */
+.export-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px;}
+.exp-btn{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);color:rgba(255,255,255,.8);border-radius:10px;padding:12px;font-family:'DM Sans',sans-serif;font-size:.82rem;font-weight:600;cursor:pointer;text-align:center;transition:all .2s;}
+.exp-btn:hover{background:rgba(212,160,23,.15);border-color:rgba(212,160,23,.3);}
+.wa-btn{background:#25D366;border:none;color:#fff;}
+.wa-btn:hover{background:#1da851;}
+
+/* LOADING */
+.loading{text-align:center;padding:60px 20px;color:var(--grey);}
+.loading-spinner{font-size:2rem;animation:spin 1s linear infinite;display:block;margin-bottom:12px;}
+@keyframes spin{to{transform:rotate(360deg);}}
+
+/* CREDIT */
+.credit{text-align:center;padding:10px 16px 24px;font-size:.7rem;color:rgba(212,160,23,.55);letter-spacing:.1em;}
+.credit strong{color:var(--gold-lt);}
+</style>
+</head>
+<body>
+
+<div class="sgc-burger" onclick="openNav()">&#9776;</div>
+
+<!-- NAV DRAWER -->
+<div class="nav-overlay" id="sgcNavOverlay" onclick="closeNav()"></div>
+<div class="nav-drawer" id="sgcNavDrawer">
+  <div class="nav-head"><img class="nav-logo" src="club-logo.png" alt=""><div><div class="nav-club-name">Stanmore Golf Club</div><div class="nav-club-sub">Est. 1893</div></div></div>
+  <div class="nav-items">
+    <div class="nav-sec">Main</div>
+    <a class="nav-item" href="stanmore-hub.html"><span class="nav-icon">&#127968;</span><span class="nav-lbl">Hub<span class="nav-desc">Home &amp; QR codes</span></span></a>
+    <div class="nav-div"></div>
+    <div class="nav-sec">Competition</div>
+    <a class="nav-item" href="stanmore-player-scoring.html"><span class="nav-icon">&#9971;</span><span class="nav-lbl">Score Entry<span class="nav-desc">Enter your round scores</span></span></a>
+    <a class="nav-item" href="stanmore-leaderboard-live.html"><span class="nav-icon">&#127942;</span><span class="nav-lbl">Live Leaderboard<span class="nav-desc">Live standings</span></span></a>
+    <a class="nav-item active" href="stanmore-results.html"><span class="nav-icon">&#127941;</span><span class="nav-lbl">Results<span class="nav-desc">Final prize list</span></span></a>
+    <div class="nav-div"></div>
+    <div class="nav-sec">Reference</div>
+    <a class="nav-item" href="stanmore-course-guide.html"><span class="nav-icon">&#128203;</span><span class="nav-lbl">Course Guide<span class="nav-desc">Scorecard &amp; handicap calc</span></span></a>
+    <div class="nav-div"></div>
+    <div class="nav-sec">Management</div>
+    <a class="nav-item" href="stanmore-admin.html"><span class="nav-icon">&#128274;</span><span class="nav-lbl">Admin Panel<span class="nav-desc">Competition management</span></span></a>
+  </div>
+  <div class="nav-foot">Stanmore Golf Club · Digital Hub<br>stanmore1893.github.io</div>
+</div>
+
+<div class="hdr">
+  <div class="hdr-row">
+    <div class="brand">
+      <img class="logo-sm" src="club-logo.png" alt="">
+      <div><div class="brand-name">Results</div><div class="brand-sub">Prize List</div></div>
+    </div>
+    <div class="hdr-btns">
+      <button class="hbtn" onclick="exportPDF()">&#128462; PDF</button>
+      <button class="hbtn" onclick="exportCSV()">&#128202; CSV</button>
+      <button class="hbtn" onclick="loadResults()">&#8635;</button>
+    </div>
+  </div>
+</div>
+
+<div class="content">
+  <div id="loadingState" class="loading">
+    <span class="loading-spinner">&#9971;</span>
+    Loading results…
+  </div>
+  <div id="resultsContent" style="display:none;">
+
+    <!-- Competition header -->
+    <div class="comp-hdr">
+      <div class="comp-name" id="rCompName">Competition Results</div>
+      <div class="comp-meta" id="rCompMeta"></div>
+      <div class="comp-date" id="rCompDate"></div>
+    </div>
+
+    <!-- WhatsApp share -->
+    <button class="exp-btn wa-btn" onclick="shareResults()" style="width:100%;margin-bottom:12px;">
+      📱 Share Results via WhatsApp
+    </button>
+
+    <!-- Podium top 3 -->
+    <div class="podium" id="rPodium"></div>
+
+    <!-- Stats row -->
+    <div class="stats-grid" id="rStats"></div>
+
+    <!-- Full results table -->
+    <div style="background:rgba(0,0,0,.2);border:1px solid rgba(255,255,255,.08);border-radius:14px;overflow:hidden;margin-bottom:16px;">
+      <table class="results-table">
+        <thead><tr>
+          <th style="width:40px">Pos</th>
+          <th>Player</th>
+          <th class="r">HCP</th>
+          <th class="r">Gross</th>
+          <th class="r">Nett</th>
+          <th class="r">Pts</th>
+        </tr></thead>
+        <tbody id="rTableBody"></tbody>
+      </table>
+    </div>
+
+  </div>
+</div>
+
+<div class="credit">Designed &amp; built by <strong>Alex Persaud</strong> &nbsp;·&nbsp; PGA Professional</div>
+
+<div class="toast" id="toast" style="position:fixed;bottom:28px;left:50%;transform:translateX(-50%) translateY(16px);background:var(--navy-dk);border:1px solid var(--gold);color:var(--gold-lt);padding:10px 20px;border-radius:20px;font-size:.8rem;font-weight:600;opacity:0;transition:all .3s;pointer-events:none;z-index:999;white-space:nowrap;"></div>
+
+<style>
+.nav-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.65);z-index:500;backdrop-filter:blur(4px);}
+.nav-overlay.open{display:block;}
+.nav-drawer{position:fixed;top:0;right:0;bottom:0;width:300px;background:linear-gradient(180deg,#09132a 0%,#0f2347 60%,#1a3a6b 100%);border-left:2px solid rgba(212,160,23,.3);z-index:501;transform:translateX(100%);transition:transform .3s cubic-bezier(.4,0,.2,1);display:flex;flex-direction:column;overflow:hidden;box-shadow:-4px 0 30px rgba(0,0,0,.5);}
+.nav-drawer.open{transform:translateX(0);}
+.nav-head{padding:22px 18px 16px;border-bottom:1px solid rgba(212,160,23,.25);display:flex;align-items:center;gap:12px;background:rgba(0,0,0,.3);}
+.nav-logo{width:46px;height:46px;object-fit:contain;flex-shrink:0;}
+.nav-club-name{font-family:'Cormorant Garamond',serif;font-size:1.1rem;font-weight:700;color:#fff;line-height:1.2;}
+.nav-club-sub{font-size:.62rem;color:rgba(212,160,23,.85);letter-spacing:.18em;text-transform:uppercase;margin-top:3px;}
+.nav-items{flex:1;padding:12px 0;overflow-y:auto;}
+.nav-item{display:flex;align-items:center;gap:14px;padding:16px 20px;text-decoration:none;color:#fff;font-family:'DM Sans',sans-serif;font-size:1rem;font-weight:500;transition:all .2s;border-right:3px solid transparent;}
+.nav-item:active{background:rgba(255,255,255,.08);}
+.nav-item.active{background:rgba(212,160,23,.15);color:#f0c040;border-right-color:#d4a017;font-weight:600;}
+.nav-icon{font-size:1.3rem;width:30px;text-align:center;flex-shrink:0;}
+.nav-lbl{line-height:1.3;}
+.nav-desc{font-size:.72rem;color:rgba(255,255,255,.55);display:block;margin-top:2px;font-weight:400;}
+.nav-item.active .nav-desc{color:rgba(212,160,23,.65);}
+.nav-div{height:1px;background:rgba(255,255,255,.1);margin:6px 18px;}
+.nav-sec{font-size:.65rem;letter-spacing:.16em;text-transform:uppercase;color:rgba(255,255,255,.4);padding:10px 20px 4px;font-family:'DM Sans',sans-serif;font-weight:600;}
+.nav-foot{padding:14px 18px;border-top:1px solid rgba(255,255,255,.1);font-size:.68rem;color:rgba(255,255,255,.3);font-family:'DM Mono',monospace;line-height:1.7;}
+.sgc-burger{position:fixed;top:12px;right:12px;z-index:499;width:42px;height:42px;background:#1a3a6b;border:1.5px solid rgba(212,160,23,.5);border-radius:9px;display:flex;align-items:center;justify-content:center;cursor:pointer;box-shadow:0 2px 12px rgba(0,0,0,.5);color:#fff;font-size:1.3rem;line-height:1;}
+</style>
+
+<script>
+var PROXY_URL = 'https://stanmore-proxy.vercel.app/api/proxy';
+var _cache = {};
+var SGC = {
+  _fetch: async function(url, opts, retries) {
+    retries = retries || 3;
+    for (var i = 0; i < retries; i++) {
+      try { var res = await fetch(url, opts); if (res.ok) return res; } catch(e) {
+        if (i < retries - 1) await new Promise(function(r){ setTimeout(r, 800*(i+1)); });
+      }
+    }
+    return null;
+  },
+  _read: async function() {
+    var res = await SGC._fetch(PROXY_URL, { method:'GET' });
+    if (!res) return _cache;
+    try { var d = await res.json(); var r = d.record||d; _cache=r; return r; } catch(e) { return _cache; }
+  },
+  get: async function(key) { var r=await SGC._read(); return r[key]!==undefined?r[key]:null; }
+};
+
+var _results = [];
+var _compName = '';
+var _compMeta = '';
+
+async function loadResults() {
+  document.getElementById('loadingState').style.display = 'block';
+  document.getElementById('resultsContent').style.display = 'none';
+
+  try {
+    var record = await SGC._read();
+    var scores = Array.isArray(record.scores) ? record.scores : [];
+    var settings = record.settings || {};
+    var competitions = Array.isArray(record.competitions) ? record.competitions : [];
+
+    // Get active competition info
+    var activeComp = competitions.find(function(c){ return c.active; }) || {};
+    _compName = activeComp.name || settings.name || 'Competition Results';
+    _compMeta = activeComp.format ? (activeComp.format.replace(/_/g,' ') + ' · ' + (activeComp.tee||'').replace('_m',' Men').replace('_f',' Ladies').replace('yellow','Yellow').replace('white','White').replace('red','Red')) : '';
+
+    // Filter finished players only, sort by points
+    _results = scores
+      .filter(function(p){ return p.fin; })
+      .sort(function(a,b){ return b.pts - a.pts || (a.gross||0) - (b.gross||0); });
+
+    renderResults();
+  } catch(e) {
+    document.getElementById('loadingState').innerHTML = '<span style="color:#e87878;">Could not load results. Please try again.</span>';
+  }
+}
+
+function renderResults() {
+  if (!_results.length) {
+    document.getElementById('loadingState').innerHTML = '<span style="color:var(--grey)">No finished players yet.</span>';
+    return;
+  }
+
+  document.getElementById('loadingState').style.display = 'none';
+  document.getElementById('resultsContent').style.display = 'block';
+
+  // Header
+  document.getElementById('rCompName').textContent = _compName;
+  document.getElementById('rCompMeta').textContent = _compMeta;
+  document.getElementById('rCompDate').textContent = new Date().toLocaleDateString('en-GB',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
+
+  // Podium top 3
+  var podium = document.getElementById('rPodium');
+  podium.innerHTML = '';
+  var trophies = ['🥇','🥈','🥉'];
+  var classes = ['p1','p2','p3'];
+  _results.slice(0,3).forEach(function(p,i){
+    var div = document.createElement('div');
+    div.className = 'podium-card ' + classes[i];
+    div.innerHTML =
+      '<div class="pod-trophy">' + trophies[i] + '</div>' +
+      '<div class="pod-name">' + p.name + '</div>' +
+      '<div class="pod-pts">' + p.pts + '</div>' +
+      '<div class="pod-lbl">points</div>' +
+      '<div class="pod-detail">Gross ' + (p.gross||0) + ' · HCP ' + (p.ph||p.hcp||0) + '</div>';
+    podium.appendChild(div);
+  });
+
+  // Stats
+  var totalPlayers = _results.length;
+  var avgPts = Math.round(_results.reduce(function(s,p){return s+p.pts;},0) / totalPlayers);
+  var highGross = Math.max.apply(null, _results.map(function(p){return p.gross||0;}));
+  var lowGross  = Math.min.apply(null, _results.map(function(p){return p.gross||0;}));
+  document.getElementById('rStats').innerHTML =
+    '<div class="stat-card"><div class="stat-label">Players finished</div><div class="stat-val">' + totalPlayers + '</div></div>' +
+    '<div class="stat-card"><div class="stat-label">Average points</div><div class="stat-val">' + avgPts + '</div></div>' +
+    '<div class="stat-card"><div class="stat-label">Best gross</div><div class="stat-val">' + lowGross + '</div><div class="stat-sub">lowest score</div></div>' +
+    '<div class="stat-card"><div class="stat-label">Highest gross</div><div class="stat-val">' + highGross + '</div><div class="stat-sub">highest score</div></div>';
+
+  // Full table
+  var tbody = document.getElementById('rTableBody');
+  tbody.innerHTML = '';
+  _results.forEach(function(p, i) {
+    var pos = i + 1;
+    var posCls = pos===1?'pos-1':pos===2?'pos-2':pos===3?'pos-3':'pos-n';
+    var ph = p.ph||p.hcp||0;
+    var nett = p.nett || ((p.gross||0) - ph);
+    var tr = document.createElement('tr');
+    tr.innerHTML =
+      '<td><span class="pos-badge ' + posCls + '">' + pos + '</span></td>' +
+      '<td class="nm">' + p.name + (p.competition ? '<br><span style="font-size:.65rem;color:var(--grey)">' + p.competition + '</span>' : '') + '</td>' +
+      '<td class="r">' + ph + '</td>' +
+      '<td class="r">' + (p.gross||0) + '</td>' +
+      '<td class="r">' + nett + '</td>' +
+      '<td class="r pts-highlight">' + p.pts + '</td>';
+    tbody.appendChild(tr);
+  });
+}
+
+function shareResults() {
+  if (!_results.length) return;
+  var top3 = _results.slice(0,3).map(function(p,i){
+    return (i===0?'🥇':i===1?'🥈':'🥉') + ' ' + p.name + ' — ' + p.pts + ' pts';
+  }).join('\n');
+  var msg = '⛳ ' + _compName + ' Results\n\n' + top3 + '\n\n🔗 ' +
+    window.location.origin + '/Stanmore-Leaderboard/stanmore-results.html';
+  window.open('https://wa.me/?text=' + encodeURIComponent(msg), '_blank');
+}
+
+function exportPDF() {
+  if (!_results.length) { alert('No results to export'); return; }
+  var rows = _results.map(function(p,i){
+    var ph = p.ph||p.hcp||0;
+    var nett = p.nett||((p.gross||0)-ph);
+    var bg = i%2===0?'#fff':'#f8f5ef';
+    var fw = i<3?'bold':'normal';
+    return '<tr style="background:'+bg+';font-weight:'+fw+';">' +
+      '<td style="padding:9px 12px;border-bottom:1px solid #e8e0d4;text-align:center;">'+(i+1)+'</td>' +
+      '<td style="padding:9px 12px;border-bottom:1px solid #e8e0d4;font-family:Georgia,serif;">'+(p.name)+'</td>' +
+      '<td style="padding:9px 12px;border-bottom:1px solid #e8e0d4;text-align:center;font-family:monospace;">'+ph+'</td>' +
+      '<td style="padding:9px 12px;border-bottom:1px solid #e8e0d4;text-align:center;font-family:monospace;">'+(p.gross||0)+'</td>' +
+      '<td style="padding:9px 12px;border-bottom:1px solid #e8e0d4;text-align:center;font-family:monospace;">'+nett+'</td>' +
+      '<td style="padding:9px 12px;border-bottom:1px solid #e8e0d4;text-align:center;font-family:monospace;font-weight:bold;font-size:1.05rem;">'+(p.pts)+'</td>' +
+      '</tr>';
+  }).join('');
+
+  var w = window.open('','_blank');
+  w.document.write('<!DOCTYPE html><html><head><meta charset="UTF-8"><title>'+_compName+' Results</title>' +
+    '<style>@page{size:A4;margin:20mm 15mm;}body{font-family:Arial,sans-serif;color:#141e30;}' +
+    '.hdr{background:#0f2347;color:#fff;padding:24px 28px;display:flex;align-items:center;gap:16px;}' +
+    '.hdr img{width:56px;height:56px;object-fit:contain;}' +
+    '.gold-bar{height:4px;background:linear-gradient(to right,#d4a017,#f0c040,#d4a017);}' +
+    'table{width:100%;border-collapse:collapse;margin:16px 0;}' +
+    'th{background:#0f2347;color:rgba(212,160,23,.9);padding:9px 12px;font-size:.7rem;letter-spacing:.12em;text-transform:uppercase;text-align:center;}' +
+    'th:nth-child(2){text-align:left;}' +
+    '.footer{margin-top:24px;padding-top:12px;border-top:1px solid #e8e0d4;display:flex;justify-content:space-between;font-size:.7rem;color:#8896a8;}' +
+    '.no-print{display:none;}@media print{.no-print{display:none;}}' +
+    '</style></head><body>' +
+    '<div class="hdr"><img src="club-logo.png" alt=""><div>' +
+    '<div style="font-family:Georgia,serif;font-size:1.4rem;font-weight:bold;color:#f0c040;">Stanmore Golf Club</div>' +
+    '<div style="font-size:1rem;color:rgba(255,255,255,.8);margin-top:2px;">'+_compName+' — Final Results</div>' +
+    '<div style="font-size:.75rem;color:rgba(255,255,255,.5);margin-top:3px;font-family:monospace;">' + new Date().toLocaleDateString('en-GB',{weekday:'long',day:'numeric',month:'long',year:'numeric'}) + '</div>' +
+    '</div></div><div class="gold-bar"></div>' +
+    '<div style="padding:0 28px 28px;">' +
+    '<table><thead><tr><th style="width:50px">Pos</th><th style="text-align:left">Player</th><th>P.HCP</th><th>Gross</th><th>Nett</th><th>Points</th></tr></thead>' +
+    '<tbody>'+rows+'</tbody></table>' +
+    '<div class="footer"><span>Stanmore Golf Club · '+_compName+'</span><span>Generated '+new Date().toLocaleString('en-GB')+'</span></div>' +
+    '</div>' +
+    '<div class="no-print" style="position:fixed;bottom:20px;right:20px;">' +
+    '<button onclick="window.print()" style="background:#d4a017;color:#0f2347;border:none;border-radius:8px;padding:12px 24px;font-size:.9rem;font-weight:700;cursor:pointer;">Print / Save as PDF</button>' +
+    '</div></body></html>');
+  w.document.close();
+}
+
+function exportCSV() {
+  if (!_results.length) { alert('No results to export'); return; }
+  var rows = [['Position','Player','Playing HCP','Gross','Nett','Points','Competition']];
+  _results.forEach(function(p,i){
+    var ph = p.ph||p.hcp||0;
+    rows.push([i+1, p.name, ph, p.gross||0, p.nett||((p.gross||0)-ph), p.pts, p.competition||_compName]);
+  });
+  var csv = '# ' + _compName + ' Results\n\n' + rows.map(function(r){return r.map(function(v){return '"'+v+'"';}).join(',');}).join('\n');
+  var a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob([csv],{type:'text/csv'}));
+  a.download = _compName.replace(/\s+/g,'-').toLowerCase()+'-results.csv';
+  a.click();
+}
+
+function toast(msg){var t=document.getElementById('toast');t.textContent=msg;t.style.opacity='1';t.style.transform='translateX(-50%) translateY(0)';setTimeout(function(){t.style.opacity='0';t.style.transform='translateX(-50%) translateY(16px)';},2500);}
+function openNav(){document.getElementById('sgcNavDrawer').classList.add('open');document.getElementById('sgcNavOverlay').classList.add('open');document.body.style.overflow='hidden';}
+function closeNav(){document.getElementById('sgcNavDrawer').classList.remove('open');document.getElementById('sgcNavOverlay').classList.remove('open');document.body.style.overflow='';}
+document.addEventListener('keydown',function(e){if(e.key==='Escape')closeNav();});
+
+window.addEventListener('load', loadResults);
+</script>
+</body>
+</html>
