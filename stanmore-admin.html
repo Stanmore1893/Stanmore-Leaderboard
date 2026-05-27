@@ -716,6 +716,9 @@ function addComp() {
     matchplay:fmtInfo.matchplay||false,
     allowance:finalAllowance!==null?finalAllowance:(fmtInfo.allowance||0.95),
     customAllowance:customAllowance,
+    ntpHoles:  getSelectValues('ntpSelect'),
+    ntp2Holes: getSelectValues('ntp2Select'),
+    ldHoles:   getSelectValues('ldSelect'),
   });
   document.getElementById('ncName').value='';
   document.getElementById('ncDate').value='';

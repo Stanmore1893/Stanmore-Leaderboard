@@ -378,11 +378,13 @@ let players=[], tab='all', refreshTimer=null;
 
 window.addEventListener('load', async ()=>{
   document.getElementById('compDate').textContent=new Date().toLocaleDateString('en-GB',{weekday:'short',day:'numeric',month:'long',year:'numeric'});
+  loadCompetitionsLB();
   // Run independently so a settings failure doesn't block scores
   loadAdminSettings().catch(e => console.warn('Settings load failed:', e));
   loadScores();
   refreshTimer = setInterval(() => {
     loadAdminSettings().catch(e => console.warn('Settings refresh failed:', e));
+    loadCompetitionsLB();
     loadScores();
   }, 15000);
 });
