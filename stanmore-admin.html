@@ -291,7 +291,20 @@ html,body{min-height:100%;background:linear-gradient(160deg,#09132a 0%,var(--nav
         </label>
 
         <label class="slabel">Notes (optional)</label>
-        <input class="finp" id="ncNotes" type="text" placeholder="e.g. Shotgun start 8:30am" style="margin-bottom:10px">
+        <input class="finp" id="ncNotes" type="text" placeholder="e.g. Shotgun start 8:30am" style="margin-bottom:12px">
+
+        <label class="slabel">🎯 Special Prizes (optional)</label>
+        <div style="background:rgba(0,0,0,.15);border:1px solid rgba(255,255,255,.07);border-radius:10px;padding:12px;margin-bottom:12px;">
+          <div style="font-size:.72rem;color:var(--grey);margin-bottom:10px;line-height:1.6;">Select which holes have special prizes. Players will see a flag icon on those holes and can mark if they think they won.</div>
+          <div style="margin-bottom:10px;">
+            <label class="slabel" style="margin-bottom:6px;">📍 Nearest the Pin — select holes</label>
+            <div id="ntpHoles" style="display:flex;flex-wrap:wrap;gap:6px;"></div>
+          </div>
+          <div>
+            <label class="slabel" style="margin-bottom:6px;">🏌️ Longest Drive — select holes</label>
+            <div id="ldHoles" style="display:flex;flex-wrap:wrap;gap:6px;"></div>
+          </div>
+        </div>
 
         <input type="hidden" id="ncHoles" value="18">
         <input type="hidden" id="ncNineHole" value="">
@@ -492,6 +505,46 @@ function setCompType(type) {
   }
   onFmtChange();
 }
+// ── SPECIAL PRIZES HOLE SELECTOR ──
+var _ntpHoles = []; // selected nearest the pin holes
+var _ldHoles  = []; // selected longest drive holes
+
+function initPrizeHoles() {
+  ['ntpHoles','ldHoles'].forEach(function(containerId) {
+    var isNtp = containerId === 'ntpHoles';
+    var container = document.getElementById(containerId);
+    if (!container) return;
+    container.innerHTML = '';
+    for (var h = 1; h <= 18; h++) {
+      var btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'prize-hole-btn';
+      btn.textContent = h;
+      btn.dataset.hole = h;
+      btn.dataset.type = isNtp ? 'ntp' : 'ld';
+      btn.onclick = togglePrizeHole;
+      container.appendChild(btn);
+    }
+  });
+}
+
+function togglePrizeHole() {
+  var hole = parseInt(this.dataset.hole);
+  var type = this.dataset.type;
+  var arr  = type === 'ntp' ? _ntpHoles : _ldHoles;
+  var cls  = type === 'ntp' ? 'active-ntp' : 'active-ld';
+  var idx  = arr.indexOf(hole);
+  if (idx >= 0) { arr.splice(idx,1); this.classList.remove(cls); }
+  else          { arr.push(hole);    this.classList.add(cls); }
+}
+
+function resetPrizeHoles() {
+  _ntpHoles = []; _ldHoles = [];
+  document.querySelectorAll('.prize-hole-btn').forEach(function(b){
+    b.classList.remove('active-ntp','active-ld');
+  });
+}
+
 function setHoles(val) {
   var idMap = {'18':'holes18Btn','front9':'holes9fBtn','back9':'holes9bBtn','10':'holes10Btn','12':'holes12Btn'};
   Object.keys(idMap).forEach(function(v) {
@@ -624,7 +677,7 @@ function addComp() {
   document.getElementById('ncName').value='';
   document.getElementById('ncDate').value='';
   document.getElementById('ncNotes').value='';
-  setCompType('individual'); setHoles('18'); setTee('white');
+  setCompType('individual'); setHoles('18'); setTee('white'); resetPrizeHoles();
   document.getElementById('ncLadies').checked=false;
   document.getElementById('ncFmtSelect').value='ind_stableford';
   onFmtChange();
@@ -774,7 +827,7 @@ function toast(msg){
 }
 
 // ── INIT ──
-function onAdminLoad(){ loadLocalSettings(); loadScores(); loadCompetitions(); loadProfanityList(); }
+function onAdminLoad(){ loadLocalSettings(); loadScores(); loadCompetitions(); loadProfanityList(); initPrizeHoles(); }
 </script>
   <div style="text-align:center;padding:14px 16px;border-top:1px solid rgba(212,160,23,.15);">
     <div style="display:inline-flex;align-items:center;gap:10px;">

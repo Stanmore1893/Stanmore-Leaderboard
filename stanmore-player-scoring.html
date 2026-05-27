@@ -137,6 +137,14 @@ html,body{min-height:100%;background:var(--cream);font-family:'DM Sans',sans-ser
 .ann-banner{display:none;background:linear-gradient(135deg,rgba(212,160,23,.2),rgba(212,160,23,.1));border:1px solid rgba(212,160,23,.4);border-radius:10px;padding:12px 14px;margin-bottom:12px;font-size:.88rem;color:var(--gold-lt,#f0c040);line-height:1.6;text-align:center;animation:ann-in .4s ease;}
 .ann-banner.show{display:block;}
 @keyframes ann-in{from{opacity:0;transform:translateY(-8px);}to{opacity:1;transform:translateY(0);}}
+
+/* ── SPECIAL PRIZE FLAGS ── */
+.prize-flag{display:inline-flex;align-items:center;gap:5px;background:rgba(212,160,23,.15);border:1px solid rgba(212,160,23,.3);border-radius:6px;padding:3px 8px;font-size:.72rem;color:var(--gold-lt,#f0c040);margin-left:8px;animation:flag-pulse 2s ease-in-out infinite;}
+@keyframes flag-pulse{0%,100%{opacity:.7;}50%{opacity:1;}}
+.prize-claim{margin-top:10px;background:rgba(26,58,107,.25);border:1px solid rgba(26,58,107,.4);border-radius:9px;padding:10px 12px;}
+.prize-claim label{display:flex;align-items:center;gap:8px;font-size:.82rem;color:rgba(255,255,255,.8);cursor:pointer;margin-bottom:6px;}
+.prize-claim label:last-child{margin-bottom:0;}
+.prize-claim input[type=checkbox]{width:16px;height:16px;accent-color:#d4a017;flex-shrink:0;}
 </style>
 </head>
 <body>
@@ -598,6 +606,22 @@ function renderHole(){
   }
   updatePtsPreview();
   document.getElementById('prevBtn').disabled=(R.holeStep===0);
+
+  // Show special prize flags
+  var comp = window._activeComp || {};
+  var ntpHoles = comp.ntpHoles || [];
+  var ldHoles  = comp.ldHoles  || [];
+  var holeNum  = R.curIdx + 1;
+  var isNtp = ntpHoles.indexOf(holeNum) >= 0;
+  var isLd  = ldHoles.indexOf(holeNum)  >= 0;
+  document.getElementById('ntpFlag').style.display  = isNtp ? 'inline-flex' : 'none';
+  document.getElementById('ldFlag').style.display   = isLd  ? 'inline-flex' : 'none';
+  document.getElementById('ntpClaim').style.display = isNtp ? 'block' : 'none';
+  document.getElementById('ldClaim').style.display  = isLd  ? 'block' : 'none';
+  document.getElementById('prizeClaim').style.display = (isNtp || isLd) ? 'block' : 'none';
+  // Reset checkboxes on new hole
+  if (document.getElementById('ntpCheck')) document.getElementById('ntpCheck').checked = false;
+  if (document.getElementById('ldCheck'))  document.getElementById('ldCheck').checked  = false;
   const isLast=(R.startIdx===0&&i===17)||(R.startIdx===9&&i===8);
   document.getElementById('nextBtn').textContent=isLast?'Finish ✓':'Next →';
   renderDone();
@@ -662,6 +686,14 @@ function renderDone(){
 }
 
 function nextHole(){
+  // Save prize claims for current hole before moving
+  if (!R.prizeClaims) R.prizeClaims = {ntp:[], ld:[]};
+  var holeNum = R.curIdx + 1;
+  var ntpEl = document.getElementById('ntpCheck');
+  var ldEl  = document.getElementById('ldCheck');
+  if (ntpEl && ntpEl.checked && R.prizeClaims.ntp.indexOf(holeNum) < 0) R.prizeClaims.ntp.push(holeNum);
+  if (ldEl  && ldEl.checked  && R.prizeClaims.ld.indexOf(holeNum)  < 0) R.prizeClaims.ld.push(holeNum);
+
   if(R.holeStep >= R.holeIndexes.length - 1){finishRound();return;}
   R.holeStep++;
   R.curIdx = R.holeIndexes[R.holeStep];

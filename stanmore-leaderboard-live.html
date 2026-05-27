@@ -121,6 +121,19 @@ html,body{height:100%;background:var(--cream);font-family:sans-serif;color:var(-
 .nav-foot{padding:14px 18px;border-top:1px solid rgba(255,255,255,.1);font-size:.68rem;color:rgba(255,255,255,.3);font-family:monospace;line-height:1.7;}
 .sgc-burger{position:fixed;top:12px;right:12px;left:auto;z-index:499;width:42px;height:42px;background:#1a3a6b;border:1.5px solid rgba(212,160,23,.5);border-radius:9px;display:flex;align-items:center;justify-content:center;cursor:pointer;box-shadow:0 2px 12px rgba(0,0,0,.5);color:#fff;font-size:1.3rem;line-height:1;}
 .sgc-burger:active{background:rgba(212,160,23,.3);}
+
+/* ── TEAMS ── */
+.team-card{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:12px;padding:14px 13px;margin-bottom:10px;}
+.team-name{font-family:'Cormorant Garamond',serif;font-size:1.05rem;font-weight:700;color:var(--white);margin-bottom:8px;display:flex;align-items:center;justify-content:space-between;}
+.team-pts{font-family:'DM Mono',monospace;font-size:1.3rem;color:var(--gold-lt);font-weight:500;}
+.team-member{display:flex;align-items:center;justify-content:space-between;padding:5px 0;border-top:1px solid rgba(255,255,255,.05);font-size:.8rem;color:rgba(255,255,255,.65);}
+.team-member:first-of-type{border-top:none;}
+.prize-section-title{font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;color:rgba(212,160,23,.8);font-weight:600;margin-bottom:8px;display:flex;align-items:center;gap:6px;}
+.prize-card{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:10px;padding:12px 13px;margin-bottom:8px;display:flex;align-items:center;justify-content:space-between;}
+.prize-hole{font-family:'DM Mono',monospace;font-size:.78rem;color:var(--grey);background:rgba(255,255,255,.07);border-radius:5px;padding:2px 8px;}
+.prize-claimants{font-size:.8rem;color:rgba(255,255,255,.8);}
+.prize-none{font-size:.78rem;color:var(--grey);padding:8px 0;}
+.hole-indicator{display:inline-flex;align-items:center;justify-content:center;width:20px;height:20px;border-radius:50%;background:rgba(45,110,78,.3);border:1px solid rgba(45,110,78,.5);font-size:.65rem;font-family:'DM Mono',monospace;color:#8ee0b4;font-weight:600;}
 </style>
 </head>
 <body>
@@ -178,10 +191,12 @@ html,body{height:100%;background:var(--cream);font-family:sans-serif;color:var(-
     <div style="font-size:.7rem;color:var(--gold-lt);font-family:monospace;text-align:center;" id="tickerMsg"></div>
   </div>
 
-  <div class="tab-bar">
+  <div class="tab-bar" style="overflow-x:auto;white-space:nowrap;">
     <div class="tab active" onclick="setTab('all',this)">All</div>
     <div class="tab" onclick="setTab('inplay',this)">On Course</div>
     <div class="tab" onclick="setTab('finished',this)">Finished</div>
+    <div class="tab" onclick="setTab('teams',this)">Teams</div>
+    <div class="tab" onclick="setTab('prizes',this)">🎯 Prizes</div>
   </div>
   <div class="col-hdr">
     <div class="ch">Pos</div><div class="ch">Player</div>
@@ -394,6 +409,14 @@ async function loadAdminSettings() {
   } catch(e) { console.warn('loadAdminSettings error:', e.message); }
 }
 
+var _competitions = [];
+async function loadCompetitionsLB() {
+  try {
+    var c = await SGC.get('competitions');
+    _competitions = Array.isArray(c) ? c : [];
+  } catch(e) { _competitions = []; }
+}
+
 async function loadScores(){
   try{
     const r = await SGC.get('scores');
@@ -440,7 +463,10 @@ function render(){
     card.style.animationDelay=(i*.025)+'s';
     const posH=rank<=3?`<div class="ppos top">${MEDALS[rank-1]}</div>`:`<div class="ppos">${rank}</div>`;
     var finLabel = p.fin ? (p.nineHole==='front'?'✓ F9':p.nineHole==='back'?'✓ B9':'✓ F') : null;
-    const thruH=p.fin?'<div class="pthru"><span class="tv fin">'+finLabel+'</span></div>':`<div class="pthru"><span class="tv">${p.thru||0}</span><span class="tl">Thru</span></div>`;
+    var thruDisplay = p.fin
+      ? '<div class="pthru"><span class="tv fin">'+finLabel+'</span></div>'
+      : '<div class="pthru"><span class="hole-indicator">'+(p.thru||0)+'</span><span class="tl" style="font-size:.58rem;margin-top:2px;">hole</span></div>';
+    const thruH = thruDisplay;
     const ph=p.ph||p.hcp||0;
     const teeLabel=p.teeKey?(p.teeKey.includes('white')?'W':p.teeKey.includes('yellow')?'Y':'R'):'';
     const compTag=p.competition?` · ${p.competition}`:'';
@@ -512,6 +538,103 @@ function shareUrl(){
 
 function stamp(){document.getElementById('updTxt').textContent='Updated '+new Date().toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit',second:'2-digit'});}
 
+
+// ── TEAMS LEADERBOARD ──
+function renderTeams() {
+  var body = document.getElementById('teamsBody');
+  if (!body) return;
+
+  // Group players by team name
+  var teams = {};
+  players.forEach(function(p) {
+    var teamName = p.team || null;
+    if (!teamName) return;
+    if (!teams[teamName]) teams[teamName] = { name:teamName, members:[], totalPts:0, bestPts:0 };
+    teams[teamName].members.push(p);
+    teams[teamName].totalPts += p.pts || 0;
+    teams[teamName].bestPts = Math.max(teams[teamName].bestPts, p.pts||0);
+  });
+
+  var teamList = Object.values(teams).sort(function(a,b){ return b.totalPts - a.totalPts; });
+
+  if (!teamList.length) {
+    body.innerHTML = '<div style="text-align:center;padding:28px;color:var(--grey);font-size:.85rem;">No teams entered yet.<br><span style="font-size:.75rem;">Players can enter a team name when scoring.</span></div>';
+    return;
+  }
+
+  body.innerHTML = '';
+  teamList.forEach(function(team, i) {
+    var card = document.createElement('div');
+    card.className = 'team-card';
+    var membersHtml = team.members.sort(function(a,b){return b.pts-a.pts;}).map(function(m){
+      var thru = m.fin ? '<span style="color:var(--green-lt)">Fin</span>' : (m.thru||0)+' holes';
+      return '<div class="team-member"><span>'+m.name+'</span><span style="font-family:monospace">'+m.pts+' pts - '+thru+'</span></div>';
+    }).join('');
+    card.innerHTML =
+      '<div class="team-name"><span>'+(i===0?'🥇':i===1?'🥈':i===2?'🥉':'')+' '+team.name+'</span><span class="team-pts">'+team.totalPts+'</span></div>' +
+      membersHtml;
+    body.appendChild(card);
+  });
+}
+
+// ── PRIZES LEADERBOARD ──
+function renderPrizes() {
+  renderNTP();
+  renderLD();
+}
+
+function renderNTP() {
+  var body = document.getElementById('ntpBody');
+  if (!body) return;
+
+  // Find NTP holes from active competition
+  var activeComp = _competitions && _competitions.find ? _competitions.find(function(c){return c.active;}) : null;
+  var ntpHoles = activeComp && activeComp.ntpHoles ? activeComp.ntpHoles : [];
+
+  var html = '<div class="prize-section-title">📍 Nearest the Pin</div>';
+  if (!ntpHoles.length) {
+    html += '<div class="prize-none">No nearest the pin holes set for this competition.</div>';
+  } else {
+    ntpHoles.forEach(function(hole) {
+      var claimants = players.filter(function(p){ return p.ntpClaims && p.ntpClaims.indexOf(hole) >= 0; });
+      html += '<div class="prize-card">';
+      html += '<div><div style="font-size:.85rem;font-weight:600;color:var(--white);">Hole '+hole+'</div>';
+      if (claimants.length) {
+        html += '<div class="prize-claimants">'+claimants.map(function(p){return p.name;}).join(', ')+'</div>';
+      } else {
+        html += '<div class="prize-none">No claims yet</div>';
+      }
+      html += '</div><span class="prize-hole">Hole '+hole+'</span></div>';
+    });
+  }
+  body.innerHTML = html;
+}
+
+function renderLD() {
+  var body = document.getElementById('ldBody');
+  if (!body) return;
+
+  var activeComp = _competitions && _competitions.find ? _competitions.find(function(c){return c.active;}) : null;
+  var ldHoles = activeComp && activeComp.ldHoles ? activeComp.ldHoles : [];
+
+  var html = '<div class="prize-section-title">🏌️ Longest Drive</div>';
+  if (!ldHoles.length) {
+    html += '<div class="prize-none">No longest drive holes set for this competition.</div>';
+  } else {
+    ldHoles.forEach(function(hole) {
+      var claimants = players.filter(function(p){ return p.ldClaims && p.ldClaims.indexOf(hole) >= 0; });
+      html += '<div class="prize-card">';
+      html += '<div><div style="font-size:.85rem;font-weight:600;color:var(--white);">Hole '+hole+'</div>';
+      if (claimants.length) {
+        html += '<div class="prize-claimants">'+claimants.map(function(p){return p.name;}).join(', ')+'</div>';
+      } else {
+        html += '<div class="prize-none">No claims yet</div>';
+      }
+      html += '</div><span class="prize-hole">Hole '+hole+'</span></div>';
+    });
+  }
+  body.innerHTML = html;
+}
 
 function openNav(){
   document.getElementById('sgcNavDrawer').classList.add('open');
@@ -625,7 +748,6 @@ function exportPDF() {
     + '.trophy{font-size:1.1rem;}'
     + '.footer{margin-top:32px;padding-top:16px;border-top:1px solid #e8e0d4;display:flex;justify-content:space-between;font-size:.72rem;color:#8896a8;}'
     + '@media print{.no-print{display:none;}}'
-    + '</style></head><body>'
     + '<div class="header">'
     + '<img class="header-logo" src="club-logo.png" alt="">'
     + '<div class="header-text">'
@@ -664,4 +786,17 @@ function exportPDF() {
     </div>
   </div>
 </body>
-</html>
+</html<!-- TEAMS LEADERBOARD -->
+<div id="teamsSection" style="display:none;padding:0 14px 14px;">
+  <div style="font-size:.65rem;letter-spacing:.14em;text-transform:uppercase;color:var(--grey);padding:10px 0 8px;">Team Leaderboard</div>
+  <div id="teamsBody"></div>
+</div>
+
+<!-- PRIZES SECTION -->
+<div id="prizesSection" style="display:none;padding:0 14px 14px;">
+  <div style="font-size:.65rem;letter-spacing:.14em;text-transform:uppercase;color:var(--grey);padding:10px 0 8px;">🎯 Special Prizes</div>
+  <div id="ntpBody" style="margin-bottom:12px;"></div>
+  <div id="ldBody"></div>
+</div>
+
+>
