@@ -442,7 +442,6 @@ function onProChange() {
 }
 
 function onGenderChange() {
-  // Re-apply correct tee when gender changes
   var comp = window._activeComp;
   if (comp) {
     var genderEl = document.getElementById('pGender');
@@ -452,6 +451,8 @@ function onGenderChange() {
       : (comp.teeMen   || comp.tee || 'yellow_m');
     var teeEl = document.getElementById('pTee');
     if (teeEl) teeEl.value = correctTee;
+    // Refresh comp details card to show correct tee
+    onCompSelect();
   }
   previewHcp();
 }
@@ -1059,7 +1060,11 @@ function onCompSelect() {
 
   var comp = _competitions[idx];
   var fmt  = FORMAT_MAP[comp.format] || {label: comp.format, allowance:'0.95'};
-  var teeLabel = TEE_LABELS[comp.tee] || comp.tee;
+  // Build teeLabel based on player gender
+  var genderEl2 = document.getElementById('pGender');
+  var isLadies2 = genderEl2 && genderEl2.value === 'f';
+  var genderTeeKey = isLadies2 ? (comp.teeLadies || comp.tee) : (comp.teeMen || comp.tee);
+  var teeLabel = TEE_LABELS[genderTeeKey] || genderTeeKey || comp.tee;
 
   // Lock format
   var fmtEl = document.getElementById('pFormat');
@@ -1084,9 +1089,14 @@ function onCompSelect() {
     // Build gold pill badges for competition details
       var pills = '';
       pills += '<span style="background:#f0c040;border-radius:6px;padding:5px 12px;font-size:.88rem;font-weight:700;color:#0f2347;display:inline-block;margin:2px 4px 2px 0;">' + comp.name + '</span>';
-      pills += '<span style="background:rgba(212,160,23,.2);border:1px solid rgba(212,160,23,.5);border-radius:6px;padding:4px 10px;font-size:.78rem;font-weight:600;color:#f0c040;display:inline-block;margin:2px 4px 2px 0;">📋 ' + (fmt.label||comp.format) + '</span>';
-      pills += '<span style="background:rgba(212,160,23,.2);border:1px solid rgba(212,160,23,.5);border-radius:6px;padding:4px 10px;font-size:.78rem;font-weight:600;color:#f0c040;display:inline-block;margin:2px 4px 2px 0;">🏌️ ' + teeLabel + '</span>';
-      if (comp.date) pills += '<span style="background:rgba(212,160,23,.2);border:1px solid rgba(212,160,23,.5);border-radius:6px;padding:4px 10px;font-size:.78rem;font-weight:600;color:#f0c040;display:inline-block;margin:2px 4px 2px 0;">📅 ' + comp.date + '</span>';
+      pills += '<span style="background:rgba(212,160,23,.3);border:1px solid rgba(212,160,23,.6);border-radius:6px;padding:4px 10px;font-size:.78rem;font-weight:600;color:#0f2347;display:inline-block;margin:2px 4px 2px 0;">📋 ' + (fmt.label||comp.format) + '</span>';
+      pills += '<span style="background:rgba(212,160,23,.3);border:1px solid rgba(212,160,23,.6);border-radius:6px;padding:4px 10px;font-size:.78rem;font-weight:600;color:#0f2347;display:inline-block;margin:2px 4px 2px 0;">🏌️ ' + teeLabel + '</span>';
+      // Show both tees if mixed and different
+      if (!isLadies2 && comp.teeLadies && comp.teeLadies !== (comp.teeMen||comp.tee)) {
+        var ladiesTeeLabel = TEE_LABELS[comp.teeLadies] || comp.teeLadies;
+        pills += '<span style="background:rgba(212,160,23,.3);border:1px solid rgba(212,160,23,.6);border-radius:6px;padding:4px 10px;font-size:.78rem;font-weight:600;color:#0f2347;display:inline-block;margin:2px 4px 2px 0;">👩 ' + ladiesTeeLabel + '</span>';
+      }
+      if (comp.date) pills += '<span style="background:rgba(212,160,23,.3);border:1px solid rgba(212,160,23,.6);border-radius:6px;padding:4px 10px;font-size:.78rem;font-weight:600;color:#0f2347;display:inline-block;margin:2px 4px 2px 0;">📅 ' + comp.date + '</span>';
       if (comp.notes) pills += '<div style="font-size:.72rem;color:rgba(255,255,255,.55);margin-top:6px;">'+comp.notes+'</div>';
 
       // Add prize holes section
@@ -1094,22 +1104,22 @@ function onCompSelect() {
       var ntp2H = comp.ntp2Holes || [];
       var ldH   = comp.ldHoles   || [];
       if (ntpH.length || ntp2H.length || ldH.length) {
-        pills += '<div style="margin-top:10px;padding-top:10px;border-top:1px solid rgba(212,160,23,.4);">';
-        pills += '<div style="font-size:.65rem;letter-spacing:.12em;text-transform:uppercase;color:#f0c040;font-weight:700;margin-bottom:8px;">🎯 Special Prizes</div>';
+        pills += '<div style="margin-top:10px;padding-top:10px;border-top:1.5px solid rgba(15,35,71,.3);">';
+        pills += '<div style="font-size:.65rem;letter-spacing:.12em;text-transform:uppercase;color:#0f2347;font-weight:700;margin-bottom:8px;">🎯 Special Prizes</div>';
         if (ntpH.length) {
-          pills += '<div style="margin-bottom:5px;font-size:.82rem;color:#fff;"><strong style="color:#fff;">📍 Nearest the Pin:</strong> ' + ntpH.sort(function(a,b){return a-b;}).map(function(h){ return 'Hole '+h; }).join(', ') + '</div>';
+          pills += '<div style="margin-bottom:5px;font-size:.82rem;color:#0f2347;"><strong style="color:#0f2347;">📍 Nearest the Pin:</strong> ' + ntpH.sort(function(a,b){return a-b;}).map(function(h){ return 'Hole '+h; }).join(', ') + '</div>';
         }
         if (ntp2H.length) {
-          pills += '<div style="margin-bottom:5px;font-size:.82rem;color:#fff;"><strong style="color:#fff;">📍 Nearest the Pin in 2:</strong> ' + ntp2H.sort(function(a,b){return a-b;}).map(function(h){ return 'Hole '+h; }).join(', ') + '</div>';
+          pills += '<div style="margin-bottom:5px;font-size:.82rem;color:#0f2347;"><strong style="color:#0f2347;">📍 Nearest the Pin in 2:</strong> ' + ntp2H.sort(function(a,b){return a-b;}).map(function(h){ return 'Hole '+h; }).join(', ') + '</div>';
         }
         if (ldH.length) {
-          pills += '<div style="margin-bottom:5px;font-size:.82rem;color:#fff;"><strong style="color:#fff;">🏌️ Longest Drive:</strong> ' + ldH.sort(function(a,b){return a-b;}).map(function(h){ return 'Hole '+h; }).join(', ') + '</div>';
+          pills += '<div style="margin-bottom:5px;font-size:.82rem;color:#0f2347;"><strong style="color:#0f2347;">🏌️ Longest Drive:</strong> ' + ldH.sort(function(a,b){return a-b;}).map(function(h){ return 'Hole '+h; }).join(', ') + '</div>';
         }
-        pills += '<div style="font-size:.72rem;color:rgba(255,255,255,.8);margin-top:6px;">⛳ A flag will appear on these holes during your round.</div>';
+        pills += '<div style="font-size:.72rem;color:#0f2347;margin-top:6px;opacity:.8;">⛳ A flag will appear on these holes during your round.</div>';
         pills += '</div>';
       }
 
-      details.innerHTML = '<div style="background:rgba(212,160,23,.18);border:2px solid #f0c040;border-radius:10px;padding:14px;">' + pills + '</div>';
+      details.innerHTML = '<div style="background:rgba(212,160,23,.22);border:2px solid #f0c040;border-radius:10px;padding:14px;">' + pills + '</div>';
   }
 
   // Lock start hole based on 9-hole format
