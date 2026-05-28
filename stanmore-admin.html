@@ -70,6 +70,7 @@ select.finp option{background:#1a3a6b;color:#fff;}
 .comp-item{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:10px;padding:12px 14px;margin-bottom:8px;}
 .comp-item.active-comp{border-color:rgba(45,110,78,.5);background:rgba(45,110,78,.08);}
 .comp-name-lbl{font-size:.95rem;font-weight:600;color:#fff;margin-bottom:3px;}
+.comp-name{font-size:.95rem;font-weight:600;color:#fff;margin-bottom:3px;}
 .comp-meta-lbl{font-size:.68rem;color:var(--grey);margin-bottom:8px;}
 .comp-btns{display:flex;gap:6px;flex-wrap:wrap;}
 .comp-btn-ok{background:rgba(45,110,78,.25);border:1px solid rgba(45,110,78,.5);color:#8ee0b4;border-radius:7px;padding:5px 12px;font-size:.72rem;cursor:pointer;}
@@ -156,7 +157,7 @@ select.finp option{background:#1a3a6b;color:#fff;}
 </div>
 
 <!-- ADMIN APP -->
-<div id="adminApp">
+<div id="adminApp" style="max-width:520px;margin:0 auto;">
   <div class="page-title">&#128274; Admin Panel</div>
   <div class="page-sub">Competition Management</div>
 
@@ -173,14 +174,6 @@ select.finp option{background:#1a3a6b;color:#fff;}
       <button class="save-btn" style="background:rgba(192,57,43,.3);border-color:rgba(192,57,43,.5);color:#e87878;" onclick="clearAnnouncement()">&#10005; Clear</button>
     </div>
     <div class="info-box info-blue" style="margin-top:10px;font-size:.72rem;">&#128276; Message scrolls live on all pages. Clear it when done.</div>
-  </div>
-
-  <!-- PRIZE LEADERS -->
-  <div class="sec" id="prizeSec">
-    <div class="sec-title">&#127919; Prize Leaders</div>
-    <div class="sec-desc">Live view of who is currently leading each special prize. Refreshes every 10 seconds.</div>
-    <div id="adminPrizesBody" style="margin-top:10px;"><div style="color:var(--grey);font-size:.82rem;">Loading prize data…</div></div>
-    <button class="save-btn" style="margin-top:10px;" onclick="loadAdminPrizes()">&#8635; Refresh Now</button>
   </div>
 
   <!-- COMPETITIONS -->
@@ -302,9 +295,17 @@ select.finp option{background:#1a3a6b;color:#fff;}
     <button class="save-btn" onclick="saveCompetitions()" style="margin-top:6px;">&#128190; Save All Competitions</button>
   </div>
 
+  <!-- PRIZE LEADERS -->
+  <div class="sec" id="prizeSec">
+    <div class="sec-title">&#127919; Prize Leaders</div>
+    <div class="sec-desc">Live view of who is currently leading each special prize. Refreshes every 10 seconds.</div>
+    <div id="adminPrizesBody" style="margin-top:10px;"><div style="color:var(--grey);font-size:.82rem;">Loading prize data…</div></div>
+    <button class="save-btn" style="margin-top:10px;" onclick="loadAdminPrizes()">&#8635; Refresh Now</button>
+  </div>
+
   <!-- LIVE SCORES -->
   <div class="sec">
-    <div class="sec-title">&#127944; Live Scores</div>
+    <div class="sec-title">&#9971; Live Scores</div>
     <div class="sec-desc">All submitted scores. Delete any incorrect entries.</div>
     <div id="adminScoresWrap">
       <table class="scores-table">
@@ -578,7 +579,7 @@ function renderCompList() {
     var div=document.createElement('div');
     div.className='comp-item'+(c.active?' active-comp':'');
     div.innerHTML='<div style="flex:1;">'
-      +'<div class="comp-name">'+c.name+(c.active?' <span style="background:rgba(45,110,78,.3);color:#8ee0b4;border-radius:4px;padding:1px 6px;font-size:.58rem;letter-spacing:.08em;text-transform:uppercase;vertical-align:middle;">ACTIVE</span>':'')+'</div>'
+      +'<div class="comp-name">'+c.name+(c.active?' <span style="background:#2d6e4e;color:#ffffff;border-radius:4px;padding:2px 8px;font-size:.62rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;vertical-align:middle;">ACTIVE</span>':'')+'</div>'
       +'<div class="comp-meta">'+fmt.label+' · '+pct+' · '+holes+' · '+teeLabel+(c.date?' · '+c.date:'')+'</div>'
       +'</div>'
       +'<div class="comp-actions">'
