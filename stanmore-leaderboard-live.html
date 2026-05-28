@@ -445,7 +445,25 @@ async function doRefresh(){
 
 function sorted(){return [...players].sort((a,b)=>b.pts-a.pts||b.thru-a.thru);}
 
-function setTab(t,el){tab=t;document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));el.classList.add('active');render();}
+function setTab(t, el) {
+  tab = t;
+  document.querySelectorAll('.tab').forEach(x => x.classList.remove('active'));
+  el.classList.add('active');
+  var isTeams  = t === 'teams';
+  var isPrizes = t === 'prizes';
+  var isNormal = !isTeams && !isPrizes;
+  var teamsEl   = document.getElementById('teamsSection');
+  var prizesEl  = document.getElementById('prizesSection');
+  var colHdr    = document.querySelector('.col-hdr');
+  var board     = document.getElementById('board');
+  if (teamsEl)  teamsEl.style.display  = isTeams  ? 'block' : 'none';
+  if (prizesEl) prizesEl.style.display = isPrizes ? 'block' : 'none';
+  if (colHdr)   colHdr.style.display   = isNormal ? ''      : 'none';
+  if (board)    board.style.display    = isNormal ? ''      : 'none';
+  if (isTeams)  renderTeams();
+  if (isPrizes) renderPrizes().catch(function(){});
+  if (isNormal) render();
+}
 
 function render(){
   const all=sorted();

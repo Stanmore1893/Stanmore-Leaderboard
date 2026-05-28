@@ -403,6 +403,16 @@ html,body{min-height:100%;background:linear-gradient(160deg,#09132a 0%,var(--nav
 
 
 
+    <!-- PRIZE LEADERS -->
+    <div class="sec" id="prizeSec">
+      <div class="sec-title">🎯 Prize Leaders</div>
+      <div class="sec-desc">Live view of who is currently leading each special prize. Refreshes every 10 seconds.</div>
+      <div id="adminPrizesBody" style="margin-top:10px;">
+        <div style="color:var(--grey);font-size:.82rem;">Loading prize data…</div>
+      </div>
+      <button class="save-btn" style="margin-top:10px;" onclick="loadAdminPrizes()">&#8635; Refresh Now</button>
+    </div>
+
     <!-- PROFANITY FILTER -->
     <div class="sec">
       <div class="sec-title">&#128683; Name Filter</div>
@@ -588,6 +598,15 @@ function resetPrizeHoles() {
   });
 }
 
+function setGender(val) {
+  ['mixed','men','ladies'].forEach(function(g) {
+    var btn = document.getElementById('gender'+g.charAt(0).toUpperCase()+g.slice(1)+'Btn');
+    if (btn) btn.classList.toggle('active', g === val);
+  });
+  document.getElementById('ncLadies').value = val;
+  updateTeeGender();
+}
+
 function setHoles(val) {
   var idMap = {'18':'holes18Btn','front9':'holes9fBtn','back9':'holes9bBtn','10':'holes10Btn','12':'holes12Btn'};
   Object.keys(idMap).forEach(function(v) {
@@ -610,7 +629,8 @@ function setTee(base) {
   });
 }
 function updateTeeGender() {
-  var ladies=document.getElementById('ncLadies').checked;
+  var genderVal = document.getElementById('ncLadies').value || 'mixed';
+  var ladies = genderVal === 'ladies';
   document.getElementById('ncTee').value=_ncTeeBase+(ladies?'_f':'_m');
 }
 
@@ -716,6 +736,7 @@ function addComp() {
     matchplay:fmtInfo.matchplay||false,
     allowance:finalAllowance!==null?finalAllowance:(fmtInfo.allowance||0.95),
     customAllowance:customAllowance,
+    gender:    document.getElementById('ncLadies').value || 'mixed',
     ntpHoles:  getSelectValues('ntpSelect'),
     ntp2Holes: getSelectValues('ntp2Select'),
     ldHoles:   getSelectValues('ldSelect'),
@@ -723,7 +744,7 @@ function addComp() {
   document.getElementById('ncName').value='';
   document.getElementById('ncDate').value='';
   document.getElementById('ncNotes').value='';
-  setCompType('individual'); setHoles('18'); setTee('white'); resetPrizeHoles();
+  setCompType('individual'); setHoles('18'); setTee('white'); setGender('mixed'); resetPrizeHoles();
   document.getElementById('ncLadies').checked=false;
   document.getElementById('ncFmtSelect').value='ind_stableford';
   onFmtChange();
@@ -823,6 +844,73 @@ function copyEmbed(){
   if(navigator.clipboard) navigator.clipboard.writeText(code).then(function(){toast('Embed code copied');});
 }
 
+// ── ADMIN PRIZE LEADERS ──
+async function loadAdminPrizes() {
+  var body = document.getElementById('adminPrizesBody');
+  if (!body) return;
+  try {
+    var record = await SGC._read();
+    var prizes = record.prizes || {};
+    var competitions = Array.isArray(record.competitions) ? record.competitions : [];
+    var activeComp = competitions.find(function(c){ return c.active; }) || {};
+    var ntpHoles  = activeComp.ntpHoles  || [];
+    var ntp2Holes = activeComp.ntp2Holes || [];
+    var ldHoles   = activeComp.ldHoles   || [];
+
+    if (!ntpHoles.length && !ntp2Holes.length && !ldHoles.length) {
+      body.innerHTML = '<div style="color:var(--grey);font-size:.82rem;">No special prizes set for the active competition.</div>';
+      return;
+    }
+
+    function renderPrizeCat(title, holes, prizeType) {
+      if (!holes.length) return '';
+      var map = prizes[prizeType] || {};
+      var html = '<div style="margin-bottom:14px;">';
+      html += '<div style="font-size:.65rem;letter-spacing:.14em;text-transform:uppercase;color:var(--gold);font-weight:600;margin-bottom:8px;">'+title+'</div>';
+      holes.sort(function(a,b){return a-b;}).forEach(function(hole) {
+        var hKey = 'h'+hole;
+        var hData = map[hKey] || {};
+        var current = hData.current || null;
+        var history = hData.history || [];
+        html += '<div style="background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:9px;padding:11px 13px;margin-bottom:6px;">';
+        html += '<div style="display:flex;align-items:center;justify-content:space-between;">';
+        html += '<span style="font-size:.78rem;font-weight:600;color:rgba(255,255,255,.7);font-family:monospace;">Hole '+hole+'</span>';
+        if (current) {
+          html += '<span style="background:rgba(45,110,78,.3);color:#8ee0b4;border:1px solid rgba(45,110,78,.5);border-radius:12px;padding:2px 10px;font-size:.65rem;font-weight:600;">LEADING</span>';
+        } else {
+          html += '<span style="color:var(--grey);font-size:.7rem;">No claims</span>';
+        }
+        html += '</div>';
+        if (current) {
+          html += '<div style="margin-top:7px;padding:8px 10px;background:rgba(212,160,23,.12);border:1px solid rgba(212,160,23,.25);border-radius:7px;">';
+          html += '<div style="font-size:.6rem;color:rgba(212,160,23,.6);text-transform:uppercase;letter-spacing:.1em;margin-bottom:2px;">Current Leader</div>';
+          html += '<div style="font-size:1rem;font-weight:700;color:#f0c040;">🏅 '+current+'</div>';
+          html += '</div>';
+        }
+        if (history.length > 1) {
+          html += '<div style="font-size:.7rem;color:rgba(255,255,255,.35);margin-top:5px;">All claimants: '+history.map(function(h){return h.name;}).join(', ')+'</div>';
+        }
+        html += '</div>';
+      });
+      html += '</div>';
+      return html;
+    }
+
+    body.innerHTML =
+      renderPrizeCat('📍 Nearest the Pin', ntpHoles, 'ntp') +
+      renderPrizeCat('📍 Nearest the Pin in 2', ntp2Holes, 'ntp2') +
+      renderPrizeCat('🏌️ Longest Drive', ldHoles, 'ld');
+
+  } catch(e) {
+    if (body) body.innerHTML = '<div style="color:#e87878;font-size:.82rem;">Could not load prize data.</div>';
+  }
+}
+
+// Auto-refresh prizes every 10 seconds
+setInterval(function() {
+  if (document.getElementById('adminPrizesBody')) loadAdminPrizes();
+}, 10000);
+
 // ── PROFANITY FILTER MANAGER ──
 var DEFAULT_BANNED = [
   'fuck','shit','cunt','bastard','wanker','twat','piss','cock','dick','arse',
@@ -873,7 +961,99 @@ function toast(msg){
 }
 
 // ── INIT ──
-function onAdminLoad(){ loadLocalSettings(); loadScores(); loadCompetitions(); loadProfanityList(); }
+
+// ── CLOSE COMPETITION & PRINT RESULTS ──
+async function closeCompetition(idx) {
+  var comp = competitions[idx];
+  if (!confirm('Close "' + comp.name + '" and print results? This will deactivate the competition.')) return;
+
+  // Deactivate
+  competitions[idx].active = false;
+  competitions[idx].closed = true;
+  competitions[idx].closedAt = new Date().toISOString();
+  await saveCompetitions();
+  toast('Competition closed');
+
+  // Load scores and print PDF
+  try {
+    var scores = await SGC.get('scores');
+    if (!Array.isArray(scores)) scores = [];
+    var compScores = scores
+      .filter(function(p){ return p.fin && (p.competition === comp.name || !p.competition); })
+      .sort(function(a,b){ return b.pts - a.pts || (a.gross||0) - (b.gross||0); });
+
+    printResultsPDF(comp, compScores);
+  } catch(e) {
+    toast('Could not load scores for PDF');
+  }
+}
+
+function printResultsPDF(comp, results) {
+  if (!results.length) { alert('No finished players to print.'); return; }
+
+  var rows = results.map(function(p, i) {
+    var ph   = p.ph || p.hcp || 0;
+    var nett = p.nett || ((p.gross||0) - ph);
+    var bg   = i % 2 === 0 ? '#fff' : '#f8f5f0';
+    var fw   = i < 3 ? 'bold' : 'normal';
+    var medal = i===0?'🥇':i===1?'🥈':i===2?'🥉':'';
+    return '<tr style="background:'+bg+';font-weight:'+fw+';">'
+      + '<td style="padding:9px 12px;border-bottom:1px solid #e8e0d4;text-align:center;font-size:.9rem;">'+medal+' '+(i+1)+'</td>'
+      + '<td style="padding:9px 12px;border-bottom:1px solid #e8e0d4;font-family:Georgia,serif;font-size:.95rem;">'+p.name+'</td>'
+      + '<td style="padding:9px 12px;border-bottom:1px solid #e8e0d4;text-align:center;font-family:monospace;">'+ph+'</td>'
+      + '<td style="padding:9px 12px;border-bottom:1px solid #e8e0d4;text-align:center;font-family:monospace;">'+(p.gross||0)+'</td>'
+      + '<td style="padding:9px 12px;border-bottom:1px solid #e8e0d4;text-align:center;font-family:monospace;">'+nett+'</td>'
+      + '<td style="padding:9px 12px;border-bottom:1px solid #e8e0d4;text-align:center;font-family:monospace;font-weight:bold;font-size:1rem;">'+p.pts+'</td>'
+      + '</tr>';
+  }).join('');
+
+  var date = new Date().toLocaleDateString('en-GB', {weekday:'long',day:'numeric',month:'long',year:'numeric'});
+  var fmt  = comp.format ? comp.format.replace(/_/g,' ') : '';
+
+  var w = window.open('','_blank');
+  w.document.write('<!DOCTYPE html><html><head><meta charset="UTF-8">'
+    + '<title>'+comp.name+' — Results</title>'
+    + '<style>'
+    + '@page{size:A4;margin:18mm 15mm;}'
+    + '*{box-sizing:border-box;margin:0;padding:0;}'
+    + 'body{font-family:Arial,sans-serif;color:#141e30;}'
+    + '.hdr{background:#0f2347;color:#fff;padding:20px 24px;display:flex;align-items:center;gap:16px;}'
+    + '.hdr img{width:52px;height:52px;object-fit:contain;}'
+    + '.gold-bar{height:4px;background:linear-gradient(to right,#d4a017,#f0c040,#d4a017);}'
+    + '.body{padding:20px 24px;}'
+    + 'table{width:100%;border-collapse:collapse;margin-top:16px;}'
+    + 'th{background:#0f2347;color:rgba(212,160,23,.9);padding:9px 12px;font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;}'
+    + 'th:nth-child(2){text-align:left;}'
+    + 'th:not(:nth-child(2)){text-align:center;}'
+    + '.footer{margin-top:20px;padding-top:12px;border-top:1px solid #e0d8cc;display:flex;justify-content:space-between;font-size:.7rem;color:#8896a8;}'
+    + '.print-btn{position:fixed;bottom:20px;right:20px;background:#d4a017;color:#0f2347;border:none;border-radius:8px;padding:12px 24px;font-size:.9rem;font-weight:700;cursor:pointer;box-shadow:0 4px 16px rgba(0,0,0,.2);}'
+    + '@media print{.print-btn{display:none;}}'
+    + '</style></head><body>'
+    + '<div class="hdr">'
+    + '<img src="https://stanmore1893.github.io/Stanmore-Leaderboard/club-logo.png" alt="">'
+    + '<div>'
+    + '<div style="font-family:Georgia,serif;font-size:1.3rem;font-weight:bold;color:#f0c040;">Stanmore Golf Club</div>'
+    + '<div style="font-size:.95rem;color:rgba(255,255,255,.85);margin-top:2px;">'+comp.name+' — Final Results</div>'
+    + '<div style="font-size:.72rem;color:rgba(255,255,255,.5);margin-top:3px;font-family:monospace;">'+date+(fmt?' &nbsp;·&nbsp; '+fmt:'')+'</div>'
+    + '</div></div>'
+    + '<div class="gold-bar"></div>'
+    + '<div class="body">'
+    + '<table><thead><tr>'
+    + '<th style="width:50px">Pos</th>'
+    + '<th style="text-align:left">Player</th>'
+    + '<th>P.HCP</th><th>Gross</th><th>Nett</th><th>Points</th>'
+    + '</tr></thead><tbody>'+rows+'</tbody></table>'
+    + '<div class="footer">'
+    + '<span>Stanmore Golf Club &nbsp;·&nbsp; '+comp.name+'</span>'
+    + '<span>Printed '+new Date().toLocaleString('en-GB')+'</span>'
+    + '</div>'
+    + '</div>'
+    + '<button class="print-btn" onclick="window.print()">🖨️ Print / Save as PDF</button>'
+    + '</body></html>');
+  w.document.close();
+}
+
+function onAdminLoad(){ loadLocalSettings(); loadScores(); loadCompetitions(); loadProfanityList(); loadAdminPrizes(); }
 </script>
   <div style="text-align:center;padding:14px 16px;border-top:1px solid rgba(212,160,23,.15);">
     <div style="display:inline-flex;align-items:center;gap:10px;">
