@@ -217,14 +217,14 @@ select.finp option{background:#1a3a6b;color:#fff;}
       <div class="info-box info-blue" id="fmtInfo" style="margin-top:-4px;"></div>
 
       <label class="slabel">Custom Allowance (optional)</label>
-      <select class="allow-select" id="ncAllowance">
+      <select class="finp" id="ncAllowance">
         <option value="">Use format default</option>
-        <option value="1.00">100% (General Play)</option>
-        <option value="0.95">95% (Stableford / Stroke Play)</option>
-        <option value="0.90">90% (Fourball Par/Bogey)</option>
-        <option value="0.85">85% (Fourball Stableford)</option>
-        <option value="0.50">50% (Foursomes)</option>
-        <option value="greensomes">Greensomes (60/40%)</option>
+        <option value="1.00">100% — General Play / Matchplay</option>
+        <option value="0.95">95% — Stableford / Stroke Play</option>
+        <option value="0.90">90% — Fourball Par/Bogey</option>
+        <option value="0.85">85% — Fourball Stableford</option>
+        <option value="0.50">50% — Foursomes</option>
+        <option value="greensomes">Greensomes (60% low / 40% high)</option>
       </select>
 
       <label class="slabel">Holes</label>
@@ -242,15 +242,15 @@ select.finp option{background:#1a3a6b;color:#fff;}
       <div style="background:rgba(0,0,0,.12);border:1px solid rgba(255,255,255,.07);border-radius:10px;padding:11px 12px;margin-bottom:10px;">
         <div style="font-size:.65rem;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.45);margin-bottom:8px;">Men's Tee</div>
         <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:12px;">
-          <button type="button" class="tee-btn ye active" id="teeWhiteBtn" onclick="setTee('white','men')">&#9898; White</button>
-          <button type="button" class="tee-btn ye active" id="teeYellowBtn" onclick="setTee('yellow','men')">&#127937; Yellow</button>
-          <button type="button" class="tee-btn re" id="teeRedBtn" onclick="setTee('red','men')">&#128308; Red</button>
+          <button type="button" class="tee-btn" id="teeWhiteBtn" onclick="setTee('white','men')"><span style="color:#ffffff;">●</span> White</button>
+          <button type="button" class="tee-btn ye active" id="teeYellowBtn" onclick="setTee('yellow','men')"><span style="color:#f0c040;">●</span> Yellow</button>
+          <button type="button" class="tee-btn" id="teeRedBtn" onclick="setTee('red','men')"><span style="color:#e74c3c;">●</span> Red</button>
         </div>
         <div style="font-size:.65rem;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.45);margin-bottom:8px;">Ladies' Tee</div>
         <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;">
-          <button type="button" class="tee-btn" id="teeWhiteLBtn" onclick="setTee('white','ladies')">&#9898; White</button>
-          <button type="button" class="tee-btn" id="teeYellowLBtn" onclick="setTee('yellow','ladies')">&#127937; Yellow</button>
-          <button type="button" class="tee-btn re active" id="teeRedLBtn" onclick="setTee('red','ladies')">&#128308; Red</button>
+          <button type="button" class="tee-btn" id="teeWhiteLBtn" onclick="setTee('white','ladies')"><span style="color:#ffffff;">●</span> White</button>
+          <button type="button" class="tee-btn" id="teeYellowLBtn" onclick="setTee('yellow','ladies')"><span style="color:#f0c040;">●</span> Yellow</button>
+          <button type="button" class="tee-btn re active" id="teeRedLBtn" onclick="setTee('red','ladies')"><span style="color:#e74c3c;">●</span> Red</button>
         </div>
         <div style="font-size:.68rem;color:rgba(255,255,255,.35);margin-top:8px;">For single-gender competitions only the relevant tee applies.</div>
       </div>
@@ -273,28 +273,16 @@ select.finp option{background:#1a3a6b;color:#fff;}
       <div style="background:rgba(0,0,0,.15);border:1px solid rgba(255,255,255,.07);border-radius:10px;padding:12px;margin-bottom:12px;">
         <div style="font-size:.72rem;color:var(--grey);margin-bottom:12px;line-height:1.6;">Select holes for each special prize category.</div>
         <div style="margin-bottom:12px;">
-          <label class="slabel" style="margin-bottom:6px;">&#128205; Nearest the Pin</label>
-          <select class="finp" id="ntpSelect" multiple size="5" style="height:auto;padding:8px;font-family:'DM Mono',monospace;font-size:.82rem;background:rgba(0,0,0,.3);">
-            <option value="4">Hole 4 (Par 3)</option><option value="6">Hole 6 (Par 3)</option><option value="8">Hole 8 (Par 3)</option><option value="10">Hole 10 (Par 3)</option><option value="17">Hole 17 (Par 3)</option>
-            <option value="1">Hole 1</option><option value="2">Hole 2</option><option value="3">Hole 3</option><option value="5">Hole 5</option><option value="7">Hole 7</option><option value="9">Hole 9</option><option value="11">Hole 11</option><option value="12">Hole 12</option><option value="13">Hole 13</option><option value="14">Hole 14</option><option value="15">Hole 15</option><option value="16">Hole 16</option><option value="18">Hole 18</option>
-          </select>
-          <div style="font-size:.68rem;color:var(--grey);margin-top:4px;">Hold Ctrl/Cmd to select multiple</div>
+          <label class="slabel" style="margin-bottom:6px;">&#128205; Nearest the Pin — tap holes to select</label>
+          <div id="ntpGrid" style="display:flex;flex-wrap:wrap;gap:6px;"></div>
         </div>
         <div style="margin-bottom:12px;">
-          <label class="slabel" style="margin-bottom:6px;">&#128205; Nearest the Pin in 2</label>
-          <select class="finp" id="ntp2Select" multiple size="3" style="height:auto;padding:8px;font-family:'DM Mono',monospace;font-size:.82rem;background:rgba(0,0,0,.3);">
-            <option value="7">Hole 7</option><option value="14">Hole 14</option>
-            <option value="1">Hole 1</option><option value="2">Hole 2</option><option value="3">Hole 3</option><option value="4">Hole 4</option><option value="5">Hole 5</option><option value="6">Hole 6</option><option value="8">Hole 8</option><option value="9">Hole 9</option><option value="10">Hole 10</option><option value="11">Hole 11</option><option value="12">Hole 12</option><option value="13">Hole 13</option><option value="15">Hole 15</option><option value="16">Hole 16</option><option value="17">Hole 17</option><option value="18">Hole 18</option>
-          </select>
-          <div style="font-size:.68rem;color:var(--grey);margin-top:4px;">Hold Ctrl/Cmd to select multiple</div>
+          <label class="slabel" style="margin-bottom:6px;">&#128205; Nearest the Pin in 2 — tap holes to select</label>
+          <div id="ntp2Grid" style="display:flex;flex-wrap:wrap;gap:6px;"></div>
         </div>
         <div>
-          <label class="slabel" style="margin-bottom:6px;">&#127941; Longest Drive</label>
-          <select class="finp" id="ldSelect" multiple size="3" style="height:auto;padding:8px;font-family:'DM Mono',monospace;font-size:.82rem;background:rgba(0,0,0,.3);">
-            <option value="11">Hole 11</option><option value="18">Hole 18</option>
-            <option value="1">Hole 1</option><option value="2">Hole 2</option><option value="3">Hole 3</option><option value="4">Hole 4</option><option value="5">Hole 5</option><option value="6">Hole 6</option><option value="7">Hole 7</option><option value="8">Hole 8</option><option value="9">Hole 9</option><option value="10">Hole 10</option><option value="12">Hole 12</option><option value="13">Hole 13</option><option value="14">Hole 14</option><option value="15">Hole 15</option><option value="16">Hole 16</option><option value="17">Hole 17</option>
-          </select>
-          <div style="font-size:.68rem;color:var(--grey);margin-top:4px;">Hold Ctrl/Cmd to select multiple</div>
+          <label class="slabel" style="margin-bottom:6px;">&#127941; Longest Drive — tap holes to select</label>
+          <div id="ldGrid" style="display:flex;flex-wrap:wrap;gap:6px;"></div>
         </div>
       </div>
 
@@ -488,17 +476,71 @@ function setCompType(type) {
 }
 // ── SPECIAL PRIZES HOLE SELECTOR ──
 function getSelectValues(id) {
-  var sel = document.getElementById(id);
-  if (!sel) return [];
-  return Array.from(sel.selectedOptions).map(function(o){ return parseInt(o.value); });
+  // Read from tap grid
+  var gridId = id.replace('Select','Grid');
+  var grid = document.getElementById(gridId);
+  if (!grid) return [];
+  var selected = [];
+  grid.querySelectorAll('[data-hole].selected').forEach(function(btn){
+    selected.push(parseInt(btn.dataset.hole));
+  });
+  return selected;
 }
 
-function initPrizeHoles() {} // no longer needed - using select elements
+function initPrizeHoles() {
+  [
+    {gridId:'ntpGrid'},
+    {gridId:'ntp2Grid'},
+    {gridId:'ldGrid'},
+  ].forEach(function(cfg) {
+    var grid = document.getElementById(cfg.gridId);
+    if (!grid) return;
+    grid.innerHTML = '';
+    for (var h = 1; h <= 18; h++) {
+      var btn = document.createElement('button');
+      btn.type = 'button';
+      btn.dataset.hole = h;
+      btn.textContent = h;
+      btn.style.width = '38px';
+      btn.style.height = '38px';
+      btn.style.borderRadius = '8px';
+      btn.style.border = '1.5px solid rgba(255,255,255,.15)';
+      btn.style.background = 'rgba(255,255,255,.06)';
+      btn.style.color = 'rgba(255,255,255,.7)';
+      btn.style.fontFamily = 'monospace';
+      btn.style.fontSize = '14px';
+      btn.style.fontWeight = '600';
+      btn.style.cursor = 'pointer';
+      btn.onclick = function() { togglePrizeHole(this); };
+      grid.appendChild(btn);
+    }
+  });
+}
+
+
+function togglePrizeHole(btn) {
+  btn.classList.toggle('selected');
+  if (btn.classList.contains('selected')) {
+    btn.style.background = 'rgba(212,160,23,.3)';
+    btn.style.borderColor = 'rgba(212,160,23,.8)';
+    btn.style.color = '#f0c040';
+  } else {
+    btn.style.background = 'rgba(255,255,255,.06)';
+    btn.style.borderColor = 'rgba(255,255,255,.15)';
+    btn.style.color = 'rgba(255,255,255,.7)';
+  }
+}
 
 function resetPrizeHoles() {
-  ['ntpSelect','ntp2Select','ldSelect'].forEach(function(id) {
-    var el = document.getElementById(id);
-    if (el) Array.from(el.options).forEach(function(o){ o.selected = false; });
+  ['ntpGrid','ntp2Grid','ldGrid'].forEach(function(id) {
+    var grid = document.getElementById(id);
+    if (!grid) return;
+    grid.querySelectorAll('[data-hole]').forEach(function(btn){
+      btn.classList.remove('selected');
+      btn.style.background = 'rgba(255,255,255,.06)';
+      btn.style.borderColor = 'rgba(255,255,255,.15)';
+      btn.style.color = 'rgba(255,255,255,.7)';
+    });
   });
 }
 
@@ -1010,7 +1052,7 @@ function printResultsPDF(comp, results) {
   w.document.close();
 }
 
-function onAdminLoad(){ loadLocalSettings(); loadScores(); loadCompetitions(); loadProfanityList(); loadAdminPrizes(); }
+function onAdminLoad(){ loadLocalSettings(); loadScores(); loadCompetitions(); loadProfanityList(); loadAdminPrizes(); initPrizeHoles(); }
 
 </script>
 </body>
