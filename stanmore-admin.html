@@ -76,6 +76,15 @@ select.finp option{background:#1a3a6b;color:#fff;}
 .comp-btn-ok{background:rgba(45,110,78,.25);border:1px solid rgba(45,110,78,.5);color:#8ee0b4;border-radius:7px;padding:5px 12px;font-size:.72rem;cursor:pointer;}
 .comp-btn-warn{background:rgba(192,57,43,.2);border:1px solid rgba(192,57,43,.4);color:#e87878;border-radius:7px;padding:5px 12px;font-size:.72rem;cursor:pointer;}
 .comp-btn-del{background:rgba(192,57,43,.3);border:1px solid rgba(192,57,43,.5);color:#e87878;border-radius:7px;padding:5px 12px;font-size:.72rem;cursor:pointer;}
+.comp-item{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:10px;padding:12px 14px;margin-bottom:8px;display:flex;align-items:center;justify-content:space-between;gap:10px;}
+.comp-item.active-comp{border-color:rgba(45,110,78,.5);background:rgba(45,110,78,.06);}
+.comp-name{font-size:.92rem;font-weight:600;color:#fff;margin-bottom:3px;}
+.comp-meta{font-size:.68rem;color:var(--grey);line-height:1.6;}
+.comp-actions{display:flex;gap:6px;flex-shrink:0;}
+.comp-act-btn{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);color:rgba(255,255,255,.6);border-radius:7px;padding:6px 12px;font-size:.72rem;cursor:pointer;font-family:'Poppins',sans-serif;white-space:nowrap;}
+.comp-act-btn.active-btn{background:#2d6e4e;border-color:#2d6e4e;color:#ffffff;font-weight:700;}
+.comp-act-btn.del-btn{background:rgba(192,57,43,.2);border-color:rgba(192,57,43,.4);color:#e87878;}
+.comp-act-btn:active{opacity:.7;}
 
 /* INFO BOXES */
 .info-box{border-radius:9px;padding:10px 13px;font-size:.75rem;line-height:1.6;margin-bottom:10px;}
@@ -166,7 +175,9 @@ select.finp option{background:#1a3a6b;color:#fff;}
     <div class="sec-title" style="color:var(--gold-lt)">&#9889; Quick Settings</div>
     <div class="sec-desc">Push announcements scroll as a live banner on the leaderboard and score entry pages instantly.</div>
     <label class="slabel">Competition Name</label>
-    <input class="finp" id="quickName" type="text" placeholder="e.g. Seniors Open 2025">
+    <select class="finp" id="quickName" onchange="onQuickCompChange()">
+      <option value="">— Select active competition —</option>
+    </select>
     <label class="slabel">&#128226; Push Announcement</label>
     <input class="finp" id="quickTicker" type="text" placeholder="e.g. ⚠️ Tee times delayed 30 mins">
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
@@ -562,6 +573,7 @@ async function loadCompetitions() {
   renderCompList();
 }
 function renderCompList() {
+  populateQuickCompDropdown();
   var el=document.getElementById('compList');
   if(!competitions.length){el.innerHTML='<div style="font-size:.78rem;color:var(--grey);padding:8px 0;">No competitions yet.</div>';return;}
   el.innerHTML='';
@@ -700,9 +712,32 @@ async function saveSettings(){
 function loadLocalSettings(){
   try{
     var s=JSON.parse(localStorage.getItem('sgc_comp_settings')||'{}');
-    document.getElementById('quickName').value=s.name||'';
     document.getElementById('quickTicker').value=s.ticker||'';
+    populateQuickCompDropdown(s.name||'');
   }catch(e){}
+}
+
+function populateQuickCompDropdown(selectedName) {
+  var sel = document.getElementById('quickName');
+  if (!sel) return;
+  var current = selectedName || sel.value;
+  sel.innerHTML = '<option value="">— Select competition —</option>';
+  (competitions||[]).forEach(function(c) {
+    var opt = document.createElement('option');
+    opt.value = c.name;
+    opt.textContent = c.name + (c.active ? ' ✓ Active' : '');
+    if (c.name === current) opt.selected = true;
+    sel.appendChild(opt);
+  });
+  // Auto-select active comp if nothing selected
+  if (!sel.value) {
+    var active = (competitions||[]).find(function(c){ return c.active; });
+    if (active) sel.value = active.name;
+  }
+}
+
+function onQuickCompChange() {
+  // Nothing extra needed - saveQuick reads the value directly
 }
 
 // ── SCORES ──
