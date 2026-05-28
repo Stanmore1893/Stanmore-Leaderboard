@@ -1034,7 +1034,7 @@ function printResultsPDF(comp, results) {
     var medal = i===0?'🥇':i===1?'🥈':i===2?'🥉':'';
     return '<tr style="background:'+bg+';font-weight:'+fw+';">'
       + '<td style="padding:9px 12px;border-bottom:1px solid #e8e0d4;text-align:center;font-size:.9rem;">'+medal+' '+(i+1)+'</td>'
-      + '<td style="padding:9px 12px;border-bottom:1px solid #e8e0d4;font-family:'Poppins',sans-serif;font-size:.95rem;">'+p.name+'</td>'
+      + '<td style="padding:9px 12px;border-bottom:1px solid #e8e0d4;font-family:Arial,sans-serif;font-size:.95rem;">'+p.name+'</td>'
       + '<td style="padding:9px 12px;border-bottom:1px solid #e8e0d4;text-align:center;font-family:monospace;">'+ph+'</td>'
       + '<td style="padding:9px 12px;border-bottom:1px solid #e8e0d4;text-align:center;font-family:monospace;">'+(p.gross||0)+'</td>'
       + '<td style="padding:9px 12px;border-bottom:1px solid #e8e0d4;text-align:center;font-family:monospace;">'+nett+'</td>'
@@ -1051,7 +1051,7 @@ function printResultsPDF(comp, results) {
     + '<style>'
     + '@page{size:A4;margin:18mm 15mm;}'
     + '*{box-sizing:border-box;margin:0;padding:0;}'
-    + 'body{font-family:'Poppins',sans-serif;color:#141e30;}'
+    + 'body{font-family:Poppins,sans-serif;color:#141e30;}'
     + '.hdr{background:#0f2347;color:#fff;padding:20px 24px;display:flex;align-items:center;gap:16px;}'
     + '.hdr img{width:52px;height:52px;object-fit:contain;}'
     + '.gold-bar{height:4px;background:linear-gradient(to right,#d4a017,#f0c040,#d4a017);}'
@@ -1067,7 +1067,7 @@ function printResultsPDF(comp, results) {
     + '<div class="hdr">'
     + '<img src="https://stanmore1893.github.io/Stanmore-Leaderboard/club-logo.png" alt="">'
     + '<div>'
-    + '<div style="font-family:'Poppins',sans-serif;font-size:1.3rem;font-weight:bold;color:#f0c040;">Stanmore Golf Club</div>'
+    + '<div style="font-family:Arial,sans-serif;font-size:1.3rem;font-weight:bold;color:#f0c040;">Stanmore Golf Club</div>'
     + '<div style="font-size:.95rem;color:rgba(255,255,255,.85);margin-top:2px;">'+comp.name+' — Final Results</div>'
     + '<div style="font-size:.72rem;color:rgba(255,255,255,.5);margin-top:3px;font-family:monospace;">'+date+(fmt?' &nbsp;·&nbsp; '+fmt:'')+'</div>'
     + '</div></div>'
@@ -1093,7 +1093,7 @@ function onAdminLoad(){ loadLocalSettings(); loadScores(); loadCompetitions(); l
   <div style="text-align:center;padding:14px 16px;border-top:1px solid rgba(212,160,23,.15);">
     <div style="display:inline-flex;align-items:center;gap:10px;">
       <div style="width:28px;height:1.5px;background:linear-gradient(to right,transparent,rgba(212,160,23,.6));"></div>
-      <span style="font-size:.68rem;color:rgba(212,160,23,.6);letter-spacing:.1em;font-family:'Poppins',sans-serif;">Designed &amp; built by <strong style="color:var(--gold-lt,#f0c040);font-weight:600;">Alex Persaud</strong> &nbsp;·&nbsp; PGA Professional</span>
+      <span style="font-size:.68rem;color:rgba(212,160,23,.6);letter-spacing:.1em;font-family:Arial,sans-serif;">Designed &amp; built by <strong style="color:var(--gold-lt,#f0c040);font-weight:600;">Alex Persaud</strong> &nbsp;·&nbsp; PGA Professional</span>
       <div style="width:28px;height:1.5px;background:linear-gradient(to left,transparent,rgba(212,160,23,.6));"></div>
     </div>
   </div>

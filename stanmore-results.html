@@ -323,7 +323,7 @@ function exportPDF() {
     var fw = i<3?'bold':'normal';
     return '<tr style="background:'+bg+';font-weight:'+fw+';">' +
       '<td style="padding:9px 12px;border-bottom:1px solid #e8e0d4;text-align:center;">'+(i+1)+'</td>' +
-      '<td style="padding:9px 12px;border-bottom:1px solid #e8e0d4;font-family:'Poppins',sans-serif;">'+(p.name)+'</td>' +
+      '<td style="padding:9px 12px;border-bottom:1px solid #e8e0d4;font-family:Arial,sans-serif;">'+(p.name)+'</td>' +
       '<td style="padding:9px 12px;border-bottom:1px solid #e8e0d4;text-align:center;font-family:monospace;">'+ph+'</td>' +
       '<td style="padding:9px 12px;border-bottom:1px solid #e8e0d4;text-align:center;font-family:monospace;">'+(p.gross||0)+'</td>' +
       '<td style="padding:9px 12px;border-bottom:1px solid #e8e0d4;text-align:center;font-family:monospace;">'+nett+'</td>' +
@@ -333,7 +333,7 @@ function exportPDF() {
 
   var w = window.open('','_blank');
   w.document.write('<!DOCTYPE html><html><head><meta charset="UTF-8"><title>'+_compName+' Results</title>' +
-    '<style>@page{size:A4;margin:20mm 15mm;}body{font-family:'Poppins',sans-serif;color:#141e30;}' +
+    '<style>@page{size:A4;margin:20mm 15mm;}body{font-family:Poppins,sans-serif;color:#141e30;}' +
     '.hdr{background:#0f2347;color:#fff;padding:24px 28px;display:flex;align-items:center;gap:16px;}' +
     '.hdr img{width:56px;height:56px;object-fit:contain;}' +
     '.gold-bar{height:4px;background:linear-gradient(to right,#d4a017,#f0c040,#d4a017);}' +
@@ -344,7 +344,7 @@ function exportPDF() {
     '.no-print{display:none;}@media print{.no-print{display:none;}}' +
     '</style></head><body>' +
     '<div class="hdr"><img src="club-logo.png" alt=""><div>' +
-    '<div style="font-family:'Poppins',sans-serif;font-size:1.4rem;font-weight:bold;color:#f0c040;">Stanmore Golf Club</div>' +
+    '<div style="font-family:Arial,sans-serif;font-size:1.4rem;font-weight:bold;color:#f0c040;">Stanmore Golf Club</div>' +
     '<div style="font-size:1rem;color:rgba(255,255,255,.8);margin-top:2px;">'+_compName+' — Final Results</div>' +
     '<div style="font-size:.75rem;color:rgba(255,255,255,.5);margin-top:3px;font-family:monospace;">' + new Date().toLocaleDateString('en-GB',{weekday:'long',day:'numeric',month:'long',year:'numeric'}) + '</div>' +
     '</div></div><div class="gold-bar"></div>' +
