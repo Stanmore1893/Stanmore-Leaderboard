@@ -642,10 +642,10 @@ function renderPrizeSection(containerId, title, emoji, holes, prizeType) {
   var prizeMap = _prizesData[prizeType] || {};
 
   var out = '<div style="background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);border-radius:14px;padding:14px;margin-bottom:14px;">';
-  out += '<div style="font-size:1rem;font-weight:700;color:var(--gold-lt);margin-bottom:12px;">'+emoji+' '+title+'</div>';
+  out += '<div style="font-size:1.05rem;font-weight:700;color:#f0c040;margin-bottom:12px;letter-spacing:.02em;">'+emoji+' '+title+'</div>';
 
   if (!holes.length) {
-    out += '<div style="font-size:.8rem;color:var(--grey);padding:6px 0;">No holes set for this competition.</div>';
+    out += '<div style="font-size:.82rem;color:rgba(255,255,255,.5);padding:6px 0;">No holes set for this competition.</div>';
   } else {
     holes.sort(function(a,b){return a-b;}).forEach(function(hole) {
       var hKey = 'h' + hole;
@@ -655,27 +655,27 @@ function renderPrizeSection(containerId, title, emoji, holes, prizeType) {
 
       out += '<div style="border-top:1px solid rgba(255,255,255,.06);padding:10px 0;">';
       out += '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;">';
-      out += '<span style="font-size:.78rem;font-weight:600;color:rgba(255,255,255,.6);font-family:monospace;">HOLE ' + hole + '</span>';
+      out += '<span style="font-size:.88rem;font-weight:700;color:#ffffff;letter-spacing:.05em;">⛳ Hole ' + hole + '</span>';
       if (current) {
         out += '<span style="font-size:.65rem;background:rgba(45,110,78,.7);color:#ffffff;border:1px solid rgba(45,110,78,.9);border-radius:20px;padding:2px 10px;font-weight:600;">LIVE LEADER</span>';
       } else {
-        out += '<span style="font-size:.65rem;color:var(--grey);">No claims yet</span>';
+        out += '<span style="font-size:.72rem;color:rgba(255,255,255,.55);">No claims yet</span>';
       }
       out += '</div>';
 
       if (current) {
         out += '<div style="background:rgba(212,160,23,.12);border:1.5px solid rgba(212,160,23,.35);border-radius:10px;padding:10px 12px;margin-bottom:6px;">';
-        out += '<div style="font-size:.6rem;letter-spacing:.12em;text-transform:uppercase;color:rgba(212,160,23,.6);margin-bottom:3px;">Current Leader</div>';
+        out += '<div style="font-size:.65rem;letter-spacing:.12em;text-transform:uppercase;color:rgba(212,160,23,.85);font-weight:600;margin-bottom:3px;">Current Leader</div>';
         out += '<div style="font-size:1.1rem;font-weight:700;color:#f0c040;">🏅 ' + current + '</div>';
         out += '</div>';
       }
 
       if (history.length > 0) {
         out += '<div style="font-size:.7rem;color:rgba(255,255,255,.4);line-height:1.8;">';
-        out += '<span style="color:rgba(255,255,255,.3);font-size:.62rem;text-transform:uppercase;letter-spacing:.1em;">All claimants: </span>';
+        out += '<span style="color:rgba(255,255,255,.6);font-size:.68rem;font-weight:600;">All claimants: </span>';
         history.forEach(function(h, idx2) {
           var isCurrent = idx2 === history.length - 1;
-          out += '<span style="color:' + (isCurrent ? 'rgba(212,160,23,.7)' : 'rgba(255,255,255,.35)') + ';">' + h.name + (idx2 < history.length - 1 ? ', ' : '') + '</span>';
+          out += '<span style="color:' + (isCurrent ? '#f0c040' : 'rgba(255,255,255,.65)') + ';font-weight:' + (isCurrent ? '700' : '400') + ';">' + h.name + (idx2 < history.length - 1 ? ', ' : '') + '</span>';
         });
         out += '</div>';
       }
