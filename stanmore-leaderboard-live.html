@@ -596,57 +596,74 @@ async function loadPrizesData() {
   } catch(e) { _prizesData = {}; }
 }
 
-function renderPrizeSection(containerId, title, holes, prizeType) {
+function renderPrizeSection(containerId, title, emoji, holes, prizeType) {
   var body = document.getElementById(containerId);
   if (!body) return;
   var prizeMap = _prizesData[prizeType] || {};
-  var out = '<div class="prize-section-title">' + title + '</div>';
+
+  var out = '<div style="background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);border-radius:14px;padding:14px;margin-bottom:14px;">';
+  out += '<div style="font-size:1rem;font-weight:700;color:var(--gold-lt);margin-bottom:12px;">'+emoji+' '+title+'</div>';
+
   if (!holes.length) {
-    out += '<div class="prize-none">No holes set for this competition.</div>';
+    out += '<div style="font-size:.8rem;color:var(--grey);padding:6px 0;">No holes set for this competition.</div>';
   } else {
     holes.sort(function(a,b){return a-b;}).forEach(function(hole) {
       var hKey = 'h' + hole;
       var hData = prizeMap[hKey] || {};
       var current = hData.current || null;
       var history = hData.history || [];
-      out += '<div class="prize-card" style="flex-direction:column;align-items:flex-start;gap:6px;">';
-      out += '<div style="display:flex;align-items:center;justify-content:space-between;width:100%;">';
-      out += '<div style="font-size:.85rem;font-weight:600;color:var(--white);">Hole ' + hole + '</div>';
-      out += '<span class="prize-hole">Hole ' + hole + '</span></div>';
+
+      out += '<div style="border-top:1px solid rgba(255,255,255,.06);padding:10px 0;">';
+      out += '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;">';
+      out += '<span style="font-size:.78rem;font-weight:600;color:rgba(255,255,255,.6);font-family:monospace;">HOLE ' + hole + '</span>';
       if (current) {
-        out += '<div style="background:rgba(212,160,23,.15);border:1px solid rgba(212,160,23,.3);border-radius:7px;padding:7px 10px;width:100%;">';
-        out += '<div style="font-size:.65rem;letter-spacing:.1em;text-transform:uppercase;color:rgba(212,160,23,.6);margin-bottom:2px;">Current Leader</div>';
-        out += '<div style="font-family:Georgia,serif;font-size:1rem;font-weight:700;color:#f0c040;">&#127946; ' + current + '</div>';
-        out += '</div>';
-        if (history.length > 1) {
-          out += '<div style="font-size:.7rem;color:var(--grey);margin-top:2px;">Previous: ' +
-            history.slice(0,-1).map(function(h){return h.name;}).join(', ') + '</div>';
-        }
+        out += '<span style="font-size:.65rem;background:rgba(45,110,78,.25);color:#8ee0b4;border:1px solid rgba(45,110,78,.4);border-radius:20px;padding:2px 10px;">LIVE LEADER</span>';
       } else {
-        out += '<div class="prize-none">No claims yet</div>';
+        out += '<span style="font-size:.65rem;color:var(--grey);">No claims yet</span>';
       }
+      out += '</div>';
+
+      if (current) {
+        out += '<div style="background:rgba(212,160,23,.12);border:1.5px solid rgba(212,160,23,.35);border-radius:10px;padding:10px 12px;margin-bottom:6px;">';
+        out += '<div style="font-size:.6rem;letter-spacing:.12em;text-transform:uppercase;color:rgba(212,160,23,.6);margin-bottom:3px;">Current Leader</div>';
+        out += '<div style="font-size:1.1rem;font-weight:700;color:#f0c040;">🏅 ' + current + '</div>';
+        out += '</div>';
+      }
+
+      if (history.length > 0) {
+        out += '<div style="font-size:.7rem;color:rgba(255,255,255,.4);line-height:1.8;">';
+        out += '<span style="color:rgba(255,255,255,.3);font-size:.62rem;text-transform:uppercase;letter-spacing:.1em;">All claimants: </span>';
+        history.forEach(function(h, idx2) {
+          var isCurrent = idx2 === history.length - 1;
+          out += '<span style="color:' + (isCurrent ? 'rgba(212,160,23,.7)' : 'rgba(255,255,255,.35)') + ';">' + h.name + (idx2 < history.length - 1 ? ', ' : '') + '</span>';
+        });
+        out += '</div>';
+      }
+
       out += '</div>';
     });
   }
+  out += '</div>';
   body.innerHTML = out;
 }
+
 
 function renderNTP() {
   var activeComp = _competitions && _competitions.find ? _competitions.find(function(c){return c.active;}) : null;
   var ntpHoles = activeComp && activeComp.ntpHoles ? activeComp.ntpHoles : [];
-  renderPrizeSection('ntpBody', '📍 Nearest the Pin', ntpHoles, 'ntp');
+  renderPrizeSection('ntpBody', 'Nearest the Pin', '📍', ntpHoles, 'ntp');
 }
 
 function renderNTP2() {
   var activeComp = _competitions && _competitions.find ? _competitions.find(function(c){return c.active;}) : null;
   var ntp2Holes = activeComp && activeComp.ntp2Holes ? activeComp.ntp2Holes : [];
-  renderPrizeSection('ntp2Body', '📍 Nearest the Pin in 2', ntp2Holes, 'ntp2');
+  renderPrizeSection('ntp2Body', 'Nearest the Pin in 2', '📍', ntp2Holes, 'ntp2');
 }
 
 function renderLD() {
   var activeComp = _competitions && _competitions.find ? _competitions.find(function(c){return c.active;}) : null;
   var ldHoles = activeComp && activeComp.ldHoles ? activeComp.ldHoles : [];
-  renderPrizeSection('ldBody', '🏌️ Longest Drive', ldHoles, 'ld');
+  renderPrizeSection('ldBody', 'Longest Drive', '🏌️', ldHoles, 'ld');
 }
 
 function openNav(){
