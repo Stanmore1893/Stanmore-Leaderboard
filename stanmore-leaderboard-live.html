@@ -198,6 +198,19 @@ html,body{height:100%;background:var(--cream);font-family:sans-serif;color:var(-
     <div class="tab" onclick="setTab('teams',this)">Teams</div>
     <div class="tab" onclick="setTab('prizes',this)">🎯 Prizes</div>
   </div>
+  <!-- TEAMS LEADERBOARD -->
+  <div id="teamsSection" style="display:none;padding:0 14px 14px;">
+    <div style="font-size:.65rem;letter-spacing:.14em;text-transform:uppercase;color:var(--grey);padding:10px 0 8px;">Team Leaderboard</div>
+    <div id="teamsBody"></div>
+  </div>
+
+  <!-- PRIZES SECTION -->
+  <div id="prizesSection" style="display:none;padding:0 14px 14px;">
+    <div id="ntpBody" style="margin-bottom:12px;"></div>
+    <div id="ntp2Body" style="margin-bottom:12px;"></div>
+    <div id="ldBody"></div>
+  </div>
+
   <div class="col-hdr">
     <div class="ch">Pos</div><div class="ch">Player</div>
     <div class="ch r">P.HCP</div><div class="ch r">Gross</div>
@@ -611,7 +624,15 @@ var _prizesData = {};
 async function loadPrizesData() {
   try {
     var record = await SGC._read();
-    _prizesData = record.prizes || {};
+    var allPrizes = record.prizes || {};
+    // Get active competition key
+    var activeComp = _competitions && _competitions.find ? _competitions.find(function(c){return c.active;}) : null;
+    if (activeComp) {
+      var compKey = 'comp_' + (activeComp.id || activeComp.name || 'default').toString().replace(/[^a-zA-Z0-9]/g,'_');
+      _prizesData = allPrizes[compKey] || {};
+    } else {
+      _prizesData = {};
+    }
   } catch(e) { _prizesData = {}; }
 }
 
@@ -835,18 +856,6 @@ function exportPDF() {
     </div>
   </div>
 </body>
-</html<!-- TEAMS LEADERBOARD -->
-<div id="teamsSection" style="display:none;padding:0 14px 14px;">
-  <div style="font-size:.65rem;letter-spacing:.14em;text-transform:uppercase;color:var(--grey);padding:10px 0 8px;">Team Leaderboard</div>
-  <div id="teamsBody"></div>
-</div>
-
-<!-- PRIZES SECTION -->
-<div id="prizesSection" style="display:none;padding:0 14px 14px;">
-  <div style="font-size:.65rem;letter-spacing:.14em;text-transform:uppercase;color:var(--grey);padding:10px 0 8px;">🎯 Special Prizes</div>
-  <div id="ntpBody" style="margin-bottom:12px;"></div>
-  <div id="ntp2Body" style="margin-bottom:12px;"></div>
-  <div id="ldBody"></div>
-</div>
+</html
 
 >

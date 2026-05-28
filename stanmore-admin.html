@@ -286,10 +286,6 @@ html,body{min-height:100%;background:linear-gradient(160deg,#09132a 0%,var(--nav
           <button type="button" class="tee-btn ye" id="teeYellowBtn" onclick="setTee('yellow')">&#127937; Yellow</button>
           <button type="button" class="tee-btn re" id="teeRedBtn" onclick="setTee('red')">&#128308; Red</button>
         </div>
-        <label class="fmt-radio-lbl" style="font-size:.72rem;margin-bottom:12px;">
-          <input type="checkbox" id="ncLadies" onchange="updateTeeGender()"> Ladies (women&#39;s course rating &amp; SI)
-        </label>
-
         <label class="slabel">Notes (optional)</label>
         <input class="finp" id="ncNotes" type="text" placeholder="e.g. Shotgun start 8:30am" style="margin-bottom:12px">
 
@@ -745,7 +741,7 @@ function addComp() {
   document.getElementById('ncDate').value='';
   document.getElementById('ncNotes').value='';
   setCompType('individual'); setHoles('18'); setTee('white'); setGender('mixed'); resetPrizeHoles();
-  document.getElementById('ncLadies').checked=false;
+  // gender reset handled by setGender('mixed')
   document.getElementById('ncFmtSelect').value='ind_stableford';
   onFmtChange();
   renderCompList(); toast('Added — tap Save All to publish');
@@ -850,9 +846,11 @@ async function loadAdminPrizes() {
   if (!body) return;
   try {
     var record = await SGC._read();
-    var prizes = record.prizes || {};
+    var allPrizes = record.prizes || {};
     var competitions = Array.isArray(record.competitions) ? record.competitions : [];
     var activeComp = competitions.find(function(c){ return c.active; }) || {};
+    var compKey = 'comp_' + ((activeComp.id || activeComp.name || 'default')).toString().replace(/[^a-zA-Z0-9]/g,'_');
+    var prizes = allPrizes[compKey] || {};
     var ntpHoles  = activeComp.ntpHoles  || [];
     var ntp2Holes = activeComp.ntp2Holes || [];
     var ldHoles   = activeComp.ldHoles   || [];

@@ -1005,12 +1005,16 @@ async function claimPrize(type) {
 
   try {
     var record = await SGC._read();
-    if (!record.prizes) record.prizes = {ntp:{},ntp2:{},ld:{}};
-    if (!record.prizes[type]) record.prizes[type] = {};
+    // Store prizes per competition to avoid cross-competition contamination
+    var comp = window._activeComp || {};
+    var compKey = 'comp_' + (comp.id || comp.name || 'default').toString().replace(/[^a-zA-Z0-9]/g,'_');
+    if (!record.prizes) record.prizes = {};
+    if (!record.prizes[compKey]) record.prizes[compKey] = {ntp:{},ntp2:{},ld:{}};
+    if (!record.prizes[compKey][type]) record.prizes[compKey][type] = {};
     var hKey = 'h'+holeNum;
-    if (!record.prizes[type][hKey]) record.prizes[type][hKey] = {current:null,history:[]};
-    record.prizes[type][hKey].current = R.name;
-    record.prizes[type][hKey].history.push({name:R.name,ts:Date.now()});
+    if (!record.prizes[compKey][type][hKey]) record.prizes[compKey][type][hKey] = {current:null,history:[]};
+    record.prizes[compKey][type][hKey].current = R.name;
+    record.prizes[compKey][type][hKey].history.push({name:R.name,ts:Date.now()});
     await SGC._write(record);
     if (btn)  { btn.style.background='rgba(45,110,78,.5)'; btn.style.borderColor='rgba(45,110,78,.8)'; btn.style.color='#ffffff'; btn.textContent='✓ Claimed!'; }
     if (stat) stat.textContent='You are currently leading on hole '+holeNum;
