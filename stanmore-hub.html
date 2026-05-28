@@ -222,6 +222,30 @@ html,body{min-height:100%;background:linear-gradient(175deg,#060e1e 0%,#0f2347 1
     </div>
   </div>
 
+  <!-- RESULTS -->
+  <div class="app-card">
+    <div class="card-head results" style="background:linear-gradient(to right,rgba(212,160,23,.12),transparent);">
+      <div class="card-icon results" style="background:rgba(212,160,23,.15);border:1px solid rgba(212,160,23,.3);">🏅</div>
+      <div class="card-info">
+        <div class="card-title">Results &amp; Prize List</div>
+        <div class="card-desc">Final standings with podium, full results table, PDF and CSV export.</div>
+      </div>
+    </div>
+    <div class="card-body">
+      <div class="qr-section">
+        <div class="qr-wrap"><canvas id="qr-results" width="100" height="100"></canvas></div>
+        <div class="qr-info">
+          <div class="qr-label">Scan to open results</div>
+          <div class="url-box" id="url-results" onclick="copyUrl('url-results')">Hosted URL will appear here</div>
+        </div>
+      </div>
+      <div class="btn-row">
+        <button class="btn primary" onclick="openApp('results')">🏅 Open Results</button>
+        <button class="btn copy" onclick="copyUrl('url-results')">📋 Copy</button>
+      </div>
+    </div>
+  </div>
+
   <!-- COURSE GUIDE -->
   <div class="app-card">
     <div class="card-head guide">
@@ -303,6 +327,7 @@ document.addEventListener('DOMContentLoaded', () => {
   // Set URL boxes
   document.getElementById('url1').textContent = APPS.scoring;
   document.getElementById('url2').textContent = APPS.leaderboard;
+  document.getElementById('url-results').textContent = APPS.results;
   document.getElementById('url3').textContent = APPS.guide;
 
   // Generate QR codes
