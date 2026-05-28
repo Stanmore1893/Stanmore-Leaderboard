@@ -381,7 +381,7 @@ html,body{min-height:100%;background:linear-gradient(160deg,#09132a 0%,var(--nav
 
         <input type="hidden" id="ncHoles" value="18">
         <input type="hidden" id="ncNineHole" value="">
-        <input type="hidden" id="ncTee" value="white_m">
+        <input type="hidden" id="ncTee" value="yellow_m"><input type="hidden" id="ncLadies" value="mixed">
 
         <button class="save-btn green" onclick="addComp()">+ Add Competition</button>
       </div>
@@ -609,7 +609,8 @@ function setGender(val) {
     var btn = document.getElementById('gender'+g.charAt(0).toUpperCase()+g.slice(1)+'Btn');
     if (btn) btn.classList.toggle('active', g === val);
   });
-  document.getElementById('ncLadies').value = val;
+  var ladiesEl = document.getElementById('ncLadies');
+  if (ladiesEl) ladiesEl.value = val;
   updateTeeGender();
 }
 
@@ -656,6 +657,9 @@ function setTee(base, gender) {
   }
   // Keep legacy _ncTeeBase as men's tee for backward compat
   _ncTeeBase = _ncTeeMen;
+  // Update hidden ncTee input so addComp can read it
+  var ncTeeEl = document.getElementById('ncTee');
+  if (ncTeeEl) ncTeeEl.value = _ncTeeMen + '_m';
   updateTeeGender();
 }
 function updateTeeGender() {
@@ -766,7 +770,6 @@ function addComp() {
     matchplay:fmtInfo.matchplay||false,
     allowance:finalAllowance!==null?finalAllowance:(fmtInfo.allowance||0.95),
     customAllowance:customAllowance,
-    gender:    document.getElementById('ncLadies').value || 'mixed',
     ntpHoles:  getSelectValues('ntpSelect'),
     ntp2Holes: getSelectValues('ntp2Select'),
     ldHoles:   getSelectValues('ldSelect'),
