@@ -755,11 +755,8 @@ async function clearAnnouncement(){
 }
 
 async function saveQuick(){
-  var name=document.getElementById('quickName').value.trim();
-  var ticker=document.getElementById('quickTicker').value.trim();
-  document.getElementById('compNameInput').value=name;
-  document.getElementById('compTickerInput').value=ticker;
   await saveSettings();
+  toast('✓ Live — apps update within 15 seconds');
 }
 
 // ── FULL SETTINGS ──
@@ -810,15 +807,14 @@ async function loadScores(){
     var record=await SGC._read();
     var players=Array.isArray(record.scores)?record.scores:[];
     renderScores(players);
-    document.getElementById('statusTxt').textContent=players.length+' player'+(players.length!==1?'s':'')+' entered';
-    document.getElementById('statusCount').textContent=players.filter(function(p){return p.fin;}).length+' finished';
+
   }catch(e){
     document.getElementById('statusTxt').textContent='No scores yet';
     renderScores([]);
   }
 }
 function renderScores(players){
-  var body=document.getElementById('scoreBody');
+  var body=document.getElementById('scoresBody');
   if(!players.length){body.innerHTML='<tr><td colspan="7" style="text-align:center;padding:18px;color:var(--grey);">No scores yet</td></tr>';return;}
   var sorted=[...players].sort(function(a,b){return b.pts-a.pts;});
   body.innerHTML='';
@@ -845,16 +841,15 @@ async function deletePlayer(name){
     loadScores();
   }catch(e){toast('Error: '+e.message);}
 }
-function confirmClear(){ document.getElementById('clearModal').classList.add('open'); }
 async function clearAllScores(){
+  if(!confirm('Clear ALL scores? This cannot be undone.')) return;
   try{
     var record=await SGC._read();
     record.scores=[];
     var ok=await SGC._write(record);
     toast(ok?'All scores cleared':'Could not clear — check connection');
+    loadScores();
   }catch(e){toast('Error: '+e.message);}
-  document.getElementById('clearModal').classList.remove('open');
-  loadScores();
 }
 
 // ── EMBED ──
