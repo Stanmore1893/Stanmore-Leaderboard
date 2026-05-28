@@ -386,6 +386,7 @@ window.addEventListener('load', async ()=>{
     loadAdminSettings().catch(e => console.warn('Settings refresh failed:', e));
     loadCompetitionsLB();
     loadScores();
+    if (tab === 'prizes') renderPrizes().catch(function(){});
   }, 5000);
 });
 
