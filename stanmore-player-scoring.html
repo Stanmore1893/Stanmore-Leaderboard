@@ -775,7 +775,7 @@ async function claimPrize(type) {
     record.prizes[type][hKey].current = R.name;
     record.prizes[type][hKey].history.push({name:R.name,ts:Date.now()});
     await SGC._write(record);
-    if (btn)  { btn.style.background='rgba(45,110,78,.3)'; btn.style.borderColor='rgba(45,110,78,.6)'; btn.style.color='#8ee0b4'; btn.textContent='✓ Claimed!'; }
+    if (btn)  { btn.style.background='rgba(45,110,78,.5)'; btn.style.borderColor='rgba(45,110,78,.8)'; btn.style.color='#ffffff'; btn.textContent='✓ Claimed!'; }
     if (stat) stat.textContent='You are currently leading on hole '+holeNum;
   } catch(e) {
     if (btn)  { btn.disabled=false; btn.style.opacity='1'; btn.textContent='📍 Try again'; }
@@ -1044,7 +1044,7 @@ async function claimPrize(type) {
     record.prizes[type][hKey].current = R.name;
     record.prizes[type][hKey].history.push({name:R.name,ts:Date.now()});
     await SGC._write(record);
-    if (btn)  { btn.style.background='rgba(45,110,78,.3)'; btn.style.borderColor='rgba(45,110,78,.6)'; btn.style.color='#8ee0b4'; btn.textContent='✓ Claimed!'; }
+    if (btn)  { btn.style.background='rgba(45,110,78,.5)'; btn.style.borderColor='rgba(45,110,78,.8)'; btn.style.color='#ffffff'; btn.textContent='✓ Claimed!'; }
     if (stat) stat.textContent='You are currently leading on hole '+holeNum;
   } catch(e) {
     if (btn)  { btn.disabled=false; btn.style.opacity='1'; btn.textContent='📍 Try again'; }
