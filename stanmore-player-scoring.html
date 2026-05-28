@@ -195,7 +195,7 @@ html,body{min-height:100%;background:var(--cream);font-family:'DM Sans',sans-ser
   <input class="finp" id="pName" type="text" placeholder="e.g. Brian Holloway" autocomplete="name">
   <div class="frow2">
     <div><label class="flbl">WHS Handicap Index</label><input class="finp" id="pHI" type="number" placeholder="e.g. 14.2 or +2 (enter -2)" step="0.1" min="-5" max="54" oninput="previewHcp()"></div>
-    <div><label class="flbl">Gender</label><select class="finp" id="pGender" onchange="previewHcp()"><option value="m">Male</option><option value="f">Female</option></select></div>
+    <div><label class="flbl">Gender</label><select class="finp" id="pGender" onchange="onGenderChange()"><option value="m">Male</option><option value="f">Female</option></select></div>
   </div>
   <label style="display:flex;align-items:center;gap:10px;padding:11px 13px;background:rgba(212,160,23,.1);border:1px solid rgba(212,160,23,.25);border-radius:9px;cursor:pointer;margin-bottom:10px;font-size:.88rem;color:rgba(255,255,255,.85);">
     <input type="checkbox" id="pPro" style="width:17px;height:17px;accent-color:#d4a017;flex-shrink:0;" onchange="onProChange()">
@@ -427,6 +427,22 @@ function onProChange() {
   }
   previewHcp();
 }
+
+function onGenderChange() {
+  // Re-apply correct tee when gender changes
+  var comp = window._activeComp;
+  if (comp) {
+    var genderEl = document.getElementById('pGender');
+    var isLadies = genderEl && genderEl.value === 'f';
+    var correctTee = isLadies
+      ? (comp.teeLadies || comp.tee || 'red_f')
+      : (comp.teeMen   || comp.tee || 'yellow_m');
+    var teeEl = document.getElementById('pTee');
+    if (teeEl) teeEl.value = correctTee;
+  }
+  previewHcp();
+}
+
 
 function previewHcp(){
   const isPro = document.getElementById('pPro') && document.getElementById('pPro').checked;
@@ -945,12 +961,22 @@ function onCompSelect() {
   var fmt  = FORMAT_MAP[comp.format] || {label: comp.format, allowance:'0.95'};
   var teeLabel = TEE_LABELS[comp.tee] || comp.tee;
 
-  // Lock tee and format
-  var teeEl = document.getElementById('pTee');
-  if (teeEl) { teeEl.value = comp.tee; teeEl.disabled = true; }
+  // Lock format
   var fmtEl = document.getElementById('pFormat');
   if (fmtEl) fmtEl.value = fmt.allowance;
+
+  // Set tee based on player gender - use per-gender tees if set
+  var teeEl = document.getElementById('pTee');
+  var genderEl = document.getElementById('pGender');
+  var isLadies = genderEl && genderEl.value === 'f';
+  var correctTee = isLadies
+    ? (comp.teeLadies || comp.tee || 'red_f')
+    : (comp.teeMen   || comp.tee || 'yellow_m');
+  if (teeEl) { teeEl.value = correctTee; teeEl.disabled = true; }
   document.getElementById('teeLockLabel').style.display = 'inline';
+
+  // Re-apply when gender changes
+  window._activeComp = comp;
 
   // Show details card
   if (details) {

@@ -281,10 +281,20 @@ html,body{min-height:100%;background:linear-gradient(160deg,#09132a 0%,var(--nav
         </div>
 
         <label class="slabel">Tee</label>
-        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:8px;">
-          <button type="button" class="tee-btn wh active" id="teeWhiteBtn" onclick="setTee('white')">&#9898; White</button>
-          <button type="button" class="tee-btn ye" id="teeYellowBtn" onclick="setTee('yellow')">&#127937; Yellow</button>
-          <button type="button" class="tee-btn re" id="teeRedBtn" onclick="setTee('red')">&#128308; Red</button>
+        <div style="background:rgba(0,0,0,.12);border:1px solid rgba(255,255,255,.07);border-radius:10px;padding:11px 12px;margin-bottom:10px;">
+          <div style="font-size:.65rem;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.45);margin-bottom:8px;">Men's Tee</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:12px;">
+            <button type="button" class="tee-btn wh active" id="teeWhiteBtn" onclick="setTee('white','men')">&#9898; White</button>
+            <button type="button" class="tee-btn ye" id="teeYellowBtn" onclick="setTee('yellow','men')">&#127937; Yellow</button>
+            <button type="button" class="tee-btn re" id="teeRedBtn" onclick="setTee('red','men')">&#128308; Red</button>
+          </div>
+          <div style="font-size:.65rem;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.45);margin-bottom:8px;">Ladies' Tee</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;">
+            <button type="button" class="tee-btn" id="teeWhiteLBtn" onclick="setTee('white','ladies')">&#9898; White</button>
+            <button type="button" class="tee-btn" id="teeYellowLBtn" onclick="setTee('yellow','ladies')">&#127937; Yellow</button>
+            <button type="button" class="tee-btn re active" id="teeRedLBtn" onclick="setTee('red','ladies')">&#128308; Red</button>
+          </div>
+          <div style="font-size:.68rem;color:rgba(255,255,255,.35);margin-top:8px;">For men-only or ladies-only competitions, only the relevant tee applies.</div>
         </div>
         <label class="slabel">Notes (optional)</label>
         <input class="finp" id="ncNotes" type="text" placeholder="e.g. Shotgun start 8:30am" style="margin-bottom:12px">
@@ -616,13 +626,37 @@ function setHoles(val) {
   var descriptor = val==='front9'?'front':val==='back9'?'back':val==='10'?'custom10':val==='12'?'custom12':'';
   document.getElementById('ncNineHole').value = descriptor;
 }
-function setTee(base) {
-  _ncTeeBase=base;
+var _ncTeeMen    = 'yellow'; // default men's tee
+var _ncTeeLadies = 'red';    // default ladies' tee
+
+function setTee(base, gender) {
+  gender = gender || 'men';
+  if (gender === 'men') {
+    _ncTeeMen = base;
+    ['white','yellow','red'].forEach(function(c){
+      var btn = document.getElementById('tee'+c.charAt(0).toUpperCase()+c.slice(1)+'Btn');
+      if (btn) {
+        btn.classList.toggle('active', base===c);
+        btn.classList.toggle('wh', c==='white' && base===c);
+        btn.classList.toggle('ye', c==='yellow' && base===c);
+        btn.classList.toggle('re', c==='red' && base===c);
+      }
+    });
+  } else {
+    _ncTeeLadies = base;
+    ['white','yellow','red'].forEach(function(c){
+      var btn = document.getElementById('tee'+c.charAt(0).toUpperCase()+c.slice(1)+'LBtn');
+      if (btn) {
+        btn.classList.toggle('active', base===c);
+        btn.classList.toggle('wh', c==='white' && base===c);
+        btn.classList.toggle('ye', c==='yellow' && base===c);
+        btn.classList.toggle('re', c==='red' && base===c);
+      }
+    });
+  }
+  // Keep legacy _ncTeeBase as men's tee for backward compat
+  _ncTeeBase = _ncTeeMen;
   updateTeeGender();
-  ['white','yellow','red'].forEach(function(c){
-    var btn=document.getElementById('tee'+c.charAt(0).toUpperCase()+c.slice(1)+'Btn');
-    if(btn){btn.classList.toggle('active',base===c);btn.classList.toggle('wh',c==='white'&&base===c);btn.classList.toggle('ye',c==='yellow'&&base===c);btn.classList.toggle('re',c==='red'&&base===c);}
-  });
 }
 function updateTeeGender() {
   var genderVal = document.getElementById('ncLadies').value || 'mixed';
@@ -740,7 +774,7 @@ function addComp() {
   document.getElementById('ncName').value='';
   document.getElementById('ncDate').value='';
   document.getElementById('ncNotes').value='';
-  setCompType('individual'); setHoles('18'); setTee('white'); setGender('mixed'); resetPrizeHoles();
+  setCompType('individual'); setHoles('18'); setTee('yellow','men'); setTee('red','ladies'); setGender('mixed'); resetPrizeHoles();
   // gender reset handled by setGender('mixed')
   document.getElementById('ncFmtSelect').value='ind_stableford';
   onFmtChange();
