@@ -134,7 +134,12 @@ html,body{min-height:100%;background:var(--cream);font-family:'Poppins',sans-ser
 .sc-share-btn{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;background:#25D366;color:#fff;border:none;border-radius:10px;padding:13px;font-family:'Poppins',sans-serif;font-size:.92rem;font-weight:600;cursor:pointer;margin-top:10px;}
 
 /* ── ANNOUNCEMENT BANNER ── */
-.ann-banner{display:none;background:linear-gradient(135deg,rgba(212,160,23,.2),rgba(212,160,23,.1));border:1px solid rgba(212,160,23,.4);border-radius:10px;padding:12px 14px;margin-bottom:12px;font-size:.88rem;color:var(--gold-lt,#f0c040);line-height:1.6;text-align:center;animation:ann-in .4s ease;}
+.ann-banner{display:none;background:rgba(212,160,23,.12);border-top:1px solid rgba(212,160,23,.2);border-bottom:1px solid rgba(212,160,23,.2);margin-bottom:12px;padding:6px 0;overflow:hidden;}
+.ann-banner.show{display:block;}
+.ann-inner{display:flex;white-space:nowrap;animation:ticker-scroll 18s linear infinite;}
+.ann-text{font-size:.78rem;font-weight:600;color:var(--gold-lt,#f0c040);padding:0 40px;flex-shrink:0;}
+@keyframes ann-in{from{opacity:0;transform:translateY(-8px);}to{opacity:1;transform:translateY(0);}}
+@keyframes ticker-scroll{0%{transform:translateX(0);}100%{transform:translateX(-50%);}}
 .ann-banner.show{display:block;}
 @keyframes ann-in{from{opacity:0;transform:translateY(-8px);}to{opacity:1;transform:translateY(0);}}
 
@@ -186,7 +191,15 @@ html,body{min-height:100%;background:var(--cream);font-family:'Poppins',sans-ser
 
 <!-- SETUP -->
 <div class="screen active" id="scrSetup">
-  <div class="ann-banner" id="annBanner"></div>
+  <div class="ann-banner" id="annBanner"><div class="ann-inner"><span class="ann-text" id="annText1"></span><span class="ann-text" id="annText2"></span></div></div>
+  <div id="resumeBanner" style="display:none;background:rgba(26,58,107,.3);border:1.5px solid rgba(212,160,23,.4);border-radius:12px;padding:14px 16px;margin:12px 16px 0;">
+    <div style="font-size:.65rem;letter-spacing:.12em;text-transform:uppercase;color:rgba(212,160,23,.7);font-weight:600;margin-bottom:6px;">⚡ Unfinished Round Found</div>
+    <div id="resumeMsg" style="font-size:.92rem;font-weight:600;color:#ffffff;margin-bottom:10px;"></div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+      <button onclick="resumeRound()" style="background:rgba(212,160,23,.2);border:1.5px solid rgba(212,160,23,.5);color:#f0c040;border-radius:9px;padding:10px;font-family:'Poppins',sans-serif;font-size:.85rem;font-weight:600;cursor:pointer;">▶ Continue Round</button>
+      <button onclick="dismissResume()" style="background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);color:rgba(255,255,255,.6);border-radius:9px;padding:10px;font-family:'Poppins',sans-serif;font-size:.85rem;cursor:pointer;">✕ Start Fresh</button>
+    </div>
+  </div>
   <div class="wlogo"><img src="club-logo.png" alt=""></div>
   <div class="ptitle">Score Entry</div>
   <div class="psub" id="setupCompName">Stanmore Golf Club</div>
@@ -225,7 +238,7 @@ html,body{min-height:100%;background:var(--cream);font-family:'Poppins',sans-ser
     <select class="finp" id="compPicker" onchange="onCompSelect()">
       <option value="">Loading competitions…</option>
     </select>
-    <div id="compDetails" style="display:none;background:rgba(26,58,107,.15);border:1px solid rgba(26,58,107,.3);border-radius:8px;padding:10px 13px;margin-top:8px;font-size:.75rem;color:#a8c4f0;line-height:1.7;"></div>
+    <div id="compDetails" style="display:none;border-radius:10px;margin-top:8px;"></div>
   </div>
   <div class="hcp-calc-preview" id="hcpPreview"></div>
   <button class="start-btn" onclick="startRound()">Start Round →</button>
@@ -256,15 +269,15 @@ html,body{min-height:100%;background:var(--cream);font-family:'Poppins',sans-ser
   <div id="prizeClaim" style="display:none;margin:8px 0;">
     <div style="font-size:.65rem;letter-spacing:.1em;text-transform:uppercase;color:rgba(212,160,23,.6);font-weight:600;margin-bottom:8px;">🎯 Special Prize — Claim</div>
     <div id="ntpClaim"  style="display:none;">
-      <button type="button" id="ntpBtn" onclick="claimPrize('ntp')" style="width:100%;background:rgba(212,160,23,.15);border:1.5px solid rgba(212,160,23,.3);color:var(--gold-lt,#f0c040);border-radius:9px;padding:12px;font-family:'Poppins',sans-serif;font-size:.88rem;font-weight:600;cursor:pointer;margin-bottom:6px;">📍 I'm nearest the pin — claim it</button>
+      <button type="button" id="ntpBtn" onclick="claimPrize('ntp')" style="width:100%;background:rgba(212,160,23,.15);border:1.5px solid rgba(212,160,23,.3);color:var(--gold-lt,#f0c040);border-radius:9px;padding:12px;font-family:Poppins,sans-serif;font-size:.88rem;font-weight:600;cursor:pointer;margin-bottom:6px;">📍 I'm nearest the pin — claim it</button>
       <div id="ntpStatus" style="font-size:.72rem;color:rgba(255,255,255,.5);text-align:center;margin-bottom:4px;"></div>
     </div>
     <div id="ntp2Claim" style="display:none;">
-      <button type="button" id="ntp2Btn" onclick="claimPrize('ntp2')" style="width:100%;background:rgba(212,160,23,.15);border:1.5px solid rgba(212,160,23,.3);color:var(--gold-lt,#f0c040);border-radius:9px;padding:12px;font-family:'Poppins',sans-serif;font-size:.88rem;font-weight:600;cursor:pointer;margin-bottom:6px;">📍 I'm nearest the pin in 2 — claim it</button>
+      <button type="button" id="ntp2Btn" onclick="claimPrize('ntp2')" style="width:100%;background:rgba(212,160,23,.15);border:1.5px solid rgba(212,160,23,.3);color:var(--gold-lt,#f0c040);border-radius:9px;padding:12px;font-family:Poppins,sans-serif;font-size:.88rem;font-weight:600;cursor:pointer;margin-bottom:6px;">📍 I'm nearest the pin in 2 — claim it</button>
       <div id="ntp2Status" style="font-size:.72rem;color:rgba(255,255,255,.5);text-align:center;margin-bottom:4px;"></div>
     </div>
     <div id="ldClaim" style="display:none;">
-      <button type="button" id="ldBtn" onclick="claimPrize('ld')" style="width:100%;background:rgba(212,160,23,.15);border:1.5px solid rgba(212,160,23,.3);color:var(--gold-lt,#f0c040);border-radius:9px;padding:12px;font-family:'Poppins',sans-serif;font-size:.88rem;font-weight:600;cursor:pointer;margin-bottom:6px;">🏌️ I had the longest drive — claim it</button>
+      <button type="button" id="ldBtn" onclick="claimPrize('ld')" style="width:100%;background:rgba(212,160,23,.15);border:1.5px solid rgba(212,160,23,.3);color:var(--gold-lt,#f0c040);border-radius:9px;padding:12px;font-family:Poppins,sans-serif;font-size:.88rem;font-weight:600;cursor:pointer;margin-bottom:6px;">🏌️ I had the longest drive — claim it</button>
       <div id="ldStatus" style="font-size:.72rem;color:rgba(255,255,255,.5);text-align:center;margin-bottom:4px;"></div>
     </div>
   </div>
@@ -746,6 +759,7 @@ function finishRound(){
   document.getElementById('doneNett').textContent=nett;
   document.getElementById('donePH').textContent=R.ph;
   document.getElementById('holeBadge').textContent=(R.holes===9?'9 Holes':'18 Holes')+' Complete';
+  clearRoundState();
   showScr('scrDone');
   submitScore(pts,gross,nett);
 }
@@ -766,6 +780,7 @@ async function submitScore(pts,gross,nett){
 }
 
 async function saveProgress(){
+  saveRoundState(); // Always save locally first
   try{
     const partial={name:R.name,hi:R.hi,teeKey:R.teeKey,gender:R.gender,ph:R.ph,gross:R.scores.reduce((s,g)=>s+(g||0),0),nett:0,thru:R.scores.filter(s=>s!==null).length,pts:runningPts(),fin:false,ts:Date.now()};
     let scores=[];
@@ -820,9 +835,92 @@ function shareScorecard() {
   window.open('https://wa.me/?text='+encodeURIComponent(msg),'_blank');
 }
 
+// ── ROUND STATE SAVE / RESTORE ──
+var ROUND_KEY = 'sgc_round_state';
+
+function saveRoundState() {
+  try {
+    var state = {
+      R: {
+        name:        R.name,
+        hi:          R.hi,
+        teeKey:      R.teeKey,
+        gender:      R.gender,
+        ph:          R.ph,
+        scores:      R.scores,
+        holeStep:    R.holeStep,
+        curIdx:      R.curIdx,
+        holeIndexes: R.holeIndexes,
+        holes:       R.holes,
+        nineHole:    R.nineHole,
+        competition: R.competition,
+        isPro:       R.isPro,
+        prizeClaims: R.prizeClaims,
+        team:        R.team,
+      },
+      compIdx: document.getElementById('compPicker') ? document.getElementById('compPicker').value : '',
+      ts: Date.now()
+    };
+    localStorage.setItem(ROUND_KEY, JSON.stringify(state));
+  } catch(e) {}
+}
+
+function clearRoundState() {
+  try { localStorage.removeItem(ROUND_KEY); } catch(e) {}
+}
+
+function checkForSavedRound() {
+  try {
+    var saved = localStorage.getItem(ROUND_KEY);
+    if (!saved) return;
+    var state = JSON.parse(saved);
+    if (!state || !state.R || !state.R.name) return;
+
+    // Only offer resume if saved within last 6 hours
+    var age = Date.now() - (state.ts || 0);
+    if (age > 6 * 60 * 60 * 1000) { clearRoundState(); return; }
+
+    var holesPlayed = (state.R.scores || []).filter(function(s){ return s !== null; }).length;
+    if (holesPlayed === 0) { clearRoundState(); return; }
+
+    // Show resume banner
+    var banner = document.getElementById('resumeBanner');
+    var msg    = document.getElementById('resumeMsg');
+    if (banner && msg) {
+      msg.textContent = state.R.name + ' — ' + holesPlayed + ' hole' + (holesPlayed===1?'':'s') + ' completed';
+      banner.style.display = 'block';
+      banner.dataset.state = saved;
+    }
+  } catch(e) {}
+}
+
+function resumeRound() {
+  try {
+    var banner = document.getElementById('resumeBanner');
+    var saved  = JSON.parse(banner.dataset.state);
+    R = saved.R;
+    // Restore prizeClaims structure
+    if (!R.prizeClaims) R.prizeClaims = {ntp:[],ntp2:[],ld:[]};
+    banner.style.display = 'none';
+    showScr('scrCard');
+    renderHole();
+  } catch(e) {
+    alert('Could not restore round — please start again.');
+  }
+}
+
+function dismissResume() {
+  clearRoundState();
+  document.getElementById('resumeBanner').style.display = 'none';
+}
+
+
 function showScr(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active');window.scrollTo(0,0);}
 
-window.addEventListener('load', loadAdminSettings);
+window.addEventListener('load', function() {
+  loadAdminSettings();
+  checkForSavedRound();
+});
 
 // ── FORMAT & TEE LOOKUPS ──
 // FORMAT_MAP covers both old keys (backwards compat) and new admin keys
@@ -888,10 +986,12 @@ async function loadAdminSettings() {
     var settings = await SGC.get('settings');
     if (settings && settings.ticker && settings.ticker.trim()) {
       var banner = document.getElementById('annBanner');
-      if (banner) {
-        banner.textContent = '📢 ' + settings.ticker;
-        banner.classList.add('show');
-      }
+      var txt1   = document.getElementById('annText1');
+      var txt2   = document.getElementById('annText2');
+      var msg    = '📢 ' + settings.ticker + '  ·  ';
+      if (txt1) txt1.textContent = msg;
+      if (txt2) txt2.textContent = msg;
+      if (banner) banner.classList.add('show');
     }
   } catch(e) {}
 
@@ -981,11 +1081,44 @@ function onCompSelect() {
   // Show details card
   if (details) {
     details.style.display = 'block';
-    details.innerHTML =
-      '<strong>' + comp.name + '</strong><br>' +
-      '📋 ' + fmt.label + ' &nbsp;·&nbsp; 🏌️ ' + teeLabel +
-      (comp.date ? ' &nbsp;·&nbsp; 📅 ' + comp.date : '') +
-      (comp.notes ? '<br><span style="color:var(--grey)">' + comp.notes + '</span>' : '');
+    // Build gold pill badges for competition details
+      var pills = '';
+      pills += '<span style="background:rgba(212,160,23,.2);border:1px solid rgba(212,160,23,.5);border-radius:6px;padding:4px 10px;font-size:.78rem;font-weight:700;color:#f0c040;display:inline-block;margin:2px 3px 2px 0;">' + comp.name + '</span>';
+      pills += '<span style="background:rgba(212,160,23,.12);border:1px solid rgba(212,160,23,.3);border-radius:6px;padding:3px 9px;font-size:.72rem;font-weight:600;color:#f0c040;display:inline-block;margin:2px 3px 2px 0;">📋 ' + (fmt.label||comp.format) + '</span>';
+      pills += '<span style="background:rgba(212,160,23,.12);border:1px solid rgba(212,160,23,.3);border-radius:6px;padding:3px 9px;font-size:.72rem;font-weight:600;color:#f0c040;display:inline-block;margin:2px 3px 2px 0;">🏌️ ' + teeLabel + '</span>';
+      if (comp.date) pills += '<span style="background:rgba(212,160,23,.12);border:1px solid rgba(212,160,23,.3);border-radius:6px;padding:3px 9px;font-size:.72rem;font-weight:600;color:#f0c040;display:inline-block;margin:2px 3px 2px 0;">📅 ' + comp.date + '</span>';
+      if (comp.notes) pills += '<div style="font-size:.72rem;color:rgba(255,255,255,.55);margin-top:6px;">'+comp.notes+'</div>';
+
+      // Add prize holes section
+      var ntpH  = comp.ntpHoles  || [];
+      var ntp2H = comp.ntp2Holes || [];
+      var ldH   = comp.ldHoles   || [];
+      if (ntpH.length || ntp2H.length || ldH.length) {
+        pills += '<div style="margin-top:10px;padding-top:10px;border-top:1px solid rgba(212,160,23,.15);">';
+        pills += '<div style="font-size:.62rem;letter-spacing:.12em;text-transform:uppercase;color:rgba(212,160,23,.6);font-weight:600;margin-bottom:6px;">🎯 Special Prizes</div>';
+        if (ntpH.length) {
+          pills += '<div style="margin-bottom:4px;font-size:.78rem;color:rgba(255,255,255,.8);"><strong style="color:#f0c040;">📍 Nearest the Pin:</strong> ';
+          pills += ntpH.sort(function(a,b){return a-b;}).map(function(h){
+            return 'Hole '+h;
+          }).join(', ') + '</div>';
+        }
+        if (ntp2H.length) {
+          pills += '<div style="margin-bottom:4px;font-size:.78rem;color:rgba(255,255,255,.8);"><strong style="color:#f0c040;">📍 Nearest the Pin in 2:</strong> ';
+          pills += ntp2H.sort(function(a,b){return a-b;}).map(function(h){
+            return 'Hole '+h;
+          }).join(', ') + '</div>';
+        }
+        if (ldH.length) {
+          pills += '<div style="margin-bottom:4px;font-size:.78rem;color:rgba(255,255,255,.8);"><strong style="color:#f0c040;">🏌️ Longest Drive:</strong> ';
+          pills += ldH.sort(function(a,b){return a-b;}).map(function(h){
+            return 'Hole '+h;
+          }).join(', ') + '</div>';
+        }
+        pills += '<div style="font-size:.68rem;color:rgba(255,255,255,.4);margin-top:5px;">A flag will appear when you reach these holes.</div>';
+        pills += '</div>';
+      }
+
+      details.innerHTML = '<div style="background:rgba(26,58,107,.2);border:1px solid rgba(212,160,23,.2);border-radius:10px;padding:12px 14px;">' + pills + '</div>';
   }
 
   // Lock start hole based on 9-hole format
@@ -1104,13 +1237,96 @@ function shareScorecard() {
   window.open('https://wa.me/?text='+encodeURIComponent(msg),'_blank');
 }
 
+// ── ROUND STATE SAVE / RESTORE ──
+var ROUND_KEY = 'sgc_round_state';
+
+function saveRoundState() {
+  try {
+    var state = {
+      R: {
+        name:        R.name,
+        hi:          R.hi,
+        teeKey:      R.teeKey,
+        gender:      R.gender,
+        ph:          R.ph,
+        scores:      R.scores,
+        holeStep:    R.holeStep,
+        curIdx:      R.curIdx,
+        holeIndexes: R.holeIndexes,
+        holes:       R.holes,
+        nineHole:    R.nineHole,
+        competition: R.competition,
+        isPro:       R.isPro,
+        prizeClaims: R.prizeClaims,
+        team:        R.team,
+      },
+      compIdx: document.getElementById('compPicker') ? document.getElementById('compPicker').value : '',
+      ts: Date.now()
+    };
+    localStorage.setItem(ROUND_KEY, JSON.stringify(state));
+  } catch(e) {}
+}
+
+function clearRoundState() {
+  try { localStorage.removeItem(ROUND_KEY); } catch(e) {}
+}
+
+function checkForSavedRound() {
+  try {
+    var saved = localStorage.getItem(ROUND_KEY);
+    if (!saved) return;
+    var state = JSON.parse(saved);
+    if (!state || !state.R || !state.R.name) return;
+
+    // Only offer resume if saved within last 6 hours
+    var age = Date.now() - (state.ts || 0);
+    if (age > 6 * 60 * 60 * 1000) { clearRoundState(); return; }
+
+    var holesPlayed = (state.R.scores || []).filter(function(s){ return s !== null; }).length;
+    if (holesPlayed === 0) { clearRoundState(); return; }
+
+    // Show resume banner
+    var banner = document.getElementById('resumeBanner');
+    var msg    = document.getElementById('resumeMsg');
+    if (banner && msg) {
+      msg.textContent = state.R.name + ' — ' + holesPlayed + ' hole' + (holesPlayed===1?'':'s') + ' completed';
+      banner.style.display = 'block';
+      banner.dataset.state = saved;
+    }
+  } catch(e) {}
+}
+
+function resumeRound() {
+  try {
+    var banner = document.getElementById('resumeBanner');
+    var saved  = JSON.parse(banner.dataset.state);
+    R = saved.R;
+    // Restore prizeClaims structure
+    if (!R.prizeClaims) R.prizeClaims = {ntp:[],ntp2:[],ld:[]};
+    banner.style.display = 'none';
+    showScr('scrCard');
+    renderHole();
+  } catch(e) {
+    alert('Could not restore round — please start again.');
+  }
+}
+
+function dismissResume() {
+  clearRoundState();
+  document.getElementById('resumeBanner').style.display = 'none';
+}
+
+
 function showScr(id) {
   document.querySelectorAll('.screen').forEach(function(s){ s.classList.remove('active'); });
   document.getElementById(id).classList.add('active');
   window.scrollTo(0,0);
 }
 
-window.addEventListener('load', loadAdminSettings);
+window.addEventListener('load', function() {
+  loadAdminSettings();
+  checkForSavedRound();
+});
 
 
 function openNav(){
@@ -1128,7 +1344,7 @@ document.addEventListener('keydown',function(e){if(e.key==='Escape')closeNav();}
   <div style="text-align:center;padding:14px 16px;border-top:1px solid rgba(212,160,23,.15);">
     <div style="display:inline-flex;align-items:center;gap:10px;">
       <div style="width:28px;height:1.5px;background:linear-gradient(to right,transparent,rgba(212,160,23,.6));"></div>
-      <span style="font-size:.68rem;color:rgba(212,160,23,.6);letter-spacing:.1em;font-family:'Poppins',sans-serif;">Designed &amp; built by <strong style="color:var(--gold-lt,#f0c040);font-weight:600;">Alex Persaud</strong> &nbsp;·&nbsp; PGA Professional</span>
+      <span style="font-size:.68rem;color:rgba(212,160,23,.6);letter-spacing:.1em;font-family:Poppins,sans-serif;">Designed &amp; built by <strong style="color:var(--gold-lt,#f0c040);font-weight:600;">Alex Persaud</strong> &nbsp;·&nbsp; PGA Professional</span>
       <div style="width:28px;height:1.5px;background:linear-gradient(to left,transparent,rgba(212,160,23,.6));"></div>
     </div>
   </div>
