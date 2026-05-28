@@ -203,29 +203,37 @@ select.finp option{background:#1a3a6b;color:#fff;}
       <input class="finp" id="ncDate" type="date">
 
       <label class="slabel">Format</label>
-      <div class="fmt-grid" id="compTypeGrid">
-        <label class="fmt-radio-lbl active" id="typeIndividualLbl"><input type="radio" name="compType" value="individual" checked onchange="setCompType('individual')"> Individual</label>
-        <label class="fmt-radio-lbl" id="typeTeamLbl"><input type="radio" name="compType" value="team" onchange="setCompType('team')"> Team</label>
-      </div>
       <select class="finp" id="ncFmtSelect" onchange="onFmtChange()">
-        <option value="ind_stableford">Stableford (95%)</option>
-        <option value="ind_strokeplay">Stroke Play (95%)</option>
-        <option value="ind_parbogey">Par / Bogey (95%)</option>
-        <option value="ind_maxscore">Maximum Score (95%)</option>
-        <option value="ind_matchplay">Singles Matchplay (100%)</option>
+        <optgroup label="Individual">
+          <option value="ind_stableford">Stableford</option>
+          <option value="ind_strokeplay">Stroke Play</option>
+          <option value="ind_parbogey">Par / Bogey</option>
+          <option value="ind_maxscore">Maximum Score</option>
+          <option value="ind_matchplay">Singles Matchplay</option>
+        </optgroup>
+        <optgroup label="Team">
+          <option value="team_fourball_sf">Fourball Stableford</option>
+          <option value="team_fourball_sp">Fourball Stroke Play</option>
+          <option value="team_fourball_pb">Fourball Par/Bogey</option>
+          <option value="team_foursomes">Foursomes</option>
+          <option value="team_greensomes">Greensomes</option>
+          <option value="team_matchplay_fb">Fourball Matchplay</option>
+          <option value="team_matchplay_fs">Foursomes Matchplay</option>
+        </optgroup>
       </select>
-      <div class="info-box info-blue" id="fmtInfo" style="margin-top:-4px;"></div>
 
-      <label class="slabel">Custom Allowance (optional)</label>
+      <label class="slabel">Stroke Allowance</label>
       <select class="finp" id="ncAllowance">
-        <option value="">Use format default</option>
-        <option value="1.00">100% — General Play / Matchplay</option>
-        <option value="0.95">95% — Stableford / Stroke Play</option>
-        <option value="0.90">90% — Fourball Par/Bogey</option>
-        <option value="0.85">85% — Fourball Stableford</option>
-        <option value="0.50">50% — Foursomes</option>
-        <option value="greensomes">Greensomes (60% low / 40% high)</option>
+        <option value="">Use England Golf default</option>
+        <option value="1.00">100%</option>
+        <option value="0.95">95%</option>
+        <option value="0.90">90%</option>
+        <option value="0.85">85%</option>
+        <option value="0.75">75%</option>
+        <option value="0.50">50%</option>
+        <option value="greensomes">Greensomes (60/40%)</option>
       </select>
+      <div class="info-box info-blue" id="fmtInfo" style="margin-top:-4px;font-size:.72rem;"></div>
 
       <label class="slabel">Holes</label>
       <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:6px;">
@@ -460,21 +468,10 @@ var TEE_LABELS = {
 var _ncType='individual', _ncTeeBase='white';
 function setCompType(type) {
   _ncType = type;
-  document.getElementById('typeIndBtn').classList.toggle('active', type==='individual');
-  document.getElementById('typeTeamBtn').classList.toggle('active', type==='team');
-  // Filter the format dropdown to show relevant optgroup first
-  var sel = document.getElementById('ncFmtSelect');
-  var groups = sel.querySelectorAll('optgroup');
-  if (type === 'individual') {
-    groups[0].style.display = ''; groups[1].style.display = 'none';
-    sel.value = 'ind_stableford';
-  } else {
-    groups[0].style.display = 'none'; groups[1].style.display = '';
-    sel.value = 'team_fourball_sf';
-  }
-  onFmtChange();
+  // No longer needed — single select with optgroups handles both types
 }
-// ── SPECIAL PRIZES HOLE SELECTOR ──
+
+
 function getSelectValues(id) {
   // Read from tap grid
   var gridId = id.replace('Select','Grid');
