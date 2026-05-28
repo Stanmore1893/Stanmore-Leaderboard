@@ -684,12 +684,14 @@ function onFmtChange() {
     }
   }
   // Show hint
-  var hint = document.getElementById('fmtHint');
-  if (mandatory.hint) {
-    hint.textContent = 'England Golf mandatory allowance: ' + mandatory.hint + (matched ? ' — pre-selected' : '');
-    hint.style.display = 'block';
-  } else {
-    hint.style.display = 'none';
+  var hint = document.getElementById('fmtInfo');
+  if (hint) {
+    if (mandatory.hint) {
+      hint.textContent = 'England Golf default: ' + mandatory.hint;
+      hint.style.display = 'block';
+    } else {
+      hint.style.display = 'none';
+    }
   }
 }
 
