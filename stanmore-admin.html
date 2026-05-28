@@ -618,7 +618,13 @@ function renderCompList() {
   el.innerHTML='';
   competitions.forEach(function(c,i){
     var fmt=FORMAT_LABELS[c.format]||{label:c.format,allowance:null};
-    var teeLabel=TEE_LABELS[c.tee]||c.tee;
+    // Build tee label - show both for mixed competitions
+    var teeLabel;
+    if ((c.gender||'mixed') === 'mixed' && c.teeLadies && c.teeLadies !== c.teeMen) {
+      teeLabel = (TEE_LABELS[c.teeMen]||c.teeMen) + ' / ' + (TEE_LABELS[c.teeLadies]||c.teeLadies);
+    } else {
+      teeLabel = TEE_LABELS[c.tee||c.teeMen] || c.tee;
+    }
     // Show custom allowance if set, otherwise use format default
   var dispAllowance = c.allowance !== undefined ? c.allowance : fmt.allowance;
   var pct = c.customAllowance==='greensomes'?'60/40%' : (dispAllowance ? Math.round(dispAllowance*100)+'%' : '—');
@@ -687,7 +693,7 @@ function onFmtChange() {
   }
 }
 
-function addComp() {
+async function addComp() {
   var name=document.getElementById('ncName').value.trim();
   if(!name){toast('Please enter a competition name');return;}
   var selectedFmt = document.getElementById('ncFmtSelect').value;
@@ -696,11 +702,15 @@ function addComp() {
   var fmtInfo = FORMAT_LABELS[selectedFmt] || {};
   // Use custom allowance if set, otherwise use format default
   var finalAllowance = customAllowance === 'greensomes' ? null : parseFloat(customAllowance);
+  var genderVal = document.getElementById('ncLadies') ? document.getElementById('ncLadies').value : 'mixed';
   competitions.push({
     id:Date.now().toString(), name:name,
     date:document.getElementById('ncDate').value,
     format:selectedFmt, type:fmtInfo.type||'individual',
-    tee:document.getElementById('ncTee').value,
+    tee:     _ncTeeMen + '_m',
+    teeMen:  _ncTeeMen + '_m',
+    teeLadies: _ncTeeLadies + '_f',
+    gender:  genderVal || 'mixed',
     notes:document.getElementById('ncNotes').value.trim(),
     active:competitions.length===0,
     holes:parseInt(document.getElementById('ncHoles').value)||18,
@@ -719,7 +729,10 @@ function addComp() {
   // gender reset handled by setGender('mixed')
   document.getElementById('ncFmtSelect').value='ind_stableford';
   onFmtChange();
-  renderCompList(); toast('Added — tap Save All to publish');
+  renderCompList();
+  // Auto-save immediately so score entry picks it up
+  var ok = await SGC.set('competitions', competitions);
+  toast(ok ? '✓ Competition added and published' : 'Added locally — tap Save All to publish');
 }
 
 // ── QUICK SETTINGS ──
