@@ -7,131 +7,157 @@
 <title>Stanmore GC · Course Guide</title>
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Cormorant+Garamond:wght@400;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
-:root{--navy:#1a3a6b;--navy-dk:#0f2347;--gold:#d4a017;--gold-lt:#f0c040;--gold-pale:#faf0d0;--red:#c0392b;--cream:#f8f5ef;--text:#141e30;--grey:#8896a8;--green:#2d6e4e;--green-lt:#3fa06e;--white:#fff;}
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap');
+:root{--navy:#1a3a6b;--navy-dk:#0f2347;--gold:#d4a017;--gold-lt:#f0c040;--grey:#8896a8;--green:#2d6e4e;--white:#fff;}
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
-html,body{min-height:100%;background:var(--cream);font-family:'Poppins',sans-serif;color:var(--text);}
-.hdr{background:linear-gradient(to right,var(--navy-dk),var(--navy));padding:13px 16px 0;position:sticky;top:0;z-index:20;}
-.hdr::after{content:'';display:block;height:3px;background:linear-gradient(to right,var(--gold),var(--gold-lt),var(--gold));margin-top:9px;}
-.hdr-row{display:flex;align-items:center;justify-content:space-between;}
-.brand{display:flex;align-items:center;gap:10px;}
-.logo{width:40px;height:40px;object-fit:contain;}
-.club-name{font-family:'Poppins',sans-serif;font-size:1.1rem;font-weight:700;color:var(--white);}
-.club-sub{font-size:.58rem;color:var(--gold-lt);letter-spacing:.18em;text-transform:uppercase;}
-.tab-nav{display:flex;background:var(--white);border-bottom:1px solid rgba(26,58,107,.1);}
-.tnav{flex:1;padding:11px 4px;text-align:center;font-size:.63rem;font-weight:600;letter-spacing:.07em;text-transform:uppercase;color:var(--grey);cursor:pointer;border-bottom:2px solid transparent;transition:all .2s;}
-.tnav.active{color:var(--navy);border-bottom-color:var(--gold);}
-.page{display:none;padding:14px 13px 40px;}
+html,body{min-height:100%;font-family:'Poppins',sans-serif;color:#fff;background:linear-gradient(175deg,#060e1e 0%,#0f2347 18%,#1a3a6b 38%,#162d5c 55%,#1e4a8a 68%,#0f2347 82%,#060e1e 100%);}
+#app{display:flex;flex-direction:column;min-height:100vh;}
+/* HEADER */
+.app-header{background:rgba(9,19,42,.88);backdrop-filter:blur(12px);border-bottom:1px solid rgba(212,160,23,.2);padding:12px 16px 10px;display:flex;align-items:center;gap:12px;position:sticky;top:0;z-index:100;}
+.hdr-logo{width:44px;height:44px;object-fit:contain;filter:drop-shadow(0 2px 8px rgba(212,160,23,.3));}
+.hdr-club{font-size:1.05rem;font-weight:700;color:#f0c040;}
+.hdr-sub{font-size:.62rem;color:rgba(255,255,255,.45);letter-spacing:.14em;text-transform:uppercase;margin-top:1px;}
+/* TABS */
+.tab-nav{display:flex;background:rgba(0,0,0,.3);border-bottom:1px solid rgba(212,160,23,.15);overflow-x:auto;}
+.tnav{flex:1;padding:12px 4px;text-align:center;font-size:.64rem;font-weight:600;letter-spacing:.07em;text-transform:uppercase;color:rgba(255,255,255,.4);cursor:pointer;border-bottom:2.5px solid transparent;transition:all .2s;white-space:nowrap;}
+.tnav.active{color:#f0c040;border-bottom-color:#f0c040;}
+/* PAGES */
+.page{display:none;padding:16px 14px 60px;}
 .page.active{display:block;}
-.sec-title{font-family:'Poppins',sans-serif;font-size:1.3rem;font-weight:700;color:var(--navy-dk);margin-bottom:3px;margin-top:4px;}
-.sec-sub{font-size:.72rem;color:var(--grey);margin-bottom:14px;line-height:1.5;}
-
-/* TEE CARDS */
-.tee-card{border-radius:12px;overflow:hidden;border:1px solid rgba(26,58,107,.1);margin-bottom:10px;}
-.tee-head{padding:10px 15px;display:flex;align-items:center;justify-content:space-between;}
-.tee-head.wh{background:linear-gradient(to right,#c8c8c8,#e4e4e4);color:var(--navy-dk);}
-.tee-head.ye{background:linear-gradient(to right,#c8a800,#f0c840);color:var(--navy-dk);}
-.tee-head.re{background:linear-gradient(to right,#a01818,#d43020);color:var(--white);}
-.tee-name{font-family:'Poppins',sans-serif;font-size:1.05rem;font-weight:700;}
-.tee-yds{font-family:monospace;font-size:.85rem;font-weight:500;}
-.tee-body{background:var(--white);padding:10px 15px;display:grid;grid-template-columns:1fr 1fr;gap:6px 20px;}
-.ts{display:flex;flex-direction:column;}
-.ts-lbl{font-size:.55rem;letter-spacing:.13em;text-transform:uppercase;color:var(--grey);margin-bottom:2px;}
-.ts-val{font-family:monospace;font-size:.95rem;font-weight:500;color:var(--navy-dk);}
-.ts-gen{font-size:.62rem;color:var(--grey);}
-
-/* ALLOWANCES */
-.allow-table{background:var(--white);border-radius:10px;border:1px solid rgba(26,58,107,.1);overflow:hidden;}
-.at-head-row{display:grid;grid-template-columns:1.6fr .7fr .8fr;padding:7px 12px;background:var(--navy);font-size:.57rem;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:rgba(212,160,23,.8);}
-.at-row{display:grid;grid-template-columns:1.6fr .7fr .8fr;padding:9px 12px;border-bottom:1px solid rgba(26,58,107,.06);font-size:.78rem;}
-.at-row:last-child{border-bottom:none;}
-.at-row:nth-child(odd){background:rgba(248,245,239,.6);}
-.at-type{font-weight:600;color:var(--navy-dk);}
-.at-sub{font-size:.68rem;color:var(--grey);}
-.at-pct{font-family:monospace;font-weight:500;color:var(--navy);text-align:right;}
-.at-note{font-size:.66rem;color:var(--grey);}
-
+.pg-title{font-size:1.2rem;font-weight:700;color:#f0c040;margin-bottom:2px;}
+.pg-sub{font-size:.72rem;color:rgba(255,255,255,.45);margin-bottom:16px;}
+/* GENDER/TEE SELECTORS */
+.sel-row{display:flex;gap:8px;margin-bottom:10px;flex-wrap:wrap;}
+.gbtn,.tbtn{flex:1;padding:9px 6px;border-radius:9px;border:1.5px solid rgba(255,255,255,.12);background:rgba(255,255,255,.05);color:rgba(255,255,255,.6);font-family:'Poppins',sans-serif;font-size:.78rem;font-weight:500;cursor:pointer;transition:all .2s;}
+.gbtn.active{background:rgba(26,58,107,.5);border-color:rgba(255,255,255,.3);color:#fff;font-weight:600;}
+.tbtn.w.active{background:rgba(255,255,255,.18);border-color:rgba(255,255,255,.5);color:#fff;}
+.tbtn.y.active{background:rgba(212,160,23,.2);border-color:rgba(212,160,23,.6);color:#f0c040;}
+.tbtn.r.active{background:rgba(192,57,43,.2);border-color:rgba(192,57,43,.5);color:#e87878;}
 /* SCORECARD */
-.tee-sel{display:flex;gap:7px;margin-bottom:12px;}
-.tbtn{flex:1;padding:9px 4px;border-radius:8px;border:2px solid transparent;font-size:.7rem;font-weight:600;cursor:pointer;letter-spacing:.05em;text-transform:uppercase;text-align:center;transition:all .2s;}
-.tbtn.w{background:#f0f0f0;color:var(--navy-dk);border-color:#c0c0c0;}
-.tbtn.y{background:#fef0a0;color:#6b4a00;border-color:#c8a800;}
-.tbtn.r{background:#fde8e8;color:#7a1010;border-color:#c03020;}
-.tbtn.active.w{background:#d0d0d0;border-color:#888;}
-.tbtn.active.y{background:#f0c840;border-color:#a08000;}
-.tbtn.active.r{background:#d43020;color:var(--white);border-color:#a01818;}
-.gender-sel{display:flex;gap:7px;margin-bottom:12px;}
-.gbtn{flex:1;padding:8px;border-radius:8px;border:1.5px solid rgba(26,58,107,.15);background:var(--white);font-size:.72rem;font-weight:600;cursor:pointer;color:var(--grey);transition:all .2s;text-align:center;}
-.gbtn.active{background:var(--navy);color:var(--white);border-color:var(--navy);}
-.sc-wrap{overflow-x:auto;border-radius:12px;border:1px solid rgba(26,58,107,.1);margin-bottom:8px;}
-table{border-collapse:collapse;width:100%;min-width:360px;background:var(--white);}
-thead tr{background:var(--navy);}
-th{padding:7px 5px;font-size:.54rem;font-weight:600;letter-spacing:.11em;text-transform:uppercase;color:rgba(212,160,23,.8);text-align:center;}
-th.lft{text-align:left;padding-left:10px;}
-tbody tr{border-bottom:1px solid rgba(26,58,107,.06);}
-tbody tr:nth-child(even){background:rgba(248,245,239,.7);}
-tr.nine-tot{background:rgba(26,58,107,.07);border-top:2px solid rgba(26,58,107,.18);}
-tr.grand-tot{background:linear-gradient(to right,rgba(212,160,23,.12),rgba(248,245,239,.5));border-top:2px solid var(--gold);}
-td{padding:8px 5px;font-family:monospace;font-size:.79rem;text-align:center;color:var(--text);}
-td.hn{font-weight:600;color:var(--navy);font-size:.77rem;}
-td.pc{color:var(--navy-dk);}
-td.sc{color:var(--grey);font-size:.71rem;}
-td.lbl{font-family:'Poppins',sans-serif;font-weight:600;font-size:.72rem;text-align:left;padding-left:10px;color:var(--navy-dk);}
-.p3 td.pc{color:var(--green);}
-.p5 td.pc{color:var(--navy-mid,#1e4480);}
-.sc-note{font-size:.65rem;color:var(--grey);text-align:center;margin-top:6px;}
-
-/* HANDICAP CALC */
-.calc-card{background:var(--white);border-radius:14px;border:1px solid rgba(26,58,107,.1);padding:16px 15px;margin-bottom:13px;}
-.calc-title{font-family:'Poppins',sans-serif;font-size:1.1rem;font-weight:600;color:var(--navy-dk);margin-bottom:12px;}
-.frow{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:11px;}
-.frow.one{grid-template-columns:1fr;}
-.fld{display:flex;flex-direction:column;gap:5px;}
-.flbl{font-size:.6rem;letter-spacing:.14em;text-transform:uppercase;color:var(--grey);}
-.finp{background:var(--cream);border:1.5px solid rgba(26,58,107,.15);border-radius:8px;padding:11px 12px;font-family:monospace;font-size:.9rem;color:var(--text);outline:none;width:100%;transition:border-color .2s;-webkit-appearance:none;}
-.finp:focus{border-color:var(--navy);}
-.finp option{background:var(--white);}
-.cbtn{width:100%;background:var(--navy);color:var(--white);border:none;border-radius:10px;padding:13px;font-family:'Poppins',sans-serif;font-size:.9rem;font-weight:600;cursor:pointer;letter-spacing:.04em;transition:all .2s;margin-top:3px;}
-.cbtn:active{transform:scale(.98);}
-.formula-box{background:rgba(26,58,107,.06);border:1px solid rgba(26,58,107,.12);border-radius:10px;padding:13px 15px;margin-bottom:13px;}
-.formula-title{font-size:.63rem;letter-spacing:.14em;text-transform:uppercase;color:var(--navy);font-weight:600;margin-bottom:8px;}
-.fstep{display:flex;align-items:flex-start;gap:9px;margin-bottom:7px;font-size:.77rem;color:var(--text);line-height:1.5;}
+.sc-wrap{overflow-x:auto;border-radius:10px;border:1px solid rgba(255,255,255,.08);margin-bottom:12px;}
+.sc-wrap table{width:100%;border-collapse:collapse;}
+.sc-wrap th{background:rgba(0,0,0,.4);color:rgba(212,160,23,.85);padding:9px 8px;font-size:.6rem;letter-spacing:.1em;text-transform:uppercase;text-align:center;}
+.sc-wrap th.lft{text-align:left;padding-left:12px;}
+.sc-wrap td{padding:8px;text-align:center;border-bottom:1px solid rgba(255,255,255,.05);font-family:'DM Mono',monospace;font-size:.82rem;color:rgba(255,255,255,.85);}
+.sc-wrap td:first-child{text-align:left;padding-left:12px;font-weight:600;color:#f0c040;}
+.sc-wrap tr.nine-row td{background:rgba(0,0,0,.25);color:rgba(255,255,255,.4);font-size:.7rem;letter-spacing:.08em;}
+.sc-wrap tr.tot-row td{background:rgba(212,160,23,.1);color:#f0c040;font-weight:700;}
+.sc-note{font-size:.72rem;color:rgba(255,255,255,.4);line-height:1.7;padding:8px 0;}
+/* FORMULA */
+.formula-box{background:rgba(0,0,0,.25);border:1px solid rgba(212,160,23,.2);border-radius:12px;padding:14px;margin-bottom:16px;}
+.formula-title{font-size:.62rem;letter-spacing:.15em;text-transform:uppercase;color:rgba(212,160,23,.6);font-weight:700;margin-bottom:10px;}
+.fstep{display:flex;align-items:flex-start;gap:10px;margin-bottom:8px;}
 .fstep:last-child{margin-bottom:0;}
-.snum{background:var(--navy);color:var(--white);border-radius:50%;width:19px;height:19px;display:flex;align-items:center;justify-content:center;font-size:.63rem;font-weight:600;flex-shrink:0;margin-top:1px;}
-.result-card{background:linear-gradient(135deg,var(--navy-dk),var(--navy));border-radius:14px;padding:18px 15px;margin-bottom:13px;display:none;}
-.result-card.show{display:block;}
-.res-title{font-family:'Poppins',sans-serif;font-size:1rem;font-weight:600;color:var(--gold-lt);margin-bottom:13px;}
-.res-grid{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-bottom:13px;}
-.ri{background:rgba(255,255,255,.07);border-radius:10px;padding:11px 13px;}
-.ri.hi{background:rgba(212,160,23,.2);border:1px solid rgba(212,160,23,.3);}
-.ri-lbl{font-size:.55rem;letter-spacing:.13em;text-transform:uppercase;color:var(--grey);margin-bottom:3px;}
-.ri-val{font-family:monospace;font-size:1.35rem;font-weight:500;color:var(--white);}
-.ri.hi .ri-val{color:var(--gold-lt);font-size:1.55rem;}
-.res-note{font-size:.7rem;color:rgba(255,255,255,.5);line-height:1.6;border-top:1px solid rgba(255,255,255,.1);padding-top:11px;}
-
-
-
-/* ── NAV DRAWER ── */
+.snum{width:22px;height:22px;border-radius:50%;background:rgba(212,160,23,.2);border:1px solid rgba(212,160,23,.4);color:#f0c040;font-size:.72rem;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:2px;}
+.fstep>div{font-size:.8rem;color:rgba(255,255,255,.8);line-height:1.6;}
+.fstep strong{color:#fff;}
+.fstep em{color:#f0c040;font-style:normal;}
+/* CALC CARDS */
+.calc-card{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:14px;padding:16px 14px;margin-bottom:14px;}
+.calc-title{font-size:.88rem;font-weight:700;color:#f0c040;margin-bottom:12px;padding-bottom:8px;border-bottom:1px solid rgba(212,160,23,.15);}
+label.clbl{display:block;font-size:.62rem;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.45);margin-bottom:5px;margin-top:10px;}
+/* Option C input style */
+label.clbl,.flbl{font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;color:#f0c040;font-weight:700;margin-bottom:6px;display:block;margin-top:14px;}
+input.cinp,input.finp{width:100%;background:rgba(0,0,0,.35);border:1.5px solid rgba(212,160,23,.3);border-radius:10px;padding:13px 14px;color:#fff;font-family:'DM Mono',monospace;font-size:1.3rem;font-weight:700;outline:none;-webkit-appearance:none;transition:border-color .2s;}
+input.cinp:focus,input.finp:focus{border-color:rgba(212,160,23,.7);}
+input.cinp::placeholder,input.finp::placeholder{color:rgba(255,255,255,.25);font-size:.9rem;font-family:'Poppins',sans-serif;font-weight:400;}
+select.cinp,select.finp{width:100%;background:rgba(0,0,0,.35);border:1.5px solid rgba(212,160,23,.3);border-radius:10px;padding:13px 14px;color:#fff;font-family:'Poppins',sans-serif;font-size:.92rem;outline:none;-webkit-appearance:none;margin-bottom:0;}
+select.cinp option,select.finp option{background:#1a3a6b;}
+select.cinp:focus,select.finp:focus{border-color:rgba(212,160,23,.7);}
+/* Tee selector grid */
+.tee-pick{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-top:6px;}
+.tee-opt{background:rgba(0,0,0,.25);border:1.5px solid rgba(255,255,255,.12);border-radius:10px;padding:12px 6px;text-align:center;cursor:pointer;transition:all .2s;}
+.tee-opt .tdot{width:13px;height:13px;border-radius:50%;margin:0 auto 6px;}
+.tee-opt .tname{font-size:.85rem;font-weight:600;color:rgba(255,255,255,.5);}
+.tee-opt .tyds{font-size:.68rem;color:rgba(255,255,255,.3);margin-top:2px;}
+.tee-opt.active-wh{background:rgba(0,0,0,.35);border-color:#ffffff;} .tee-opt.active-wh .tname{color:#fff;}
+.tee-opt.active-ye{background:rgba(0,0,0,.35);border-color:#f0c040;} .tee-opt.active-ye .tname{color:#f0c040;}
+.tee-opt.active-re{background:rgba(0,0,0,.35);border-color:#e74c3c;} .tee-opt.active-re .tname{color:#e87878;}
+.cbtn{width:100%;background:rgba(212,160,23,.2);border:1.5px solid rgba(212,160,23,.5);color:#f0c040;border-radius:10px;padding:13px;font-family:'Poppins',sans-serif;font-size:.92rem;font-weight:700;cursor:pointer;margin-top:14px;transition:all .2s;}
+.cbtn:active{background:rgba(212,160,23,.35);}
+.result-box{background:rgba(0,0,0,.25);border:1px solid rgba(212,160,23,.2);border-radius:10px;padding:14px;margin-top:12px;display:none;}
+.result-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.result-item{text-align:center;}
+.result-label{font-size:.6rem;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.4);margin-bottom:3px;}
+.result-value{font-size:1.5rem;font-weight:700;color:#f0c040;font-family:'DM Mono',monospace;}
+.result-note{font-size:.7rem;color:rgba(255,255,255,.45);margin-top:2px;}
+.hole-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:4px;margin-top:10px;}
+.hcell{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.07);border-radius:6px;padding:5px 3px;text-align:center;}
+.hcell-n{font-size:.58rem;color:rgba(255,255,255,.35);}
+.hcell-v{font-size:.82rem;font-weight:600;color:#f0c040;font-family:'DM Mono',monospace;}
+.hcell-s{font-size:.58rem;color:rgba(255,255,255,.4);}
+/* ALLOWANCE TABLES */
+.allow-section{margin-bottom:18px;}
+.allow-cat{font-size:.62rem;letter-spacing:.14em;text-transform:uppercase;color:#f0c040;font-weight:700;padding:10px 0 8px;border-bottom:1px solid rgba(212,160,23,.2);margin-bottom:8px;}
+.allow-table{border-radius:10px;overflow:hidden;border:1px solid rgba(255,255,255,.08);}
+.at-head{display:grid;grid-template-columns:1fr 1fr 1fr;background:rgba(0,0,0,.4);padding:8px 12px;font-size:.6rem;letter-spacing:.1em;text-transform:uppercase;color:rgba(212,160,23,.8);font-weight:700;gap:4px;}
+.at-head>div:not(:first-child){text-align:center;}
+.at-row{display:grid;grid-template-columns:1fr 1fr 1fr;padding:9px 12px;border-top:1px solid rgba(255,255,255,.05);font-size:.8rem;color:rgba(255,255,255,.8);gap:4px;align-items:center;}
+.at-row:nth-child(even){background:rgba(255,255,255,.02);}
+.at-badge{background:rgba(212,160,23,.15);border:1px solid rgba(212,160,23,.3);border-radius:5px;padding:2px 0;font-size:.72rem;font-weight:700;color:#f0c040;text-align:center;}
+.at-type{font-size:.68rem;color:rgba(255,255,255,.45);text-align:center;}
+/* RATINGS TABLE */
+.ratings-table{width:100%;border-collapse:collapse;}
+.ratings-table th{background:rgba(0,0,0,.4);color:rgba(212,160,23,.85);padding:9px 10px;font-size:.6rem;letter-spacing:.1em;text-transform:uppercase;text-align:center;}
+.ratings-table th:first-child{text-align:left;}
+.ratings-table td{padding:9px 10px;border-bottom:1px solid rgba(255,255,255,.05);text-align:center;font-family:'DM Mono',monospace;font-size:.82rem;color:rgba(255,255,255,.8);}
+.ratings-table td:first-child{text-align:left;font-family:'Poppins',sans-serif;color:#fff;font-weight:500;}
+/* NAV DRAWER */
 .nav-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.65);z-index:500;backdrop-filter:blur(4px);}
 .nav-overlay.open{display:block;}
-.nav-drawer{position:fixed;top:0;right:0;bottom:0;width:300px;background:linear-gradient(180deg,#09132a 0%,#0f2347 60%,#1a3a6b 100%);border-left:2px solid rgba(212,160,23,.3);z-index:501;transform:translateX(100%);transition:transform .3s cubic-bezier(.4,0,.2,1);display:flex;flex-direction:column;overflow:hidden;box-shadow:-4px 0 30px rgba(0,0,0,.5);}
+.nav-drawer{position:fixed;top:0;right:0;bottom:0;width:300px;background:linear-gradient(180deg,#09132a 0%,#0f2347 60%,#1a3a6b 100%);border-left:2px solid rgba(212,160,23,.3);z-index:501;transform:translateX(100%);transition:transform .3s cubic-bezier(.4,0,.2,1);display:flex;flex-direction:column;overflow:hidden;}
 .nav-drawer.open{transform:translateX(0);}
 .nav-head{padding:22px 18px 16px;border-bottom:1px solid rgba(212,160,23,.25);display:flex;align-items:center;gap:12px;background:rgba(0,0,0,.3);}
-.nav-logo{width:46px;height:46px;object-fit:contain;flex-shrink:0;}
-.nav-club-name{font-family:'Poppins',sans-serif;font-size:1.1rem;font-weight:700;color:#fff;line-height:1.2;}
+.nav-logo{width:46px;height:46px;object-fit:contain;}
+.nav-club-name{font-size:1.1rem;font-weight:700;color:#fff;}
 .nav-club-sub{font-size:.62rem;color:rgba(212,160,23,.85);letter-spacing:.18em;text-transform:uppercase;margin-top:3px;}
 .nav-items{flex:1;padding:12px 0;overflow-y:auto;}
-.nav-item{display:flex;align-items:center;gap:14px;padding:16px 20px;text-decoration:none;color:#ffffff;font-family:'Poppins',sans-serif;font-size:1rem;font-weight:500;transition:all .2s;border-right:3px solid transparent;letter-spacing:.01em;}
-.nav-item:active{background:rgba(255,255,255,.08);color:#fff;}
+.nav-item{display:flex;align-items:center;gap:14px;padding:16px 20px;text-decoration:none;color:#fff;font-family:'Poppins',sans-serif;font-size:1rem;font-weight:500;transition:all .2s;border-right:3px solid transparent;}
 .nav-item.active{background:rgba(212,160,23,.15);color:#f0c040;border-right-color:#d4a017;font-weight:600;}
 .nav-icon{font-size:1.3rem;width:30px;text-align:center;flex-shrink:0;}
 .nav-lbl{line-height:1.3;}
 .nav-desc{font-size:.72rem;color:rgba(255,255,255,.55);display:block;margin-top:2px;font-weight:400;}
-.nav-item.active .nav-desc{color:rgba(212,160,23,.65);}
 .nav-div{height:1px;background:rgba(255,255,255,.1);margin:6px 18px;}
-.nav-sec{font-size:.65rem;letter-spacing:.16em;text-transform:uppercase;color:rgba(255,255,255,.4);padding:10px 20px 4px;font-family:'Poppins',sans-serif;font-weight:600;}
-.nav-foot{padding:14px 18px;border-top:1px solid rgba(255,255,255,.1);font-size:.68rem;color:rgba(255,255,255,.3);font-family:monospace;line-height:1.7;}
-.sgc-burger{position:fixed;top:12px;right:12px;left:auto;z-index:499;width:42px;height:42px;background:#1a3a6b;border:1.5px solid rgba(212,160,23,.5);border-radius:9px;display:flex;align-items:center;justify-content:center;cursor:pointer;box-shadow:0 2px 12px rgba(0,0,0,.5);color:#fff;font-size:1.3rem;line-height:1;}
-.sgc-burger:active{background:rgba(212,160,23,.3);}
+.nav-sec{font-size:.65rem;letter-spacing:.16em;text-transform:uppercase;color:rgba(255,255,255,.4);padding:10px 20px 4px;}
+.nav-foot{padding:14px 18px;border-top:1px solid rgba(255,255,255,.1);font-size:.68rem;color:rgba(255,255,255,.3);font-family:'DM Mono',monospace;line-height:1.7;}
+.sgc-burger{position:fixed;top:12px;right:12px;z-index:499;width:42px;height:42px;background:#1a3a6b;border:1.5px solid rgba(212,160,23,.5);border-radius:9px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:#fff;font-size:1.3rem;}
+/* TEE CARDS */
+.tee-card{border-radius:12px;overflow:hidden;border:1px solid rgba(255,255,255,.1);margin-bottom:14px;}
+.tee-head{display:flex;align-items:center;justify-content:space-between;padding:12px 14px;}
+.tee-head.wh{background:rgba(255,255,255,.15);border-bottom:1px solid rgba(255,255,255,.15);}
+.tee-head.ye{background:rgba(212,160,23,.2);border-bottom:1px solid rgba(212,160,23,.3);}
+.tee-head.re{background:rgba(192,57,43,.2);border-bottom:1px solid rgba(192,57,43,.3);}
+.tee-name{font-size:1rem;font-weight:700;color:#fff;}
+.tee-yds{font-size:.85rem;font-weight:700;color:#ffffff;font-family:'DM Mono',monospace;}
+.tee-body{display:grid;grid-template-columns:1fr 1fr;background:rgba(0,0,0,.2);}
+.ts{display:grid;grid-template-columns:1fr auto auto;align-items:center;gap:8px;padding:11px 14px;border-bottom:1px solid rgba(255,255,255,.05);border-right:1px solid rgba(255,255,255,.05);}
+.ts:nth-child(even){border-right:none;}
+.ts:nth-last-child(-n+2){border-bottom:none;}
+.ts-lbl{font-size:.82rem;font-weight:600;color:#ffffff;}
+.ts-val{font-size:1.05rem;font-weight:700;color:#f0c040;font-family:'DM Mono',monospace;}
+.ts-gen{font-size:.7rem;font-weight:600;color:#0f2347;background:#f0c040;border-radius:5px;padding:2px 8px;white-space:nowrap;}
+
+/* ALLOWANCE CATEGORIES */
+.allow-cat-lbl{font-size:.72rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:#f0c040;padding:10px 0 8px;border-bottom:1px solid rgba(212,160,23,.2);margin-bottom:8px;}
+
+/* AT-TYPE / AT-PCT fix — these are the data cells */
+.at-type{font-size:.88rem;color:rgba(255,255,255,.85);}
+.at-pct{font-size:.88rem;font-weight:700;color:#f0c040;font-family:'DM Mono',monospace;text-align:center;}
+.at-note{font-size:.75rem;color:rgba(255,255,255,.55);text-align:center;word-break:break-word;line-height:1.3;}
+
+/* Increase table font sizes globally */
+.sc-wrap td{font-size:.9rem;}
+.sc-wrap th{font-size:.68rem;}
+.at-row{font-size:.88rem;}
+.at-head{font-size:.68rem;}
+.ratings-table td{font-size:.9rem;}
+.ratings-table th{font-size:.68rem;}
+
+/* SOURCE NOTE */
+.source-note{font-size:.75rem;color:rgba(255,255,255,.4);text-align:center;padding:8px 0 4px;}
+
+/* FOOTER */
+.footer{padding:18px 16px;text-align:center;border-top:1px solid rgba(255,255,255,.07);}
 </style>
 </head>
 <body>
@@ -161,18 +187,18 @@ td.lbl{font-family:'Poppins',sans-serif;font-weight:600;font-size:.72rem;text-al
   <div class="nav-foot">Stanmore Golf Club · Digital Hub<br>stanmore1893.github.io</div>
 </div>
 
-<div class="hdr">
-  <div class="hdr-row">
-<div class="brand">
-      <img class="logo" src="club-logo.png" alt="">
-      <div><div class="club-name">Stanmore Golf Club</div><div class="club-sub">Course Guide & Handicaps</div></div>
-    </div>
+
+<div class="app-header">
+  <img class="hdr-logo" src="club-logo.png" alt="Stanmore GC">
+  <div>
+    <div class="hdr-club">Stanmore Golf Club</div>
+    <div class="hdr-sub">Course Guide &amp; Handicap Calculator</div>
   </div>
 </div>
 <div class="tab-nav">
-  <div class="tnav active" onclick="showPage('pgR',this)">Tee Ratings</div>
-  <div class="tnav" onclick="showPage('pgC',this)">Scorecard</div>
-  <div class="tnav" onclick="showPage('pgH',this)">Hcp Calc</div>
+  <div class="tnav active" onclick="showPage('pgR',this)">📊 Tee Ratings</div>
+  <div class="tnav" onclick="showPage('pgC',this)">📋 Scorecard</div>
+  <div class="tnav" onclick="showPage('pgH',this)">🧮 Hcp Calc</div>
 </div>
 
 <!-- RATINGS -->
@@ -203,60 +229,60 @@ td.lbl{font-family:'Poppins',sans-serif;font-weight:600;font-size:.72rem;text-al
       <div class="ts"><div class="ts-lbl">Slope Rating</div><div class="ts-val">127</div><div class="ts-gen">Women</div></div>
     </div>
   </div>
-  <div class="sec-title" style="margin-top:8px">Playing Handicap Allowances</div>
-  <div class="sec-sub">England Golf mandatory allowances — World Handicap System</div>
+  <div class="pg-title" style="margin-top:8px;font-size:1.1rem;">Playing Handicap Allowances</div>
+  <div class="pg-sub">England Golf mandatory allowances · World Handicap System</div>
 
   <!-- INDIVIDUAL -->
   <div style="margin-bottom:14px;">
-    <div style="font-size:.65rem;font-weight:600;letter-spacing:.15em;text-transform:uppercase;color:var(--navy);padding:8px 0 6px;">Individual</div>
+    <div class="allow-cat-lbl">Individual</div>
     <div class="allow-table">
-      <div class="at-head" style="display:grid;grid-template-columns:1fr auto;"><div>Format</div><div>Allowance</div></div>
-      <div class="at-row"><div class="at-type">Stableford</div><div class="at-pct">95%</div></div>
-      <div class="at-row"><div class="at-type">Strokeplay (Nett)</div><div class="at-pct">95%</div></div>
-      <div class="at-row"><div class="at-type">Par / Bogey</div><div class="at-pct">95%</div></div>
-      <div class="at-row"><div class="at-type">Maximum Score</div><div class="at-pct">95%</div></div>
+      <div class="at-head"><div>Format</div><div>Allowance</div><div>Type</div></div>
+      <div class="at-row"><div class="at-type">Stableford</div><div class="at-pct">95%</div><div class="at-note">Mandatory</div></div>
+      <div class="at-row"><div class="at-type">Strokeplay (Nett)</div><div class="at-pct">95%</div><div class="at-note">Mandatory</div></div>
+      <div class="at-row"><div class="at-type">Par / Bogey</div><div class="at-pct">95%</div><div class="at-note">Mandatory</div></div>
+      <div class="at-row"><div class="at-type">Maximum Score</div><div class="at-pct">95%</div><div class="at-note">Mandatory</div></div>
     </div>
   </div>
 
   <!-- MATCHPLAY -->
   <div style="margin-bottom:14px;">
-    <div style="font-size:.65rem;font-weight:600;letter-spacing:.15em;text-transform:uppercase;color:var(--navy);padding:8px 0 6px;">Matchplay</div>
+    <div class="allow-cat-lbl">Matchplay</div>
     <div class="allow-table">
-      <div class="at-head" style="display:grid;grid-template-columns:1fr auto;"><div>Format</div><div>Allowance</div></div>
-      <div class="at-row"><div class="at-type">Individual</div><div class="at-pct">100%</div></div>
-      <div class="at-row"><div class="at-type">Fourball</div><div class="at-pct">90%</div></div>
+      <div class="at-head"><div>Format</div><div>Allowance</div><div>Type</div></div>
+      <div class="at-row"><div class="at-type">Individual Matchplay</div><div class="at-pct">100%</div><div class="at-note">Mandatory</div></div>
+      <div class="at-row"><div class="at-type">Fourball Matchplay</div><div class="at-pct">90%</div><div class="at-note">Mandatory</div></div>
     </div>
   </div>
 
   <!-- TEAM STROKEPLAY -->
   <div style="margin-bottom:14px;">
-    <div style="font-size:.65rem;font-weight:600;letter-spacing:.15em;text-transform:uppercase;color:var(--navy);padding:8px 0 6px;">Team / Pairs (Strokeplay)</div>
+    <div class="allow-cat-lbl">Team / Pairs (Strokeplay)</div>
     <div class="allow-table">
-      <div class="at-head" style="display:grid;grid-template-columns:1fr auto;"><div>Format</div><div>Allowance</div></div>
-      <div class="at-row"><div class="at-type">Fourball Stableford</div><div class="at-pct">85%</div></div>
-      <div class="at-row"><div class="at-type">Fourball Strokeplay</div><div class="at-pct">85%</div></div>
-      <div class="at-row"><div class="at-type">Fourball Par / Bogey</div><div class="at-pct">90%</div></div>
-      <div class="at-row"><div class="at-type">Foursomes</div><div class="at-pct">50% combined</div></div>
-      <div class="at-row"><div class="at-type">Greensomes</div><div class="at-pct">60% low + 40% high</div></div>
-      <div class="at-row"><div class="at-type">Scramble (4 players)</div><div class="at-pct">25/20/15/10% low→high</div></div>
-      <div class="at-row"><div class="at-type">Scramble (2 players)</div><div class="at-pct">35% low + 15% high</div></div>
+      <div class="at-head"><div>Format</div><div>Allowance</div><div>Type</div></div>
+      <div class="at-row"><div class="at-type">Fourball Stableford</div><div class="at-pct">85%</div><div class="at-note">Mandatory</div></div>
+      <div class="at-row"><div class="at-type">Fourball Strokeplay</div><div class="at-pct">85%</div><div class="at-note">Mandatory</div></div>
+      <div class="at-row"><div class="at-type">Fourball Par / Bogey</div><div class="at-pct">90%</div><div class="at-note">Mandatory</div></div>
+      <div class="at-row"><div class="at-type">Foursomes</div><div class="at-pct">50%</div><div class="at-note">Mandatory</div></div>
+      <div class="at-row"><div class="at-type">Greensomes</div><div class="at-pct">60/40%</div><div class="at-note">Mandatory</div></div>
+      <div class="at-row"><div class="at-type">Scramble (4 players)</div><div class="at-pct">Variable</div><div class="at-note">Recommended</div></div>
+      <div class="at-row"><div class="at-type">Scramble (2 players)</div><div class="at-pct">35/15%</div><div class="at-note">Recommended</div></div>
     </div>
   </div>
 
-  <div style="font-size:.68rem;color:var(--grey);text-align:center;padding-bottom:4px;">
+  <div class="source-note">
     Source: England Golf · World Handicap System mandatory allowances
   </div>
 </div>
 
 <!-- SCORECARD -->
 <div class="page" id="pgC">
-  <div class="sec-title">Course Scorecard</div>
-  <div class="sec-sub">From official club scorecard · Select tee and gender</div>
-  <div class="gender-sel">
+  <div class="pg-title">📋 Course Scorecard</div>
+  <div class="pg-sub">Select your tee and gender to view the full scorecard</div>
+  <div class="sel-row">
     <button class="gbtn active" onclick="setGender('m',this)">♂ Men (Par 69)</button>
     <button class="gbtn" onclick="setGender('f',this)">♀ Women (Par 72)</button>
   </div>
-  <div class="tee-sel">
+  <div class="sel-row">
     <button class="tbtn w active" onclick="setTee('white',this)">⚪ White</button>
     <button class="tbtn y" onclick="setTee('yellow',this)">🟡 Yellow</button>
     <button class="tbtn r" onclick="setTee('red',this)">🔴 Red</button>
@@ -269,8 +295,8 @@ td.lbl{font-family:'Poppins',sans-serif;font-weight:600;font-size:.72rem;text-al
 
 <!-- HANDICAP CALC -->
 <div class="page" id="pgH">
-  <div class="sec-title">Handicap Calculator</div>
-  <div class="sec-sub">WHS: Handicap Index → Course Handicap → Playing Handicap</div>
+  <div class="pg-title">🧮 Handicap Calculator</div>
+  <div class="pg-sub">WHS: Handicap Index → Course Handicap → Playing Handicap</div>
 
   <!-- FORMULA -->
   <div class="formula-box">
@@ -285,14 +311,35 @@ td.lbl{font-family:'Poppins',sans-serif;font-weight:600;font-size:.72rem;text-al
     <div class="calc-title">Individual Playing Handicap</div>
     <div class="frow">
       <div class="fld"><div class="flbl">Handicap Index</div><input class="finp" id="hiIn" type="number" placeholder="e.g. 14.2" step="0.1" min="-5" max="54"></div>
-      <div class="fld"><div class="flbl">Gender</div><select class="finp" id="genIn"><option value="m">Male</option><option value="f">Female</option></select></div>
+      <div class="fld"><div class="flbl">Gender</div><div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:6px;">
+  <div onclick="setGenIn('m',this)" style="background:rgba(0,0,0,.35);border:1.5px solid #f0c040;border-radius:10px;padding:12px;text-align:center;cursor:pointer;" id="genInM">
+    <div style="font-size:.85rem;font-weight:600;color:#f0c040;">Male</div>
+  </div>
+  <div onclick="setGenIn('f',this)" style="background:rgba(0,0,0,.25);border:1.5px solid rgba(255,255,255,.12);border-radius:10px;padding:12px;text-align:center;cursor:pointer;" id="genInF">
+    <div style="font-size:.85rem;font-weight:600;color:rgba(255,255,255,.4);">Female</div>
+  </div>
+</div>
+<input type="hidden" id="genIn" value="m"></div>
     </div>
     <div class="frow">
-      <div class="fld"><div class="flbl">Tee</div><select class="finp" id="teeIn">
-        <option value="white_m">White (Men)</option><option value="white_f">White (Women)</option>
-        <option value="yellow_m">Yellow (Men)</option><option value="yellow_f">Yellow (Women)</option>
-        <option value="red_m">Red (Men)</option><option value="red_f">Red (Women)</option>
-      </select></div>
+      <div class="fld"><div class="flbl">Tee</div><div class="tee-pick" id="teeInGrid">
+  <div class="tee-opt" data-tee="white_m" onclick="selectTeeOpt(this,'teeIn')">
+    <div class="tdot" style="background:#ffffff;border:1px solid rgba(255,255,255,.4);"></div>
+    <div class="tname">White</div>
+    <div class="tyds">6,025 yds</div>
+  </div>
+  <div class="tee-opt" data-tee="yellow_m" onclick="selectTeeOpt(this,'teeIn')">
+    <div class="tdot" style="background:#f0c040;"></div>
+    <div class="tname">Yellow</div>
+    <div class="tyds">5,758 yds</div>
+  </div>
+  <div class="tee-opt" data-tee="red_m" onclick="selectTeeOpt(this,'teeIn')">
+    <div class="tdot" style="background:#e74c3c;"></div>
+    <div class="tname">Red</div>
+    <div class="tyds">5,385 yds</div>
+  </div>
+</div>
+<input type="hidden" id="teeIn" value="yellow_m"></div>
       <div class="fld"><div class="flbl">Format</div><select class="finp" id="fmtIn">
         <option value="0.95">Stableford (95%)</option>
         <option value="0.95">Stroke Play (95%)</option>
@@ -327,11 +374,24 @@ td.lbl{font-family:'Poppins',sans-serif;font-weight:600;font-size:.72rem;text-al
     <div style="font-size:.74rem;color:var(--grey);margin-bottom:11px;line-height:1.6;">Paste Handicap Indexes separated by commas to get Playing Handicaps for the full field.</div>
     <div class="frow one"><div class="fld"><div class="flbl">Handicap Indexes</div><input class="finp" id="batchIn" type="text" placeholder="14.2, 7.4, 22.1, 5.0…"></div></div>
     <div class="frow">
-      <div class="fld"><div class="flbl">Tee</div><select class="finp" id="bTee">
-        <option value="white_m">White (Men)</option><option value="yellow_m">Yellow (Men)</option>
-        <option value="red_m">Red (Men)</option><option value="yellow_f">Yellow (Women)</option>
-        <option value="red_f">Red (Women)</option>
-      </select></div>
+      <div class="fld"><div class="flbl">Tee</div><div class="tee-pick" id="bTeeGrid">
+  <div class="tee-opt" data-tee="white_m" onclick="selectTeeOpt(this,'bTee')">
+    <div class="tdot" style="background:#ffffff;border:1px solid rgba(255,255,255,.4);"></div>
+    <div class="tname">White</div>
+    <div class="tyds">6,025 yds</div>
+  </div>
+  <div class="tee-opt" data-tee="yellow_m" onclick="selectTeeOpt(this,'bTee')">
+    <div class="tdot" style="background:#f0c040;"></div>
+    <div class="tname">Yellow</div>
+    <div class="tyds">5,758 yds</div>
+  </div>
+  <div class="tee-opt" data-tee="red_m" onclick="selectTeeOpt(this,'bTee')">
+    <div class="tdot" style="background:#e74c3c;"></div>
+    <div class="tname">Red</div>
+    <div class="tyds">5,385 yds</div>
+  </div>
+</div>
+<input type="hidden" id="bTee" value="yellow_m"></div>
       <div class="fld"><div class="flbl">Format</div><select class="finp" id="bFmt">
         <option value="0.95">Stableford (95%)</option>
         <option value="0.95">Stroke Play (95%)</option>
@@ -369,11 +429,24 @@ td.lbl{font-family:'Poppins',sans-serif;font-weight:600;font-size:.72rem;text-al
       <div style="font-size:.65rem;letter-spacing:.14em;text-transform:uppercase;color:#a8c4f0;font-weight:600;margin-bottom:10px;" id="mpLabelA">Player A</div>
       <div class="frow" style="margin-bottom:0">
         <div class="fld"><div class="flbl">Handicap Index</div><input class="finp" id="mpA_hi" type="number" placeholder="e.g. 5.1" step="0.1" min="-5" max="54" style="margin-bottom:0"></div>
-        <div class="fld"><div class="flbl">Tee</div><select class="finp" id="mpA_tee" style="margin-bottom:0">
-          <option value="yellow_m">Yellow (Men)</option><option value="white_m">White (Men)</option>
-          <option value="red_m">Red (Men)</option><option value="red_f">Red (Women)</option>
-          <option value="yellow_f">Yellow (Women)</option><option value="white_f">White (Women)</option>
-        </select></div>
+        <div class="fld"><div class="flbl">Tee</div><div class="tee-pick" id="mpA_teeGrid">
+  <div class="tee-opt" data-tee="white_m" onclick="selectTeeOpt(this,'mpA_tee')">
+    <div class="tdot" style="background:#ffffff;border:1px solid rgba(255,255,255,.4);"></div>
+    <div class="tname">White</div>
+    <div class="tyds">6,025 yds</div>
+  </div>
+  <div class="tee-opt" data-tee="yellow_m" onclick="selectTeeOpt(this,'mpA_tee')">
+    <div class="tdot" style="background:#f0c040;"></div>
+    <div class="tname">Yellow</div>
+    <div class="tyds">5,758 yds</div>
+  </div>
+  <div class="tee-opt" data-tee="red_m" onclick="selectTeeOpt(this,'mpA_tee')">
+    <div class="tdot" style="background:#e74c3c;"></div>
+    <div class="tname">Red</div>
+    <div class="tyds">5,385 yds</div>
+  </div>
+</div>
+<input type="hidden" id="mpA_tee" value="yellow_m"></div>
       </div>
     </div>
 
@@ -382,11 +455,24 @@ td.lbl{font-family:'Poppins',sans-serif;font-weight:600;font-size:.72rem;text-al
       <div style="font-size:.65rem;letter-spacing:.14em;text-transform:uppercase;color:#8ee0b4;font-weight:600;margin-bottom:10px;" id="mpLabelB">Player B</div>
       <div class="frow" style="margin-bottom:0">
         <div class="fld"><div class="flbl">Handicap Index</div><input class="finp" id="mpB_hi" type="number" placeholder="e.g. 14.2" step="0.1" min="-5" max="54" style="margin-bottom:0"></div>
-        <div class="fld"><div class="flbl">Tee</div><select class="finp" id="mpB_tee" style="margin-bottom:0">
-          <option value="yellow_m">Yellow (Men)</option><option value="white_m">White (Men)</option>
-          <option value="red_m">Red (Men)</option><option value="red_f">Red (Women)</option>
-          <option value="yellow_f">Yellow (Women)</option><option value="white_f">White (Women)</option>
-        </select></div>
+        <div class="fld"><div class="flbl">Tee</div><div class="tee-pick" id="mpB_teeGrid">
+  <div class="tee-opt" data-tee="white_m" onclick="selectTeeOpt(this,'mpB_tee')">
+    <div class="tdot" style="background:#ffffff;border:1px solid rgba(255,255,255,.4);"></div>
+    <div class="tname">White</div>
+    <div class="tyds">6,025 yds</div>
+  </div>
+  <div class="tee-opt" data-tee="yellow_m" onclick="selectTeeOpt(this,'mpB_tee')">
+    <div class="tdot" style="background:#f0c040;"></div>
+    <div class="tname">Yellow</div>
+    <div class="tyds">5,758 yds</div>
+  </div>
+  <div class="tee-opt" data-tee="red_m" onclick="selectTeeOpt(this,'mpB_tee')">
+    <div class="tdot" style="background:#e74c3c;"></div>
+    <div class="tname">Red</div>
+    <div class="tyds">5,385 yds</div>
+  </div>
+</div>
+<input type="hidden" id="mpB_tee" value="yellow_m"></div>
       </div>
     </div>
 
@@ -397,22 +483,48 @@ td.lbl{font-family:'Poppins',sans-serif;font-weight:600;font-size:.72rem;text-al
         <div style="font-size:.65rem;letter-spacing:.14em;text-transform:uppercase;color:rgba(212,160,23,.8);font-weight:600;margin-bottom:10px;" id="mpLabelC">Player C</div>
         <div class="frow" style="margin-bottom:0">
           <div class="fld"><div class="flbl">Handicap Index</div><input class="finp" id="mpC_hi" type="number" placeholder="e.g. 8.0" step="0.1" min="-5" max="54" style="margin-bottom:0"></div>
-          <div class="fld"><div class="flbl">Tee</div><select class="finp" id="mpC_tee" style="margin-bottom:0">
-            <option value="yellow_m">Yellow (Men)</option><option value="white_m">White (Men)</option>
-            <option value="red_m">Red (Men)</option><option value="red_f">Red (Women)</option>
-            <option value="yellow_f">Yellow (Women)</option><option value="white_f">White (Women)</option>
-          </select></div>
+          <div class="fld"><div class="flbl">Tee</div><div class="tee-pick" id="mpC_teeGrid">
+  <div class="tee-opt" data-tee="white_m" onclick="selectTeeOpt(this,'mpC_tee')">
+    <div class="tdot" style="background:#ffffff;border:1px solid rgba(255,255,255,.4);"></div>
+    <div class="tname">White</div>
+    <div class="tyds">6,025 yds</div>
+  </div>
+  <div class="tee-opt" data-tee="yellow_m" onclick="selectTeeOpt(this,'mpC_tee')">
+    <div class="tdot" style="background:#f0c040;"></div>
+    <div class="tname">Yellow</div>
+    <div class="tyds">5,758 yds</div>
+  </div>
+  <div class="tee-opt" data-tee="red_m" onclick="selectTeeOpt(this,'mpC_tee')">
+    <div class="tdot" style="background:#e74c3c;"></div>
+    <div class="tname">Red</div>
+    <div class="tyds">5,385 yds</div>
+  </div>
+</div>
+<input type="hidden" id="mpC_tee" value="yellow_m"></div>
         </div>
       </div>
       <div style="background:rgba(212,160,23,.08);border:1px solid rgba(212,160,23,.2);border-radius:10px;padding:12px 13px;margin-bottom:10px;">
         <div style="font-size:.65rem;letter-spacing:.14em;text-transform:uppercase;color:rgba(212,160,23,.8);font-weight:600;margin-bottom:10px;" id="mpLabelD">Player D</div>
         <div class="frow" style="margin-bottom:0">
           <div class="fld"><div class="flbl">Handicap Index</div><input class="finp" id="mpD_hi" type="number" placeholder="e.g. 18.5" step="0.1" min="-5" max="54" style="margin-bottom:0"></div>
-          <div class="fld"><div class="flbl">Tee</div><select class="finp" id="mpD_tee" style="margin-bottom:0">
-            <option value="yellow_m">Yellow (Men)</option><option value="white_m">White (Men)</option>
-            <option value="red_m">Red (Men)</option><option value="red_f">Red (Women)</option>
-            <option value="yellow_f">Yellow (Women)</option><option value="white_f">White (Women)</option>
-          </select></div>
+          <div class="fld"><div class="flbl">Tee</div><div class="tee-pick" id="mpD_teeGrid">
+  <div class="tee-opt" data-tee="white_m" onclick="selectTeeOpt(this,'mpD_tee')">
+    <div class="tdot" style="background:#ffffff;border:1px solid rgba(255,255,255,.4);"></div>
+    <div class="tname">White</div>
+    <div class="tyds">6,025 yds</div>
+  </div>
+  <div class="tee-opt" data-tee="yellow_m" onclick="selectTeeOpt(this,'mpD_tee')">
+    <div class="tdot" style="background:#f0c040;"></div>
+    <div class="tname">Yellow</div>
+    <div class="tyds">5,758 yds</div>
+  </div>
+  <div class="tee-opt" data-tee="red_m" onclick="selectTeeOpt(this,'mpD_tee')">
+    <div class="tdot" style="background:#e74c3c;"></div>
+    <div class="tname">Red</div>
+    <div class="tyds">5,385 yds</div>
+  </div>
+</div>
+<input type="hidden" id="mpD_tee" value="yellow_m"></div>
         </div>
       </div>
     </div>
@@ -439,10 +551,24 @@ td.lbl{font-family:'Poppins',sans-serif;font-weight:600;font-size:.72rem;text-al
       <div class="fld"><div class="flbl">Player B — HI</div><input class="finp" id="gsB_hi" type="number" placeholder="e.g. 15.2" step="0.1" min="-5" max="54"></div>
     </div>
     <div class="frow one">
-      <div class="fld"><div class="flbl">Tee</div><select class="finp" id="gsTee">
-        <option value="yellow_m">Yellow (Men)</option><option value="white_m">White (Men)</option>
-        <option value="red_m">Red (Men)</option><option value="red_f">Red (Women)</option>
-      </select></div>
+      <div class="fld"><div class="flbl">Tee</div><div class="tee-pick" id="gsTeeGrid">
+  <div class="tee-opt" data-tee="white_m" onclick="selectTeeOpt(this,'gsTee')">
+    <div class="tdot" style="background:#ffffff;border:1px solid rgba(255,255,255,.4);"></div>
+    <div class="tname">White</div>
+    <div class="tyds">6,025 yds</div>
+  </div>
+  <div class="tee-opt" data-tee="yellow_m" onclick="selectTeeOpt(this,'gsTee')">
+    <div class="tdot" style="background:#f0c040;"></div>
+    <div class="tname">Yellow</div>
+    <div class="tyds">5,758 yds</div>
+  </div>
+  <div class="tee-opt" data-tee="red_m" onclick="selectTeeOpt(this,'gsTee')">
+    <div class="tdot" style="background:#e74c3c;"></div>
+    <div class="tname">Red</div>
+    <div class="tyds">5,385 yds</div>
+  </div>
+</div>
+<input type="hidden" id="gsTee" value="yellow_m"></div>
     </div>
     <button class="cbtn" onclick="calcTeam()">Calculate Team Handicap</button>
     <div id="gsResult" style="margin-top:13px;"></div>
@@ -875,6 +1001,54 @@ function calcTeam(){
 function openNav(){document.getElementById('sgcNavDrawer').classList.add('open');document.getElementById('sgcNavOverlay').classList.add('open');document.body.style.overflow='hidden';}
 function closeNav(){document.getElementById('sgcNavDrawer').classList.remove('open');document.getElementById('sgcNavOverlay').classList.remove('open');document.body.style.overflow='';}
 document.addEventListener('keydown',function(e){if(e.key==='Escape')closeNav();});
+
+function setGenIn(val, el) {
+  document.getElementById('genIn').value = val;
+  var m = document.getElementById('genInM');
+  var f = document.getElementById('genInF');
+  if (!m || !f) return;
+  if (val === 'm') {
+    m.style.borderColor='#f0c040'; m.style.background='rgba(0,0,0,.35)';
+    m.querySelector('div').style.color='#f0c040';
+    f.style.borderColor='rgba(255,255,255,.12)'; f.style.background='rgba(0,0,0,.25)';
+    f.querySelector('div').style.color='rgba(255,255,255,.4)';
+    // Update teeIn grid to men tees
+    var grid = document.getElementById('teeInGrid');
+    if (grid) grid.querySelectorAll('.tee-opt').forEach(function(o){
+      o.dataset.tee = o.dataset.tee.replace('_f','_m');
+      document.getElementById('teeIn').value = document.getElementById('teeIn').value.replace('_f','_m');
+    });
+  } else {
+    f.style.borderColor='#f0c040'; f.style.background='rgba(0,0,0,.35)';
+    f.querySelector('div').style.color='#f0c040';
+    m.style.borderColor='rgba(255,255,255,.12)'; m.style.background='rgba(0,0,0,.25)';
+    m.querySelector('div').style.color='rgba(255,255,255,.4)';
+    var grid = document.getElementById('teeInGrid');
+    if (grid) grid.querySelectorAll('.tee-opt').forEach(function(o){
+      o.dataset.tee = o.dataset.tee.replace('_m','_f');
+      document.getElementById('teeIn').value = document.getElementById('teeIn').value.replace('_m','_f');
+    });
+  }
+}
+
+function selectTeeOpt(el, hiddenId) {
+  var grid = el.parentElement;
+  grid.querySelectorAll('.tee-opt').forEach(function(o){
+    o.classList.remove('active-wh','active-ye','active-re');
+  });
+  var tee = el.dataset.tee;
+  el.classList.add(tee.startsWith('white') ? 'active-wh' : tee.startsWith('yellow') ? 'active-ye' : 'active-re');
+  var hidden = document.getElementById(hiddenId);
+  if (hidden) hidden.value = tee;
+}
+
+// Auto-select first tee opt on load
+window.addEventListener('load', function(){
+  document.querySelectorAll('.tee-pick').forEach(function(grid){
+    var first = grid.querySelector('.tee-opt');
+    if (first) first.click();
+  });
+});
 
 function showPage(id,el){
   document.querySelectorAll('.page').forEach(function(p){p.classList.remove('active');});
@@ -944,952 +1118,6 @@ renderSC();
 </body>
 </html<div class="footer">
   <div style="display:inline-flex;align-items:center;gap:10px;">
-    <div style="width:28px;height:1.5px;background:linear-gradient(to right,transparent,rgba(212,160,23,.6));"></div>
-    <span style="font-size:.82rem;color:rgba(212,160,23,.6);letter-spacing:.1em;">Designed &amp; built by <strong style="color:#f0c040;font-weight:600;">Alex Persaud</strong> &nbsp;·&nbsp; PGA Professional</span>
-    <div style="width:28px;height:1.5px;background:linear-gradient(to left,transparent,rgba(212,160,23,.6));"></div>
-  </div>
-</div>TYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<title>Stanmore GC · Course Guide</title>
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Cormorant+Garamond:wght@400;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
-<style>
-:root{--navy:#1a3a6b;--navy-dk:#0f2347;--gold:#d4a017;--gold-lt:#f0c040;--gold-pale:#faf0d0;--red:#c0392b;--cream:#f8f5ef;--text:#141e30;--grey:#8896a8;--green:#2d6e4e;--green-lt:#3fa06e;--white:#fff;}
-*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
-html,body{min-height:100%;background:var(--cream);font-family:'Poppins',sans-serif;color:var(--text);}
-.hdr{background:linear-gradient(to right,var(--navy-dk),var(--navy));padding:13px 16px 0;position:sticky;top:0;z-index:20;}
-.hdr::after{content:'';display:block;height:3px;background:linear-gradient(to right,var(--gold),var(--gold-lt),var(--gold));margin-top:9px;}
-.hdr-row{display:flex;align-items:center;justify-content:space-between;}
-.brand{display:flex;align-items:center;gap:10px;}
-.logo{width:40px;height:40px;object-fit:contain;}
-.club-name{font-family:'Poppins',sans-serif;font-size:1.1rem;font-weight:700;color:var(--white);}
-.club-sub{font-size:.58rem;color:var(--gold-lt);letter-spacing:.18em;text-transform:uppercase;}
-.tab-nav{display:flex;background:var(--white);border-bottom:1px solid rgba(26,58,107,.1);}
-.tnav{flex:1;padding:11px 4px;text-align:center;font-size:.63rem;font-weight:600;letter-spacing:.07em;text-transform:uppercase;color:var(--grey);cursor:pointer;border-bottom:2px solid transparent;transition:all .2s;}
-.tnav.active{color:var(--navy);border-bottom-color:var(--gold);}
-.page{display:none;padding:14px 13px 40px;}
-.page.active{display:block;}
-.sec-title{font-family:'Poppins',sans-serif;font-size:1.3rem;font-weight:700;color:var(--navy-dk);margin-bottom:3px;margin-top:4px;}
-.sec-sub{font-size:.72rem;color:var(--grey);margin-bottom:14px;line-height:1.5;}
-
-/* TEE CARDS */
-.tee-card{border-radius:12px;overflow:hidden;border:1px solid rgba(26,58,107,.1);margin-bottom:10px;}
-.tee-head{padding:10px 15px;display:flex;align-items:center;justify-content:space-between;}
-.tee-head.wh{background:linear-gradient(to right,#c8c8c8,#e4e4e4);color:var(--navy-dk);}
-.tee-head.ye{background:linear-gradient(to right,#c8a800,#f0c840);color:var(--navy-dk);}
-.tee-head.re{background:linear-gradient(to right,#a01818,#d43020);color:var(--white);}
-.tee-name{font-family:'Poppins',sans-serif;font-size:1.05rem;font-weight:700;}
-.tee-yds{font-family:monospace;font-size:.85rem;font-weight:500;}
-.tee-body{background:var(--white);padding:10px 15px;display:grid;grid-template-columns:1fr 1fr;gap:6px 20px;}
-.ts{display:flex;flex-direction:column;}
-.ts-lbl{font-size:.55rem;letter-spacing:.13em;text-transform:uppercase;color:var(--grey);margin-bottom:2px;}
-.ts-val{font-family:monospace;font-size:.95rem;font-weight:500;color:var(--navy-dk);}
-.ts-gen{font-size:.62rem;color:var(--grey);}
-
-/* ALLOWANCES */
-.allow-table{background:var(--white);border-radius:10px;border:1px solid rgba(26,58,107,.1);overflow:hidden;}
-.at-head-row{display:grid;grid-template-columns:1.6fr .7fr .8fr;padding:7px 12px;background:var(--navy);font-size:.57rem;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:rgba(212,160,23,.8);}
-.at-row{display:grid;grid-template-columns:1.6fr .7fr .8fr;padding:9px 12px;border-bottom:1px solid rgba(26,58,107,.06);font-size:.78rem;}
-.at-row:last-child{border-bottom:none;}
-.at-row:nth-child(odd){background:rgba(248,245,239,.6);}
-.at-type{font-weight:600;color:var(--navy-dk);}
-.at-sub{font-size:.68rem;color:var(--grey);}
-.at-pct{font-family:monospace;font-weight:500;color:var(--navy);text-align:right;}
-.at-note{font-size:.66rem;color:var(--grey);}
-
-/* SCORECARD */
-.tee-sel{display:flex;gap:7px;margin-bottom:12px;}
-.tbtn{flex:1;padding:9px 4px;border-radius:8px;border:2px solid transparent;font-size:.7rem;font-weight:600;cursor:pointer;letter-spacing:.05em;text-transform:uppercase;text-align:center;transition:all .2s;}
-.tbtn.w{background:#f0f0f0;color:var(--navy-dk);border-color:#c0c0c0;}
-.tbtn.y{background:#fef0a0;color:#6b4a00;border-color:#c8a800;}
-.tbtn.r{background:#fde8e8;color:#7a1010;border-color:#c03020;}
-.tbtn.active.w{background:#d0d0d0;border-color:#888;}
-.tbtn.active.y{background:#f0c840;border-color:#a08000;}
-.tbtn.active.r{background:#d43020;color:var(--white);border-color:#a01818;}
-.gender-sel{display:flex;gap:7px;margin-bottom:12px;}
-.gbtn{flex:1;padding:8px;border-radius:8px;border:1.5px solid rgba(26,58,107,.15);background:var(--white);font-size:.72rem;font-weight:600;cursor:pointer;color:var(--grey);transition:all .2s;text-align:center;}
-.gbtn.active{background:var(--navy);color:var(--white);border-color:var(--navy);}
-.sc-wrap{overflow-x:auto;border-radius:12px;border:1px solid rgba(26,58,107,.1);margin-bottom:8px;}
-table{border-collapse:collapse;width:100%;min-width:360px;background:var(--white);}
-thead tr{background:var(--navy);}
-th{padding:7px 5px;font-size:.54rem;font-weight:600;letter-spacing:.11em;text-transform:uppercase;color:rgba(212,160,23,.8);text-align:center;}
-th.lft{text-align:left;padding-left:10px;}
-tbody tr{border-bottom:1px solid rgba(26,58,107,.06);}
-tbody tr:nth-child(even){background:rgba(248,245,239,.7);}
-tr.nine-tot{background:rgba(26,58,107,.07);border-top:2px solid rgba(26,58,107,.18);}
-tr.grand-tot{background:linear-gradient(to right,rgba(212,160,23,.12),rgba(248,245,239,.5));border-top:2px solid var(--gold);}
-td{padding:8px 5px;font-family:monospace;font-size:.79rem;text-align:center;color:var(--text);}
-td.hn{font-weight:600;color:var(--navy);font-size:.77rem;}
-td.pc{color:var(--navy-dk);}
-td.sc{color:var(--grey);font-size:.71rem;}
-td.lbl{font-family:'Poppins',sans-serif;font-weight:600;font-size:.72rem;text-align:left;padding-left:10px;color:var(--navy-dk);}
-.p3 td.pc{color:var(--green);}
-.p5 td.pc{color:var(--navy-mid,#1e4480);}
-.sc-note{font-size:.65rem;color:var(--grey);text-align:center;margin-top:6px;}
-
-/* HANDICAP CALC */
-.calc-card{background:var(--white);border-radius:14px;border:1px solid rgba(26,58,107,.1);padding:16px 15px;margin-bottom:13px;}
-.calc-title{font-family:'Poppins',sans-serif;font-size:1.1rem;font-weight:600;color:var(--navy-dk);margin-bottom:12px;}
-.frow{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:11px;}
-.frow.one{grid-template-columns:1fr;}
-.fld{display:flex;flex-direction:column;gap:5px;}
-.flbl{font-size:.6rem;letter-spacing:.14em;text-transform:uppercase;color:var(--grey);}
-.finp{background:var(--cream);border:1.5px solid rgba(26,58,107,.15);border-radius:8px;padding:11px 12px;font-family:monospace;font-size:.9rem;color:var(--text);outline:none;width:100%;transition:border-color .2s;-webkit-appearance:none;}
-.finp:focus{border-color:var(--navy);}
-.finp option{background:var(--white);}
-.cbtn{width:100%;background:var(--navy);color:var(--white);border:none;border-radius:10px;padding:13px;font-family:'Poppins',sans-serif;font-size:.9rem;font-weight:600;cursor:pointer;letter-spacing:.04em;transition:all .2s;margin-top:3px;}
-.cbtn:active{transform:scale(.98);}
-.formula-box{background:rgba(26,58,107,.06);border:1px solid rgba(26,58,107,.12);border-radius:10px;padding:13px 15px;margin-bottom:13px;}
-.formula-title{font-size:.63rem;letter-spacing:.14em;text-transform:uppercase;color:var(--navy);font-weight:600;margin-bottom:8px;}
-.fstep{display:flex;align-items:flex-start;gap:9px;margin-bottom:7px;font-size:.77rem;color:var(--text);line-height:1.5;}
-.fstep:last-child{margin-bottom:0;}
-.snum{background:var(--navy);color:var(--white);border-radius:50%;width:19px;height:19px;display:flex;align-items:center;justify-content:center;font-size:.63rem;font-weight:600;flex-shrink:0;margin-top:1px;}
-.result-card{background:linear-gradient(135deg,var(--navy-dk),var(--navy));border-radius:14px;padding:18px 15px;margin-bottom:13px;display:none;}
-.result-card.show{display:block;}
-.res-title{font-family:'Poppins',sans-serif;font-size:1rem;font-weight:600;color:var(--gold-lt);margin-bottom:13px;}
-.res-grid{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-bottom:13px;}
-.ri{background:rgba(255,255,255,.07);border-radius:10px;padding:11px 13px;}
-.ri.hi{background:rgba(212,160,23,.2);border:1px solid rgba(212,160,23,.3);}
-.ri-lbl{font-size:.55rem;letter-spacing:.13em;text-transform:uppercase;color:var(--grey);margin-bottom:3px;}
-.ri-val{font-family:monospace;font-size:1.35rem;font-weight:500;color:var(--white);}
-.ri.hi .ri-val{color:var(--gold-lt);font-size:1.55rem;}
-.res-note{font-size:.7rem;color:rgba(255,255,255,.5);line-height:1.6;border-top:1px solid rgba(255,255,255,.1);padding-top:11px;}
-
-
-
-/* ── NAV DRAWER ── */
-.nav-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.65);z-index:500;backdrop-filter:blur(4px);}
-.nav-overlay.open{display:block;}
-.nav-drawer{position:fixed;top:0;right:0;bottom:0;width:300px;background:linear-gradient(180deg,#09132a 0%,#0f2347 60%,#1a3a6b 100%);border-left:2px solid rgba(212,160,23,.3);z-index:501;transform:translateX(100%);transition:transform .3s cubic-bezier(.4,0,.2,1);display:flex;flex-direction:column;overflow:hidden;box-shadow:-4px 0 30px rgba(0,0,0,.5);}
-.nav-drawer.open{transform:translateX(0);}
-.nav-head{padding:22px 18px 16px;border-bottom:1px solid rgba(212,160,23,.25);display:flex;align-items:center;gap:12px;background:rgba(0,0,0,.3);}
-.nav-logo{width:46px;height:46px;object-fit:contain;flex-shrink:0;}
-.nav-club-name{font-family:'Poppins',sans-serif;font-size:1.1rem;font-weight:700;color:#fff;line-height:1.2;}
-.nav-club-sub{font-size:.62rem;color:rgba(212,160,23,.85);letter-spacing:.18em;text-transform:uppercase;margin-top:3px;}
-.nav-items{flex:1;padding:12px 0;overflow-y:auto;}
-.nav-item{display:flex;align-items:center;gap:14px;padding:16px 20px;text-decoration:none;color:#ffffff;font-family:'Poppins',sans-serif;font-size:1rem;font-weight:500;transition:all .2s;border-right:3px solid transparent;letter-spacing:.01em;}
-.nav-item:active{background:rgba(255,255,255,.08);color:#fff;}
-.nav-item.active{background:rgba(212,160,23,.15);color:#f0c040;border-right-color:#d4a017;font-weight:600;}
-.nav-icon{font-size:1.3rem;width:30px;text-align:center;flex-shrink:0;}
-.nav-lbl{line-height:1.3;}
-.nav-desc{font-size:.72rem;color:rgba(255,255,255,.55);display:block;margin-top:2px;font-weight:400;}
-.nav-item.active .nav-desc{color:rgba(212,160,23,.65);}
-.nav-div{height:1px;background:rgba(255,255,255,.1);margin:6px 18px;}
-.nav-sec{font-size:.65rem;letter-spacing:.16em;text-transform:uppercase;color:rgba(255,255,255,.4);padding:10px 20px 4px;font-family:'Poppins',sans-serif;font-weight:600;}
-.nav-foot{padding:14px 18px;border-top:1px solid rgba(255,255,255,.1);font-size:.68rem;color:rgba(255,255,255,.3);font-family:monospace;line-height:1.7;}
-.sgc-burger{position:fixed;top:12px;right:12px;left:auto;z-index:499;width:42px;height:42px;background:#1a3a6b;border:1.5px solid rgba(212,160,23,.5);border-radius:9px;display:flex;align-items:center;justify-content:center;cursor:pointer;box-shadow:0 2px 12px rgba(0,0,0,.5);color:#fff;font-size:1.3rem;line-height:1;}
-.sgc-burger:active{background:rgba(212,160,23,.3);}
-</style>
-</head>
-<body>
-
-<div class="sgc-burger" onclick="openNav()">&#9776;</div>
-<div class="nav-overlay" id="sgcNavOverlay" onclick="closeNav()"></div>
-<div class="nav-drawer" id="sgcNavDrawer">
-  <div class="nav-head">
-    <img class="nav-logo" src="club-logo.png" alt="">
-    <div><div class="nav-club-name">Stanmore Golf Club</div><div class="nav-club-sub">Est. 1893</div></div>
-  </div>
-  <div class="nav-items">
-    <div class="nav-sec">Main</div>
-    <a class="nav-item" href="stanmore-hub.html"><span class="nav-icon">🏠</span><span class="nav-lbl">Hub<span class="nav-desc">Home &amp; QR codes</span></span></a>
-    <div class="nav-div"></div>
-    <div class="nav-sec">Competition</div>
-    <a class="nav-item" href="stanmore-player-scoring.html"><span class="nav-icon">⛳</span><span class="nav-lbl">Score Entry<span class="nav-desc">Enter your round scores</span></span></a>
-    <div class="nav-div"></div>
-    <a class="nav-item" href="stanmore-leaderboard-live.html"><span class="nav-icon">🏆</span><span class="nav-lbl">Live Leaderboard<span class="nav-desc">Live standings</span></span></a>
-    <a class="nav-item" href="stanmore-results.html"><span class="nav-icon">🏅</span><span class="nav-lbl">Results<span class="nav-desc">Final prize list</span></span></a>
-    <div class="nav-sec">Reference</div>
-    <a class="nav-item active" href="stanmore-course-guide.html"><span class="nav-icon">📋</span><span class="nav-lbl">Course Guide<span class="nav-desc">Scorecard &amp; handicap calc</span></span></a>
-    <div class="nav-div"></div>
-    <div class="nav-sec">Management</div>
-    <a class="nav-item" href="stanmore-admin.html"><span class="nav-icon">🔐</span><span class="nav-lbl">Admin Panel<span class="nav-desc">Competition management</span></span></a>
-  </div>
-  <div class="nav-foot">Stanmore Golf Club · Digital Hub<br>stanmore1893.github.io</div>
 </div>
-
-<div class="hdr">
-  <div class="hdr-row">
-<div class="brand">
-      <img class="logo" src="club-logo.png" alt="">
-      <div><div class="club-name">Stanmore Golf Club</div><div class="club-sub">Course Guide & Handicaps</div></div>
-    </div>
-  </div>
-</div>
-<div class="tab-nav">
-  <div class="tnav active" onclick="showPage('pgR',this)">Tee Ratings</div>
-  <div class="tnav" onclick="showPage('pgC',this)">Scorecard</div>
-  <div class="tnav" onclick="showPage('pgH',this)">Hcp Calc</div>
-</div>
-
-<!-- RATINGS -->
-<div class="page active" id="pgR">
-  <div class="sec-title">Course & Slope Ratings</div>
-  <div class="sec-sub">Stanmore GC · Men Par 69 · Women Par 72 · Designed by Alister MacKenzie (1921)</div>
-  <div class="tee-card"><div class="tee-head wh"><div class="tee-name">⚪ White Tees</div><div class="tee-yds">6,025 yds</div></div>
-    <div class="tee-body">
-      <div class="ts"><div class="ts-lbl">Course Rating</div><div class="ts-val">69.7</div><div class="ts-gen">Men</div></div>
-      <div class="ts"><div class="ts-lbl">Slope Rating</div><div class="ts-val">129</div><div class="ts-gen">Men</div></div>
-      <div class="ts"><div class="ts-lbl">Course Rating</div><div class="ts-val">73.9</div><div class="ts-gen">Women</div></div>
-      <div class="ts"><div class="ts-lbl">Slope Rating</div><div class="ts-val">130</div><div class="ts-gen">Women</div></div>
-    </div>
-  </div>
-  <div class="tee-card"><div class="tee-head ye"><div class="tee-name">🟡 Yellow Tees</div><div class="tee-yds">5,758 yds</div></div>
-    <div class="tee-body">
-      <div class="ts"><div class="ts-lbl">Course Rating</div><div class="ts-val">68.8</div><div class="ts-gen">Men</div></div>
-      <div class="ts"><div class="ts-lbl">Slope Rating</div><div class="ts-val">127</div><div class="ts-gen">Men</div></div>
-      <div class="ts"><div class="ts-lbl">Course Rating</div><div class="ts-val">74.3</div><div class="ts-gen">Women</div></div>
-      <div class="ts"><div class="ts-lbl">Slope Rating</div><div class="ts-val">133</div><div class="ts-gen">Women</div></div>
-    </div>
-  </div>
-  <div class="tee-card"><div class="tee-head re"><div class="tee-name">🔴 Red Tees</div><div class="tee-yds">5,385 yds</div></div>
-    <div class="tee-body">
-      <div class="ts"><div class="ts-lbl">Course Rating</div><div class="ts-val">66.8</div><div class="ts-gen">Men</div></div>
-      <div class="ts"><div class="ts-lbl">Slope Rating</div><div class="ts-val">121</div><div class="ts-gen">Men</div></div>
-      <div class="ts"><div class="ts-lbl">Course Rating</div><div class="ts-val">72.1</div><div class="ts-gen">Women</div></div>
-      <div class="ts"><div class="ts-lbl">Slope Rating</div><div class="ts-val">127</div><div class="ts-gen">Women</div></div>
-    </div>
-  </div>
-  <div class="sec-title" style="margin-top:8px">Playing Handicap Allowances</div>
-  <div class="sec-sub">England Golf mandatory allowances — World Handicap System</div>
-
-  <!-- INDIVIDUAL -->
-  <div style="margin-bottom:14px;">
-    <div style="font-size:.65rem;font-weight:600;letter-spacing:.15em;text-transform:uppercase;color:var(--navy);padding:8px 0 6px;">Individual</div>
-    <div class="allow-table">
-      <div class="at-head" style="display:grid;grid-template-columns:1fr auto;"><div>Format</div><div>Allowance</div></div>
-      <div class="at-row"><div class="at-type">Stableford</div><div class="at-pct">95%</div></div>
-      <div class="at-row"><div class="at-type">Strokeplay (Nett)</div><div class="at-pct">95%</div></div>
-      <div class="at-row"><div class="at-type">Par / Bogey</div><div class="at-pct">95%</div></div>
-      <div class="at-row"><div class="at-type">Maximum Score</div><div class="at-pct">95%</div></div>
-    </div>
-  </div>
-
-  <!-- MATCHPLAY -->
-  <div style="margin-bottom:14px;">
-    <div style="font-size:.65rem;font-weight:600;letter-spacing:.15em;text-transform:uppercase;color:var(--navy);padding:8px 0 6px;">Matchplay</div>
-    <div class="allow-table">
-      <div class="at-head" style="display:grid;grid-template-columns:1fr auto;"><div>Format</div><div>Allowance</div></div>
-      <div class="at-row"><div class="at-type">Individual</div><div class="at-pct">100%</div></div>
-      <div class="at-row"><div class="at-type">Fourball</div><div class="at-pct">90%</div></div>
-    </div>
-  </div>
-
-  <!-- TEAM STROKEPLAY -->
-  <div style="margin-bottom:14px;">
-    <div style="font-size:.65rem;font-weight:600;letter-spacing:.15em;text-transform:uppercase;color:var(--navy);padding:8px 0 6px;">Team / Pairs (Strokeplay)</div>
-    <div class="allow-table">
-      <div class="at-head" style="display:grid;grid-template-columns:1fr auto;"><div>Format</div><div>Allowance</div></div>
-      <div class="at-row"><div class="at-type">Fourball Stableford</div><div class="at-pct">85%</div></div>
-      <div class="at-row"><div class="at-type">Fourball Strokeplay</div><div class="at-pct">85%</div></div>
-      <div class="at-row"><div class="at-type">Fourball Par / Bogey</div><div class="at-pct">90%</div></div>
-      <div class="at-row"><div class="at-type">Foursomes</div><div class="at-pct">50% combined</div></div>
-      <div class="at-row"><div class="at-type">Greensomes</div><div class="at-pct">60% low + 40% high</div></div>
-      <div class="at-row"><div class="at-type">Scramble (4 players)</div><div class="at-pct">25/20/15/10% low→high</div></div>
-      <div class="at-row"><div class="at-type">Scramble (2 players)</div><div class="at-pct">35% low + 15% high</div></div>
-    </div>
-  </div>
-
-  <div style="font-size:.68rem;color:var(--grey);text-align:center;padding-bottom:4px;">
-    Source: England Golf · World Handicap System mandatory allowances
-  </div>
-</div>
-
-<!-- SCORECARD -->
-<div class="page" id="pgC">
-  <div class="sec-title">Course Scorecard</div>
-  <div class="sec-sub">From official club scorecard · Select tee and gender</div>
-  <div class="gender-sel">
-    <button class="gbtn active" onclick="setGender('m',this)">♂ Men (Par 69)</button>
-    <button class="gbtn" onclick="setGender('f',this)">♀ Women (Par 72)</button>
-  </div>
-  <div class="tee-sel">
-    <button class="tbtn w active" onclick="setTee('white',this)">⚪ White</button>
-    <button class="tbtn y" onclick="setTee('yellow',this)">🟡 Yellow</button>
-    <button class="tbtn r" onclick="setTee('red',this)">🔴 Red</button>
-  </div>
-  <div class="sc-wrap"><table><thead><tr>
-    <th class="lft">Hole</th><th>Par</th><th>S.I.</th><th id="yHdr">Yds</th>
-  </tr></thead><tbody id="scBody"></tbody></table></div>
-  <div class="sc-note">Official scorecard data · Stanmore Golf Club</div>
-</div>
-
-<!-- HANDICAP CALC -->
-<div class="page" id="pgH">
-  <div class="sec-title">Handicap Calculator</div>
-  <div class="sec-sub">WHS: Handicap Index → Course Handicap → Playing Handicap</div>
-
-  <!-- FORMULA -->
-  <div class="formula-box">
-    <div class="formula-title">WHS Formula</div>
-    <div class="fstep"><div class="snum">1</div><div><strong>Course Handicap</strong> = HI × (Slope ÷ 113) + (Course Rating − Par)</div></div>
-    <div class="fstep"><div class="snum">2</div><div><strong>Playing Handicap</strong> = Round( <em>unrounded</em> Course HCP × Allowance% )</div></div>
-    <div class="fstep"><div class="snum">3</div><div><strong>Matchplay strokes</strong> = Difference in Course Handicaps × Allowance%</div></div>
-  </div>
-
-  <!-- ── INDIVIDUAL CALCULATOR ── -->
-  <div class="calc-card">
-    <div class="calc-title">Individual Playing Handicap</div>
-    <div class="frow">
-      <div class="fld"><div class="flbl">Handicap Index</div><input class="finp" id="hiIn" type="number" placeholder="e.g. 14.2" step="0.1" min="-5" max="54"></div>
-      <div class="fld"><div class="flbl">Gender</div><select class="finp" id="genIn"><option value="m">Male</option><option value="f">Female</option></select></div>
-    </div>
-    <div class="frow">
-      <div class="fld"><div class="flbl">Tee</div><select class="finp" id="teeIn">
-        <option value="white_m">White (Men)</option><option value="white_f">White (Women)</option>
-        <option value="yellow_m">Yellow (Men)</option><option value="yellow_f">Yellow (Women)</option>
-        <option value="red_m">Red (Men)</option><option value="red_f">Red (Women)</option>
-      </select></div>
-      <div class="fld"><div class="flbl">Format</div><select class="finp" id="fmtIn">
-        <option value="0.95">Stableford (95%)</option>
-        <option value="0.95">Stroke Play (95%)</option>
-        <option value="0.95">Par/Bogey (95%)</option>
-        <option value="1.00">Singles Matchplay (100%)</option>
-        <option value="0.85">Fourball Stableford (85%)</option>
-        <option value="0.85">Fourball Stroke Play (85%)</option>
-        <option value="0.90">Fourball Par/Bogey (90%)</option>
-        <option value="0.50">Foursomes (50%)</option>
-        <option value="0.90">Fourball Matchplay (90%)</option>
-      </select></div>
-    </div>
-    <button class="cbtn" onclick="calcSingle()">Calculate</button>
-  </div>
-
-  <!-- Result -->
-  <div class="result-card" id="resCard">
-    <div class="res-title" id="resTitle">Playing Handicap</div>
-    <div class="res-grid">
-      <div class="ri"><div class="ri-lbl">Handicap Index</div><div class="ri-val" id="rHI">—</div></div>
-      <div class="ri"><div class="ri-lbl">Course Handicap</div><div class="ri-val" id="rCH">—</div></div>
-      <div class="ri hi" style="grid-column:1/-1"><div class="ri-lbl">Playing Handicap</div><div class="ri-val" id="rPH">—</div></div>
-      <div class="ri"><div class="ri-lbl">Slope</div><div class="ri-val" id="rSl">—</div></div>
-      <div class="ri"><div class="ri-lbl">Course Rating</div><div class="ri-val" id="rCR">—</div></div>
-    </div>
-    <div class="res-note" id="resNote"></div>
-  </div>
-
-  <!-- ── BATCH CALCULATOR ── -->
-  <div class="calc-card">
-    <div class="calc-title">Batch — Full Field</div>
-    <div style="font-size:.74rem;color:var(--grey);margin-bottom:11px;line-height:1.6;">Paste Handicap Indexes separated by commas to get Playing Handicaps for the full field.</div>
-    <div class="frow one"><div class="fld"><div class="flbl">Handicap Indexes</div><input class="finp" id="batchIn" type="text" placeholder="14.2, 7.4, 22.1, 5.0…"></div></div>
-    <div class="frow">
-      <div class="fld"><div class="flbl">Tee</div><select class="finp" id="bTee">
-        <option value="white_m">White (Men)</option><option value="yellow_m">Yellow (Men)</option>
-        <option value="red_m">Red (Men)</option><option value="yellow_f">Yellow (Women)</option>
-        <option value="red_f">Red (Women)</option>
-      </select></div>
-      <div class="fld"><div class="flbl">Format</div><select class="finp" id="bFmt">
-        <option value="0.95">Stableford (95%)</option>
-        <option value="0.95">Stroke Play (95%)</option>
-        <option value="1.00">Matchplay (100%)</option>
-        <option value="0.85">Fourball Stableford (85%)</option>
-        <option value="0.90">Fourball Par/Bogey (90%)</option>
-        <option value="0.50">Foursomes (50%)</option>
-      </select></div>
-    </div>
-    <button class="cbtn" onclick="calcBatch()">Calculate All</button>
-    <div id="bRes" style="margin-top:13px;"></div>
-  </div>
-
-  <!-- ── MATCHPLAY STROKE DIFFERENCE ── -->
-  <div class="calc-card">
-    <div class="calc-title">Matchplay — Stroke Difference</div>
-    <div style="font-size:.74rem;color:var(--grey);margin-bottom:14px;line-height:1.6;">
-      The allowance % is applied to the <strong>difference in Course Handicaps</strong>. The higher-handicap player/team receives the resulting strokes. Tick <strong>Mixed Tees</strong> to add equalisation shots.<br><br>
-      <strong>Foursomes note:</strong> Partners alternate shots — Player A tees odd holes, Player B tees even holes, each from their own tee. The combined team handicap uses both players' Course Handicaps × 50%, and equalisation uses the average Course Rating of both tees.
-    </div>
-
-    <!-- FORMAT SELECTOR -->
-    <div class="frow one" style="margin-bottom:10px;">
-      <div class="fld"><div class="flbl">Format</div>
-        <select class="finp" id="mpFmt" onchange="onMpFmtChange()" style="margin-bottom:0">
-          <option value="singles_100">Singles Matchplay (100%)</option>
-          <option value="fourball_90">Fourball Matchplay (90%)</option>
-          <option value="foursomes_50">Foursomes Matchplay (50%)</option>
-        </select>
-      </div>
-    </div>
-
-    <!-- PLAYER A -->
-    <div style="background:rgba(26,58,107,.15);border:1px solid rgba(26,58,107,.3);border-radius:10px;padding:12px 13px;margin-bottom:10px;">
-      <div style="font-size:.65rem;letter-spacing:.14em;text-transform:uppercase;color:#a8c4f0;font-weight:600;margin-bottom:10px;" id="mpLabelA">Player A</div>
-      <div class="frow" style="margin-bottom:0">
-        <div class="fld"><div class="flbl">Handicap Index</div><input class="finp" id="mpA_hi" type="number" placeholder="e.g. 5.1" step="0.1" min="-5" max="54" style="margin-bottom:0"></div>
-        <div class="fld"><div class="flbl">Tee</div><select class="finp" id="mpA_tee" style="margin-bottom:0">
-          <option value="yellow_m">Yellow (Men)</option><option value="white_m">White (Men)</option>
-          <option value="red_m">Red (Men)</option><option value="red_f">Red (Women)</option>
-          <option value="yellow_f">Yellow (Women)</option><option value="white_f">White (Women)</option>
-        </select></div>
-      </div>
-    </div>
-
-    <!-- PLAYER B / PARTNER A (Fourball/Foursomes) -->
-    <div style="background:rgba(45,110,78,.12);border:1px solid rgba(45,110,78,.25);border-radius:10px;padding:12px 13px;margin-bottom:10px;" id="mpBSection">
-      <div style="font-size:.65rem;letter-spacing:.14em;text-transform:uppercase;color:#8ee0b4;font-weight:600;margin-bottom:10px;" id="mpLabelB">Player B</div>
-      <div class="frow" style="margin-bottom:0">
-        <div class="fld"><div class="flbl">Handicap Index</div><input class="finp" id="mpB_hi" type="number" placeholder="e.g. 14.2" step="0.1" min="-5" max="54" style="margin-bottom:0"></div>
-        <div class="fld"><div class="flbl">Tee</div><select class="finp" id="mpB_tee" style="margin-bottom:0">
-          <option value="yellow_m">Yellow (Men)</option><option value="white_m">White (Men)</option>
-          <option value="red_m">Red (Men)</option><option value="red_f">Red (Women)</option>
-          <option value="yellow_f">Yellow (Women)</option><option value="white_f">White (Women)</option>
-        </select></div>
-      </div>
-    </div>
-
-    <!-- PARTNER C (Fourball/Foursomes only) -->
-    <div id="mpTeamSection" style="display:none;">
-      <div style="font-size:.65rem;letter-spacing:.14em;text-transform:uppercase;color:rgba(212,160,23,.8);font-weight:600;margin:4px 0 8px;">vs</div>
-      <div style="background:rgba(212,160,23,.08);border:1px solid rgba(212,160,23,.2);border-radius:10px;padding:12px 13px;margin-bottom:10px;">
-        <div style="font-size:.65rem;letter-spacing:.14em;text-transform:uppercase;color:rgba(212,160,23,.8);font-weight:600;margin-bottom:10px;" id="mpLabelC">Player C</div>
-        <div class="frow" style="margin-bottom:0">
-          <div class="fld"><div class="flbl">Handicap Index</div><input class="finp" id="mpC_hi" type="number" placeholder="e.g. 8.0" step="0.1" min="-5" max="54" style="margin-bottom:0"></div>
-          <div class="fld"><div class="flbl">Tee</div><select class="finp" id="mpC_tee" style="margin-bottom:0">
-            <option value="yellow_m">Yellow (Men)</option><option value="white_m">White (Men)</option>
-            <option value="red_m">Red (Men)</option><option value="red_f">Red (Women)</option>
-            <option value="yellow_f">Yellow (Women)</option><option value="white_f">White (Women)</option>
-          </select></div>
-        </div>
-      </div>
-      <div style="background:rgba(212,160,23,.08);border:1px solid rgba(212,160,23,.2);border-radius:10px;padding:12px 13px;margin-bottom:10px;">
-        <div style="font-size:.65rem;letter-spacing:.14em;text-transform:uppercase;color:rgba(212,160,23,.8);font-weight:600;margin-bottom:10px;" id="mpLabelD">Player D</div>
-        <div class="frow" style="margin-bottom:0">
-          <div class="fld"><div class="flbl">Handicap Index</div><input class="finp" id="mpD_hi" type="number" placeholder="e.g. 18.5" step="0.1" min="-5" max="54" style="margin-bottom:0"></div>
-          <div class="fld"><div class="flbl">Tee</div><select class="finp" id="mpD_tee" style="margin-bottom:0">
-            <option value="yellow_m">Yellow (Men)</option><option value="white_m">White (Men)</option>
-            <option value="red_m">Red (Men)</option><option value="red_f">Red (Women)</option>
-            <option value="yellow_f">Yellow (Women)</option><option value="white_f">White (Women)</option>
-          </select></div>
-        </div>
-      </div>
-    </div>
-
-    <!-- MIXED TEES -->
-    <label style="display:flex;align-items:center;gap:8px;padding:10px 12px;border-radius:8px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.07);font-size:.83rem;color:rgba(255,255,255,.75);cursor:pointer;margin-bottom:12px;">
-      <input type="checkbox" id="mpMixed" accent-color="#d4a017" style="width:16px;height:16px;accent-color:#d4a017;flex-shrink:0;">
-      Mixed Tees — apply equalisation shots
-    </label>
-
-    <button class="cbtn" onclick="calcMatchplay()">Calculate Strokes</button>
-    <div id="mpResult" style="margin-top:13px;"></div>
-  </div>
-
-  <!-- ── GREENSOMES CALCULATOR ── -->
-  <div class="calc-card">
-    <div class="calc-title">Greensomes / Foursomes — Combined Handicap</div>
-    <div style="font-size:.74rem;color:var(--grey);margin-bottom:12px;line-height:1.6;">
-      Greensomes: 60% of lower + 40% of higher Course Handicap.<br>
-      Foursomes: 50% of each player's Course Handicap combined.
-    </div>
-    <div class="frow">
-      <div class="fld"><div class="flbl">Player A — HI</div><input class="finp" id="gsA_hi" type="number" placeholder="e.g. 8.4" step="0.1" min="-5" max="54"></div>
-      <div class="fld"><div class="flbl">Player B — HI</div><input class="finp" id="gsB_hi" type="number" placeholder="e.g. 15.2" step="0.1" min="-5" max="54"></div>
-    </div>
-    <div class="frow one">
-      <div class="fld"><div class="flbl">Tee</div><select class="finp" id="gsTee">
-        <option value="yellow_m">Yellow (Men)</option><option value="white_m">White (Men)</option>
-        <option value="red_m">Red (Men)</option><option value="red_f">Red (Women)</option>
-      </select></div>
-    </div>
-    <button class="cbtn" onclick="calcTeam()">Calculate Team Handicap</button>
-    <div id="gsResult" style="margin-top:13px;"></div>
-  </div>
-
-</div>
-<script>
-
-// ── COURSE DATA (from official Stanmore GC scorecard) ──
-var COURSE = {
-  holes:[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18],
-  par_men:  [4,4,4,3,4,3,4,3,4,3,5,4,4,4,4,4,3,5],
-  par_women:[4,5,4,3,4,3,4,3,4,3,5,4,5,4,5,4,3,5],
-  si_men:   [14,4,8,16,2,18,12,10,6,17,5,7,1,15,3,11,9,13],
-  si_women: [12,4,8,18,2,16,10,14,6,17,7,1,3,15,5,11,13,9],
-  white:    [343,408,407,127,400,122,352,176,386,165,515,416,422,307,410,380,196,493],
-  yellow:   [328,384,400,119,374,115,328,158,371,147,506,392,407,294,397,369,191,478],
-  red:      [265,408,389,111,350,108,307,149,355,122,425,379,395,272,375,344,177,454],
-  ratings:{
-    white_m: {cr:69.7, slope:129, par:69, name:'White (Men)'},
-    white_f: {cr:73.9, slope:130, par:72, name:'White (Women)'},
-    yellow_m:{cr:68.8, slope:127, par:69, name:'Yellow (Men)'},
-    yellow_f:{cr:74.3, slope:133, par:72, name:'Yellow (Women)'},
-    red_m:   {cr:66.8, slope:121, par:69, name:'Red (Men)'},
-    red_f:   {cr:72.1, slope:127, par:72, name:'Red (Women)'},
-  }
-};
-
-// ── WHS HANDICAP FUNCTIONS ──
-function courseHcpRaw(hi, teeKey) {
-  var t = COURSE.ratings[teeKey];
-  return hi * (t.slope / 113) + (t.cr - t.par);
-}
-function calcCourseHcp(hi, teeKey) {
-  return Math.round(courseHcpRaw(hi, teeKey));
-}
-function calcPlayingHcp(hi, teeKey, allowance) {
-  return Math.round(courseHcpRaw(hi, teeKey) * allowance);
-}
-
-function calcSingle(){
-  var hi=parseFloat(document.getElementById('hiIn').value);
-  var teeKey=document.getElementById('teeIn').value;
-  var allow=parseFloat(document.getElementById('fmtIn').value);
-  if(isNaN(hi)||hi<-5||hi>54){alert('Please enter a valid Handicap Index (-5 to 54)');return;}
-  var t=COURSE.ratings[teeKey];
-  var ch=calcCourseHcp(hi,teeKey);
-  var ph=calcPlayingHcp(hi,teeKey,allow);
-  var chRaw=(hi*(t.slope/113)+(t.cr-t.par)).toFixed(2);
-  document.getElementById('rHI').textContent=hi.toFixed(1);
-  document.getElementById('rCH').textContent=ch;
-  document.getElementById('rPH').textContent=ph;
-  document.getElementById('rSl').textContent=t.slope;
-  document.getElementById('rCR').textContent=t.cr;
-  document.getElementById('resTitle').textContent='Playing Handicap — '+t.name;
-  document.getElementById('resNote').innerHTML=
-    'HI '+hi.toFixed(1)+' × ('+t.slope+'÷113) + ('+t.cr+'−'+t.par+') = '+chRaw+' → Course HCP <strong>'+ch+'</strong><br>'+
-    'Playing HCP = '+ch+' × '+Math.round(allow*100)+'% = <strong>'+ph+'</strong>';
-  document.getElementById('resCard').classList.add('show');
-}
-
-function calcBatch(){
-  var raw=document.getElementById('batchIn').value;
-  var teeKey=document.getElementById('bTee').value;
-  var allow=parseFloat(document.getElementById('bFmt').value);
-  var t=COURSE.ratings[teeKey];
-  var idxs=raw.split(',').map(function(s){return parseFloat(s.trim());}).filter(function(n){return !isNaN(n);});
-  if(!idxs.length){alert('Enter at least one Handicap Index');return;}
-  var rows=idxs.map(function(hi){return{hi:hi,ch:calcCourseHcp(hi,teeKey),ph:calcPlayingHcp(hi,teeKey,allow)};}).sort(function(a,b){return a.ph-b.ph;});
-  var pct=Math.round(allow*100);
-  var h='<div style="font-size:.63rem;letter-spacing:.11em;text-transform:uppercase;color:var(--grey);margin-bottom:7px;">'+t.name+' · '+pct+'% · '+rows.length+' players</div>';
-  h+='<div style="background:var(--white);border-radius:10px;border:1px solid rgba(26,58,107,.1);overflow:hidden;">';
-  h+='<div style="display:grid;grid-template-columns:1fr 56px 56px;padding:7px 12px;background:var(--navy);font-size:.54rem;letter-spacing:.11em;text-transform:uppercase;color:rgba(212,160,23,.8);">'
-    +'<div>HI</div><div style="text-align:right">C.HCP</div><div style="text-align:right">P.HCP</div></div>';
-  rows.forEach(function(r,i){
-    var bg=i%2===0?'':'background:rgba(248,245,239,.7)';
-    h+='<div style="'+bg+';display:grid;grid-template-columns:1fr 56px 56px;padding:9px 12px;border-top:1px solid rgba(26,58,107,.06);font-family:monospace;font-size:.8rem;">'
-      +'<div>'+r.hi.toFixed(1)+'</div><div style="text-align:right;color:var(--grey)">'+r.ch+'</div>'
-      +'<div style="text-align:right;font-weight:500;color:var(--navy-dk)">'+r.ph+'</div></div>';
-  });
-  h+='</div>';
-  document.getElementById('bRes').innerHTML=h;
-}
-
-// ── FORMAT CHANGE HANDLER ──
-function onMpFmtChange() {
-  var fmt = document.getElementById('mpFmt').value;
-  var isTeam = fmt === 'fourball_90' || fmt === 'foursomes_50';
-  document.getElementById('mpTeamSection').style.display = isTeam ? 'block' : 'none';
-  if (fmt === 'singles_100') {
-    document.getElementById('mpLabelA').textContent = 'Player A';
-    document.getElementById('mpLabelB').textContent = 'Player B';
-  } else if (fmt === 'fourball_90') {
-    document.getElementById('mpLabelA').textContent = 'Team 1 — Player A';
-    document.getElementById('mpLabelB').textContent = 'Team 1 — Player B';
-    document.getElementById('mpLabelC').textContent = 'Team 2 — Player C';
-    document.getElementById('mpLabelD').textContent = 'Team 2 — Player D';
-  } else if (fmt === 'foursomes_50') {
-    document.getElementById('mpLabelA').textContent = 'Team 1 — Player A (tees odd holes 1,3,5…)';
-    document.getElementById('mpLabelB').textContent = 'Team 1 — Player B (tees even holes 2,4,6…)';
-    document.getElementById('mpLabelC').textContent = 'Team 2 — Player C (tees odd holes 1,3,5…)';
-    document.getElementById('mpLabelD').textContent = 'Team 2 — Player D (tees even holes 2,4,6…)';
-  }
-}
-
-// ── EQUALISATION SHOTS ──
-// Difference between two tees' course ratings, rounded to nearest whole number
-function equalisationShots(teeKeyA, teeKeyB) {
-  var rA = COURSE.ratings[teeKeyA];
-  var rB = COURSE.ratings[teeKeyB];
-  if (!rA || !rB || teeKeyA === teeKeyB) return 0;
-  return Math.round(rA.cr - rB.cr); // positive = A gets shots, negative = B gets shots
-}
-
-// ── MAIN MATCHPLAY CALCULATOR ──
-function calcMatchplay() {
-  var fmtVal  = document.getElementById('mpFmt').value;
-  var isMixed = document.getElementById('mpMixed').checked;
-  var hiA = parseFloat(document.getElementById('mpA_hi').value);
-  var hiB = parseFloat(document.getElementById('mpB_hi').value);
-  var teeA = document.getElementById('mpA_tee').value;
-  var teeB = document.getElementById('mpB_tee').value;
-
-  var fmtMap = {
-    'singles_100': {label:'Singles Matchplay',   allow:1.00},
-    'fourball_90': {label:'Fourball Matchplay',   allow:0.90},
-    'foursomes_50':{label:'Foursomes Matchplay',  allow:0.50},
-  };
-  var fmt = fmtMap[fmtVal] || {label:'Matchplay', allow:1.00};
-
-  // Validate
-  if (isNaN(hiA) || isNaN(hiB)) { alert('Please enter Handicap Indexes for Players A and B'); return; }
-
-  var isTeam = fmtVal === 'fourball_90' || fmtVal === 'foursomes_50';
-  var hiC, hiD, teeC, teeD;
-  if (isTeam) {
-    hiC  = parseFloat(document.getElementById('mpC_hi').value);
-    hiD  = parseFloat(document.getElementById('mpD_hi').value);
-    teeC = document.getElementById('mpC_tee').value;
-    teeD = document.getElementById('mpD_tee').value;
-    if (isNaN(hiC) || isNaN(hiD)) { alert('Please enter Handicap Indexes for all four players'); return; }
-  }
-
-  var out = '<div style="background:linear-gradient(135deg,var(--navy-dk),var(--navy));border-radius:12px;padding:16px;color:#fff;">';
-  out += '<div style="font-family:Poppins,sans-serif;font-size:1rem;color:var(--gold-lt,#f0c040);margin-bottom:14px;font-weight:600;">' + fmt.label + '</div>';
-
-  if (!isTeam) {
-    // ── SINGLES ──
-    out += calcSinglesResult(hiA, teeA, hiB, teeB, fmt.allow, isMixed, 'Player A', 'Player B');
-  } else if (fmtVal === 'fourball_90') {
-    // ── FOURBALL ── each player gets individual course hcp × 90%, then compare best of each team
-    out += calcFourballResult(hiA, teeA, hiB, teeB, hiC, teeC, hiD, teeD, fmt.allow, isMixed);
-  } else if (fmtVal === 'foursomes_50') {
-    // ── FOURSOMES ── combine team course hcps × 50%, then take difference
-    out += calcFoursomesResult(hiA, teeA, hiB, teeB, hiC, teeC, hiD, teeD, fmt.allow, isMixed);
-  }
-
-  out += '</div>';
-  document.getElementById('mpResult').innerHTML = out;
-}
-
-function playerSummaryRow(label, hi, teeKey, ph, eqShots, finalPh) {
-  var t = COURSE.ratings[teeKey];
-  var ch = calcCourseHcp(hi, teeKey);
-  var eqStr = eqShots !== 0 ? ' ' + (eqShots > 0 ? '+' : '') + eqShots + ' eq' : '';
-  return '<div style="display:grid;grid-template-columns:1fr 44px 44px 44px;gap:6px;padding:7px 10px;background:rgba(255,255,255,.05);border-radius:6px;margin-bottom:5px;font-size:.78rem;">'
-    + '<div style="color:rgba(255,255,255,.8);">' + label + ' <span style="font-size:.62rem;color:rgba(255,255,255,.4);">(' + t.name + ')</span></div>'
-    + '<div style="text-align:right;font-family:monospace;">' + ch + '</div>'
-    + '<div style="text-align:right;font-family:monospace;color:rgba(212,160,23,.8);">' + ph + eqStr + '</div>'
-    + '<div style="text-align:right;font-family:monospace;font-weight:600;color:#f0c040;">' + finalPh + '</div>'
-    + '</div>';
-}
-
-function colHeaders() {
-  return '<div style="display:grid;grid-template-columns:1fr 44px 44px 44px;gap:6px;padding:4px 10px;font-size:.55rem;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.35);margin-bottom:4px;">'
-    + '<div>Player</div><div style="text-align:right">C.HCP</div><div style="text-align:right">P.HCP</div><div style="text-align:right">Final</div></div>';
-}
-
-function strokeDiffBlock(teamLabel, strokes, holes) {
-  if (strokes === 0) {
-    return '<div style="background:rgba(255,255,255,.07);border-radius:8px;padding:12px;text-align:center;font-size:.85rem;color:rgba(255,255,255,.7);margin-top:10px;">Equal handicaps — no strokes given.</div>';
-  }
-  var holeList = holes.map(function(h){ return '#'+h.hole+' (SI'+h.si+')'; }).join(', ');
-  return '<div style="background:rgba(212,160,23,.15);border:1px solid rgba(212,160,23,.3);border-radius:8px;padding:12px 14px;margin-top:10px;">'
-    + '<div style="font-size:.65rem;letter-spacing:.1em;text-transform:uppercase;color:rgba(212,160,23,.7);margin-bottom:6px;">Strokes Received</div>'
-    + '<div style="font-family:monospace;font-size:1.4rem;color:#f0c040;font-weight:500;margin-bottom:6px;">' + strokes + ' stroke' + (strokes!==1?'s':'') + ' to ' + teamLabel + '</div>'
-    + '<div style="font-size:.72rem;color:rgba(255,255,255,.55);line-height:1.7;">On holes: ' + holeList + '</div>'
-    + '</div>';
-}
-
-function getStrokeHoles(diff, gender) {
-  var si = gender === 'f' ? COURSE.si_women : COURSE.si_men;
-  var par = gender === 'f' ? COURSE.par_women : COURSE.par_men;
-  var absDiff = Math.abs(diff);
-  var holes = [];
-  for (var h=0; h<18; h++) {
-    var s = Math.floor(absDiff/18) + (si[h] <= (absDiff%18) ? 1 : 0);
-    if (s > 0) holes.push({hole:h+1, si:si[h], par:par[h], strokes:s});
-  }
-  return holes.sort(function(a,b){return a.si-b.si;});
-}
-
-function calcSinglesResult(hiA, teeA, hiB, teeB, allow, isMixed, labelA, labelB) {
-  var chA_raw = courseHcpRaw(hiA, teeA);
-  var chB_raw = courseHcpRaw(hiB, teeB);
-  var phA = Math.round(chA_raw * allow);
-  var phB = Math.round(chB_raw * allow);
-
-  // Equalisation
-  var eqA = 0, eqB = 0;
-  if (isMixed && teeA !== teeB) {
-    var eq = equalisationShots(teeA, teeB);
-    // eq > 0 means teeA has higher CR — player B gets eq shots added
-    if (eq > 0) { eqB += eq; } else if (eq < 0) { eqA += Math.abs(eq); }
-  }
-
-  var finalA = phA + eqA;
-  var finalB = phB + eqB;
-  var diff   = finalA - finalB;
-  var higher = diff > 0 ? labelA : diff < 0 ? labelB : null;
-  var absDiff = Math.abs(diff);
-  var gender = teeA.endsWith('_f') ? 'f' : 'm';
-  var holes  = getStrokeHoles(absDiff, gender);
-
-  var out = colHeaders();
-  out += playerSummaryRow(labelA, hiA, teeA, phA, eqA, finalA);
-  out += playerSummaryRow(labelB, hiB, teeB, phB, eqB, finalB);
-  if (isMixed && teeA !== teeB) {
-    var eq2 = equalisationShots(teeA, teeB);
-    out += '<div style="font-size:.68rem;color:rgba(255,255,255,.45);padding:4px 10px;line-height:1.6;">Mixed tees: CR diff = '
-      + Math.abs(COURSE.ratings[teeA].cr - COURSE.ratings[teeB].cr).toFixed(1)
-      + ' → ' + Math.abs(eq2) + ' equalisation shot' + (Math.abs(eq2)!==1?'s':'')
-      + ' added to ' + (eq2>=0?labelB:labelA) + '</div>';
-  }
-  out += strokeDiffBlock(higher||'neither', absDiff, holes);
-  return out;
-}
-
-function calcFourballResult(hiA, teeA, hiB, teeB, hiC, teeC, hiD, teeD, allow, isMixed) {
-  // FOURBALL MATCHPLAY — each player plays their own ball
-  // Step 1: Calculate each player's Course Handicap
-  // Step 2: Find the lowest Course Handicap across all 4 players — they play off scratch
-  // Step 3: Each other player receives: round((their CH - lowest CH) × allow%) shots
-  // Step 4: Add equalisation shots if mixed tees (vs lowest CR tee in group)
-
-  var players = [
-    {hi:hiA, tee:teeA, label:'Team 1 — A', team:1},
-    {hi:hiB, tee:teeB, label:'Team 1 — B', team:1},
-    {hi:hiC, tee:teeC, label:'Team 2 — C', team:2},
-    {hi:hiD, tee:teeD, label:'Team 2 — D', team:2},
-  ];
-
-  // Step 1: Course handicaps
-  players.forEach(function(p) {
-    p.chRaw = courseHcpRaw(p.hi, p.tee);
-    p.ch    = Math.round(p.chRaw);
-  });
-
-  // Step 2: Find lowest course handicap across all 4
-  var lowestCH = Math.min.apply(null, players.map(function(p){ return p.ch; }));
-  var lowestPlayer = players.filter(function(p){ return p.ch === lowestCH; })[0];
-
-  // Step 3: Each player's shots received = round((their CH - lowestCH) × allow)
-  players.forEach(function(p) {
-    var diff = p.ch - lowestCH;
-    p.shotsFromDiff = Math.round(diff * allow);
-    p.eq = 0;
-  });
-
-  // Step 4: Equalisation — each player vs lowest CR tee in group
-  if (isMixed) {
-    var allCRs = players.map(function(p){ return COURSE.ratings[p.tee].cr; });
-    var minCR  = Math.min.apply(null, allCRs);
-    players.forEach(function(p) {
-      p.eq = Math.round(COURSE.ratings[p.tee].cr - minCR);
-    });
-  }
-
-  // Final shots received by each player
-  players.forEach(function(p) {
-    p.finalShots = p.shotsFromDiff + p.eq;
-  });
-
-  // Build result
-  var out = '<div style="font-size:.62rem;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.35);margin-bottom:6px;padding:0 2px;">'
-    + 'Lowest C.HCP in group: <strong style="color:#f0c040;">' + lowestPlayer.label + ' (' + lowestCH + ')</strong> — plays off scratch</div>';
-
-  // Column headers
-  out += '<div style="display:grid;grid-template-columns:1fr 44px 44px 44px 54px;gap:4px;padding:4px 10px;font-size:.53rem;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.35);margin-bottom:4px;">'
-    + '<div>Player</div><div style="text-align:right">C.HCP</div><div style="text-align:right">Diff</div><div style="text-align:right">Eq</div><div style="text-align:right">Shots Rcvd</div></div>';
-
-  players.forEach(function(p) {
-    var isLowest = p.ch === lowestCH;
-    var bg = p.team === 1 ? 'rgba(26,58,107,.2)' : 'rgba(45,110,78,.15)';
-    var borderCol = p.team === 1 ? 'rgba(26,58,107,.4)' : 'rgba(45,110,78,.3)';
-    out += '<div style="display:grid;grid-template-columns:1fr 44px 44px 44px 54px;gap:4px;padding:8px 10px;background:' + bg + ';border:1px solid ' + borderCol + ';border-radius:7px;margin-bottom:5px;font-size:.78rem;align-items:center;">'
-      + '<div style="color:#fff;">' + p.label + (isLowest?' <span style="font-size:.58rem;background:rgba(212,160,23,.3);color:#f0c040;border-radius:3px;padding:1px 4px;">Scratch</span>':'') + '</div>'
-      + '<div style="text-align:right;font-family:monospace;">' + p.ch + '</div>'
-      + '<div style="text-align:right;font-family:monospace;color:rgba(255,255,255,.55);">' + (p.ch - lowestCH) + '</div>'
-      + '<div style="text-align:right;font-family:monospace;color:rgba(212,160,23,.7);">' + (p.eq > 0 ? '+'+p.eq : p.eq === 0 ? '—' : p.eq) + '</div>'
-      + '<div style="text-align:right;font-family:monospace;font-size:.95rem;font-weight:600;color:' + (p.finalShots > 0 ? '#f0c040' : 'rgba(255,255,255,.4)') + ';">'
-      + (p.finalShots > 0 ? p.finalShots + ' shot' + (p.finalShots!==1?'s':'') : 'Scratch') + '</div>'
-      + '</div>';
-  });
-
-  // Show which holes each player (non-scratch) gets their shots on
-  var nonScratch = players.filter(function(p){ return p.finalShots > 0; });
-  if (nonScratch.length > 0) {
-    out += '<div style="margin-top:10px;">';
-    nonScratch.forEach(function(p) {
-      var gender = p.tee.endsWith('_f') ? 'f' : 'm';
-      var holes  = getStrokeHoles(p.finalShots, gender);
-      var teamCol = p.team === 1 ? '#a8c4f0' : '#8ee0b4';
-      out += '<div style="background:rgba(212,160,23,.1);border:1px solid rgba(212,160,23,.2);border-radius:8px;padding:10px 12px;margin-bottom:8px;">'
-        + '<div style="font-size:.65rem;letter-spacing:.08em;text-transform:uppercase;color:rgba(212,160,23,.7);margin-bottom:4px;">' + p.label + ' — receives ' + p.finalShots + ' stroke' + (p.finalShots!==1?'s':'') + '</div>'
-        + '<div style="font-size:.7rem;color:rgba(255,255,255,.6);line-height:1.8;">'
-        + holes.map(function(h){ return 'Hole ' + h.hole + ' (SI ' + h.si + ')'; }).join(' &nbsp;·&nbsp; ')
-        + '</div></div>';
-    });
-    out += '</div>';
-  }
-
-  if (isMixed) {
-    var allCRs2 = players.map(function(p){ return COURSE.ratings[p.tee].cr; });
-    var minCR2  = Math.min.apply(null, allCRs2);
-    var minTee  = players.filter(function(p){ return COURSE.ratings[p.tee].cr === minCR2; })[0];
-    out += '<div style="font-size:.67rem;color:rgba(255,255,255,.4);padding:8px 10px;line-height:1.7;border-top:1px solid rgba(255,255,255,.07);margin-top:6px;">'
-      + 'Mixed tees: equalisation applied vs lowest CR tee (' + COURSE.ratings[minTee.tee].name + ', CR ' + minCR2 + ')</div>';
-  }
-
-  return out;
-}
-
-function calcFoursomesResult(hiA, teeA, hiB, teeB, hiC, teeC, hiD, teeD, allow, isMixed) {
-  // Foursomes: combined team course hcp (sum of both × 50% each = combined × 50%)
-  var chA_raw = courseHcpRaw(hiA, teeA);
-  var chB_raw = courseHcpRaw(hiB, teeB);
-  var chC_raw = courseHcpRaw(hiC, teeC);
-  var chD_raw = courseHcpRaw(hiD, teeD);
-
-  // Each player ph at 50%
-  var phA = Math.round(chA_raw * allow);
-  var phB = Math.round(chB_raw * allow);
-  var phC = Math.round(chC_raw * allow);
-  var phD = Math.round(chD_raw * allow);
-
-  // Team combined ph
-  var t1ph = phA + phB;
-  var t2ph = phC + phD;
-
-  // Equalisation: apply to combined team ph
-  var eqT1 = 0, eqT2 = 0;
-  if (isMixed) {
-    // Use average CR of each team vs the other
-    var crT1avg = (COURSE.ratings[teeA].cr + COURSE.ratings[teeB].cr) / 2;
-    var crT2avg = (COURSE.ratings[teeC].cr + COURSE.ratings[teeD].cr) / 2;
-    var eqDiff  = Math.round(crT1avg - crT2avg);
-    if (eqDiff > 0) { eqT2 += eqDiff; } else if (eqDiff < 0) { eqT1 += Math.abs(eqDiff); }
-  }
-
-  var finalT1 = t1ph + eqT1;
-  var finalT2 = t2ph + eqT2;
-  var diff    = finalT1 - finalT2;
-  var higherTeam = diff > 0 ? 'Team 1' : diff < 0 ? 'Team 2' : null;
-  var absDiff = Math.abs(diff);
-  var gender  = teeA.endsWith('_f') ? 'f' : 'm';
-  var holes   = getStrokeHoles(absDiff, gender);
-
-  var players = [
-    {label:'Team 1 — A (tees odd holes)', hi:hiA, tee:teeA, ph:phA, eq:0, final:phA},
-    {label:'Team 1 — B (tees even holes)', hi:hiB, tee:teeB, ph:phB, eq:0, final:phB},
-    {label:'Team 2 — C (tees odd holes)', hi:hiC, tee:teeC, ph:phC, eq:0, final:phC},
-    {label:'Team 2 — D (tees even holes)', hi:hiD, tee:teeD, ph:phD, eq:0, final:phD},
-  ];
-
-  var out = colHeaders();
-  players.forEach(function(p){ out += playerSummaryRow(p.label, p.hi, p.tee, p.ph, 0, p.final); });
-  out += '<div style="font-size:.68rem;color:rgba(255,255,255,.45);padding:6px 10px;line-height:1.6;border-top:1px solid rgba(255,255,255,.07);margin-top:4px;">'
-    + 'Foursomes: combined team ph · Team 1 = ' + phA + '+' + phB + ' = <strong>' + t1ph + '</strong>'
-    + (eqT1?' +'+eqT1+' eq':'') + (eqT2?' (Team 2 +'+eqT2+' eq)':'')
-    + ' · Team 2 = ' + phC + '+' + phD + ' = <strong>' + t2ph + '</strong></div>';
-  out += strokeDiffBlock(higherTeam||'neither', absDiff, holes);
-  return out;
-}
-
-
-function calcTeam(){
-  var hiA=parseFloat(document.getElementById('gsA_hi').value);
-  var hiB=parseFloat(document.getElementById('gsB_hi').value);
-  var teeKey=document.getElementById('gsTee').value;
-  if(isNaN(hiA)||isNaN(hiB)||hiA<-5||hiB<-5){alert('Please enter valid Handicap Indexes (-5 to 54)');return;}
-
-  var chA_raw=courseHcpRaw(hiA,teeKey);
-  var chB_raw=courseHcpRaw(hiB,teeKey);
-  var chA=Math.round(chA_raw);
-  var chB=Math.round(chB_raw);
-  var low=Math.min(chA,chB);
-  var high=Math.max(chA,chB);
-
-  // Greensomes: 60% low + 40% high
-  var gsHcp=Math.round(low*0.60 + high*0.40);
-  // Foursomes: 50% each combined
-  var fsHcp=Math.round((chA+chB)*0.50);
-  // Fourball: each player gets their own allowance separately
-
-  var t=COURSE.ratings[teeKey];
-  var out='<div style="background:linear-gradient(135deg,var(--navy-dk),var(--navy));border-radius:12px;padding:16px;color:#fff;">';
-  out+='<div style="font-family:Poppins,sans-serif;font-size:1rem;color:var(--gold-lt,#f0c040);margin-bottom:12px;">Team Handicaps · '+t.name+'</div>';
-  out+='<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px;">';
-  out+='<div style="background:rgba(255,255,255,.07);border-radius:8px;padding:10px;text-align:center;"><div style="font-size:.55rem;letter-spacing:.1em;text-transform:uppercase;color:var(--grey,#8896a8);margin-bottom:3px;">Player A C.HCP</div><div style="font-family:monospace;font-size:1.15rem;">'+chA+'</div></div>';
-  out+='<div style="background:rgba(255,255,255,.07);border-radius:8px;padding:10px;text-align:center;"><div style="font-size:.55rem;letter-spacing:.1em;text-transform:uppercase;color:var(--grey,#8896a8);margin-bottom:3px;">Player B C.HCP</div><div style="font-family:monospace;font-size:1.15rem;">'+chB+'</div></div>';
-  out+='</div>';
-  out+='<div style="display:flex;flex-direction:column;gap:8px;">';
-  out+='<div style="background:rgba(212,160,23,.15);border:1px solid rgba(212,160,23,.3);border-radius:8px;padding:12px;display:flex;justify-content:space-between;align-items:center;">'
-    +'<div><div style="font-size:.65rem;letter-spacing:.1em;text-transform:uppercase;color:rgba(212,160,23,.7);">Greensomes</div><div style="font-size:.7rem;color:rgba(255,255,255,.5);margin-top:2px;">60% × '+low+' + 40% × '+high+'</div></div>'
-    +'<div style="font-family:monospace;font-size:1.5rem;color:#f0c040;font-weight:500;">'+gsHcp+'</div></div>';
-  out+='<div style="background:rgba(45,110,78,.15);border:1px solid rgba(45,110,78,.3);border-radius:8px;padding:12px;display:flex;justify-content:space-between;align-items:center;">'
-    +'<div><div style="font-size:.65rem;letter-spacing:.1em;text-transform:uppercase;color:#8ee0b4;">Foursomes</div><div style="font-size:.7rem;color:rgba(255,255,255,.5);margin-top:2px;">50% × ('+chA+' + '+chB+')</div></div>'
-    +'<div style="font-family:monospace;font-size:1.5rem;color:#8ee0b4;font-weight:500;">'+fsHcp+'</div></div>';
-  out+='<div style="background:rgba(26,58,107,.3);border:1px solid rgba(26,68,128,.5);border-radius:8px;padding:12px;">'
-    +'<div style="font-size:.65rem;letter-spacing:.1em;text-transform:uppercase;color:#a8c4f0;margin-bottom:6px;">Fourball — Individual Allowances (90%)</div>'
-    +'<div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;">'
-    +'<div style="text-align:center;font-family:monospace;font-size:1.1rem;color:#fff;">'+Math.round(chA_raw*0.9)+'<div style="font-size:.6rem;color:rgba(255,255,255,.4);margin-top:1px;">Player A</div></div>'
-    +'<div style="text-align:center;font-family:monospace;font-size:1.1rem;color:#fff;">'+Math.round(chB_raw*0.9)+'<div style="font-size:.6rem;color:rgba(255,255,255,.4);margin-top:1px;">Player B</div></div>'
-    +'</div></div>';
-  out+='</div></div>';
-  document.getElementById('gsResult').innerHTML=out;
-}
-
-function openNav(){document.getElementById('sgcNavDrawer').classList.add('open');document.getElementById('sgcNavOverlay').classList.add('open');document.body.style.overflow='hidden';}
-function closeNav(){document.getElementById('sgcNavDrawer').classList.remove('open');document.getElementById('sgcNavOverlay').classList.remove('open');document.body.style.overflow='';}
-document.addEventListener('keydown',function(e){if(e.key==='Escape')closeNav();});
-
-function showPage(id,el){
-  document.querySelectorAll('.page').forEach(function(p){p.classList.remove('active');});
-  document.querySelectorAll('.tnav').forEach(function(t){t.classList.remove('active');});
-  document.getElementById(id).classList.add('active');
-  el.classList.add('active');
-  window.scrollTo(0,0);
-}
-// ── SCORECARD FUNCTIONS ──
-var scTee = 'white', scGender = 'm';
-
-function setGender(g, el) {
-  scGender = g;
-  document.querySelectorAll('.gbtn').forEach(function(b){ b.classList.remove('active'); });
-  el.classList.add('active');
-  renderSC();
-}
-
-function setTee(t, el) {
-  scTee = t;
-  document.querySelectorAll('.tbtn').forEach(function(b){ b.classList.remove('active'); });
-  el.classList.add('active');
-  var labels = {white:'⚪ White · Yds', yellow:'🟡 Yellow · Yds', red:'🔴 Red · Yds'};
-  document.getElementById('yHdr').textContent = labels[t] || 'Yds';
-  renderSC();
-}
-
-function renderSC() {
-  var body = document.getElementById('scBody');
-  if (!body) return;
-  body.innerHTML = '';
-  var yds = COURSE[scTee];
-  var par = scGender === 'f' ? COURSE.par_women : COURSE.par_men;
-  var si  = scGender === 'f' ? COURSE.si_women  : COURSE.si_men;
-  var op=0, oy=0, ip=0, iy=0;
-  for (var i=0; i<18; i++) {
-    var back = i >= 9;
-    if (!back){ op+=par[i]; oy+=yds[i]; } else { ip+=par[i]; iy+=yds[i]; }
-    var cls = par[i]===3 ? 'p3' : par[i]===5 ? 'p5' : '';
-    var tr = document.createElement('tr');
-    tr.className = cls;
-    tr.innerHTML = '<td class="hn">'+(i+1)+'</td><td class="pc">'+par[i]+'</td><td class="sc">'+si[i]+'</td><td>'+yds[i]+'</td>';
-    body.appendChild(tr);
-    if (i===8) {
-      var r = document.createElement('tr');
-      r.className = 'nine-tot';
-      r.innerHTML = '<td class="lbl">OUT</td><td class="pc" style="font-weight:600">'+op+'</td><td class="sc">—</td><td style="font-weight:600">'+oy+'</td>';
-      body.appendChild(r);
-    }
-  }
-  var tot = document.createElement('tr');
-  tot.className = 'grand-tot';
-  tot.innerHTML = '<td class="lbl">TOTAL</td><td class="pc" style="font-weight:700;font-size:.88rem">'+(op+ip)+'</td><td class="sc">—</td><td style="font-weight:700;font-size:.88rem">'+(oy+iy)+'</td>';
-  body.appendChild(tot);
-}
-
-
-renderSC();
-</script>
-  <div style="text-align:center;padding:14px 16px;border-top:1px solid rgba(212,160,23,.15);">
-    <div style="display:inline-flex;align-items:center;gap:10px;">
-      <div style="width:28px;height:1.5px;background:linear-gradient(to right,transparent,rgba(212,160,23,.6));"></div>
-      <span style="font-size:.68rem;color:rgba(212,160,23,.6);letter-spacing:.1em;font-family:Poppins,sans-serif;">Designed &amp; built by <strong style="color:var(--gold-lt,#f0c040);font-weight:600;">Alex Persaud</strong> &nbsp;·&nbsp; PGA Professional</span>
-      <div style="width:28px;height:1.5px;background:linear-gradient(to left,transparent,rgba(212,160,23,.6));"></div>
-    </div>
-  </div>
 </body>
 </html>
