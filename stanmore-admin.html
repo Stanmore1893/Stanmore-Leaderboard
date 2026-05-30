@@ -356,6 +356,17 @@ select.finp option{background:#1a3a6b;color:#fff;}
   </div>
 
 
+  <!-- RESULTS ARCHIVE -->
+  <div class="sec" style="margin-top:14px;">
+    <div class="sec-title">🏆 Results Archive</div>
+    <div class="sec-desc">Saved results from closed competitions.</div>
+    <div id="archiveList" style="margin-top:10px;">
+      <div style="color:var(--grey);font-size:.82rem;">Loading…</div>
+    </div>
+  </div>
+
+</div><!-- end adminApp -->
+
 <!-- SCORE EDITOR MODAL -->
 <div id="scoreEditorOverlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:600;overflow-y:auto;padding:20px 16px;">
   <div style="background:linear-gradient(175deg,#0f2347,#1a3a6b);border:1.5px solid rgba(212,160,23,.4);border-radius:16px;max-width:480px;margin:0 auto;padding:20px;">
@@ -674,6 +685,7 @@ function renderCompList() {
       +'</div>'
       +'<div class="comp-actions">'
       +'<button class="comp-act-btn'+(c.active?' active-btn':'')+'" onclick="setActiveComp('+i+')">'+(c.active?'&#10003; Active':'Set Active')+'</button>'
+      +(c.active && !c.closed ? '<button class="comp-act-btn" onclick="closeCompetition('+i+')" style="background:rgba(45,110,78,.2);border:1px solid rgba(45,110,78,.4);color:#8ee0b4;border-radius:7px;padding:5px 10px;font-size:.72rem;font-weight:600;cursor:pointer;font-family:Poppins,sans-serif;">&#9989; Close</button>' : '')
       +'<button class="comp-act-btn del-btn" onclick="deleteComp('+i+')">&#10005;</button>'
       +'</div>';
     el.appendChild(div);
