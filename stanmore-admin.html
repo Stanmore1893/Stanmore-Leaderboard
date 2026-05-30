@@ -1223,11 +1223,12 @@ function promptHoleScore(holeIdx) {
   var ph = _editPlayer.ph || _editPlayer.hcp || 0;
   var isLadies = _editPlayer.gender === 'f';
   var par = isLadies ? COURSE.par_women : COURSE.par_men;
+  var si  = isLadies ? COURSE.si_women  : COURSE.si_men;
   var holePar = par[holeIdx];
   var current = _editScores[holeIdx] || '';
   var strokes = strokesOnHole(ph, si[holeIdx]);
   var val = prompt(
-    'Hole ' + (holeIdx+1) + '  |  Par ' + holePar + '  |  SI ' + si[holeIdx] + '  |  You receive ' + strokes + ' stroke' + (strokes!==1?'s':'') + '\n\nEnter gross score (blank or 0 to clear):',
+    'Hole ' + (holeIdx+1) + '  |  Par ' + holePar + '  |  Strokes received: ' + strokes + '\n\nEnter gross score (blank or 0 to clear):',
     current
   );
   if (val === null) return;
