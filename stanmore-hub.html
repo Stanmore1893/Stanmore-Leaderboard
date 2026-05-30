@@ -362,72 +362,86 @@ function makeQR(canvasId, url) {
 }
 
 function printQRSheet() {
-  // Build a print-ready A4 page with all QR codes
   var pages = [
-    {key:'scoring',     label:'Score Entry',          desc:'Enter your gross score hole by hole', icon:'⛳', canvas:'qr1'},
-    {key:'leaderboard', label:'Live Leaderboard',      desc:'Live standings updated every 5 seconds', icon:'🏆', canvas:'qr2'},
-    {key:'results',     label:'Results & Prize List',  desc:'Final standings, podium and prizes', icon:'🏅', canvas:'qr-results'},
-    {key:'guide',       label:'Course Guide',          desc:'Scorecard & handicap calculator', icon:'📋', canvas:'qr3'},
+    {key:'scoring',     label:'Score Entry',         desc:'Enter your gross score hole by hole. Works on any smartphone — no app needed.', icon:'⛳', canvas:'qr1',  color:'#1a3a6b', accent:'#d4a017'},
+    {key:'leaderboard', label:'Live Leaderboard',    desc:'See live standings, team scores and nearest the pin leaders. Updates every 5 seconds.', icon:'🏆', canvas:'qr2',  color:'#0f4d2e', accent:'#3fa06e'},
+    {key:'results',     label:'Results & Prizes',    desc:'Final standings, podium positions and prize winners with full scorecard breakdown.', icon:'🏅', canvas:'qr-results', color:'#5a2d00', accent:'#d4a017'},
+    {key:'guide',       label:'Course Guide',        desc:'Full scorecard, slope & course ratings, and a WHS handicap calculator for any format.', icon:'📋', canvas:'qr3',  color:'#2d1a5a', accent:'#9b7fe8'},
   ];
 
   var date = new Date().toLocaleDateString('en-GB', {weekday:'long',day:'numeric',month:'long',year:'numeric'});
 
-  // Build QR image data from existing canvases
   var qrImages = {};
   pages.forEach(function(p) {
     var canvas = document.getElementById(p.canvas);
-    if (canvas) {
-      try { qrImages[p.key] = canvas.toDataURL('image/png'); } catch(e) {}
-    }
+    if (canvas) { try { qrImages[p.key] = canvas.toDataURL('image/png'); } catch(e) {} }
   });
 
   var cards = pages.map(function(p) {
     var imgTag = qrImages[p.key]
-      ? '<img src="' + qrImages[p.key] + '" style="width:130px;height:130px;display:block;margin:0 auto 10px;">'
-      : '<div style="width:130px;height:130px;background:#e8e8e8;margin:0 auto 10px;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:12px;color:#999;">QR</div>';
-    return '<div style="break-inside:avoid;background:#fff;border:1.5px solid #1a3a6b;border-radius:12px;padding:20px 16px;text-align:center;">'
+      ? '<img src="' + qrImages[p.key] + '" style="width:150px;height:150px;display:block;margin:0 auto 14px;border-radius:8px;border:3px solid ' + p.accent + ';">'
+      : '<div style="width:150px;height:150px;background:#e8e8e8;margin:0 auto 14px;border-radius:8px;"></div>';
+    return '<div style="break-inside:avoid;background:linear-gradient(135deg,' + p.color + ' 0%,#0a1628 100%);border:2px solid ' + p.accent + ';border-radius:14px;padding:24px 18px 20px;text-align:center;position:relative;overflow:hidden;">'
+      + '<div style="position:absolute;top:-20px;right:-20px;width:80px;height:80px;border-radius:50%;background:' + p.accent + ';opacity:.08;"></div>'
       + imgTag
-      + '<div style="font-size:11px;font-weight:700;color:#0f2347;letter-spacing:.08em;text-transform:uppercase;margin-bottom:4px;">' + p.icon + ' ' + p.label + '</div>'
-      + '<div style="font-size:10px;color:#8896a8;line-height:1.5;">' + p.desc + '</div>'
-      + '<div style="font-size:9px;color:#b0bec5;margin-top:6px;word-break:break-all;">' + (APPS[p.key]||'') + '</div>'
+      + '<div style="font-size:22px;margin-bottom:6px;">' + p.icon + '</div>'
+      + '<div style="font-size:14px;font-weight:800;color:#ffffff;letter-spacing:.04em;margin-bottom:8px;text-transform:uppercase;">' + p.label + '</div>'
+      + '<div style="font-size:11px;color:rgba(255,255,255,.75);line-height:1.7;margin-bottom:10px;">' + p.desc + '</div>'
+      + '<div style="font-size:8.5px;color:' + p.accent + ';opacity:.8;word-break:break-all;font-family:monospace;background:rgba(0,0,0,.25);border-radius:5px;padding:4px 6px;">' + (APPS[p.key]||'') + '</div>'
       + '</div>';
   }).join('');
 
   var w = window.open('', '_blank');
   w.document.write('<!DOCTYPE html><html><head><meta charset="UTF-8">'
-    + '<title>Stanmore GC — QR Code Sheet</title>'
+    + '<title>Stanmore GC — QR Codes</title>'
+    + '<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&display=swap" rel="stylesheet">'
     + '<style>'
-    + '@page{size:A4 portrait;margin:12mm 10mm;}'
+    + '@page{size:A4 portrait;margin:10mm 8mm;}'
     + '*{box-sizing:border-box;margin:0;padding:0;}'
-    + 'body{font-family:Poppins,Arial,sans-serif;color:#0f2347;background:#fff;}'
-    + '.header{background:#0f2347;color:#fff;padding:16px 20px;display:flex;align-items:center;gap:14px;border-radius:10px;margin-bottom:14px;}'
-    + '.header img{width:52px;height:52px;object-fit:contain;}'
-    + '.gold-bar{height:3px;background:linear-gradient(to right,#d4a017,#f0c040,#d4a017);border-radius:2px;margin-bottom:14px;}'
-    + '.grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;}'
-    + '.instruction{background:#f8f5ef;border:1px solid #e8e0d0;border-radius:8px;padding:10px 14px;margin-bottom:14px;font-size:11px;color:#5a6a7a;line-height:1.7;}'
-    + '.footer{margin-top:14px;text-align:center;font-size:9px;color:#b0bec5;border-top:1px solid #e8e0d0;padding-top:10px;}'
-    + '.print-btn{position:fixed;bottom:16px;right:16px;background:#d4a017;color:#0f2347;border:none;border-radius:8px;padding:10px 20px;font-size:13px;font-weight:700;cursor:pointer;}'
-    + '@media print{.print-btn{display:none;}}'
+    + 'body{font-family:Poppins,Arial,sans-serif;background:#060e1e;color:#fff;}'
+    + '.header{display:flex;align-items:center;gap:16px;padding:18px 20px;background:rgba(0,0,0,.4);border-bottom:3px solid #d4a017;margin-bottom:14px;border-radius:10px;}'
+    + '.header img{width:60px;height:60px;object-fit:contain;}'
+    + '.header-text h1{font-size:22px;font-weight:800;color:#f0c040;letter-spacing:.02em;}'
+    + '.header-text p{font-size:11px;color:rgba(255,255,255,.55);margin-top:2px;letter-spacing:.08em;text-transform:uppercase;}'
+    + '.header-text .dateline{font-size:10px;color:rgba(255,255,255,.35);margin-top:3px;font-family:monospace;}'
+    + '.how-to{background:linear-gradient(135deg,rgba(212,160,23,.15),rgba(212,160,23,.05));border:2px solid rgba(212,160,23,.4);border-radius:12px;padding:16px 20px;margin-bottom:16px;}'
+    + '.how-to-title{font-size:15px;font-weight:800;color:#f0c040;margin-bottom:10px;display:flex;align-items:center;gap:8px;}'
+    + '.how-to-steps{display:grid;grid-template-columns:1fr 1fr;gap:8px;}'
+    + '.step{display:flex;align-items:flex-start;gap:10px;}'
+    + '.step-num{width:24px;height:24px;border-radius:50%;background:#d4a017;color:#0f2347;font-size:12px;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px;}'
+    + '.step-text{font-size:11px;color:rgba(255,255,255,.85);line-height:1.6;}'
+    + '.step-text strong{color:#f0c040;}'
+    + '.grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px;}'
+    + '.footer{text-align:center;font-size:9px;color:rgba(255,255,255,.3);border-top:1px solid rgba(255,255,255,.08);padding-top:10px;font-family:monospace;}'
+    + '.print-btn{position:fixed;bottom:16px;right:16px;background:#d4a017;color:#0f2347;border:none;border-radius:10px;padding:12px 24px;font-size:13px;font-weight:800;cursor:pointer;letter-spacing:.04em;}'
+    + '@media print{.print-btn{display:none;}body{background:#060e1e;}}'
     + '</style></head><body>'
+
     + '<div class="header">'
     + '<img src="https://stanmore1893.github.io/Stanmore-Leaderboard/club-logo.png" alt="">'
-    + '<div>'
-    + '<div style="font-size:18px;font-weight:700;color:#f0c040;">Stanmore Golf Club</div>'
-    + '<div style="font-size:11px;color:rgba(255,255,255,.7);margin-top:2px;">Digital Competition Hub — QR Code Reference Sheet</div>'
-    + '<div style="font-size:10px;color:rgba(255,255,255,.45);margin-top:1px;">' + date + '</div>'
+    + '<div class="header-text">'
+    + '<h1>Stanmore Golf Club</h1>'
+    + '<p>Digital Competition Hub — Quick Access Guide</p>'
+    + '<div class="dateline">' + date + '</div>'
     + '</div></div>'
-    + '<div class="gold-bar"></div>'
-    + '<div class="instruction">'
-    + '<strong>How to use:</strong> Scan any QR code below with your phone camera to open the page instantly. '
-    + 'For score entry, each player scans the Score Entry code and enters their details. '
-    + 'The leaderboard updates live every 5 seconds — display it on a screen or scan to follow on your phone.'
-    + '</div>'
+
+    + '<div class="how-to">'
+    + '<div class="how-to-title">📱 How to use these QR codes</div>'
+    + '<div class="how-to-steps">'
+    + '<div class="step"><div class="step-num">1</div><div class="step-text"><strong>Open your camera app</strong> on any iPhone or Android phone — no need to download anything.</div></div>'
+    + '<div class="step"><div class="step-num">2</div><div class="step-text"><strong>Point it at a QR code</strong> below and hold steady for a second until a link appears.</div></div>'
+    + '<div class="step"><div class="step-num">3</div><div class="step-text"><strong>Tap the link</strong> that pops up — the page opens instantly in your browser.</div></div>'
+    + '<div class="step"><div class="step-num">4</div><div class="step-text"><strong>Add to your home screen</strong> for quick access throughout the day — tap Share then "Add to Home Screen".</div></div>'
+    + '</div></div>'
+
     + '<div class="grid">' + cards + '</div>'
-    + '<div class="footer">Stanmore Golf Club &nbsp;·&nbsp; stanmore1893.github.io &nbsp;·&nbsp; Designed & built by Alex Persaud · PGA Professional</div>'
+
+    + '<div class="footer">Stanmore Golf Club &nbsp;·&nbsp; stanmore1893.github.io &nbsp;·&nbsp; Designed &amp; built by Alex Persaud &middot; PGA Professional</div>'
     + '<button class="print-btn" onclick="window.print()">🖨️ Print</button>'
     + '</body></html>');
   w.document.close();
 }
+
 
 function openApp(key) {
   window.open(APPS[key], '_blank');
