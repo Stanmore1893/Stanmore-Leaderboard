@@ -421,7 +421,12 @@ async function loadAdminSettings() {
     // s may be an object already or a JSON string
     const settings = (typeof s === 'string') ? JSON.parse(s) : s;
     if (settings.name) document.getElementById('compNameHdr').textContent = settings.name;
-    if (settings.ticker && settings.ticker.trim()) {
+    // Check if active competition has a welcome message - it takes priority over ticker
+    var compsForWelcome = Array.isArray(record.competitions) ? record.competitions : [];
+    var activeForWelcome = compsForWelcome.find(function(c){ return c.active; });
+    var hasWelcome = activeForWelcome && activeForWelcome.branding && activeForWelcome.branding.welcome && activeForWelcome.branding.welcome.trim();
+
+    if (!hasWelcome && settings.ticker && settings.ticker.trim()) {
       const bar  = document.getElementById('tickerBar');
       const txt1 = document.getElementById('tickerText');
       const txt2 = document.getElementById('tickerText2');

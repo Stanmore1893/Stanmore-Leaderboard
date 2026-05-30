@@ -736,6 +736,104 @@ function renderCompList() {
   });
 }
 function setActiveComp(idx){ competitions.forEach(function(c,i){c.active=(i===idx);}); renderCompList(); toast('Set active — tap Save to publish'); }
+function editComp(idx) {
+  var c = competitions[idx];
+  if (!c) return;
+
+  // Pre-fill form
+  document.getElementById('ncName').value = c.name || '';
+  document.getElementById('ncDate').value = c.date || '';
+  document.getElementById('ncNotes').value = c.notes || '';
+  var fmtEl = document.getElementById('ncFmtSelect');
+  if (fmtEl) { fmtEl.value = c.format || 'ind_stableford'; onFmtChange(); }
+  setHoles(String(c.holes || 18));
+  var nineEl = document.getElementById('ncNineHole');
+  if (nineEl) nineEl.value = c.nineHole || '';
+  setTee((c.teeMen||'yellow_m').replace('_m',''), 'men');
+  setTee((c.teeLadies||'red_f').replace('_f',''), 'ladies');
+  setGender(c.gender || 'mixed');
+
+  // Pre-fill branding
+  var b = c.branding || {};
+  var bMap = {ncBrandName:'name',ncBrandTagline:'tagline',ncBrandWelcome:'welcome',ncBrandSponsor:'sponsor',ncBrandLogo:'logo'};
+  Object.keys(bMap).forEach(function(id){
+    var el = document.getElementById(id);
+    if (el) el.value = b[bMap[id]] || '';
+  });
+  var colEl = document.getElementById('ncBrandColour');
+  var hexEl = document.getElementById('ncBrandColourHex');
+  if (colEl) colEl.value = b.colour || '#d4a017';
+  if (hexEl) hexEl.textContent = b.colour || '#d4a017';
+
+  // Open branding panel if branding exists
+  if (c.branding) {
+    var bp = document.getElementById('brandingPanel');
+    var bc = document.getElementById('brandingChevron');
+    if (bp) bp.style.display = 'block';
+    if (bc) bc.textContent = '▲';
+  }
+
+  // Change button to Save
+  var addBtn = document.querySelector('button.save-btn.green');
+  if (addBtn) {
+    addBtn.textContent = '💾 Save Changes to ' + c.name;
+    addBtn.onclick = function(){ saveEditComp(idx); };
+  }
+
+  // Scroll to form
+  var pt = document.querySelector('.page-title');
+  if (pt) pt.scrollIntoView({behavior:'smooth'});
+  toast('Editing: ' + c.name + ' — make changes then tap Save');
+}
+
+async function saveEditComp(idx) {
+  var name = document.getElementById('ncName').value.trim();
+  if (!name) { toast('Please enter a competition name'); return; }
+  var selectedFmt = document.getElementById('ncFmtSelect').value;
+  var customAllowance = document.getElementById('ncAllowance') ? document.getElementById('ncAllowance').value : '';
+  var fmtInfo = FORMAT_LABELS[selectedFmt] || {};
+  var finalAllowance = customAllowance === 'greensomes' ? null
+    : (customAllowance !== '' ? parseFloat(customAllowance) : null);
+  var genderVal = document.getElementById('ncLadies') ? document.getElementById('ncLadies').value : 'mixed';
+  var brandColour = document.getElementById('ncBrandColour') ? document.getElementById('ncBrandColour').value : '#d4a017';
+  var branding = {
+    name:    (document.getElementById('ncBrandName')    ||{}).value||'',
+    tagline: (document.getElementById('ncBrandTagline') ||{}).value||'',
+    welcome: (document.getElementById('ncBrandWelcome') ||{}).value||'',
+    sponsor: (document.getElementById('ncBrandSponsor') ||{}).value||'',
+    logo:    (document.getElementById('ncBrandLogo')    ||{}).value||'',
+    colour:  brandColour === '#d4a017' ? '' : brandColour,
+  };
+  var hasBranding = Object.values(branding).some(function(v){ return v && v.trim(); });
+
+  competitions[idx] = Object.assign({}, competitions[idx], {
+    name:name, date:document.getElementById('ncDate').value,
+    format:selectedFmt, type:fmtInfo.type||competitions[idx].type||'individual',
+    tee:_ncTeeMen+'_m', teeMen:_ncTeeMen+'_m', teeLadies:_ncTeeLadies+'_f',
+    gender:genderVal||'mixed', notes:document.getElementById('ncNotes').value.trim(),
+    holes:parseInt(document.getElementById('ncHoles').value)||18,
+    nineHole:document.getElementById('ncNineHole').value||null,
+    matchplay:fmtInfo.matchplay||false,
+    allowance:finalAllowance!==null?finalAllowance:(fmtInfo.allowance||0.95),
+    customAllowance:customAllowance,
+    ntpHoles:getSelectValues('ntpSelect'),
+    ntp2Holes:getSelectValues('ntp2Select'),
+    ldHoles:getSelectValues('ldSelect'),
+    branding:hasBranding?branding:null,
+  });
+
+  var ok = false;
+  try { ok = await SGC.set('competitions', competitions); } catch(e) {}
+  if (!ok) { toast('Could not save — check connection'); return; }
+
+  // Reset button
+  var addBtn = document.querySelector('button.save-btn.green');
+  if (addBtn) { addBtn.textContent = '+ Add Competition'; addBtn.onclick = addComp; }
+
+  renderCompList();
+  toast('✓ Competition updated live');
+}
+
 function deleteComp(idx){ competitions.splice(idx,1); renderCompList(); toast('Removed — tap Save to publish'); }
 async function saveCompetitions(){
   var ok=await SGC.set('competitions',competitions);
