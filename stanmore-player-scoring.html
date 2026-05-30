@@ -1315,131 +1315,15 @@ function shareScorecard() {
 // ── ROUND STATE SAVE / RESTORE ──
 var ROUND_KEY = 'sgc_round_state';
 
-function saveRoundState() {
-  try {
-    var state = {
-      R: {
-        name:        R.name,
-        hi:          R.hi,
-        teeKey:      R.teeKey,
-        gender:      R.gender,
-        ph:          R.ph,
-        scores:      R.scores,
-        holeStep:    R.holeStep,
-        curIdx:      R.curIdx,
-        holeIndexes: R.holeIndexes,
-        holes:       R.holes,
-        nineHole:    R.nineHole,
-        competition: R.competition,
-        isPro:       R.isPro,
-        prizeClaims: R.prizeClaims,
-        team:        R.team,
-      },
-      activeComp: window._activeComp || null,
-      compIdx: document.getElementById('compPicker') ? document.getElementById('compPicker').value : '',
-      ts: Date.now()
-    };
-    localStorage.setItem(ROUND_KEY, JSON.stringify(state));
-  } catch(e) {}
-}
 
-function clearRoundState() {
-  try { localStorage.removeItem(ROUND_KEY); } catch(e) {}
-}
 
-function checkForSavedRound() {
-  try {
-    var saved = localStorage.getItem(ROUND_KEY);
-    if (!saved) return;
-    var state = JSON.parse(saved);
-    if (!state || !state.R || !state.R.name) return;
 
-    // Only offer resume if saved within last 6 hours
-    var age = Date.now() - (state.ts || 0);
-    if (age > 6 * 60 * 60 * 1000) { clearRoundState(); return; }
 
-    var holesPlayed = (state.R.scores || []).filter(function(s){ return s !== null; }).length;
-    if (holesPlayed === 0) { clearRoundState(); return; }
 
-    // Show resume banner
-    var banner = document.getElementById('resumeBanner');
-    var msg    = document.getElementById('resumeMsg');
-    if (banner && msg) {
-      msg.textContent = state.R.name + ' — ' + holesPlayed + ' hole' + (holesPlayed===1?'':'s') + ' completed';
-      banner.style.display = 'block';
-      window._savedRoundState = state; // store in JS var, not dataset (avoids HTML attribute corruption)
-    }
-  } catch(e) {}
-}
 
-function resumeRound() {
-  // Get state from localStorage directly - most reliable source
-  var raw = null;
-  try { raw = localStorage.getItem(ROUND_KEY); } catch(e) {}
-  
-  if (!raw) {
-    // Try the JS variable as fallback
-    if (window._savedRoundState) {
-      raw = JSON.stringify(window._savedRoundState);
-    } else {
-      alert('No saved round found. Please start again.');
-      return;
-    }
-  }
-  
-  var state;
-  try { state = JSON.parse(raw); } catch(e) {
-    alert('Saved round data is corrupted. Please start again.');
-    clearRoundState();
-    return;
-  }
-  
-  if (!state || !state.R) {
-    alert('Saved round is incomplete. Please start again.');
-    clearRoundState();
-    return;
-  }
-  
-  // Restore R with all safeguards
-  R = {
-    name:        state.R.name        || '',
-    hi:          state.R.hi          || 0,
-    teeKey:      state.R.teeKey      || 'yellow_m',
-    gender:      state.R.gender      || 'm',
-    ph:          state.R.ph          || 0,
-    scores:      Array.isArray(state.R.scores) ? state.R.scores : new Array(18).fill(null),
-    holeStep:    typeof state.R.holeStep === 'number' ? state.R.holeStep : 0,
-    curIdx:      typeof state.R.curIdx  === 'number' ? state.R.curIdx  : 0,
-    holeIndexes: Array.isArray(state.R.holeIndexes) && state.R.holeIndexes.length ? state.R.holeIndexes : [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17],
-    holes:       state.R.holes       || 18,
-    nineHole:    state.R.nineHole    || null,
-    competition: state.R.competition || '',
-    isPro:       state.R.isPro       || false,
-    prizeClaims: state.R.prizeClaims || {ntp:[], ntp2:[], ld:[]},
-    team:        state.R.team        || '',
-  };
-  
-  // Restore active comp for prize flags
-  window._activeComp = state.activeComp || {};
-  
-  // Hide banner
-  var banner = document.getElementById('resumeBanner');
-  if (banner) banner.style.display = 'none';
-  
-  // Switch to scoring screen
-  showScr('scrCard');
-  
-  // Render with delay
-  setTimeout(function() {
-    renderHole();
-    saveProgress(); // sync to server
-  }, 100);
-}
 
-function dismissResume() {
-  clearRoundState();
-  document.getElementById('resumeBanner').style.display = 'none';
-}
+
+
 
 
 function showScr(id) {
