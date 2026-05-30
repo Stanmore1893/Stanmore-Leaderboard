@@ -302,29 +302,38 @@ select.finp option{background:#1a3a6b;color:#fff;}
           <span id="brandingChevron" style="color:rgba(255,255,255,.4);font-size:.8rem;">▼</span>
         </div>
         <div id="brandingPanel" style="display:none;background:rgba(0,0,0,.15);border:1px solid rgba(255,255,255,.07);border-radius:0 0 8px 8px;padding:13px;">
-          <div style="font-size:.72rem;color:rgba(255,255,255,.45);margin-bottom:12px;line-height:1.6;">Override Stanmore branding for this competition day. Leave blank to use Stanmore defaults.</div>
+          <div style="font-size:.72rem;color:rgba(255,255,255,.45);margin-bottom:12px;line-height:1.6;">Override Stanmore branding for this competition day. Leave any field blank to keep the Stanmore default.</div>
 
           <label class="slabel">Society / Club Name</label>
-          <input class="sinput" id="ncBrandName" type="text" placeholder="e.g. Stanmore Golf Society">
+          <input class="finp" id="ncBrandName" type="text" placeholder="e.g. Stanmore Golf Society">
 
           <label class="slabel">Tagline</label>
-          <input class="sinput" id="ncBrandTagline" type="text" placeholder="e.g. Est. 1893 · Middlesex">
+          <input class="finp" id="ncBrandTagline" type="text" placeholder="e.g. Est. 1893 · Middlesex">
 
           <label class="slabel">Welcome Message (shown on hub)</label>
-          <input class="sinput" id="ncBrandWelcome" type="text" placeholder="e.g. Welcome to our Summer Open Day!">
+          <input class="finp" id="ncBrandWelcome" type="text" placeholder="e.g. Welcome to our Summer Open Day!">
 
           <label class="slabel">Sponsor Name</label>
-          <input class="sinput" id="ncBrandSponsor" type="text" placeholder="e.g. Sponsored by Acme Ltd">
+          <input class="finp" id="ncBrandSponsor" type="text" placeholder="e.g. Sponsored by Acme Ltd">
 
-          <label class="slabel">Logo URL (jpg/jpeg/png — must be publicly accessible)</label>
-          <input class="sinput" id="ncBrandLogo" type="url" placeholder="https://example.com/logo.jpg">
-          <div style="font-size:.68rem;color:rgba(255,255,255,.35);margin-top:3px;margin-bottom:10px;">Upload your image to a free host like <a href="https://imgur.com" target="_blank" style="color:rgba(212,160,23,.6);">imgur.com</a> and paste the direct link here</div>
+          <label class="slabel">Logo URL (jpg/jpeg/png — must be a direct public link)</label>
+          <input class="finp" id="ncBrandLogo" type="url" placeholder="https://example.com/logo.jpg">
+          <div style="font-size:.68rem;color:rgba(255,255,255,.35);margin-top:4px;margin-bottom:10px;line-height:1.7;">
+            Free UK-friendly image hosts: 
+            <a href="https://postimages.org" target="_blank" style="color:rgba(212,160,23,.6);">postimages.org</a> &nbsp;·&nbsp;
+            <a href="https://cloudinary.com" target="_blank" style="color:rgba(212,160,23,.6);">cloudinary.com</a> &nbsp;·&nbsp;
+            <a href="https://imgbb.com" target="_blank" style="color:rgba(212,160,23,.6);">imgbb.com</a><br>
+            Upload your logo, then right-click the image and copy the direct link.
+          </div>
 
           <label class="slabel">Accent Colour</label>
-          <div style="display:flex;align-items:center;gap:10px;margin-top:4px;">
-            <input type="color" id="ncBrandColour" value="#d4a017" style="width:44px;height:36px;border:none;border-radius:6px;background:none;cursor:pointer;padding:2px;">
-            <span id="ncBrandColourHex" style="font-size:.82rem;color:rgba(255,255,255,.6);font-family:monospace;">#d4a017</span>
-            <button type="button" onclick="document.getElementById('ncBrandColour').value='#d4a017';document.getElementById('ncBrandColourHex').textContent='#d4a017';" style="font-size:.7rem;color:rgba(255,255,255,.4);background:none;border:none;cursor:pointer;text-decoration:underline;">Reset to gold</button>
+          <div style="display:flex;align-items:center;gap:10px;margin-top:6px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.12);border-radius:8px;padding:10px 12px;">
+            <input type="color" id="ncBrandColour" value="#d4a017" style="width:40px;height:32px;border:none;border-radius:6px;background:none;cursor:pointer;padding:0;flex-shrink:0;">
+            <div style="flex:1;">
+              <div style="font-size:.72rem;color:rgba(255,255,255,.5);margin-bottom:2px;">Selected colour</div>
+              <span id="ncBrandColourHex" style="font-size:.88rem;color:#fff;font-family:monospace;font-weight:600;">#d4a017</span>
+            </div>
+            <button type="button" onclick="document.getElementById('ncBrandColour').value='#d4a017';document.getElementById('ncBrandColourHex').textContent='#d4a017';" style="background:rgba(212,160,23,.15);border:1px solid rgba(212,160,23,.3);color:rgba(212,160,23,.8);border-radius:7px;padding:6px 10px;font-family:Poppins,sans-serif;font-size:.72rem;font-weight:600;cursor:pointer;">↺ Reset</button>
           </div>
         </div>
       </div>
