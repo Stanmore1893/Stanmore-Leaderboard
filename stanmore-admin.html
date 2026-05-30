@@ -349,7 +349,7 @@ select.finp option{background:#1a3a6b;color:#fff;}
   <div style="text-align:center;padding:10px 16px 24px;">
     <div style="display:inline-flex;align-items:center;gap:10px;">
       <div style="width:28px;height:1.5px;background:linear-gradient(to right,transparent,rgba(212,160,23,.6));"></div>
-      <span style="font-size:.82rem;color:rgba(212,160,23,.6);letter-spacing:.1em;">Designed &amp; built by <strong style="color:#f0c040;font-weight:600;">Alex Persaud</strong> &nbsp;·&nbsp; PGA Professional</span>
+      <span style="font-size:.82rem;color:rgba(212,160,23,.6);letter-spacing:.1em;">Designed &amp; built by <strong style="color:#f0c040;font-weight:600;white-space:nowrap;">Alex Persaud &middot; PGA Professional</strong></span>
       <div style="width:28px;height:1.5px;background:linear-gradient(to left,transparent,rgba(212,160,23,.6));"></div>
     </div>
   </div>
@@ -517,32 +517,32 @@ function getSelectValues(id) {
 }
 
 function initPrizeHoles() {
-  [
-    {gridId:'ntpGrid'},
-    {gridId:'ntp2Grid'},
-    {gridId:'ldGrid'},
-  ].forEach(function(cfg) {
+  var configs = [
+    {gridId:'ntpGrid',  holes:[4,6,8,10,17]},
+    {gridId:'ntp2Grid', holes:[7,14]},
+    {gridId:'ldGrid',   holes:[11,18]},
+  ];
+  configs.forEach(function(cfg) {
     var grid = document.getElementById(cfg.gridId);
     if (!grid) return;
     grid.innerHTML = '';
-    for (var h = 1; h <= 18; h++) {
+    cfg.holes.forEach(function(h) {
       var btn = document.createElement('button');
       btn.type = 'button';
       btn.dataset.hole = h;
-      btn.textContent = h;
-      btn.style.width = '38px';
-      btn.style.height = '38px';
+      btn.textContent = 'Hole ' + h;
       btn.style.borderRadius = '8px';
       btn.style.border = '1.5px solid rgba(255,255,255,.15)';
       btn.style.background = 'rgba(255,255,255,.06)';
       btn.style.color = 'rgba(255,255,255,.7)';
-      btn.style.fontFamily = 'monospace';
-      btn.style.fontSize = '14px';
+      btn.style.fontFamily = "'Poppins',sans-serif";
+      btn.style.fontSize = '13px';
       btn.style.fontWeight = '600';
       btn.style.cursor = 'pointer';
+      btn.style.padding = '8px 12px';
       btn.onclick = function() { togglePrizeHole(this); };
       grid.appendChild(btn);
-    }
+    });
   });
 }
 
