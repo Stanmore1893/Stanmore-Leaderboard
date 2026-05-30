@@ -451,8 +451,12 @@ async function applyBranding() {
     var active = comps.find(function(c){ return c.active; });
     var b = active && active.branding ? active.branding : {};
     if (b.name) {
+      // Update header brand name
       var el = document.querySelector('.brand-name');
       if (el) el.textContent = b.name;
+      // Update competition strip name
+      var compEl = document.getElementById('compNameHdr');
+      if (compEl && compEl.textContent === 'Stanmore Golf Club') compEl.textContent = b.name;
     }
     if (b.logo) {
       var el = document.querySelector('.logo-sm');
