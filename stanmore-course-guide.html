@@ -757,15 +757,15 @@ function setMpGender(pid, gender, el) {
   }
 }
 
-function toggleMixedTeeNote() {
-  var note = document.getElementById('mixedTeeNote');
-  var checked = document.getElementById('mpMixed').checked;
-  if (note) note.style.display = checked ? 'block' : 'none';
-}
+// Mixed tee note toggle removed — equalisation is now automatic
 
 function calcMatchplay() {
   var fmtVal  = document.getElementById('mpFmt').value;
-  var isMixed = document.getElementById('mpMixed').checked;
+  // Auto-detect mixed tees: apply equalisation whenever any player is female
+  // (female tees have different course ratings - equalisation always applies)
+  var isMixed = (genA === 'f' || genB === 'f' ||
+    (document.getElementById('mpC_gen') && document.getElementById('mpC_gen').value === 'f') ||
+    (document.getElementById('mpD_gen') && document.getElementById('mpD_gen').value === 'f'));
   var hiA = parseFloat(document.getElementById('mpA_hi').value);
   var hiB = parseFloat(document.getElementById('mpB_hi').value);
   // Build tee keys using gender suffix from gender toggles
@@ -1199,7 +1199,7 @@ renderSC();
   <div style="text-align:center;padding:14px 16px;border-top:1px solid rgba(212,160,23,.15);">
     <div style="display:inline-flex;align-items:center;gap:10px;">
       <div style="width:28px;height:1.5px;background:linear-gradient(to right,transparent,rgba(212,160,23,.6));"></div>
-      <span style="font-size:.68rem;color:rgba(212,160,23,.6);letter-spacing:.1em;font-family:Poppins,sans-serif;">Designed &amp; built by <strong style="color:var(--gold-lt,#f0c040);font-weight:600;">Alex Persaud</strong> &nbsp;·&nbsp; PGA Professional</span>
+      <span style="font-size:.68rem;color:rgba(212,160,23,.6);letter-spacing:.1em;font-family:Poppins,sans-serif;">Designed &amp; built by <strong style="color:#f0c040;font-weight:600;white-space:nowrap;">Alex Persaud &middot; PGA Professional</strong></span>
       <div style="width:28px;height:1.5px;background:linear-gradient(to left,transparent,rgba(212,160,23,.6));"></div>
     </div>
   </div>
