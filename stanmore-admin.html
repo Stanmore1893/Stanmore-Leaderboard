@@ -729,6 +729,7 @@ function renderCompList() {
       +'<div class="comp-actions">'
       +'<button class="comp-act-btn'+(c.active?' active-btn':'')+'" onclick="setActiveComp('+i+')">'+(c.active?'&#10003; Active':'Set Active')+'</button>'
       +(c.active && !c.closed ? '<button class="comp-act-btn" onclick="closeCompetition('+i+')" style="background:rgba(45,110,78,.2);border:1px solid rgba(45,110,78,.4);color:#8ee0b4;border-radius:7px;padding:5px 10px;font-size:.72rem;font-weight:600;cursor:pointer;font-family:Poppins,sans-serif;">&#9989; Close</button>' : '')
+      +'<button class="comp-act-btn" onclick="editComp('+i+')" style="background:rgba(212,160,23,.15);border:1px solid rgba(212,160,23,.3);color:#f0c040;border-radius:7px;padding:5px 10px;font-size:.72rem;font-weight:600;cursor:pointer;font-family:Poppins,sans-serif;">&#9998; Edit</button>'
       +'<button class="comp-act-btn del-btn" onclick="deleteComp('+i+')">&#10005;</button>'
       +'</div>';
     el.appendChild(div);

@@ -480,6 +480,17 @@ async function applyBranding() {
         if (hdr) hdr.parentNode.insertBefore(sp, hdr.nextSibling);
       }
     }
+
+    // Welcome message overrides the quick-settings ticker if set
+    if (b.welcome && b.welcome.trim()) {
+      var bar  = document.getElementById('tickerBar');
+      var txt1 = document.getElementById('tickerText');
+      var txt2 = document.getElementById('tickerText2');
+      var msg  = '👋 ' + b.welcome + '  ·  ';
+      if (txt1) txt1.textContent = msg;
+      if (txt2) txt2.textContent = msg;
+      if (bar)  bar.style.display = 'block';
+    }
   } catch(e) { console.log('Branding load failed'); }
 }
 
