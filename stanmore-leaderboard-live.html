@@ -399,6 +399,7 @@ let players=[], tab='all', refreshTimer=null;
 
 window.addEventListener('load', async ()=>{
   document.getElementById('compDate').textContent=new Date().toLocaleDateString('en-GB',{weekday:'short',day:'numeric',month:'long',year:'numeric'});
+  applyBranding();
   loadCompetitionsLB();
   // Run independently so a settings failure doesn't block scores
   loadAdminSettings().catch(e => console.warn('Settings load failed:', e));
@@ -450,14 +451,16 @@ async function applyBranding() {
     var comps = Array.isArray(record.competitions) ? record.competitions : [];
     var active = comps.find(function(c){ return c.active; });
     var b = active && active.branding ? active.branding : {};
-    if (b.name) {
-      // Update header brand name
-      var el = document.querySelector('.brand-name');
-      if (el) el.textContent = b.name;
-      // Update competition strip name
-      var compEl = document.getElementById('compNameHdr');
-      if (compEl && compEl.textContent === 'Stanmore Golf Club') compEl.textContent = b.name;
+
+    // Always update competition name header with active comp name
+    var compNameEl = document.getElementById('compNameHdr');
+    if (compNameEl && active && active.name) {
+      compNameEl.textContent = b.name || active.name;
     }
+
+    // Update brand name in header
+    var brandEl = document.querySelector('.brand-name');
+    if (brandEl && b.name) brandEl.textContent = b.name;
     if (b.logo) {
       var el = document.querySelector('.logo-sm');
       if (el) el.src = b.logo;

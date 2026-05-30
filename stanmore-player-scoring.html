@@ -217,7 +217,7 @@ html,body{min-height:100%;background:var(--cream);font-family:'Poppins',sans-ser
   </div>
   <label style="display:flex;align-items:center;gap:10px;padding:11px 13px;background:rgba(212,160,23,.1);border:1px solid rgba(212,160,23,.25);border-radius:9px;cursor:pointer;margin-bottom:10px;font-size:.88rem;color:rgba(255,255,255,.85);">
     <input type="checkbox" id="pPro" style="width:17px;height:17px;accent-color:#d4a017;flex-shrink:0;" onchange="onProChange()">
-    <span>🏆 <strong style="color:var(--gold-lt,#f0c040);">Professional player</strong> <span style="color:rgba(255,255,255,.55);font-size:.85rem;">— Playing off scratch (Handicap 0 from any tee)</span></span>
+    <span>🏆 <strong style="color:var(--gold-lt,#f0c040);">Professional player</strong> <span id="proScratchText" style="color:rgba(255,255,255,.55);font-size:.85rem;">— Playing off scratch (Handicap 0 from any tee)</span></span>
   </label>
   <div class="frow2">
     <div>
@@ -1121,6 +1121,12 @@ function applyBrandingToScoring() {
   if (b.colour) {
     document.documentElement.style.setProperty('--gold', b.colour);
     document.documentElement.style.setProperty('--gold-lt', b.colour);
+    // Recolour pro scratch text to match accent colour
+    var proText = document.getElementById('proScratchText');
+    if (proText) proText.style.color = b.colour;
+    // Recolour strong pro label
+    var proStrong = proText ? proText.previousElementSibling : null;
+    if (proStrong) proStrong.style.color = b.colour;
   }
   if (b.sponsor) {
     var existing = document.getElementById('scoringSponsor');
