@@ -910,69 +910,47 @@ function checkForSavedRound() {
 }
 
 function resumeRound() {
-  // Get state from localStorage directly - most reliable source
-  var raw = null;
-  try { raw = localStorage.getItem(ROUND_KEY); } catch(e) {}
-  
-  if (!raw) {
-    // Try the JS variable as fallback
-    if (window._savedRoundState) {
-      raw = JSON.stringify(window._savedRoundState);
-    } else {
-      alert('No saved round found. Please start again.');
-      return;
-    }
-  }
-  
-  var state;
-  try { state = JSON.parse(raw); } catch(e) {
-    alert('Saved round data is corrupted. Please start again.');
-    clearRoundState();
-    return;
-  }
-  
-  if (!state || !state.R) {
-    alert('Saved round is incomplete. Please start again.');
-    clearRoundState();
-    return;
-  }
-  
-  // Restore R with all safeguards
-  R = {
-    name:        state.R.name        || '',
-    hi:          state.R.hi          || 0,
-    teeKey:      state.R.teeKey      || 'yellow_m',
-    gender:      state.R.gender      || 'm',
-    ph:          state.R.ph          || 0,
-    scores:      Array.isArray(state.R.scores) ? state.R.scores : new Array(18).fill(null),
-    holeStep:    typeof state.R.holeStep === 'number' ? state.R.holeStep : 0,
-    curIdx:      typeof state.R.curIdx  === 'number' ? state.R.curIdx  : 0,
-    holeIndexes: Array.isArray(state.R.holeIndexes) && state.R.holeIndexes.length ? state.R.holeIndexes : [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17],
-    holes:       state.R.holes       || 18,
-    nineHole:    state.R.nineHole    || null,
-    competition: state.R.competition || '',
-    isPro:       state.R.isPro       || false,
-    prizeClaims: state.R.prizeClaims || {ntp:[], ntp2:[], ld:[]},
-    team:        state.R.team        || '',
-  };
-  
-  // Restore active comp for prize flags
-  window._activeComp = state.activeComp || {};
-  
-  // Hide banner
-  var banner = document.getElementById('resumeBanner');
-  if (banner) banner.style.display = 'none';
-  
-  // Switch to scoring screen
-  showScr('scrCard');
-  
-  // Render with delay
-  setTimeout(function() {
-    renderHole();
-    saveProgress(); // sync to server
-  }, 100);
-}
+  var raw;
+  try { raw = localStorage.getItem(ROUND_KEY); } catch(e) { raw = null; }
+  if (!raw) { alert('No saved round found.'); return; }
 
+  var state;
+  try { state = JSON.parse(raw); } catch(e) { alert('Saved data corrupted.'); return; }
+  if (!state || !state.R || !state.R.name) { alert('Saved round incomplete.'); return; }
+
+  var sr = state.R;
+  R.name        = sr.name || '';
+  R.hi          = sr.hi || 0;
+  R.teeKey      = sr.teeKey || 'yellow_m';
+  R.gender      = sr.gender || 'm';
+  R.ph          = sr.ph || 0;
+  R.holes       = sr.holes || 18;
+  R.nineHole    = sr.nineHole || null;
+  R.competition = sr.competition || '';
+  R.isPro       = sr.isPro || false;
+  R.team        = sr.team || '';
+  R.scores      = Array.isArray(sr.scores) ? sr.scores.slice() : new Array(18).fill(null);
+  R.prizeClaims = sr.prizeClaims || {ntp:[],ntp2:[],ld:[]};
+
+  // Rebuild holeIndexes
+  if (Array.isArray(sr.holeIndexes) && sr.holeIndexes.length) {
+    R.holeIndexes = sr.holeIndexes.slice();
+  } else {
+    R.holeIndexes = [];
+    var st = R.nineHole === 'back' ? 9 : 0;
+    var tot = R.holes || 18;
+    for (var x = st; x < st + tot; x++) R.holeIndexes.push(x);
+  }
+
+  R.holeStep = (typeof sr.holeStep === 'number') ? sr.holeStep : 0;
+  R.curIdx   = R.holeIndexes[R.holeStep] || 0;
+
+  window._activeComp = state.activeComp || {};
+
+  document.getElementById('resumeBanner').style.display = 'none';
+  showScr('scrCard');
+  renderHole();
+}
 function dismissResume() {
   clearRoundState();
   document.getElementById('resumeBanner').style.display = 'none';
