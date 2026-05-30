@@ -811,62 +811,6 @@ function exportPDF() {
       + '</tr>';
   }).join('');
 
-  var printHTML = '<!DOCTYPE html><html><head><meta charset="UTF-8">'
-    + '<title>' + compName + ' — Results</title>'
-    + '<style>'
-    + '@page{size:A4;margin:20mm 15mm;}body{font-family:Poppins,sans-serif;color:#141e30;margin:0;padding:0;}'
-    + '.header{background:#0f2347;color:#fff;padding:28px 32px;display:flex;align-items:center;gap:20px;}'
-    + '.header-logo{width:64px;height:64px;object-fit:contain;}'
-    + '.header-text{}'
-    + '.header-club{font-family:Poppins,sans-serif;font-size:1.4rem;font-weight:bold;color:#f0c040;}'
-    + '.header-comp{font-size:1.1rem;color:rgba(255,255,255,.8);margin-top:3px;}'
-    + '.header-date{font-size:.8rem;color:rgba(255,255,255,.5);margin-top:4px;font-family:monospace;}'
-    + '.gold-bar{height:4px;background:linear-gradient(to right,#d4a017,#f0c040,#d4a017);}'
-    + '.body{padding:24px 32px;}'
-    + 'table{width:100%;border-collapse:collapse;margin-top:8px;}'
-    + 'thead th{background:#0f2347;color:rgba(212,160,23,.9);padding:10px 12px;font-size:.7rem;letter-spacing:.14em;text-transform:uppercase;text-align:center;}'
-    + 'thead th:nth-child(2){text-align:left;}'
-    + '.trophy{font-size:1.1rem;}'
-    + '.footer{margin-top:32px;padding-top:16px;border-top:1px solid #e8e0d4;display:flex;justify-content:space-between;font-size:.72rem;color:#8896a8;}'
-    + '@media print{.no-print{display:none;}}'
-    + '<div class="header">'
-    + '<img class="header-logo" src="club-logo.png" alt="">'
-    + '<div class="header-text">'
-    + '<div class="header-club">Stanmore Golf Club</div>'
-    + '<div class="header-comp">' + compName + ' — Final Results</div>'
-    + '<div class="header-date">' + date + '</div>'
-    + '</div></div>'
-    + '<div class="gold-bar"></div>'
-    + '<div class="body">'
-    + '<table><thead><tr>'
-    + '<th style="width:60px">Pos</th><th style="text-align:left">Player</th>'
-    + '<th>P.HCP</th><th>Gross</th><th>Nett</th>'
-    + '<th style="font-size:.8rem;">Points</th><th>Tee</th>'
-    + '</tr></thead><tbody>' + tableRows + '</tbody></table>'
-    + '<div class="footer">'
-    + '<span>Stanmore Golf Club · ' + compName + '</span>'
-    + '<span>Generated ' + new Date().toLocaleString('en-GB') + '</span>'
-    + '</div></div>'
-    + '<div class="no-print" style="position:fixed;bottom:20px;right:20px;">'
-    + '<button onclick="window.print()" style="background:#d4a017;color:#0f2347;border:none;border-radius:8px;padding:12px 24px;font-size:.9rem;font-weight:700;cursor:pointer;">&#128462; Print / Save as PDF</button>'
-    + '</div>'
-    + '</body></html>';
-
-  var w = window.open('','_blank');
-  w.document.write(printHTML);
-  w.document.close();
-  setTimeout(function(){ w.focus(); }, 300);
-}
-
-</script>
-  <div style="text-align:center;padding:14px 16px;border-top:1px solid rgba(212,160,23,.15);">
-    <div style="display:inline-flex;align-items:center;gap:10px;">
-      <div style="width:28px;height:1.5px;background:linear-gradient(to right,transparent,rgba(212,160,23,.6));"></div>
-      <span style="font-size:.68rem;color:rgba(212,160,23,.6);letter-spacing:.1em;font-family:Poppins,sans-serif;">Designed &amp; built by <strong style="color:var(--gold-lt,#f0c040);font-weight:600;">Alex Persaud</strong> &nbsp;·&nbsp; PGA Professional</span>
-      <div style="width:28px;height:1.5px;background:linear-gradient(to left,transparent,rgba(212,160,23,.6));"></div>
-    </div>
-  </div>
+  var printHTML = '<!DOCTYPE html>
 </body>
-</html
-
->
+</html>

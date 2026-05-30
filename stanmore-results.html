@@ -332,53 +332,6 @@ function exportPDF() {
   }).join('');
 
   var w = window.open('','_blank');
-  w.document.write('<!DOCTYPE html><html><head><meta charset="UTF-8"><title>'+_compName+' Results</title>' +
-    '<style>@page{size:A4;margin:20mm 15mm;}body{font-family:Poppins,sans-serif;color:#141e30;}' +
-    '.hdr{background:#0f2347;color:#fff;padding:24px 28px;display:flex;align-items:center;gap:16px;}' +
-    '.hdr img{width:56px;height:56px;object-fit:contain;}' +
-    '.gold-bar{height:4px;background:linear-gradient(to right,#d4a017,#f0c040,#d4a017);}' +
-    'table{width:100%;border-collapse:collapse;margin:16px 0;}' +
-    'th{background:#0f2347;color:rgba(212,160,23,.9);padding:9px 12px;font-size:.7rem;letter-spacing:.12em;text-transform:uppercase;text-align:center;}' +
-    'th:nth-child(2){text-align:left;}' +
-    '.footer{margin-top:24px;padding-top:12px;border-top:1px solid #e8e0d4;display:flex;justify-content:space-between;font-size:.7rem;color:#8896a8;}' +
-    '@media print{.no-print{display:none;}}' +
-    '</style></head><body>' +
-    '<div class="hdr"><img src="https://stanmore1893.github.io/Stanmore-Leaderboard/club-logo.png" alt=""><div>' +
-    '<div style="font-family:Arial,sans-serif;font-size:1.4rem;font-weight:bold;color:#f0c040;">Stanmore Golf Club</div>' +
-    '<div style="font-size:1rem;color:rgba(255,255,255,.8);margin-top:2px;">'+_compName+' — Final Results</div>' +
-    '<div style="font-size:.75rem;color:rgba(255,255,255,.5);margin-top:3px;font-family:monospace;">' + new Date().toLocaleDateString('en-GB',{weekday:'long',day:'numeric',month:'long',year:'numeric'}) + '</div>' +
-    '</div></div><div class="gold-bar"></div>' +
-    '<div style="padding:0 28px 28px;">' +
-    '<table><thead><tr><th style="width:50px">Pos</th><th style="text-align:left">Player</th><th>P.HCP</th><th>Gross</th><th>Nett</th><th>Points</th></tr></thead>' +
-    '<tbody>'+rows+'</tbody></table>' +
-    '<div class="footer"><span>Stanmore Golf Club · '+_compName+'</span><span>Generated '+new Date().toLocaleString('en-GB')+'</span></div>' +
-    '</div>' +
-    '<div class="no-print" style="position:fixed;bottom:20px;right:20px;">' +
-    '<button onclick="window.print()" style="background:#d4a017;color:#0f2347;border:none;border-radius:10px;padding:14px 28px;font-size:1rem;font-weight:700;cursor:pointer;box-shadow:0 4px 16px rgba(0,0,0,.2);">🖨️ Print / Save as PDF</button>' +
-    '</div></body></html>');
-  w.document.close();
-}
-
-function exportCSV() {
-  if (!_results.length) { alert('No results to export'); return; }
-  var rows = [['Position','Player','Playing HCP','Gross','Nett','Points','Competition']];
-  _results.forEach(function(p,i){
-    var ph = p.ph||p.hcp||0;
-    rows.push([i+1, p.name, ph, p.gross||0, p.nett||((p.gross||0)-ph), p.pts, p.competition||_compName]);
-  });
-  var csv = '# ' + _compName + ' Results\n\n' + rows.map(function(r){return r.map(function(v){return '"'+v+'"';}).join(',');}).join('\n');
-  var a = document.createElement('a');
-  a.href = URL.createObjectURL(new Blob([csv],{type:'text/csv'}));
-  a.download = _compName.replace(/\s+/g,'-').toLowerCase()+'-results.csv';
-  a.click();
-}
-
-function toast(msg){var t=document.getElementById('toast');t.textContent=msg;t.style.opacity='1';t.style.transform='translateX(-50%) translateY(0)';setTimeout(function(){t.style.opacity='0';t.style.transform='translateX(-50%) translateY(16px)';},2500);}
-function openNav(){document.getElementById('sgcNavDrawer').classList.add('open');document.getElementById('sgcNavOverlay').classList.add('open');document.body.style.overflow='hidden';}
-function closeNav(){document.getElementById('sgcNavDrawer').classList.remove('open');document.getElementById('sgcNavOverlay').classList.remove('open');document.body.style.overflow='';}
-document.addEventListener('keydown',function(e){if(e.key==='Escape')closeNav();});
-
-window.addEventListener('load', loadResults);
-</script>
+  w.document.write('<!DOCTYPE html>
 </body>
 </html>
