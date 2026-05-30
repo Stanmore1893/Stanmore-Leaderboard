@@ -1085,7 +1085,20 @@ async function loadAdminSettings() {
   // 2. Load and show any active announcement
   try {
     var settings = await SGC.get('settings');
-    if (settings && settings.ticker && settings.ticker.trim()) {
+    // Welcome message from active comp branding takes priority over ticker
+    var activeComp = _competitions.find(function(c){ return c.active; });
+    var welcomeMsg = activeComp && activeComp.branding && activeComp.branding.welcome
+      ? activeComp.branding.welcome.trim() : '';
+
+    if (welcomeMsg) {
+      var banner = document.getElementById('annBanner');
+      var txt1   = document.getElementById('annText1');
+      var txt2   = document.getElementById('annText2');
+      var msg    = '👋 ' + welcomeMsg + '  ·  ';
+      if (txt1) txt1.textContent = msg;
+      if (txt2) txt2.textContent = msg;
+      if (banner) banner.classList.add('show');
+    } else if (settings && settings.ticker && settings.ticker.trim()) {
       var banner = document.getElementById('annBanner');
       var txt1   = document.getElementById('annText1');
       var txt2   = document.getElementById('annText2');
