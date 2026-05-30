@@ -7,9 +7,15 @@
 <title>Stanmore GC · Score Entry</title>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600;700&family=DM+Mono:wght@400;500&family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
-:root{--navy:#1a3a6b;--navy-dk:#0f2347;--gold:#d4a017;--gold-lt:#f0c040;--red:#c0392b;--green:#2d6e4e;--green-lt:#3fa06e;--cream:#f8f5ef;--white:#fff;--grey:#8896a8;--text:#141e30;}
+/* Pro toggle */
+.pro-toggle{width:48px;height:26px;border-radius:13px;position:relative;flex-shrink:0;cursor:pointer;background:rgba(255,255,255,.15);transition:background .25s ease;}
+.pro-toggle.on{background:#2d6e4e;}
+.pro-toggle-knob{width:22px;height:22px;background:#fff;border-radius:50%;position:absolute;top:2px;left:2px;transition:left .25s ease,box-shadow .25s ease;}
+.pro-toggle.on .pro-toggle-knob{left:24px;box-shadow:0 2px 8px rgba(0,0,0,.3);}
+
+:root{--navy:#1a3a6b;--navy-dk:#0f2347;--gold:#d4a017;--gold-lt:#f0c040;--red:#c0392b;--green:#2d6e4e;--green-lt:#3fa06e;--cream:#0f2347;--white:#fff;--grey:#8896a8;--text:#ffffff;}
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
-html,body{min-height:100%;background:var(--cream);font-family:'Poppins',sans-serif;color:var(--text);}
+html,body{min-height:100%;background:linear-gradient(175deg,#060e1e 0%,#0f2347 18%,#1a3a6b 38%,#162d5c 55%,#1e4a8a 68%,#0f2347 82%,#060e1e 100%);background-attachment:fixed;font-family:'Poppins',sans-serif;color:#fff;}
 .hdr{background:linear-gradient(to right,var(--navy-dk),var(--navy));padding:13px 16px 0;position:sticky;top:0;z-index:10;}
 .hdr::after{content:'';display:block;height:3px;background:linear-gradient(to right,var(--gold),var(--gold-lt),var(--gold));margin-top:9px;}
 .hdr-row{display:flex;align-items:center;justify-content:space-between;}
@@ -24,21 +30,21 @@ html,body{min-height:100%;background:var(--cream);font-family:'Poppins',sans-ser
 /* SETUP */
 .wlogo{display:flex;justify-content:center;margin:6px 0 14px;}
 .wlogo img{width:86px;height:86px;object-fit:contain;}
-.ptitle{font-family:'Poppins',sans-serif;font-size:1.55rem;font-weight:700;color:var(--navy-dk);text-align:center;margin-bottom:3px;}
+.ptitle{font-family:'Poppins',sans-serif;font-size:1.55rem;font-weight:700;color:#fff;text-align:center;margin-bottom:3px;}
 .psub{font-size:.73rem;color:var(--grey);text-align:center;letter-spacing:.1em;text-transform:uppercase;margin-bottom:20px;}
 .flbl{font-size:.63rem;letter-spacing:.15em;text-transform:uppercase;color:var(--grey);margin-bottom:6px;display:block;}
-.finp{width:100%;background:var(--white);border:1.5px solid rgba(26,58,107,.14);border-radius:10px;padding:13px 15px;font-family:'Poppins',sans-serif;font-size:.95rem;color:var(--text);outline:none;margin-bottom:14px;transition:border-color .2s;-webkit-appearance:none;}
+.finp{width:100%;background:rgba(255,255,255,.06);border:1.5px solid rgba(255,255,255,.12);border-radius:10px;padding:13px 15px;font-family:'Poppins',sans-serif;font-size:.95rem;color:#fff;outline:none;margin-bottom:14px;transition:border-color .2s;-webkit-appearance:none;}
 .finp:focus{border-color:var(--navy);}
-.finp option{background:var(--white);}
+.finp option{background:rgba(255,255,255,.05);}
 .frow2{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
 .info-card{background:rgba(26,58,107,.06);border:1px solid rgba(26,58,107,.11);border-radius:10px;padding:12px 14px;font-size:.77rem;color:var(--navy);line-height:1.6;margin-bottom:14px;}
-.hcp-calc-preview{background:rgba(212,160,23,.1);border:1px solid rgba(212,160,23,.25);border-radius:10px;padding:12px 14px;font-size:.77rem;color:var(--navy-dk);line-height:1.7;margin-bottom:14px;display:none;}
+.hcp-calc-preview{background:rgba(212,160,23,.1);border:1px solid rgba(212,160,23,.25);border-radius:10px;padding:12px 14px;font-size:.77rem;color:#fff;line-height:1.7;margin-bottom:14px;display:none;}
 .start-btn{width:100%;background:var(--navy);color:var(--white);border:none;border-radius:12px;padding:15px;font-family:'Poppins',sans-serif;font-size:.95rem;font-weight:600;cursor:pointer;letter-spacing:.04em;transition:all .2s;margin-top:2px;}
 .start-btn:active{transform:scale(.98);}
 
 /* PLAYER BAR */
 .pbar{background:var(--white);border:1px solid rgba(26,58,107,.1);border-radius:12px;padding:13px 15px;margin-bottom:14px;display:flex;justify-content:space-between;align-items:center;}
-.pb-name{font-family:'Poppins',sans-serif;font-size:1.05rem;font-weight:700;color:var(--navy-dk);}
+.pb-name{font-family:'Poppins',sans-serif;font-size:1.05rem;font-weight:700;color:#fff;}
 .pb-meta{font-size:.65rem;color:var(--grey);font-family:'DM Mono',monospace;margin-top:2px;}
 .pb-right{text-align:right;}
 .pb-pts{font-family:'DM Mono',monospace;font-size:1.35rem;font-weight:500;color:var(--gold);}
@@ -52,7 +58,7 @@ html,body{min-height:100%;background:var(--cream);font-family:'Poppins',sans-ser
 .hc-body{padding:15px;}
 .sc-lbl{font-size:.6rem;letter-spacing:.13em;text-transform:uppercase;color:var(--grey);margin-bottom:9px;display:block;}
 .sc-btns{display:grid;grid-template-columns:repeat(8,1fr);gap:5px;}
-.sb{aspect-ratio:1;border-radius:7px;border:1.5px solid rgba(26,58,107,.13);background:var(--cream);font-family:'DM Mono',monospace;font-size:.88rem;font-weight:500;color:var(--text);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .15s;-webkit-appearance:none;}
+.sb{aspect-ratio:1;border-radius:7px;border:1.5px solid rgba(26,58,107,.13);background:var(--cream);font-family:'DM Mono',monospace;font-size:.88rem;font-weight:500;color:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .15s;-webkit-appearance:none;}
 .sb:active{transform:scale(.9);}
 .sb.sel{background:var(--navy);border-color:var(--navy);color:var(--white);}
 .sb.eagle{background:#1a5c35;border-color:#1a5c35;color:var(--white);}
@@ -82,7 +88,7 @@ html,body{min-height:100%;background:var(--cream);font-family:'Poppins',sans-ser
 /* COMPLETE */
 .done-card{background:var(--white);border-radius:16px;padding:26px 18px;text-align:center;border:1px solid rgba(26,58,107,.1);margin-bottom:14px;}
 .done-icon{font-size:2.8rem;margin-bottom:10px;}
-.done-title{font-family:'Poppins',sans-serif;font-size:1.55rem;font-weight:700;color:var(--navy-dk);margin-bottom:3px;}
+.done-title{font-family:'Poppins',sans-serif;font-size:1.55rem;font-weight:700;color:#fff;margin-bottom:3px;}
 .done-sub{font-size:.78rem;color:var(--grey);margin-bottom:18px;}
 .big-pts{font-family:'DM Mono',monospace;font-size:3.4rem;font-weight:500;color:var(--gold);line-height:1;}
 .big-lbl{font-size:.68rem;color:var(--grey);letter-spacing:.14em;text-transform:uppercase;margin-top:4px;margin-bottom:18px;}
@@ -216,9 +222,19 @@ html,body{min-height:100%;background:var(--cream);font-family:'Poppins',sans-ser
     <div><label class="flbl">WHS Handicap Index</label><input class="finp" id="pHI" type="number" placeholder="e.g. 14.2 or +2 (enter -2)" step="0.1" min="-5" max="54" oninput="previewHcp()"></div>
     <div><label class="flbl">Gender</label><select class="finp" id="pGender" onchange="onGenderChange()"><option value="m">Male</option><option value="f">Female</option></select></div>
   </div>
-  <label style="display:flex;align-items:center;gap:10px;padding:11px 13px;background:rgba(212,160,23,.1);border:1px solid rgba(212,160,23,.25);border-radius:9px;cursor:pointer;margin-bottom:10px;font-size:.88rem;color:rgba(255,255,255,.85);">
-    <input type="checkbox" id="pPro" style="width:17px;height:17px;accent-color:#d4a017;flex-shrink:0;" onchange="onProChange()">
-    <span>🏆 <strong style="color:var(--gold-lt,#f0c040);">Professional player</strong> <span id="proScratchText" style="color:rgba(255,255,255,.55);font-size:.85rem;">— Playing off scratch (Handicap 0 from any tee)</span></span>
+  <label style="display:flex;align-items:center;gap:10px;padding:11px 13px;background:rgba(212,160,23,.1);border:1px solid rgba(212,160,23,.25);border-radius:9px;cursor:pointer;margin-bottom:10px;font-size:.88rem;color:#fff;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:12px;padding:14px 16px;">
+    <!-- hidden checkbox for JS compatibility -->
+    <input type="checkbox" id="pPro" style="display:none;" onchange="onProChange()">
+    <!-- Visual toggle -->
+    <div style="display:flex;align-items:center;justify-content:space-between;gap:14px;width:100%;">
+      <div>
+        <div style="font-size:.95rem;font-weight:700;color:#f0c040;">🏆 Professional Player</div>
+        <div id="proScratchText" style="font-size:.75rem;color:rgba(255,255,255,.55);margin-top:3px;line-height:1.5;">Playing off scratch · Handicap 0 from any tee</div>
+      </div>
+      <div id="proToggle" class="pro-toggle" onclick="togglePro()">
+        <div id="proToggleKnob" class="pro-toggle-knob"></div>
+      </div>
+    </div>
   </label>
   <div class="frow2">
     <div>
