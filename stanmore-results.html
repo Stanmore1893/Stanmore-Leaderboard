@@ -341,9 +341,9 @@ function exportPDF() {
     'th{background:#0f2347;color:rgba(212,160,23,.9);padding:9px 12px;font-size:.7rem;letter-spacing:.12em;text-transform:uppercase;text-align:center;}' +
     'th:nth-child(2){text-align:left;}' +
     '.footer{margin-top:24px;padding-top:12px;border-top:1px solid #e8e0d4;display:flex;justify-content:space-between;font-size:.7rem;color:#8896a8;}' +
-    '.no-print{display:none;}@media print{.no-print{display:none;}}' +
+    '@media print{.no-print{display:none;}}' +
     '</style></head><body>' +
-    '<div class="hdr"><img src="club-logo.png" alt=""><div>' +
+    '<div class="hdr"><img src="https://stanmore1893.github.io/Stanmore-Leaderboard/club-logo.png" alt=""><div>' +
     '<div style="font-family:Arial,sans-serif;font-size:1.4rem;font-weight:bold;color:#f0c040;">Stanmore Golf Club</div>' +
     '<div style="font-size:1rem;color:rgba(255,255,255,.8);margin-top:2px;">'+_compName+' — Final Results</div>' +
     '<div style="font-size:.75rem;color:rgba(255,255,255,.5);margin-top:3px;font-family:monospace;">' + new Date().toLocaleDateString('en-GB',{weekday:'long',day:'numeric',month:'long',year:'numeric'}) + '</div>' +
@@ -354,7 +354,7 @@ function exportPDF() {
     '<div class="footer"><span>Stanmore Golf Club · '+_compName+'</span><span>Generated '+new Date().toLocaleString('en-GB')+'</span></div>' +
     '</div>' +
     '<div class="no-print" style="position:fixed;bottom:20px;right:20px;">' +
-    '<button onclick="window.print()" style="background:#d4a017;color:#0f2347;border:none;border-radius:8px;padding:12px 24px;font-size:.9rem;font-weight:700;cursor:pointer;">Print / Save as PDF</button>' +
+    '<button onclick="window.print()" style="background:#d4a017;color:#0f2347;border:none;border-radius:10px;padding:14px 28px;font-size:1rem;font-weight:700;cursor:pointer;box-shadow:0 4px 16px rgba(0,0,0,.2);">🖨️ Print / Save as PDF</button>' +
     '</div></body></html>');
   w.document.close();
 }
