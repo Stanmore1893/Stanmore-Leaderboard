@@ -186,6 +186,7 @@ html,body{min-height:100%;background:var(--cream);font-family:'Poppins',sans-ser
       <div><div class="club-name">Stanmore Golf Club</div><div class="club-sub" id="headerCompName">Stanmore Golf Club</div></div>
     </div>
     <div class="hole-badge" id="holeBadge" style="display:none;">Hole 1</div>
+      <div id="syncPill" style="display:none;font-size:.65rem;font-weight:600;font-family:'Poppins',sans-serif;border-radius:20px;padding:3px 10px;margin-left:6px;"></div>
   </div>
 </div>
 
@@ -839,6 +840,25 @@ async function submitScore(pts,gross,nett){
 
 async function saveProgress(){
   saveRoundState(); // Always save locally first
+
+  // Check connectivity
+  if (!navigator.onLine) {
+    setSyncStatus('offline');
+    showToast('⚠ No signal — score saved locally');
+    var gross = R.scores.reduce(function(s,g){return s+(g||0);},0);
+    var partial = {
+      name:R.name, hi:R.hi, teeKey:R.teeKey, gender:R.gender, ph:R.ph,
+      gross:gross, nett:gross-(R.ph||0),
+      thru:R.scores.filter(function(s){return s!==null;}).length,
+      pts:runningPts(), fin:false,
+      scores:R.scores.slice(), competition:R.competition||'',
+      team:R.team||'', holes:R.holes||18, ts:Date.now()
+    };
+    queueOfflineScore(partial);
+    return;
+  }
+
+  setSyncStatus('pending');
   try{
     var gross = R.scores.reduce(function(s,g){return s+(g||0);},0);
     var thru  = R.scores.filter(function(s){return s!==null;}).length;
@@ -847,16 +867,50 @@ async function saveProgress(){
     var partial={
       name:R.name, hi:R.hi, teeKey:R.teeKey, gender:R.gender, ph:R.ph,
       gross:gross, nett:nett, thru:thru, pts:pts, fin:false,
-      scores:R.scores.slice(), // ← save individual hole scores
+      scores:R.scores.slice(),
       competition:R.competition||'', team:R.team||'',
       holes:R.holes||18, ts:Date.now()
     };
-    let allScores=[];
-    try{const ex=await SGC.get('scores');if(ex&&Array.isArray(ex))allScores=ex;}catch(e){}
-    const idx=allScores.findIndex(function(s){return s.name.toLowerCase()===R.name.toLowerCase();});
+
+    // Also flush any queued offline scores
+    var offlineRaw = localStorage.getItem(OFFLINE_QUEUE_KEY);
+    var offlineQueue = offlineRaw ? JSON.parse(offlineRaw) : [];
+
+    var allScores=[];
+    try{var ex=await SGC.get('scores');if(ex&&Array.isArray(ex))allScores=ex;}catch(e){}
+
+    // Apply offline queue first
+    offlineQueue.forEach(function(q){
+      var qi=allScores.findIndex(function(s){return s.name&&s.name.toLowerCase()===q.name.toLowerCase();});
+      if(qi>=0)allScores[qi]=q;else allScores.push(q);
+    });
+
+    // Apply current score
+    var idx=allScores.findIndex(function(s){return s.name&&s.name.toLowerCase()===R.name.toLowerCase();});
     if(idx>=0)allScores[idx]=partial;else allScores.push(partial);
-    await SGC.set('scores', allScores);
-  }catch(e){}
+
+    var ok = await SGC.set('scores', allScores);
+    if (ok) {
+      localStorage.removeItem(OFFLINE_QUEUE_KEY); // clear queue on success
+      setSyncStatus('synced');
+    } else {
+      queueOfflineScore(partial);
+      setSyncStatus('offline');
+    }
+  }catch(e){
+    // Server unreachable - queue locally
+    var gross2 = R.scores.reduce(function(s,g){return s+(g||0);},0);
+    queueOfflineScore({
+      name:R.name, hi:R.hi, teeKey:R.teeKey, gender:R.gender, ph:R.ph,
+      gross:gross2, nett:gross2-(R.ph||0),
+      thru:R.scores.filter(function(s){return s!==null;}).length,
+      pts:runningPts(), fin:false,
+      scores:R.scores.slice(), competition:R.competition||'',
+      team:R.team||'', holes:R.holes||18, ts:Date.now()
+    });
+    setSyncStatus('offline');
+    showToast('⚠ No signal — score saved locally');
+  }
 }
 
 
@@ -904,6 +958,85 @@ function shareScorecard() {
 }
 
 // ── ROUND STATE SAVE / RESTORE ──
+var ROUND_KEY = 'sgc_round_state';
+var OFFLINE_QUEUE_KEY = 'sgc_offline_queue';
+
+// ── OFFLINE SYNC ──
+function setSyncStatus(status) {
+  // status: 'synced' | 'pending' | 'offline'
+  var pill = document.getElementById('syncPill');
+  if (!pill) return;
+  pill.style.display = 'inline-block';
+  if (status === 'synced') {
+    pill.textContent = '✓ Synced';
+    pill.style.background = 'rgba(45,110,78,.3)';
+    pill.style.border = '1px solid rgba(45,110,78,.5)';
+    pill.style.color = '#8ee0b4';
+  } else if (status === 'pending') {
+    pill.textContent = '⏳ Saved locally';
+    pill.style.background = 'rgba(212,160,23,.2)';
+    pill.style.border = '1px solid rgba(212,160,23,.4)';
+    pill.style.color = '#f0c040';
+  } else if (status === 'offline') {
+    pill.textContent = '⚠ No signal';
+    pill.style.background = 'rgba(192,57,43,.2)';
+    pill.style.border = '1px solid rgba(192,57,43,.4)';
+    pill.style.color = '#e87878';
+  }
+}
+
+function queueOfflineScore(scoreObj) {
+  try {
+    var queue = JSON.parse(localStorage.getItem(OFFLINE_QUEUE_KEY) || '[]');
+    // Replace existing entry for same player or add new
+    var idx = queue.findIndex(function(s){ return s.name && s.name.toLowerCase() === scoreObj.name.toLowerCase(); });
+    if (idx >= 0) queue[idx] = scoreObj; else queue.push(scoreObj);
+    localStorage.setItem(OFFLINE_QUEUE_KEY, JSON.stringify(queue));
+  } catch(e) {}
+}
+
+async function flushOfflineQueue() {
+  try {
+    var raw = localStorage.getItem(OFFLINE_QUEUE_KEY);
+    if (!raw) return;
+    var queue = JSON.parse(raw);
+    if (!queue.length) return;
+
+    var allScores = [];
+    try { var ex = await SGC.get('scores'); if (Array.isArray(ex)) allScores = ex; } catch(e) { return; }
+
+    var changed = false;
+    queue.forEach(function(scoreObj) {
+      var i = allScores.findIndex(function(s){ return s.name && s.name.toLowerCase() === scoreObj.name.toLowerCase(); });
+      if (i >= 0) allScores[i] = scoreObj; else allScores.push(scoreObj);
+      changed = true;
+    });
+
+    if (changed) {
+      var ok = await SGC.set('scores', allScores);
+      if (ok) {
+        localStorage.removeItem(OFFLINE_QUEUE_KEY);
+        setSyncStatus('synced');
+        console.log('Offline queue flushed:', queue.length, 'score(s) synced');
+      }
+    }
+  } catch(e) {
+    console.log('Flush failed — will retry');
+  }
+}
+
+// Listen for online event to auto-sync
+window.addEventListener('online', function() {
+  setSyncStatus('pending');
+  setTimeout(flushOfflineQueue, 1000);
+});
+
+window.addEventListener('offline', function() {
+  setSyncStatus('offline');
+  // Show warning toast
+  showToast('⚠ No signal — scores saved locally');
+});
+
 var ROUND_KEY = 'sgc_round_state';
 
 function saveRoundState() {
@@ -1016,10 +1149,14 @@ function showScr(id){document.querySelectorAll('.screen').forEach(s=>s.classList
 window.addEventListener('load', function() {
   loadAdminSettings();
   checkForSavedRound();
-  // Refresh competitions every 15 seconds so new competitions appear without refreshing
+  // Refresh competitions every 15 seconds
+  setInterval(function() { loadAdminSettings(); }, 15000);
+  // Retry offline queue every 30 seconds
   setInterval(function() {
-    loadAdminSettings();
-  }, 15000);
+    if (navigator.onLine) flushOfflineQueue();
+  }, 30000);
+  // Initial flush in case queued scores from previous session
+  if (navigator.onLine) setTimeout(flushOfflineQueue, 3000);
 });
 
 // ── FORMAT & TEE LOOKUPS ──
