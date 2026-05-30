@@ -354,6 +354,30 @@ select.finp option{background:#1a3a6b;color:#fff;}
     </div>
   </div>
 
+
+<!-- SCORE EDITOR MODAL -->
+<div id="scoreEditorOverlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:600;overflow-y:auto;padding:20px 16px;">
+  <div style="background:linear-gradient(175deg,#0f2347,#1a3a6b);border:1.5px solid rgba(212,160,23,.4);border-radius:16px;max-width:480px;margin:0 auto;padding:20px;">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
+      <div>
+        <div style="font-size:1rem;font-weight:700;color:#f0c040;" id="editorPlayerName"></div>
+        <div style="font-size:.72rem;color:rgba(255,255,255,.5);" id="editorPlayerMeta"></div>
+      </div>
+      <button onclick="closeScoreEditor()" style="background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);border-radius:8px;padding:6px 12px;color:rgba(255,255,255,.7);cursor:pointer;font-size:.82rem;">✕ Close</button>
+    </div>
+
+    <div style="font-size:.65rem;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.4);margin-bottom:8px;">Edit Gross Scores — tap a hole to change it</div>
+
+    <div id="editorHoleGrid" style="display:grid;grid-template-columns:repeat(6,1fr);gap:6px;margin-bottom:16px;"></div>
+
+    <div id="editorSummary" style="background:rgba(0,0,0,.2);border:1px solid rgba(255,255,255,.08);border-radius:10px;padding:12px;margin-bottom:16px;font-size:.82rem;color:rgba(255,255,255,.8);"></div>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+      <button onclick="closeScoreEditor()" class="cancel-btn">Cancel</button>
+      <button onclick="saveEditedScores()" class="save-btn" style="margin-top:0;">💾 Save Changes</button>
+    </div>
+  </div>
+</div>
 </div><!-- end adminApp -->
 
 <div class="toast" id="toast"></div>
@@ -824,12 +848,19 @@ function renderScores(players){
     var tr=document.createElement('tr');
     var ph=p.ph||p.hcp||0;
     var status=p.fin?'<span class="fin-badge">Fin</span>':(p.thru||0)+' holes';
-    tr.innerHTML='<td class="nm">'+p.name+'</td><td class="mn">'+ph+'</td><td class="mn">'+(p.gross||0)+'</td>'
+    tr.innerHTML='<td class="nm" style="cursor:pointer;text-decoration:underline;color:var(--gold-lt);" title="Click to edit scores">'+p.name+'</td>'
+      +'<td class="mn">'+ph+'</td><td class="mn">'+(p.gross||0)+'</td>'
       +'<td class="mn" style="color:var(--gold-lt);font-weight:500">'+p.pts+'</td>'
-      +'<td>'+status+'</td><td style="font-size:.65rem;color:var(--grey)">'+(p.competition||'—')+'</td>'
-      +'<td><button class="del-row-btn">&#10005;</button></td>';
+      +'<td>'+status+'</td>'
+      +'<td style="font-size:.65rem;color:var(--grey)">'+(p.competition||'—')+'</td>'
+      +'<td style="display:flex;gap:4px;">'
+        +'<button class="edit-row-btn" title="Edit scores">✏️</button>'
+        +'<button class="del-row-btn">&#10005;</button>'
+      +'</td>';
     tr.dataset.playerName=p.name;
-    tr.querySelector('.del-row-btn').addEventListener('click',function(){deletePlayer(tr.dataset.playerName);});
+    tr.querySelector('.del-row-btn').addEventListener('click',function(e){e.stopPropagation();deletePlayer(tr.dataset.playerName);});
+    tr.querySelector('.edit-row-btn').addEventListener('click',function(e){e.stopPropagation();openScoreEditor(p);});
+    tr.querySelector('.nm').addEventListener('click',function(){openScoreEditor(p);});
     body.appendChild(tr);
   });
 }
@@ -1069,6 +1100,148 @@ function printResultsPDF(comp, results) {
     + '<button class="print-btn" onclick="window.print()">🖨️ Print / Save as PDF</button>'
     + '</body></html>');
   w.document.close();
+}
+
+
+// ── SCORE EDITOR ──
+var _editPlayer = null;
+var _editScores = [];
+
+var COURSE = {
+  par_men:   [4,4,4,3,4,3,4,3,4,3,5,4,4,4,4,4,3,5],
+  par_women: [4,5,4,3,4,3,4,3,4,3,5,4,5,4,5,4,3,5],
+  si_men:    [14,4,8,16,2,18,12,10,6,17,5,7,1,15,3,11,9,13],
+  si_women:  [12,4,8,18,2,16,10,14,6,17,7,1,3,15,5,11,13,9],
+};
+
+function strokesOnHole(ph,si){if(ph<=0)return 0;var s=Math.floor(ph/18);if(si<=(ph%18))s++;return s;}
+function stablefordPts(gross,par,ph,si){if(!gross||gross<=0)return 0;var n=gross-strokesOnHole(ph,si);return Math.max(0,(par-n)+2);}
+
+function openScoreEditor(player) {
+  _editPlayer = player;
+  // Build scores array of 18 from player data
+  _editScores = Array.isArray(player.scores) ? player.scores.slice() : new Array(18).fill(null);
+  // If scores array is shorter (9-hole) pad it
+  while (_editScores.length < 18) _editScores.push(null);
+
+  document.getElementById('editorPlayerName').textContent = player.name;
+  var ph = player.ph || player.hcp || 0;
+  var teeLabel = player.teeKey ? player.teeKey.replace('_m',' (Men)').replace('_f',' (Women)').replace('white','White').replace('yellow','Yellow').replace('red','Red') : '';
+  document.getElementById('editorPlayerMeta').textContent = 'HCP ' + ph + (teeLabel ? ' · ' + teeLabel : '') + (player.competition ? ' · ' + player.competition : '');
+
+  renderEditorGrid();
+  document.getElementById('scoreEditorOverlay').style.display = 'block';
+  document.body.style.overflow = 'hidden';
+}
+
+function closeScoreEditor() {
+  document.getElementById('scoreEditorOverlay').style.display = 'none';
+  document.body.style.overflow = '';
+  _editPlayer = null;
+  _editScores = [];
+}
+
+function renderEditorGrid() {
+  var grid = document.getElementById('editorHoleGrid');
+  var ph = _editPlayer.ph || _editPlayer.hcp || 0;
+  var isLadies = _editPlayer.gender === 'f';
+  var par = isLadies ? COURSE.par_women : COURSE.par_men;
+  var si  = isLadies ? COURSE.si_women  : COURSE.si_men;
+
+  grid.innerHTML = '';
+  for (var h = 0; h < 18; h++) {
+    var gross = _editScores[h];
+    var holePar = par[h];
+    var pts = gross ? stablefordPts(gross, holePar, ph, si[h]) : null;
+    var diff = gross ? (gross - strokesOnHole(ph, si[h]) - holePar) : null;
+    var col = diff === null ? 'rgba(255,255,255,.1)'
+      : diff <= -2 ? '#ffd700'
+      : diff === -1 ? '#3fa06e'
+      : diff === 0  ? '#1a3a6b'
+      : diff === 1  ? 'rgba(192,57,43,.5)'
+      : 'rgba(192,57,43,.8)';
+
+    var cell = document.createElement('div');
+    cell.style.cssText = 'background:' + col + ';border:1px solid rgba(255,255,255,.15);border-radius:8px;padding:6px 4px;text-align:center;cursor:pointer;';
+    cell.innerHTML = '<div style="font-size:.6rem;color:rgba(255,255,255,.5);">H'+(h+1)+'</div>'
+      + '<div style="font-size:1rem;font-weight:700;color:#fff;">' + (gross || '—') + '</div>'
+      + '<div style="font-size:.6rem;color:rgba(255,255,255,.6);">' + (pts !== null ? pts+'pts' : 'p'+holePar) + '</div>';
+    cell.dataset.hole = h;
+    cell.addEventListener('click', function() { promptHoleScore(parseInt(this.dataset.hole)); });
+    grid.appendChild(cell);
+  }
+  updateEditorSummary();
+}
+
+function promptHoleScore(holeIdx) {
+  var ph = _editPlayer.ph || _editPlayer.hcp || 0;
+  var isLadies = _editPlayer.gender === 'f';
+  var par = isLadies ? COURSE.par_women : COURSE.par_men;
+  var holePar = par[holeIdx];
+  var current = _editScores[holeIdx] || '';
+  var val = prompt('Hole ' + (holeIdx+1) + ' (Par ' + holePar + ') — enter gross score (0 to clear):', current);
+  if (val === null) return;
+  var num = parseInt(val);
+  _editScores[holeIdx] = (!val || val.trim() === '' || num === 0) ? null : num;
+  renderEditorGrid();
+}
+
+function updateEditorSummary() {
+  var ph = _editPlayer.ph || _editPlayer.hcp || 0;
+  var isLadies = _editPlayer.gender === 'f';
+  var par = isLadies ? COURSE.par_women : COURSE.par_men;
+  var si  = isLadies ? COURSE.si_women  : COURSE.si_men;
+  var gross = 0, pts = 0, holesPlayed = 0;
+  _editScores.forEach(function(g, i) {
+    if (g) { gross += g; pts += stablefordPts(g, par[i], ph, si[i]); holesPlayed++; }
+  });
+  var nett = gross - ph;
+  document.getElementById('editorSummary').innerHTML =
+    '<div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:8px;text-align:center;">'
+    + '<div><div style="font-size:.6rem;color:rgba(255,255,255,.4);margin-bottom:2px;">HOLES</div><div style="font-weight:700;color:#fff;">'+holesPlayed+'</div></div>'
+    + '<div><div style="font-size:.6rem;color:rgba(255,255,255,.4);margin-bottom:2px;">GROSS</div><div style="font-weight:700;color:#fff;">'+gross+'</div></div>'
+    + '<div><div style="font-size:.6rem;color:rgba(255,255,255,.4);margin-bottom:2px;">NETT</div><div style="font-weight:700;color:#fff;">'+nett+'</div></div>'
+    + '<div><div style="font-size:.6rem;color:rgba(255,255,255,.4);margin-bottom:2px;">PTS</div><div style="font-weight:700;color:#f0c040;">'+pts+'</div></div>'
+    + '</div>';
+}
+
+async function saveEditedScores() {
+  if (!_editPlayer) return;
+  var ph = _editPlayer.ph || _editPlayer.hcp || 0;
+  var isLadies = _editPlayer.gender === 'f';
+  var par = isLadies ? COURSE.par_women : COURSE.par_men;
+  var si  = isLadies ? COURSE.si_women  : COURSE.si_men;
+  var gross = 0, pts = 0, holesPlayed = 0;
+  _editScores.forEach(function(g, i) {
+    if (g) { gross += g; pts += stablefordPts(g, par[i], ph, si[i]); holesPlayed++; }
+  });
+  var nett = gross - ph;
+  try {
+    var record = await SGC._read();
+    var players = Array.isArray(record.scores) ? record.scores : [];
+    var idx = players.findIndex(function(p){ return p.name.toLowerCase() === _editPlayer.name.toLowerCase(); });
+    if (idx < 0) { toast('Player not found'); return; }
+    players[idx] = Object.assign({}, players[idx], {
+      scores: _editScores,
+      gross:  gross,
+      nett:   nett,
+      pts:    pts,
+      thru:   holesPlayed,
+      fin:    holesPlayed >= (_editPlayer.holes || 18),
+      ts:     Date.now(),
+    });
+    record.scores = players;
+    var ok = await SGC._write(record);
+    if (ok) {
+      toast('✓ Scores updated for ' + _editPlayer.name);
+      closeScoreEditor();
+      loadScores();
+    } else {
+      toast('Save failed — check connection');
+    }
+  } catch(e) {
+    toast('Error: ' + e.message);
+  }
 }
 
 function onAdminLoad(){ loadLocalSettings(); loadScores(); loadCompetitions(); loadProfanityList(); loadAdminPrizes(); initPrizeHoles(); }
