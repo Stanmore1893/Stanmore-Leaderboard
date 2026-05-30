@@ -428,7 +428,10 @@ function openNav(){document.getElementById('sgcNavDrawer').classList.add('open')
 function closeNav(){document.getElementById('sgcNavDrawer').classList.remove('open');document.getElementById('sgcNavOverlay').classList.remove('open');document.body.style.overflow='';}
 document.addEventListener('keydown',function(e){if(e.key==='Escape')closeNav();});
 
-window.addEventListener('load', loadResults);
+window.addEventListener('load', function() {
+  loadResults();
+  populateArchivePicker();
+});
 
 </script>
 </body>
