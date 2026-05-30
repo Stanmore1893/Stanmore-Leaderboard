@@ -1080,6 +1080,7 @@ async function loadAdminSettings() {
     _competitions = []; 
   }
   populateCompPicker();
+  applyBrandingToScoring();
 
   // 2. Load and show any active announcement
   try {
@@ -1103,6 +1104,35 @@ async function loadAdminSettings() {
       document.getElementById('setupCompName').textContent  = s.name;
     }
   } catch(e) {}
+}
+
+function applyBrandingToScoring() {
+  var active = _competitions.find(function(c){ return c.active; });
+  var b = active && active.branding ? active.branding : {};
+  if (b.name) {
+    var el = document.querySelector('.club-name');
+    if (el) el.textContent = b.name;
+    var el2 = document.querySelector('.nav-club-name');
+    if (el2) el2.textContent = b.name;
+  }
+  if (b.logo) {
+    document.querySelectorAll('.logo, .nav-logo, .wlogo img').forEach(function(el){ el.src = b.logo; });
+  }
+  if (b.colour) {
+    document.documentElement.style.setProperty('--gold', b.colour);
+    document.documentElement.style.setProperty('--gold-lt', b.colour);
+  }
+  if (b.sponsor) {
+    var existing = document.getElementById('scoringSponsor');
+    if (!existing) {
+      var sp = document.createElement('div');
+      sp.id = 'scoringSponsor';
+      sp.style.cssText = 'text-align:center;padding:4px 16px 8px;font-size:.72rem;color:rgba(255,255,255,.5);';
+      sp.textContent = b.sponsor;
+      var hdr = document.querySelector('.hdr');
+      if (hdr) hdr.parentNode.insertBefore(sp, hdr.nextSibling);
+    }
+  }
 }
 
 function populateCompPicker() {

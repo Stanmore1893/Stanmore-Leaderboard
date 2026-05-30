@@ -444,6 +444,38 @@ async function loadCompetitionsLB() {
   } catch(e) { _competitions = []; }
 }
 
+async function applyBranding() {
+  try {
+    var record = await SGC._read();
+    var comps = Array.isArray(record.competitions) ? record.competitions : [];
+    var active = comps.find(function(c){ return c.active; });
+    var b = active && active.branding ? active.branding : {};
+    if (b.name) {
+      var el = document.querySelector('.brand-name');
+      if (el) el.textContent = b.name;
+    }
+    if (b.logo) {
+      var el = document.querySelector('.logo-sm');
+      if (el) el.src = b.logo;
+    }
+    if (b.colour) {
+      document.documentElement.style.setProperty('--gold', b.colour);
+      document.documentElement.style.setProperty('--gold-lt', b.colour);
+    }
+    if (b.sponsor) {
+      var existing = document.getElementById('lbSponsor');
+      if (!existing) {
+        var sp = document.createElement('div');
+        sp.id = 'lbSponsor';
+        sp.style.cssText = 'text-align:center;padding:4px;font-size:.72rem;color:rgba(255,255,255,.45);background:rgba(0,0,0,.2);';
+        sp.textContent = b.sponsor;
+        var hdr = document.querySelector('.app-header');
+        if (hdr) hdr.parentNode.insertBefore(sp, hdr.nextSibling);
+      }
+    }
+  } catch(e) { console.log('Branding load failed'); }
+}
+
 async function loadScores(){
   try{
     const r = await SGC.get('scores');

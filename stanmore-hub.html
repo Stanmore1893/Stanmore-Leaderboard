@@ -274,7 +274,65 @@ window.addEventListener('DOMContentLoaded', function() {
 
 window.addEventListener('load', function() {
   setTimeout(generateQRCodes, 500);
+  applyBranding();
 });
+
+async function applyBranding() {
+  try {
+    var record = await (async function(){
+      var r = await fetch('https://stanmore-proxy.vercel.app/api/proxy', {
+        method:'POST', headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({action:'read'})
+      });
+      return await r.json();
+    })();
+    var comps = Array.isArray(record.competitions) ? record.competitions : [];
+    var active = comps.find(function(c){ return c.active; });
+    var b = active && active.branding ? active.branding : {};
+
+    // Apply overrides — fall back to Stanmore defaults
+    var name    = b.name    || 'Stanmore Golf Club';
+    var tagline = b.tagline || 'Est. 1893 · Middlesex';
+    var welcome = b.welcome || 'Welcome to the Stanmore Golf Club digital hub. Select an option below to enter scores, follow the live leaderboard, or check the course guide.';
+    var colour  = b.colour  || '#f0c040';
+    var logo    = b.logo    || 'club-logo.png';
+
+    // Update DOM
+    var nameEl = document.querySelector('.hero-club');
+    if (nameEl) nameEl.textContent = name;
+    var subEl = document.querySelector('.hero-sub');
+    if (subEl) subEl.textContent = tagline;
+    var introEl = document.querySelector('.intro p');
+    if (introEl) introEl.textContent = welcome;
+    var logoEl = document.querySelector('.hero-logo');
+    if (logoEl && b.logo) logoEl.src = logo;
+    if (colour !== '#f0c040') {
+      document.documentElement.style.setProperty('--gold-lt', colour);
+      document.documentElement.style.setProperty('--gold', colour);
+    }
+
+    // Show sponsor if set
+    if (b.sponsor) {
+      var existing = document.getElementById('hubSponsor');
+      if (!existing) {
+        var sp = document.createElement('div');
+        sp.id = 'hubSponsor';
+        sp.style.cssText = 'text-align:center;padding:6px 16px;font-size:.78rem;color:rgba(255,255,255,.5);';
+        sp.textContent = b.sponsor;
+        var intro = document.querySelector('.intro');
+        if (intro) intro.parentNode.insertBefore(sp, intro.nextSibling);
+      }
+    }
+
+    // Update nav logo if custom logo set
+    if (b.logo) {
+      var navLogo = document.querySelector('.nav-logo');
+      if (navLogo) navLogo.src = b.logo;
+    }
+  } catch(e) {
+    console.log('Branding load failed, using defaults');
+  }
+}
 
 function setUrls() { /* URLs removed */ }
 
