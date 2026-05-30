@@ -170,6 +170,7 @@ select.finp option{background:#1a3a6b;color:#fff;}
   <div class="page-title">&#128274; Admin Panel</div>
   <div class="page-sub">Competition Management</div>
 
+
   <!-- QUICK SETTINGS -->
   <div class="sec" style="background:rgba(212,160,23,.06);">
     <div class="sec-title" style="color:var(--gold-lt)">&#9889; Quick Settings</div>
@@ -966,6 +967,66 @@ async function loadAdminPrizes() {
   }
 }
 
+// ── RESULTS ARCHIVE ──
+async function loadArchive() {
+  var el = document.getElementById('archiveList');
+  if (!el) return;
+  try {
+    var record = await SGC._read();
+    var archive = Array.isArray(record.archive) ? record.archive : [];
+    if (!archive.length) {
+      el.innerHTML = '<div style="color:var(--grey);font-size:.82rem;">No archived results yet. Close a competition to save results here.</div>';
+      return;
+    }
+    el.innerHTML = archive.slice().reverse().map(function(entry, i) {
+      var realIdx = archive.length - 1 - i;
+      var date = entry.closedAt ? new Date(entry.closedAt).toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'}) : '—';
+      var fmt = entry.comp && entry.comp.format ? entry.comp.format.replace(/_/g,' ') : '';
+      return '<div style="background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:10px;padding:12px 14px;margin-bottom:8px;">'
+        + '<div style="display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap;">'
+        + '<div>'
+        + '<div style="font-size:.92rem;font-weight:700;color:#fff;">' + (entry.comp ? entry.comp.name : 'Competition') + '</div>'
+        + '<div style="font-size:.72rem;color:rgba(255,255,255,.45);margin-top:2px;">' + date + (fmt ? ' &nbsp;·&nbsp; ' + fmt : '') + ' &nbsp;·&nbsp; ' + (entry.playerCount||0) + ' players</div>'
+        + '</div>'
+        + '<div style="display:flex;gap:6px;">'
+        + '<button onclick="viewArchive(' + realIdx + ')" style="background:rgba(212,160,23,.2);border:1.5px solid rgba(212,160,23,.4);color:#f0c040;border-radius:8px;padding:7px 12px;font-family:Poppins,sans-serif;font-size:.78rem;font-weight:600;cursor:pointer;">📋 View</button>'
+        + '<button onclick="deleteArchive(' + realIdx + ')" style="background:rgba(192,57,43,.15);border:1px solid rgba(192,57,43,.35);color:#e87878;border-radius:8px;padding:7px 12px;font-family:Poppins,sans-serif;font-size:.78rem;cursor:pointer;">🗑 Delete</button>'
+        + '</div>'
+        + '</div>'
+        + '</div>';
+    }).join('');
+  } catch(e) {
+    el.innerHTML = '<div style="color:#e87878;font-size:.82rem;">Could not load archive.</div>';
+  }
+}
+
+async function viewArchive(idx) {
+  try {
+    var record = await SGC._read();
+    var archive = Array.isArray(record.archive) ? record.archive : [];
+    var entry = archive[idx];
+    if (!entry) return;
+    printResultsPDF(entry.comp, entry.results);
+  } catch(e) {
+    toast('Could not load archived results');
+  }
+}
+
+async function deleteArchive(idx) {
+  if (!confirm('Delete these archived results? This cannot be undone.')) return;
+  try {
+    var record = await SGC._read();
+    var archive = Array.isArray(record.archive) ? record.archive : [];
+    archive.splice(idx, 1);
+    record.archive = archive;
+    await SGC._write(record);
+    toast('Archive entry deleted');
+    loadArchive();
+  } catch(e) {
+    toast('Could not delete — please try again');
+  }
+}
+
 // Auto-refresh scores and prizes every 10 seconds
 setInterval(function() {
   if (document.getElementById('adminPrizesBody')) loadAdminPrizes();
@@ -1048,26 +1109,42 @@ function toast(msg){
 // ── CLOSE COMPETITION & PRINT RESULTS ──
 async function closeCompetition(idx) {
   var comp = competitions[idx];
-  if (!confirm('Close "' + comp.name + '" and print results? This will deactivate the competition.')) return;
+  if (!confirm('Close "' + comp.name + '" and save final results? This will deactivate the competition and archive the results.')) return;
 
-  // Deactivate
-  competitions[idx].active = false;
-  competitions[idx].closed = true;
-  competitions[idx].closedAt = new Date().toISOString();
-  await saveCompetitions();
-  toast('Competition closed');
-
-  // Load scores and print PDF
   try {
-    var scores = await SGC.get('scores');
-    if (!Array.isArray(scores)) scores = [];
+    // Load scores for this competition
+    var record = await SGC._read();
+    var scores = Array.isArray(record.scores) ? record.scores : [];
     var compScores = scores
       .filter(function(p){ return p.fin && (p.competition === comp.name || !p.competition); })
-      .sort(function(a,b){ return b.pts - a.pts || (a.gross||0) - (b.gross||0); });
+      .sort(function(a,b){ return (b.pts||0) - (a.pts||0) || (a.gross||0) - (b.gross||0); });
 
+    // Save to archive
+    var archive = Array.isArray(record.archive) ? record.archive : [];
+    var archiveEntry = {
+      id: comp.id || Date.now(),
+      comp: comp,
+      results: compScores,
+      prizes: record.prizes ? (record.prizes['comp_' + (comp.id||comp.name||'default').toString().replace(/[^a-zA-Z0-9]/g,'_')] || {}) : {},
+      closedAt: new Date().toISOString(),
+      playerCount: compScores.length
+    };
+    archive.push(archiveEntry);
+    record.archive = archive;
+
+    // Deactivate competition
+    competitions[idx].active = false;
+    competitions[idx].closed = true;
+    competitions[idx].closedAt = archiveEntry.closedAt;
+    record.competitions = competitions;
+
+    await SGC._write(record);
+    toast('✓ Competition closed and results saved');
+    renderCompList();
     printResultsPDF(comp, compScores);
   } catch(e) {
-    toast('Could not load scores for PDF');
+    console.error(e);
+    toast('Error closing competition — please try again');
   }
 }
 
@@ -1295,7 +1372,16 @@ async function saveEditedScores() {
   }
 }
 
-function onAdminLoad(){ loadLocalSettings(); loadScores(); loadCompetitions(); loadProfanityList(); loadAdminPrizes(); initPrizeHoles(); }
+function onAdminLoad(){
+  loadLocalSettings();
+  loadScores();
+  loadCompetitions();
+  loadProfanityList();
+  loadAdminPrizes();
+  initPrizeHoles();
+}
+
+
 
 
 </script>

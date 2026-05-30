@@ -164,7 +164,7 @@ body{font-family:'Poppins',sans-serif;background:linear-gradient(175deg,#060e1e 
   </div>
 </div>
 
-<div class="credit">Designed &amp; built by <strong>Alex Persaud</strong> &nbsp;·&nbsp; PGA Professional</div>
+<div class="credit">Designed &amp; built by <strong style="color:#f0c040;font-weight:600;white-space:nowrap;">Alex Persaud &middot; PGA Professional</strong></div>
 
 <div class="toast" id="toast" style="position:fixed;bottom:28px;left:50%;transform:translateX(-50%) translateY(16px);background:var(--navy-dk);border:1px solid var(--gold);color:var(--gold-lt);padding:10px 20px;border-radius:20px;font-size:.8rem;font-weight:600;opacity:0;transition:all .3s;pointer-events:none;z-index:999;white-space:nowrap;"></div>
 
@@ -219,6 +219,52 @@ var SGC = {
 var _results = [];
 var _compName = '';
 var _compMeta = '';
+
+async function populateArchivePicker() {
+  try {
+    var record = await SGC._read();
+    var archive = Array.isArray(record.archive) ? record.archive : [];
+    var picker = document.getElementById('archivePicker');
+    var selector = document.getElementById('archiveSelector');
+    if (!picker) return;
+    // Clear old options except first
+    while (picker.options.length > 1) picker.remove(1);
+    if (archive.length) {
+      selector.style.display = 'block';
+      archive.slice().reverse().forEach(function(entry, i) {
+        var realIdx = archive.length - 1 - i;
+        var date = entry.closedAt ? new Date(entry.closedAt).toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'}) : '';
+        var opt = document.createElement('option');
+        opt.value = realIdx;
+        opt.textContent = (entry.comp ? entry.comp.name : 'Competition') + (date ? ' · ' + date : '') + ' (' + (entry.playerCount||0) + ' players)';
+        picker.appendChild(opt);
+      });
+    }
+  } catch(e) {}
+}
+
+async function loadArchiveEntry(idx) {
+  if (idx === '' || idx === null) {
+    loadResults();
+    return;
+  }
+  document.getElementById('loadingState').style.display = 'block';
+  document.getElementById('resultsContent').style.display = 'none';
+  try {
+    var record = await SGC._read();
+    var archive = Array.isArray(record.archive) ? record.archive : [];
+    var entry = archive[parseInt(idx)];
+    if (!entry) { loadResults(); return; }
+    _results = entry.results || [];
+    _compName = entry.comp ? entry.comp.name : 'Competition';
+    var date = entry.closedAt ? new Date(entry.closedAt).toLocaleDateString('en-GB',{weekday:'long',day:'numeric',month:'long',year:'numeric'}) : '';
+    _compMeta = date + (entry.comp && entry.comp.format ? ' · ' + entry.comp.format.replace(/_/g,' ') : '');
+    document.getElementById('loadingState').style.display = 'none';
+    renderResults();
+  } catch(e) {
+    document.getElementById('loadingState').innerHTML = '<span style="color:#e87878;">Could not load archive.</span>';
+  }
+}
 
 async function loadResults() {
   document.getElementById('loadingState').style.display = 'block';
