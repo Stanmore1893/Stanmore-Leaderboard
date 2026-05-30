@@ -1310,50 +1310,7 @@ function shareScorecard() {
     +'📍 '+(t.name||'')+' | Playing HCP '+(R.ph||0)+'\n'
     +'🔗 View leaderboard: '+window.location.origin+'/Stanmore-Leaderboard/stanmore-leaderboard-live.html';
   window.open('https://wa.me/?text='+encodeURIComponent(msg),'_blank');
-}
-
-// ── ROUND STATE SAVE / RESTORE ──
-var ROUND_KEY = 'sgc_round_state';
-
-
-
-
-
-
-
-
-
-
-
-
-function showScr(id) {
-  document.querySelectorAll('.screen').forEach(function(s){ s.classList.remove('active'); });
-  document.getElementById(id).classList.add('active');
-  window.scrollTo(0,0);
-}
-
-window.addEventListener('load', function() {
-  loadAdminSettings();
-  checkForSavedRound();
-  // Refresh competitions every 15 seconds so new competitions appear without refreshing
-  setInterval(function() {
-    loadAdminSettings();
-  }, 15000);
-});
-
-
-function openNav(){
-  document.getElementById('sgcNavDrawer').classList.add('open');
-  document.getElementById('sgcNavOverlay').classList.add('open');
-  document.body.style.overflow='hidden';
-}
-function closeNav(){
-  document.getElementById('sgcNavDrawer').classList.remove('open');
-  document.getElementById('sgcNavOverlay').classList.remove('open');
-  document.body.style.overflow='';
-}
-document.addEventListener('keydown',function(e){if(e.key==='Escape')closeNav();});
-</script>
+}</script>
   <div style="text-align:center;padding:14px 16px;border-top:1px solid rgba(212,160,23,.15);">
     <div style="display:inline-flex;align-items:center;gap:10px;">
       <div style="width:28px;height:1.5px;background:linear-gradient(to right,transparent,rgba(212,160,23,.6));"></div>
