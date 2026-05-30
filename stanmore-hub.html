@@ -33,7 +33,7 @@ html,body{min-height:100%;font-family:'Poppins',sans-serif;color:#fff;overflow-x
 .sgc-burger{position:fixed;top:12px;right:12px;z-index:499;width:42px;height:42px;background:#1a3a6b;border:1.5px solid rgba(212,160,23,.5);border-radius:9px;display:flex;align-items:center;justify-content:center;cursor:pointer;box-shadow:0 2px 12px rgba(0,0,0,.5);color:#fff;font-size:1.3rem;}
 /* HERO */
 .hero{position:relative;text-align:center;padding:58px 24px 28px;overflow:hidden;}
-#particleCanvas{position:absolute;inset:0;pointer-events:none;opacity:.5;}
+
 .hero-content{position:relative;z-index:1;}
 .hero-logo{width:88px;height:88px;object-fit:contain;filter:drop-shadow(0 0 18px rgba(212,160,23,.5));animation:logoIn .7s ease-out,logoGlow 3s ease-in-out infinite 1s;margin-bottom:14px;}
 @keyframes logoIn{from{opacity:0;transform:scale(.6) translateY(-10px);}to{opacity:1;transform:scale(1) translateY(0);}}
@@ -112,12 +112,13 @@ html,body{min-height:100%;font-family:'Poppins',sans-serif;color:#fff;overflow-x
 </div>
 
 <div class="hero">
-  <canvas id="particleCanvas"></canvas>
+  
   <div class="hero-content">
     <img class="hero-logo" src="club-logo.png" alt="Stanmore GC">
     <div class="hero-club">Stanmore Golf Club</div>
     <div class="hero-sub">Est. 1893 &nbsp;·&nbsp; Middlesex</div>
     <div class="hero-date" id="heroDate">Loading&hellip;</div>
+    <div id="hubClock" style="font-size:2rem;font-weight:700;color:#f0c040;font-family:'DM Mono',monospace;letter-spacing:.06em;margin-top:8px;">00:00:00</div>
     <div class="hero-divider"></div>
   </div>
 </div>
@@ -258,6 +259,17 @@ window.addEventListener('DOMContentLoaded', function() {
     weekday:'long', day:'numeric', month:'long', year:'numeric'
   });
   setUrls();
+  // Live clock
+  function tickClock() {
+    var now = new Date();
+    var h = String(now.getHours()).padStart(2,'0');
+    var m = String(now.getMinutes()).padStart(2,'0');
+    var s = String(now.getSeconds()).padStart(2,'0');
+    var el = document.getElementById('hubClock');
+    if (el) el.textContent = h + ':' + m + ':' + s;
+  }
+  tickClock();
+  setInterval(tickClock, 1000);
 });
 
 window.addEventListener('load', function() {
@@ -401,17 +413,7 @@ function printQRSheet() {
   w.document.close();
 }
 
-// ── PARTICLES ──
-(function(){
-  var c=document.getElementById('particleCanvas');
-  if(!c)return;
-  var ctx=c.getContext('2d'),p=[],sizes=[1.2,1.8,2.4,3.0,1.5,2.0];
-  function resize(){c.width=c.parentElement.offsetWidth;c.height=c.parentElement.offsetHeight;}
-  window.addEventListener('resize',resize);resize();
-  for(var i=0;i<55;i++) p.push({x:Math.random()*c.width,y:Math.random()*c.height,r:sizes[Math.floor(Math.random()*sizes.length)],a:Math.random()*Math.PI*2,s:0.2+Math.random()*0.5,op:0.3+Math.random()*0.5});
-  function draw(){ctx.clearRect(0,0,c.width,c.height);p.forEach(function(q){q.y-=q.s*0.4;q.x+=Math.sin(q.a)*0.3;q.a+=0.012;if(q.y<-5)q.y=c.height+5;ctx.beginPath();ctx.arc(q.x,q.y,q.r,0,Math.PI*2);ctx.fillStyle='rgba(212,160,23,'+q.op+')';ctx.fill();});requestAnimationFrame(draw);}
-  draw();
-})();
+
 </script>
 </body>
 </html>
