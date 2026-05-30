@@ -571,13 +571,9 @@ select.cinp:focus,select.finp:focus{border-color:rgba(212,160,23,.7);}
     </div>
 
     <!-- MIXED TEES -->
-    <label style="display:flex;align-items:center;gap:8px;padding:10px 12px;border-radius:8px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.07);font-size:.83rem;color:rgba(255,255,255,.75);cursor:pointer;margin-bottom:12px;">
-      <input type="checkbox" id="mpMixed" accent-color="#d4a017" style="width:16px;height:16px;accent-color:#d4a017;flex-shrink:0;" onchange="toggleMixedTeeNote()">
-      Mixed Tees — players are playing from different tees
-    </label>
-    <div id="mixedTeeNote" style="display:none;background:rgba(212,160,23,.08);border:1px solid rgba(212,160,23,.25);border-radius:9px;padding:11px 13px;margin-top:8px;font-size:.78rem;color:rgba(255,255,255,.8);line-height:1.7;">
-      <strong style="color:#f0c040;">How it works:</strong> Each player selects their own tee above. The calculator compares the Course Ratings of the two tees and adds equalisation shots to the player on the lower-rated tee — giving them extra strokes to account for the difference in difficulty.
-      <div style="margin-top:8px;font-size:.72rem;color:rgba(255,255,255,.5);">e.g. Player A on White (CR 69.7) vs Player B on Yellow (CR 68.8) — Player B receives 1 extra equalisation shot.</div>
+    <div style="background:rgba(212,160,23,.08);border:1px solid rgba(212,160,23,.2);border-radius:9px;padding:10px 13px;margin-bottom:12px;font-size:.78rem;color:rgba(255,255,255,.75);line-height:1.7;">
+      ⚖️ <strong style="color:#f0c040;">Equalisation shots</strong> are applied automatically when a female player is selected — the calculator compares course ratings and adjusts strokes accordingly.
+    </div>
     </div>
 
     <button class="cbtn" onclick="calcMatchplay()">Calculate Strokes</button>
@@ -761,16 +757,15 @@ function setMpGender(pid, gender, el) {
 
 function calcMatchplay() {
   var fmtVal  = document.getElementById('mpFmt').value;
+  var hiA = parseFloat(document.getElementById('mpA_hi').value);
+  var hiB = parseFloat(document.getElementById('mpB_hi').value);
+  // Read gender FIRST before using in isMixed
+  var genA = document.getElementById('mpA_gen') ? document.getElementById('mpA_gen').value : 'm';
+  var genB = document.getElementById('mpB_gen') ? document.getElementById('mpB_gen').value : 'm';
   // Auto-detect mixed tees: apply equalisation whenever any player is female
-  // (female tees have different course ratings - equalisation always applies)
   var isMixed = (genA === 'f' || genB === 'f' ||
     (document.getElementById('mpC_gen') && document.getElementById('mpC_gen').value === 'f') ||
     (document.getElementById('mpD_gen') && document.getElementById('mpD_gen').value === 'f'));
-  var hiA = parseFloat(document.getElementById('mpA_hi').value);
-  var hiB = parseFloat(document.getElementById('mpB_hi').value);
-  // Build tee keys using gender suffix from gender toggles
-  var genA = document.getElementById('mpA_gen') ? document.getElementById('mpA_gen').value : 'm';
-  var genB = document.getElementById('mpB_gen') ? document.getElementById('mpB_gen').value : 'm';
   var teeARaw = document.getElementById('mpA_tee').value.replace('_m','').replace('_f','');
   var teeBRaw = document.getElementById('mpB_tee').value.replace('_m','').replace('_f','');
   var teeA = teeARaw + '_' + genA;
