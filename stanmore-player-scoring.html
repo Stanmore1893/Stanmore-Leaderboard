@@ -912,7 +912,6 @@ function checkForSavedRound() {
 }
 
 function resumeRound() {
-  console.log('resumeRound called');
   var raw;
   try { raw = localStorage.getItem(ROUND_KEY); } catch(e) { raw = null; }
   if (!raw) { alert('No saved round found.'); return; }
