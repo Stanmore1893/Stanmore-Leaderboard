@@ -647,6 +647,24 @@ function renderHole(){
   document.getElementById('pbPts').textContent=runningPts();
   const max=par+6; const btns=document.getElementById('scBtns');
   btns.innerHTML='';
+  // Determine format from active competition
+  var comp = window._activeComp || {};
+  var fmt = (comp.format || '').toLowerCase();
+  var isStableford = !fmt || fmt.indexOf('stableford') > -1;
+  var isStrokeplay = fmt.indexOf('strokeplay') > -1 || fmt.indexOf('stroke') > -1 || fmt.indexOf('medal') > -1;
+
+  // Add Blob/0 button for Stableford (no score on hole = 0 pts, valid)
+  if (isStableford || (!isStrokeplay)) {
+    var blobBtn = document.createElement('button');
+    blobBtn.className = 'sb';
+    blobBtn.textContent = '—';
+    blobBtn.title = 'No score / Blob (0 points)';
+    blobBtn.style.cssText = 'font-size:.9rem;';
+    if (R.scores[i] === 0) blobBtn.classList.add('double');
+    blobBtn.onclick = function(){ selectScore(0); };
+    btns.appendChild(blobBtn);
+  }
+
   for(let s=1;s<=max;s++){
     const diff=s-par;
     const btn=document.createElement('button');
@@ -707,17 +725,37 @@ function renderHole(){
   renderDone();
 }
 
-function selectScore(s){R.scores[R.curIdx]=s;renderHole();saveProgress();}
+function selectScore(s){
+  R.scores[R.curIdx] = s;
+  renderHole();
+  saveProgress();
+}
 
 function updatePtsPreview(){
   const i=R.curIdx; const s=R.scores[i];
-  if(!s){document.getElementById('ptsPrev').textContent='Select your score above';return;}
+  const el = document.getElementById('ptsPrev');
+  const comp = window._activeComp || {};
+  const fmt = (comp.format || '').toLowerCase();
+  const isStrokeplay = fmt.indexOf('strokeplay') > -1 || fmt.indexOf('stroke') > -1 || fmt.indexOf('medal') > -1;
+
+  if(s === null || s === undefined){
+    el.textContent='Select your score above';
+    return;
+  }
+  if(s === 0){
+    if(isStrokeplay){
+      el.innerHTML='<span style="color:#e87878;font-weight:700;">⚠ NR — No Return. In Stroke Play you must complete every hole.</span>';
+    } else {
+      el.innerHTML='<strong>— Blob</strong> · 0 points (no score on this hole)';
+    }
+    return;
+  }
   const par=getPar(i);const si=getSI(i);
   const pts=stablefordPts(s,par,R.ph,si);
   const strokes=strokesOnHole(R.ph,si);
   const nett=s-strokes; const diff=nett-par;
   const rel=diff<=-2?'Eagle':diff===-1?'Birdie':diff===0?'Par':diff===1?'Bogey':diff===2?'Double Bogey':'+ '+(diff);
-  document.getElementById('ptsPrev').innerHTML=`${rel}<span class="strokes-badge">Nett ${nett}</span> · <strong>${pts} point${pts!==1?'s':''}</strong>`;
+  el.innerHTML=`${rel}<span class="strokes-badge">Nett ${nett}</span> · <strong>${pts} point${pts!==1?'s':''}</strong>`;
 }
 
 function runningPts(){
@@ -756,18 +794,32 @@ function prevHole(){
   renderHole();
 }
 function finishRound(){
-  const pts=runningPts();
-  const gross=R.scores.reduce((s,g)=>s+(g||0),0);
-  const nett=gross-R.ph;
-  document.getElementById('doneSubtitle').textContent=`Well played, ${R.name}!`;
-  document.getElementById('donePts').textContent=pts;
-  document.getElementById('doneGross').textContent=gross;
-  document.getElementById('doneNett').textContent=nett;
-  document.getElementById('donePH').textContent=R.ph;
+  const comp = window._activeComp || {};
+  const fmt = (comp.format || '').toLowerCase();
+  const isStrokeplay = fmt.indexOf('strokeplay') > -1 || fmt.indexOf('stroke') > -1 || fmt.indexOf('medal') > -1;
+  const holesPlayed = R.holeIndexes || Array.from({length:R.holes||18},(_,i)=>i);
+
+  // Check for NR in strokeplay (any hole scored as 0 or null)
+  var isNR = false;
+  if (isStrokeplay) {
+    isNR = holesPlayed.some(function(idx){ return !R.scores[idx] || R.scores[idx] === 0; });
+  }
+
+  const pts = isNR ? 0 : runningPts();
+  const gross = isNR ? 0 : R.scores.reduce((s,g)=>s+(g||0),0);
+  const nett = isNR ? 0 : gross - R.ph;
+
+  document.getElementById('doneSubtitle').textContent = isNR
+    ? 'Round submitted as NR — No Return'
+    : 'Well played, ' + R.name + '!';
+  document.getElementById('donePts').textContent = isNR ? 'NR' : pts;
+  document.getElementById('doneGross').textContent = isNR ? 'NR' : gross;
+  document.getElementById('doneNett').textContent = isNR ? 'NR' : nett;
+  document.getElementById('donePH').textContent = R.ph;
   document.getElementById('holeBadge').textContent=(R.holes===9?'9 Holes':'18 Holes')+' Complete';
   clearRoundState();
   showScr('scrDone');
-  submitScore(pts,gross,nett);
+  submitScore(isNR ? 'NR' : pts, isNR ? 'NR' : gross, isNR ? 'NR' : nett);
 }
 
 async function submitScore(pts,gross,nett){
