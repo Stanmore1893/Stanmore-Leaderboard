@@ -939,9 +939,12 @@ async function loadAdminPrizes() {
         }
         html += '</div>';
         if (current) {
-          html += '<div style="margin-top:7px;padding:8px 10px;background:rgba(212,160,23,.12);border:1px solid rgba(212,160,23,.25);border-radius:7px;">';
+          html += '<div style="margin-top:7px;padding:8px 10px;background:rgba(212,160,23,.12);border:1px solid rgba(212,160,23,.25);border-radius:7px;display:flex;align-items:center;justify-content:space-between;gap:8px;">';
+          html += '<div>';
           html += '<div style="font-size:.6rem;color:rgba(212,160,23,.6);text-transform:uppercase;letter-spacing:.1em;margin-bottom:2px;">Current Leader</div>';
           html += '<div style="font-size:1rem;font-weight:700;color:#f0c040;">🏅 '+current+'</div>';
+          html += '</div>';
+          html += '<button onclick="unclaimPrize(\'' + compKey + '\',\'' + prizeType + '\',\'' + hKey + '\')" style="background:rgba(192,57,43,.2);border:1px solid rgba(192,57,43,.5);color:#e87878;border-radius:7px;padding:5px 10px;font-family:Poppins,sans-serif;font-size:.72rem;font-weight:600;cursor:pointer;white-space:nowrap;flex-shrink:0;">✕ Unclaim</button>';
           html += '</div>';
         }
         if (history.length > 1) {
@@ -963,10 +966,33 @@ async function loadAdminPrizes() {
   }
 }
 
-// Auto-refresh prizes every 10 seconds
+// Auto-refresh scores and prizes every 10 seconds
 setInterval(function() {
   if (document.getElementById('adminPrizesBody')) loadAdminPrizes();
+  if (document.getElementById('scoresBody') && document.getElementById('adminApp').style.display !== 'none') loadScores();
 }, 10000);
+
+// ── UNCLAIM PRIZE ──
+async function unclaimPrize(compKey, prizeType, hKey) {
+  if (!confirm('Remove this claim? The previous claimant (if any) will become the leader.')) return;
+  try {
+    var record = await SGC._read();
+    var prizes = record.prizes || {};
+    if (!prizes[compKey]) prizes[compKey] = {};
+    if (!prizes[compKey][prizeType]) prizes[compKey][prizeType] = {};
+    var hData = prizes[compKey][prizeType][hKey] || {};
+    var history = hData.history || [];
+    // Remove the last claimant
+    history.pop();
+    var newCurrent = history.length ? history[history.length-1].name : null;
+    prizes[compKey][prizeType][hKey] = { current: newCurrent, history: history };
+    record.prizes = prizes;
+    await SGC._write(record);
+    loadAdminPrizes();
+  } catch(e) {
+    alert('Could not unclaim — please try again.');
+  }
+}
 
 // ── PROFANITY FILTER MANAGER ──
 var DEFAULT_BANNED = [

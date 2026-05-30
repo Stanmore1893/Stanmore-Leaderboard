@@ -274,15 +274,15 @@ html,body{min-height:100%;background:var(--cream);font-family:'Poppins',sans-ser
   <div id="prizeClaim" style="display:none;margin:8px 0;">
     <div style="font-size:.65rem;letter-spacing:.1em;text-transform:uppercase;color:rgba(212,160,23,.6);font-weight:600;margin-bottom:8px;">🎯 Special Prize — Claim</div>
     <div id="ntpClaim"  style="display:none;">
-      <button type="button" id="ntpBtn" onclick="claimPrize('ntp')" style="width:100%;background:rgba(212,160,23,.15);border:1.5px solid rgba(212,160,23,.3);color:var(--gold-lt,#f0c040);border-radius:9px;padding:12px;font-family:Poppins,sans-serif;font-size:.88rem;font-weight:600;cursor:pointer;margin-bottom:6px;">📍 I'm nearest the pin — claim it</button>
+      <button type="button" id="ntpBtn" onclick="togglePrizeClaim('ntp')" style="width:100%;background:rgba(212,160,23,.15);border:1.5px solid rgba(212,160,23,.3);color:var(--gold-lt,#f0c040);border-radius:9px;padding:12px;font-family:Poppins,sans-serif;font-size:.88rem;font-weight:600;cursor:pointer;margin-bottom:6px;">📍 I'm nearest the pin — claim it</button>
       <div id="ntpStatus" style="font-size:.72rem;color:rgba(255,255,255,.5);text-align:center;margin-bottom:4px;"></div>
     </div>
     <div id="ntp2Claim" style="display:none;">
-      <button type="button" id="ntp2Btn" onclick="claimPrize('ntp2')" style="width:100%;background:rgba(212,160,23,.15);border:1.5px solid rgba(212,160,23,.3);color:var(--gold-lt,#f0c040);border-radius:9px;padding:12px;font-family:Poppins,sans-serif;font-size:.88rem;font-weight:600;cursor:pointer;margin-bottom:6px;">📍 I'm nearest the pin in 2 — claim it</button>
+      <button type="button" id="ntp2Btn" onclick="togglePrizeClaim('ntp2')" style="width:100%;background:rgba(212,160,23,.15);border:1.5px solid rgba(212,160,23,.3);color:var(--gold-lt,#f0c040);border-radius:9px;padding:12px;font-family:Poppins,sans-serif;font-size:.88rem;font-weight:600;cursor:pointer;margin-bottom:6px;">📍 I'm nearest the pin in 2 — claim it</button>
       <div id="ntp2Status" style="font-size:.72rem;color:rgba(255,255,255,.5);text-align:center;margin-bottom:4px;"></div>
     </div>
     <div id="ldClaim" style="display:none;">
-      <button type="button" id="ldBtn" onclick="claimPrize('ld')" style="width:100%;background:rgba(212,160,23,.15);border:1.5px solid rgba(212,160,23,.3);color:var(--gold-lt,#f0c040);border-radius:9px;padding:12px;font-family:Poppins,sans-serif;font-size:.88rem;font-weight:600;cursor:pointer;margin-bottom:6px;">🏌️ I had the longest drive — claim it</button>
+      <button type="button" id="ldBtn" onclick="togglePrizeClaim('ld')" style="width:100%;background:rgba(212,160,23,.15);border:1.5px solid rgba(212,160,23,.3);color:var(--gold-lt,#f0c040);border-radius:9px;padding:12px;font-family:Poppins,sans-serif;font-size:.88rem;font-weight:600;cursor:pointer;margin-bottom:6px;">🏌️ I had the longest drive — claim it</button>
       <div id="ldStatus" style="font-size:.72rem;color:rgba(255,255,255,.5);text-align:center;margin-bottom:4px;"></div>
     </div>
   </div>
@@ -685,8 +685,8 @@ function renderHole(){
   if (!R.prizeClaims) R.prizeClaims = {ntp:[],ntp2:[],ld:[]};
   var curHole = (R.holeIndexes ? R.holeIndexes[R.holeStep] : R.curIdx) + 1;
   [
-    {btnId:'ntpBtn',  statId:'ntpStatus',  type:'ntp',  label:'📍 I\'m nearest the pin — claim it'},
-    {btnId:'ntp2Btn', statId:'ntp2Status', type:'ntp2', label:'📍 I\'m nearest the pin in 2 — claim it'},
+    {btnId:'ntpBtn',  statId:'ntpStatus',  type:'ntp',  label:'📍 Nearest the pin — claim it'},
+    {btnId:'ntp2Btn', statId:'ntp2Status', type:'ntp2', label:'📍 Nearest the pin in 2 — claim it'},
     {btnId:'ldBtn',   statId:'ldStatus',   type:'ld',   label:'🏌️ I had the longest drive — claim it'}
   ].forEach(function(cfg) {
     var btn  = document.getElementById(cfg.btnId);
@@ -1204,39 +1204,84 @@ function onCompSelect() {
 }
 
 // ── PRIZE CLAIMING ──
-async function claimPrize(type) {
-  // holeNum is the ACTUAL hole number (1-18), not the index
+async function togglePrizeClaim(type) {
   var holeNum = (R.holeIndexes ? R.holeIndexes[R.holeStep] : R.curIdx) + 1;
   var btnId  = type==='ntp' ? 'ntpBtn' : type==='ntp2' ? 'ntp2Btn' : 'ldBtn';
   var statId = type==='ntp' ? 'ntpStatus' : type==='ntp2' ? 'ntp2Status' : 'ldStatus';
   var btn    = document.getElementById(btnId);
   var stat   = document.getElementById(statId);
-  if (btn) { btn.disabled=true; btn.style.opacity='.6'; btn.textContent='Saving…'; }
 
+  // Check if already claimed on this hole
   if (!R.prizeClaims) R.prizeClaims = {ntp:[],ntp2:[],ld:[]};
   if (!R.prizeClaims[type]) R.prizeClaims[type] = [];
-  if (R.prizeClaims[type].indexOf(holeNum) < 0) R.prizeClaims[type].push(holeNum);
+  var alreadyClaimed = R.prizeClaims[type].indexOf(holeNum) >= 0;
 
-  try {
-    var record = await SGC._read();
-    // Store prizes per competition to avoid cross-competition contamination
-    var comp = window._activeComp || {};
-    var compKey = 'comp_' + (comp.id || comp.name || 'default').toString().replace(/[^a-zA-Z0-9]/g,'_');
-    if (!record.prizes) record.prizes = {};
-    if (!record.prizes[compKey]) record.prizes[compKey] = {ntp:{},ntp2:{},ld:{}};
-    if (!record.prizes[compKey][type]) record.prizes[compKey][type] = {};
-    var hKey = 'h'+holeNum;
-    if (!record.prizes[compKey][type][hKey]) record.prizes[compKey][type][hKey] = {current:null,history:[]};
-    record.prizes[compKey][type][hKey].current = R.name;
-    record.prizes[compKey][type][hKey].history.push({name:R.name,ts:Date.now()});
-    await SGC._write(record);
-    if (btn)  { btn.style.background='rgba(45,110,78,.5)'; btn.style.borderColor='rgba(45,110,78,.8)'; btn.style.color='#ffffff'; btn.textContent='✓ Claimed!'; }
-    if (stat) stat.textContent='You are currently leading on hole '+holeNum;
-  } catch(e) {
-    if (btn)  { btn.disabled=false; btn.style.opacity='1'; btn.textContent='📍 Try again'; }
-    if (stat) stat.textContent='Could not save — please try again';
+  if (alreadyClaimed) {
+    // UNCLAIM
+    if (!confirm('Remove your claim on hole ' + holeNum + '?')) return;
+    if (btn) { btn.disabled=true; btn.textContent='Removing…'; }
+    R.prizeClaims[type] = R.prizeClaims[type].filter(function(h){ return h !== holeNum; });
+    try {
+      var record = await SGC._read();
+      var comp = window._activeComp || {};
+      var compKey = 'comp_' + (comp.id || comp.name || 'default').toString().replace(/[^a-zA-Z0-9]/g,'_');
+      var hKey = 'h' + holeNum;
+      if (record.prizes && record.prizes[compKey] && record.prizes[compKey][type] && record.prizes[compKey][type][hKey]) {
+        var hData = record.prizes[compKey][type][hKey];
+        hData.history = (hData.history || []).filter(function(e){ return e.name !== R.name; });
+        hData.current = hData.history.length ? hData.history[hData.history.length-1].name : null;
+      }
+      await SGC._write(record);
+      if (btn) {
+        btn.disabled = false;
+        btn.style.background = 'rgba(212,160,23,.15)';
+        btn.style.borderColor = 'rgba(212,160,23,.3)';
+        btn.style.color = 'var(--gold-lt,#f0c040)';
+        var labels = {ntp:"📍 Nearest the pin", ntp2:"📍 Nearest the pin in 2", ld:"🏌 Longest drive"};
+        btn.textContent = labels[type];
+      }
+      if (stat) stat.textContent = 'Claim removed';
+      saveRoundState();
+    } catch(e) {
+      if (btn) { btn.disabled=false; btn.textContent='✕ Unclaim (retry)'; }
+      if (stat) stat.textContent = 'Could not remove — please try again';
+    }
+  } else {
+    // CLAIM
+    if (btn) { btn.disabled=true; btn.style.opacity='.6'; btn.textContent='Saving…'; }
+    R.prizeClaims[type].push(holeNum);
+    try {
+      var record = await SGC._read();
+      var comp = window._activeComp || {};
+      var compKey = 'comp_' + (comp.id || comp.name || 'default').toString().replace(/[^a-zA-Z0-9]/g,'_');
+      if (!record.prizes) record.prizes = {};
+      if (!record.prizes[compKey]) record.prizes[compKey] = {ntp:{},ntp2:{},ld:{}};
+      if (!record.prizes[compKey][type]) record.prizes[compKey][type] = {};
+      var hKey = 'h' + holeNum;
+      if (!record.prizes[compKey][type][hKey]) record.prizes[compKey][type][hKey] = {current:null,history:[]};
+      record.prizes[compKey][type][hKey].current = R.name;
+      record.prizes[compKey][type][hKey].history.push({name:R.name,ts:Date.now()});
+      await SGC._write(record);
+      if (btn) {
+        btn.disabled = false;
+        btn.style.opacity = '1';
+        btn.style.background = 'rgba(192,57,43,.2)';
+        btn.style.borderColor = 'rgba(192,57,43,.5)';
+        btn.style.color = '#e87878';
+        btn.textContent = '✕ Tap to unclaim';
+      }
+      if (stat) stat.textContent = '✓ You are currently leading on hole ' + holeNum;
+      saveRoundState();
+    } catch(e) {
+      R.prizeClaims[type] = R.prizeClaims[type].filter(function(h){ return h !== holeNum; });
+      if (btn) { btn.disabled=false; btn.style.opacity='1'; btn.textContent='📍 Try again'; }
+      if (stat) stat.textContent = 'Could not save — please try again';
+    }
   }
 }
+
+// Keep old name as alias so nothing breaks
+function claimPrize(type) { togglePrizeClaim(type); }
 
 function getPrizeClaims() {
   var claims = {ntp:[],ntp2:[],ld:[]};
