@@ -54,10 +54,17 @@ html,body{min-height:100%;font-family:'Poppins',sans-serif;color:#fff;background
 .fstep em{color:#f0c040;font-style:normal;}
 /* CALC CARDS */
 .calc-card{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:14px;padding:16px 14px;margin-bottom:14px;}
-.calc-title{font-size:.88rem;font-weight:700;color:#f0c040;margin-bottom:12px;padding-bottom:8px;border-bottom:1px solid rgba(212,160,23,.15);}
+.calc-title{font-size:1rem;font-weight:700;color:#f0c040;margin-bottom:6px;padding-bottom:10px;border-bottom:2px solid rgba(212,160,23,.2);}
+.calc-desc{font-size:.75rem;color:rgba(255,255,255,.5);margin-bottom:14px;line-height:1.6;}
+.calc-section-lbl{font-size:.6rem;letter-spacing:.14em;text-transform:uppercase;color:rgba(255,255,255,.4);font-weight:700;margin-bottom:8px;margin-top:14px;}
+.player-box-a{background:rgba(26,58,107,.25);border:1.5px solid rgba(100,160,255,.3);border-radius:12px;padding:13px 14px;margin-bottom:8px;}
+.player-box-b{background:rgba(45,110,78,.18);border:1.5px solid rgba(45,110,78,.4);border-radius:12px;padding:13px 14px;margin-bottom:8px;}
+.player-lbl-a{font-size:.65rem;letter-spacing:.14em;text-transform:uppercase;color:#a8c4f0;font-weight:700;margin-bottom:10px;}
+.player-lbl-b{font-size:.65rem;letter-spacing:.14em;text-transform:uppercase;color:#8ee0b4;font-weight:700;margin-bottom:10px;}
+.vs-divider{text-align:center;padding:10px 0;font-size:1.8rem;font-weight:900;color:#f0c040;letter-spacing:.05em;text-shadow:0 0 20px rgba(212,160,23,.3);}
 label.clbl{display:block;font-size:.62rem;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.45);margin-bottom:5px;margin-top:10px;}
 /* Option C input style */
-label.clbl,.flbl{font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;color:#f0c040;font-weight:700;margin-bottom:6px;display:block;margin-top:14px;}
+label.clbl,.flbl{font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;color:#f0c040;font-weight:700;margin-bottom:6px;display:block;margin-top:12px;}
 input.cinp,input.finp{width:100%;background:rgba(0,0,0,.35);border:1.5px solid rgba(212,160,23,.3);border-radius:10px;padding:13px 14px;color:#fff;font-family:'DM Mono',monospace;font-size:1.3rem;font-weight:700;outline:none;-webkit-appearance:none;transition:border-color .2s;}
 input.cinp:focus,input.finp:focus{border-color:rgba(212,160,23,.7);}
 input.cinp::placeholder,input.finp::placeholder{color:rgba(255,255,255,.25);font-size:.9rem;font-family:'Poppins',sans-serif;font-weight:400;}
@@ -308,7 +315,8 @@ select.cinp:focus,select.finp:focus{border-color:rgba(212,160,23,.7);}
 
   <!-- ── INDIVIDUAL CALCULATOR ── -->
   <div class="calc-card">
-    <div class="calc-title">Individual Playing Handicap</div>
+    <div class="calc-title">⛳ Individual Playing Handicap</div>
+    <div class="calc-desc">Enter your Handicap Index, gender and tee to calculate your Course Handicap and Playing Handicap for any format.</div>
     <div class="frow">
       <div class="fld"><div class="flbl">Handicap Index</div><input class="finp" id="hiIn" type="number" placeholder="e.g. 14.2" step="0.1" min="-5" max="54"></div>
       <div class="fld"><div class="flbl">Gender</div><div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:6px;">
@@ -370,7 +378,8 @@ select.cinp:focus,select.finp:focus{border-color:rgba(212,160,23,.7);}
 
   <!-- ── BATCH CALCULATOR ── -->
   <div class="calc-card">
-    <div class="calc-title">Batch — Full Field</div>
+    <div class="calc-title">📋 Batch — Full Field</div>
+    <div class="calc-desc">Paste multiple Handicap Indexes separated by commas to calculate Playing Handicaps for every player at once.</div>
     <div style="font-size:.74rem;color:var(--grey);margin-bottom:11px;line-height:1.6;">Paste Handicap Indexes separated by commas to get Playing Handicaps for the full field.</div>
     <div class="frow one"><div class="fld"><div class="flbl">Handicap Indexes</div><input class="finp" id="batchIn" type="text" placeholder="14.2, 7.4, 22.1, 5.0…"></div></div>
     <div class="frow">
@@ -407,7 +416,8 @@ select.cinp:focus,select.finp:focus{border-color:rgba(212,160,23,.7);}
 
   <!-- ── MATCHPLAY STROKE DIFFERENCE ── -->
   <div class="calc-card">
-    <div class="calc-title">Matchplay — Stroke Difference</div>
+    <div class="calc-title">⚔️ Matchplay — Stroke Difference</div>
+    <div class="calc-desc">Calculate how many strokes the higher-handicap player or team receives. Supports singles, fourball and foursomes formats.</div>
     <div style="font-size:.74rem;color:var(--grey);margin-bottom:14px;line-height:1.6;">
       The allowance % is applied to the <strong>difference in Course Handicaps</strong>. The higher-handicap player/team receives the resulting strokes. Tick <strong>Mixed Tees</strong> to add equalisation shots.<br><br>
       <strong>Foursomes note:</strong> Partners alternate shots — Player A tees odd holes, Player B tees even holes, each from their own tee. The combined team handicap uses both players' Course Handicaps × 50%, and equalisation uses the average Course Rating of both tees.
@@ -425,7 +435,7 @@ select.cinp:focus,select.finp:focus{border-color:rgba(212,160,23,.7);}
     </div>
 
     <!-- PLAYER A -->
-    <div style="background:rgba(26,58,107,.15);border:1px solid rgba(26,58,107,.3);border-radius:10px;padding:12px 13px;margin-bottom:10px;">
+    <div style="background:rgba(26,58,107,.25);border:1.5px solid rgba(100,160,255,.3);border-radius:12px;padding:13px 14px;margin-bottom:8px;">
       <div style="font-size:.65rem;letter-spacing:.14em;text-transform:uppercase;color:#a8c4f0;font-weight:600;margin-bottom:10px;" id="mpLabelA">Player A</div>
       <div class="frow" style="margin-bottom:0">
         <div class="fld"><div class="flbl">Handicap Index</div><input class="finp" id="mpA_hi" type="number" placeholder="e.g. 5.1" step="0.1" min="-5" max="54" style="margin-bottom:0"></div>
@@ -450,8 +460,10 @@ select.cinp:focus,select.finp:focus{border-color:rgba(212,160,23,.7);}
       </div>
     </div>
 
+    <div class="vs-divider">VS</div>
+
     <!-- PLAYER B / PARTNER A (Fourball/Foursomes) -->
-    <div style="background:rgba(45,110,78,.12);border:1px solid rgba(45,110,78,.25);border-radius:10px;padding:12px 13px;margin-bottom:10px;" id="mpBSection">
+    <div style="background:rgba(45,110,78,.18);border:1.5px solid rgba(45,110,78,.4);border-radius:12px;padding:13px 14px;margin-bottom:10px;" id="mpBSection">
       <div style="font-size:.65rem;letter-spacing:.14em;text-transform:uppercase;color:#8ee0b4;font-weight:600;margin-bottom:10px;" id="mpLabelB">Player B</div>
       <div class="frow" style="margin-bottom:0">
         <div class="fld"><div class="flbl">Handicap Index</div><input class="finp" id="mpB_hi" type="number" placeholder="e.g. 14.2" step="0.1" min="-5" max="54" style="margin-bottom:0"></div>
