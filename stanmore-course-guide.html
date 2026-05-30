@@ -544,9 +544,13 @@ select.cinp:focus,select.finp:focus{border-color:rgba(212,160,23,.7);}
 
     <!-- MIXED TEES -->
     <label style="display:flex;align-items:center;gap:8px;padding:10px 12px;border-radius:8px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.07);font-size:.83rem;color:rgba(255,255,255,.75);cursor:pointer;margin-bottom:12px;">
-      <input type="checkbox" id="mpMixed" accent-color="#d4a017" style="width:16px;height:16px;accent-color:#d4a017;flex-shrink:0;">
-      Mixed Tees — apply equalisation shots
+      <input type="checkbox" id="mpMixed" accent-color="#d4a017" style="width:16px;height:16px;accent-color:#d4a017;flex-shrink:0;" onchange="toggleMixedTeeNote()">
+      Mixed Tees — players are playing from different tees
     </label>
+    <div id="mixedTeeNote" style="display:none;background:rgba(212,160,23,.08);border:1px solid rgba(212,160,23,.25);border-radius:9px;padding:11px 13px;margin-top:8px;font-size:.78rem;color:rgba(255,255,255,.8);line-height:1.7;">
+      <strong style="color:#f0c040;">How it works:</strong> Each player selects their own tee above. The calculator compares the Course Ratings of the two tees and adds equalisation shots to the player on the lower-rated tee — giving them extra strokes to account for the difference in difficulty.
+      <div style="margin-top:8px;font-size:.72rem;color:rgba(255,255,255,.5);">e.g. Player A on White (CR 69.7) vs Player B on Yellow (CR 68.8) — Player B receives 1 extra equalisation shot.</div>
+    </div>
 
     <button class="cbtn" onclick="calcMatchplay()">Calculate Strokes</button>
     <div id="mpResult" style="margin-top:13px;"></div>
@@ -700,6 +704,12 @@ function equalisationShots(teeKeyA, teeKeyB) {
 }
 
 // ── MAIN MATCHPLAY CALCULATOR ──
+function toggleMixedTeeNote() {
+  var note = document.getElementById('mixedTeeNote');
+  var checked = document.getElementById('mpMixed').checked;
+  if (note) note.style.display = checked ? 'block' : 'none';
+}
+
 function calcMatchplay() {
   var fmtVal  = document.getElementById('mpFmt').value;
   var isMixed = document.getElementById('mpMixed').checked;
