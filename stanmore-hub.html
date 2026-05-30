@@ -47,24 +47,26 @@ html,body{min-height:100%;font-family:'Poppins',sans-serif;color:#fff;overflow-x
 .intro p{font-size:.88rem;color:rgba(255,255,255,.55);line-height:1.75;}
 /* CARDS */
 .cards{padding:0 14px;max-width:560px;margin:0 auto;}
-.app-card{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:16px;overflow:hidden;margin-bottom:14px;}
-.card-head{display:flex;align-items:center;gap:14px;padding:16px 18px;}
-.card-head.scoring{background:linear-gradient(to right,rgba(26,58,107,.35),transparent);}
-.card-head.leaderboard{background:linear-gradient(to right,rgba(45,110,78,.22),transparent);}
-.card-head.results{background:linear-gradient(to right,rgba(212,160,23,.14),transparent);}
-.card-head.guide{background:linear-gradient(to right,rgba(107,58,26,.22),transparent);}
-.card-icon{width:44px;height:44px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:1.4rem;flex-shrink:0;}
-.card-icon.scoring{background:rgba(26,58,107,.3);border:1px solid rgba(26,58,107,.5);}
-.card-icon.leaderboard{background:rgba(45,110,78,.22);border:1px solid rgba(45,110,78,.4);}
-.card-icon.results{background:rgba(212,160,23,.15);border:1px solid rgba(212,160,23,.3);}
-.card-icon.guide{background:rgba(107,58,26,.15);border:1px solid rgba(107,58,26,.3);}
+.app-card{border-radius:14px;overflow:hidden;margin-bottom:14px;border:1px solid rgba(212,160,23,.2);box-shadow:0 0 24px rgba(212,160,23,.07);}
+.card-head{display:flex;align-items:center;gap:16px;padding:18px 16px;border-bottom:1px solid rgba(212,160,23,.15);}
+.card-head.scoring{background:linear-gradient(135deg,rgba(26,58,107,.8),rgba(15,35,71,.95));}
+.card-head.leaderboard{background:linear-gradient(135deg,rgba(10,60,35,.85),rgba(15,35,71,.95));}
+.card-head.results{background:linear-gradient(135deg,rgba(90,45,0,.8),rgba(15,35,71,.95));}
+.card-head.guide{background:linear-gradient(135deg,rgba(45,26,90,.8),rgba(15,35,71,.95));}
+.card-head.admin-head{background:linear-gradient(135deg,rgba(100,20,20,.8),rgba(15,35,71,.95));}
+.card-icon{width:56px;height:56px;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:1.8rem;flex-shrink:0;border:2px solid rgba(212,160,23,.4);}
+.card-icon.scoring{background:rgba(212,160,23,.15);}
+.card-icon.leaderboard{background:rgba(212,160,23,.15);}
+.card-icon.results{background:rgba(212,160,23,.15);}
+.card-icon.guide{background:rgba(212,160,23,.15);}
 .card-info{flex:1;}
-.card-title{font-size:1rem;font-weight:700;color:#fff;}
-.card-desc{font-size:.78rem;color:rgba(255,255,255,.55);margin-top:3px;line-height:1.5;}
-.card-body{padding:14px 18px 18px;border-top:1px solid rgba(255,255,255,.06);}
+.card-pill{display:inline-flex;align-items:center;background:rgba(212,160,23,.2);border:1px solid rgba(212,160,23,.5);border-radius:20px;padding:4px 13px;margin-bottom:7px;}
+.card-pill-text{font-size:.8rem;font-weight:800;color:#f0c040;letter-spacing:.02em;}
+.card-title{font-size:.9rem;color:rgba(255,255,255,.8);line-height:1.5;}
+.card-body{background:rgba(255,255,255,.03);padding:14px 16px 16px;}
 .qr-section{display:flex;align-items:center;gap:14px;margin-bottom:12px;}
-.qr-wrap{width:88px;height:88px;flex-shrink:0;background:#fff;border-radius:10px;overflow:hidden;padding:4px;}
-.qr-wrap canvas{width:80px !important;height:80px !important;display:block;}
+.qr-wrap{width:110px;height:110px;flex-shrink:0;background:#fff;border-radius:10px;overflow:hidden;padding:4px;}
+.qr-wrap canvas{width:102px !important;height:102px !important;display:block;}
 .qr-info{flex:1;min-width:0;}
 .qr-label{font-size:.65rem;color:rgba(255,255,255,.4);letter-spacing:.1em;text-transform:uppercase;margin-bottom:6px;}
 .url-box{background:rgba(0,0,0,.3);border:1px solid rgba(255,255,255,.12);border-radius:8px;padding:7px 11px;font-size:.65rem;font-family:'DM Mono',monospace;color:rgba(255,255,255,.65);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;cursor:pointer;}
@@ -130,11 +132,14 @@ html,body{min-height:100%;font-family:'Poppins',sans-serif;color:#fff;overflow-x
   <div class="app-card">
     <div class="card-head scoring">
       <div class="card-icon scoring">&#9971;</div>
-      <div class="card-info"><div class="card-title">Score Entry</div><div class="card-desc">Enter gross scores hole by hole. WHS handicap and Stableford points calculated live.</div></div>
+      <div class="card-info">
+        <div class="card-pill"><span class="card-pill-text">Score Entry</span></div>
+        <div class="card-title">Enter gross scores hole by hole. WHS handicap and Stableford points calculated live.</div>
+      </div>
     </div>
     <div class="card-body">
       <div class="qr-section">
-        <div class="qr-wrap"><canvas id="qr1" width="80" height="80"></canvas></div>
+        <div class="qr-wrap"><canvas id="qr1" width="102" height="102"></canvas></div>
         <div class="qr-info"><div class="qr-label">Scan to open on phone</div><div class="url-box" id="url1" onclick="copyUrl('url1')">Loading&hellip;</div></div>
       </div>
       <div class="btn-row">
@@ -147,11 +152,14 @@ html,body{min-height:100%;font-family:'Poppins',sans-serif;color:#fff;overflow-x
   <div class="app-card">
     <div class="card-head leaderboard">
       <div class="card-icon leaderboard">&#127942;</div>
-      <div class="card-info"><div class="card-title">Live Leaderboard</div><div class="card-desc">Live standings every 5 seconds. Teams, prizes and on-course tracker.</div></div>
+      <div class="card-info">
+        <div class="card-pill"><span class="card-pill-text">Live Leaderboard</span></div>
+        <div class="card-title">Live standings every 5 seconds. Teams, prizes and on-course tracker.</div>
+      </div>
     </div>
     <div class="card-body">
       <div class="qr-section">
-        <div class="qr-wrap"><canvas id="qr2" width="80" height="80"></canvas></div>
+        <div class="qr-wrap"><canvas id="qr2" width="102" height="102"></canvas></div>
         <div class="qr-info"><div class="qr-label">Scan to open on tablet</div><div class="url-box" id="url2" onclick="copyUrl('url2')">Loading&hellip;</div></div>
       </div>
       <div class="btn-row">
@@ -164,11 +172,14 @@ html,body{min-height:100%;font-family:'Poppins',sans-serif;color:#fff;overflow-x
   <div class="app-card">
     <div class="card-head results">
       <div class="card-icon results">&#127941;</div>
-      <div class="card-info"><div class="card-title">Results &amp; Prize List</div><div class="card-desc">Final standings, podium, prize winners and PDF export.</div></div>
+      <div class="card-info">
+        <div class="card-pill"><span class="card-pill-text">Results &amp; Prize List</span></div>
+        <div class="card-title">Final standings, podium, prize winners and PDF export.</div>
+      </div>
     </div>
     <div class="card-body">
       <div class="qr-section">
-        <div class="qr-wrap"><canvas id="qr-results" width="80" height="80"></canvas></div>
+        <div class="qr-wrap"><canvas id="qr-results" width="102" height="102"></canvas></div>
         <div class="qr-info"><div class="qr-label">Scan to open results</div><div class="url-box" id="url-results" onclick="copyUrl('url-results')">Loading&hellip;</div></div>
       </div>
       <div class="btn-row">
@@ -181,11 +192,14 @@ html,body{min-height:100%;font-family:'Poppins',sans-serif;color:#fff;overflow-x
   <div class="app-card">
     <div class="card-head guide">
       <div class="card-icon guide">&#128203;</div>
-      <div class="card-info"><div class="card-title">Course Guide &amp; Handicap Calculator</div><div class="card-desc">Scorecard, slope ratings and WHS handicap calculators for all formats.</div></div>
+      <div class="card-info">
+        <div class="card-pill"><span class="card-pill-text">Course Guide</span></div>
+        <div class="card-title">Scorecard, slope ratings and WHS handicap calculators for all formats.</div>
+      </div>
     </div>
     <div class="card-body">
       <div class="qr-section">
-        <div class="qr-wrap"><canvas id="qr3" width="80" height="80"></canvas></div>
+        <div class="qr-wrap"><canvas id="qr3" width="102" height="102"></canvas></div>
         <div class="qr-info"><div class="qr-label">Scan to open</div><div class="url-box" id="url3" onclick="copyUrl('url3')">Loading&hellip;</div></div>
       </div>
       <div class="btn-row">
@@ -195,10 +209,13 @@ html,body{min-height:100%;font-family:'Poppins',sans-serif;color:#fff;overflow-x
     </div>
   </div>
 
-  <div class="app-card" style="border-color:rgba(192,57,43,.25);">
-    <div class="card-head" style="background:linear-gradient(to right,rgba(192,57,43,.12),transparent);">
-      <div class="card-icon" style="background:rgba(192,57,43,.15);border:1px solid rgba(192,57,43,.3);">&#128274;</div>
-      <div class="card-info"><div class="card-title">Admin Panel</div><div class="card-desc">Set up competitions, manage scores, push announcements. Password protected.</div></div>
+  <div class="app-card">
+    <div class="card-head admin-head">
+      <div class="card-icon" style="background:rgba(212,160,23,.15);border:2px solid rgba(212,160,23,.4);">&#128274;</div>
+      <div class="card-info">
+        <div class="card-pill"><span class="card-pill-text">Admin Panel</span></div>
+        <div class="card-title">Set up competitions, manage scores, push announcements. Password protected.</div>
+      </div>
     </div>
     <div class="card-body">
       <div class="btn-row">
@@ -226,7 +243,11 @@ html,body{min-height:100%;font-family:'Poppins',sans-serif;color:#fff;overflow-x
 
 <script>
 
-const BASE = window.location.href.replace(/\/[^\/]*$/, '');
+// Use GitHub Pages URL — fallback to detected base if not on GitHub
+const GITHUB_BASE = 'https://stanmore1893.github.io/Stanmore-Leaderboard';
+const BASE = window.location.hostname === 'stanmore1893.github.io'
+  ? GITHUB_BASE
+  : window.location.href.replace(/\/[^\/]*$/, '');
 const APPS = {
   scoring:     BASE + '/stanmore-player-scoring.html',
   leaderboard: BASE + '/stanmore-leaderboard-live.html',
@@ -249,10 +270,19 @@ window.addEventListener('load', function() {
 });
 
 function setUrls() {
-  var map = {url1:'scoring', url2:'leaderboard', 'url-results':'results', url3:'guide'};
-  Object.keys(map).forEach(function(id) {
+  var labels = {
+    url1:          'stanmore1893.github.io  ·  Score Entry',
+    url2:          'stanmore1893.github.io  ·  Live Leaderboard',
+    'url-results': 'stanmore1893.github.io  ·  Results & Prizes',
+    url3:          'stanmore1893.github.io  ·  Course Guide'
+  };
+  var urls = {url1:'scoring', url2:'leaderboard', 'url-results':'results', url3:'guide'};
+  Object.keys(labels).forEach(function(id) {
     var el = document.getElementById(id);
-    if (el) el.textContent = APPS[map[id]];
+    if (el) {
+      el.textContent = labels[id];
+      el.title = APPS[urls[id]]; // full URL on hover
+    }
   });
 }
 
@@ -265,7 +295,7 @@ function generateQRCodes() {
       var wrap = document.createElement('div');
       new QRCode(wrap, {
         text: APPS[map[canvasId]],
-        width: 80, height: 80,
+        width: 102, height: 102,
         colorDark: '#0f2347', colorLight: '#ffffff',
         correctLevel: QRCode.CorrectLevel.M
       });
@@ -274,9 +304,9 @@ function generateQRCodes() {
         if (!img) return;
         var ctx = canvas.getContext('2d');
         ctx.fillStyle = '#fff';
-        ctx.fillRect(0,0,80,80);
+        ctx.fillRect(0,0,102,102);
         var i = new Image();
-        i.onload = function() { ctx.drawImage(i,0,0,80,80); };
+        i.onload = function() { ctx.drawImage(i,0,0,102,102); };
         i.src = img.src;
       }, 300);
     } catch(e) { console.warn('QR error', canvasId, e); }
