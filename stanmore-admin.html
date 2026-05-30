@@ -367,6 +367,10 @@ select.finp option{background:#1a3a6b;color:#fff;}
     </div>
 
     <div style="font-size:.65rem;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.4);margin-bottom:8px;">Edit Gross Scores — tap a hole to change it</div>
+    <div id="editorNoScoresHint" style="display:none;background:rgba(212,160,23,.12);border:1px solid rgba(212,160,23,.3);border-radius:8px;padding:10px 12px;margin-bottom:10px;font-size:.78rem;color:rgba(255,255,255,.8);line-height:1.6;">
+      ⚠️ No hole-by-hole scores were recorded for this player — they may have been entered before hole tracking was active, or submitted as a total only.<br>
+      <strong style="color:#f0c040;">Tap any hole below to enter their scores manually.</strong>
+    </div>
 
     <div id="editorHoleGrid" style="display:grid;grid-template-columns:repeat(6,1fr);gap:6px;margin-bottom:16px;"></div>
 
@@ -1119,15 +1123,27 @@ function stablefordPts(gross,par,ph,si){if(!gross||gross<=0)return 0;var n=gross
 
 function openScoreEditor(player) {
   _editPlayer = player;
-  // Build scores array of 18 from player data
-  _editScores = Array.isArray(player.scores) ? player.scores.slice() : new Array(18).fill(null);
-  // If scores array is shorter (9-hole) pad it
+  // Build scores array - use stored hole scores if available
+  _editScores = Array.isArray(player.scores) && player.scores.some(function(s){return s;})
+    ? player.scores.slice()
+    : new Array(18).fill(null);
   while (_editScores.length < 18) _editScores.push(null);
 
-  document.getElementById('editorPlayerName').textContent = player.name;
+  document.getElementById('editorPlayerName').textContent = '✏️ ' + player.name;
   var ph = player.ph || player.hcp || 0;
-  var teeLabel = player.teeKey ? player.teeKey.replace('_m',' (Men)').replace('_f',' (Women)').replace('white','White').replace('yellow','Yellow').replace('red','Red') : '';
-  document.getElementById('editorPlayerMeta').textContent = 'HCP ' + ph + (teeLabel ? ' · ' + teeLabel : '') + (player.competition ? ' · ' + player.competition : '');
+  var teeLabel = player.teeKey ? player.teeKey
+    .replace('_m',' (Men)').replace('_f',' (Women)')
+    .replace('white','White').replace('yellow','Yellow').replace('red','Red') : '';
+  var hasHoleScores = _editScores.some(function(s){return s;});
+  var meta = 'HCP ' + ph
+    + (teeLabel ? ' · ' + teeLabel : '')
+    + (player.competition ? ' · ' + player.competition : '')
+    + (player.gross && !hasHoleScores ? ' · Recorded gross: ' + player.gross : '');
+  document.getElementById('editorPlayerMeta').textContent = meta;
+
+  // Show a hint if no hole scores stored
+  var hint = document.getElementById('editorNoScoresHint');
+  if (hint) hint.style.display = hasHoleScores ? 'none' : 'block';
 
   renderEditorGrid();
   document.getElementById('scoreEditorOverlay').style.display = 'block';
@@ -1179,7 +1195,11 @@ function promptHoleScore(holeIdx) {
   var par = isLadies ? COURSE.par_women : COURSE.par_men;
   var holePar = par[holeIdx];
   var current = _editScores[holeIdx] || '';
-  var val = prompt('Hole ' + (holeIdx+1) + ' (Par ' + holePar + ') — enter gross score (0 to clear):', current);
+  var strokes = strokesOnHole(ph, si[holeIdx]);
+  var val = prompt(
+    'Hole ' + (holeIdx+1) + '  |  Par ' + holePar + '  |  SI ' + si[holeIdx] + '  |  You receive ' + strokes + ' stroke' + (strokes!==1?'s':'') + '\n\nEnter gross score (blank or 0 to clear):',
+    current
+  );
   if (val === null) return;
   var num = parseInt(val);
   _editScores[holeIdx] = (!val || val.trim() === '' || num === 0) ? null : num;
