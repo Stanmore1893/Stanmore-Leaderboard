@@ -783,12 +783,22 @@ async function submitScore(pts,gross,nett){
 async function saveProgress(){
   saveRoundState(); // Always save locally first
   try{
-    const partial={name:R.name,hi:R.hi,teeKey:R.teeKey,gender:R.gender,ph:R.ph,gross:R.scores.reduce((s,g)=>s+(g||0),0),nett:0,thru:R.scores.filter(s=>s!==null).length,pts:runningPts(),fin:false,ts:Date.now()};
-    let scores=[];
-    try{const ex=await SGC.get('scores');if(ex&&Array.isArray(ex))scores=ex;else if(ex)scores=JSON.parse(ex);}catch(e){}
-    const idx=scores.findIndex(s=>s.name.toLowerCase()===R.name.toLowerCase());
-    if(idx>=0)scores[idx]=partial;else scores.push(partial);
-    await SGC.set('scores', scores);
+    var gross = R.scores.reduce(function(s,g){return s+(g||0);},0);
+    var thru  = R.scores.filter(function(s){return s!==null;}).length;
+    var pts   = runningPts();
+    var nett  = gross - (R.ph||0);
+    var partial={
+      name:R.name, hi:R.hi, teeKey:R.teeKey, gender:R.gender, ph:R.ph,
+      gross:gross, nett:nett, thru:thru, pts:pts, fin:false,
+      scores:R.scores.slice(), // ← save individual hole scores
+      competition:R.competition||'', team:R.team||'',
+      holes:R.holes||18, ts:Date.now()
+    };
+    let allScores=[];
+    try{const ex=await SGC.get('scores');if(ex&&Array.isArray(ex))allScores=ex;}catch(e){}
+    const idx=allScores.findIndex(function(s){return s.name.toLowerCase()===R.name.toLowerCase();});
+    if(idx>=0)allScores[idx]=partial;else allScores.push(partial);
+    await SGC.set('scores', allScores);
   }catch(e){}
 }
 
@@ -921,6 +931,10 @@ function showScr(id){document.querySelectorAll('.screen').forEach(s=>s.classList
 window.addEventListener('load', function() {
   loadAdminSettings();
   checkForSavedRound();
+  // Refresh competitions every 15 seconds so new competitions appear without refreshing
+  setInterval(function() {
+    loadAdminSettings();
+  }, 15000);
 });
 
 // ── FORMAT & TEE LOOKUPS ──
@@ -1090,11 +1104,18 @@ function onCompSelect() {
       var pills = '';
       pills += '<span style="background:#f0c040;border-radius:6px;padding:5px 12px;font-size:.88rem;font-weight:700;color:#0f2347;display:inline-block;margin:2px 4px 2px 0;">' + comp.name + '</span>';
       pills += '<span style="background:rgba(212,160,23,.3);border:1px solid rgba(212,160,23,.6);border-radius:6px;padding:4px 10px;font-size:.78rem;font-weight:600;color:#0f2347;display:inline-block;margin:2px 4px 2px 0;">📋 ' + (fmt.label||comp.format) + '</span>';
-      pills += '<span style="background:rgba(212,160,23,.3);border:1px solid rgba(212,160,23,.6);border-radius:6px;padding:4px 10px;font-size:.78rem;font-weight:600;color:#0f2347;display:inline-block;margin:2px 4px 2px 0;">🏌️ ' + teeLabel + '</span>';
-      // Show both tees if mixed and different
-      if (!isLadies2 && comp.teeLadies && comp.teeLadies !== (comp.teeMen||comp.tee)) {
-        var ladiesTeeLabel = TEE_LABELS[comp.teeLadies] || comp.teeLadies;
-        pills += '<span style="background:rgba(212,160,23,.3);border:1px solid rgba(212,160,23,.6);border-radius:6px;padding:4px 10px;font-size:.78rem;font-weight:600;color:#0f2347;display:inline-block;margin:2px 4px 2px 0;">👩 ' + ladiesTeeLabel + '</span>';
+      // Show tee based on gender — for mixed show both clearly
+      var compGender = comp.gender || 'mixed';
+      if (compGender === 'mixed') {
+        var menTeeLabel   = TEE_LABELS[comp.teeMen   || comp.tee] || comp.tee;
+        var ladiesTeeKey2 = comp.teeLadies || comp.tee;
+        var ladiesTeeLabel2 = TEE_LABELS[ladiesTeeKey2] || ladiesTeeKey2;
+        pills += '<span style="background:rgba(212,160,23,.3);border:1px solid rgba(212,160,23,.6);border-radius:6px;padding:4px 10px;font-size:.78rem;font-weight:600;color:#0f2347;display:inline-block;margin:2px 4px 2px 0;">👨 ' + menTeeLabel + '</span>';
+        if (ladiesTeeKey2 !== (comp.teeMen || comp.tee)) {
+          pills += '<span style="background:rgba(212,160,23,.3);border:1px solid rgba(212,160,23,.6);border-radius:6px;padding:4px 10px;font-size:.78rem;font-weight:600;color:#0f2347;display:inline-block;margin:2px 4px 2px 0;">👩 ' + ladiesTeeLabel2 + '</span>';
+        }
+      } else {
+        pills += '<span style="background:rgba(212,160,23,.3);border:1px solid rgba(212,160,23,.6);border-radius:6px;padding:4px 10px;font-size:.78rem;font-weight:600;color:#0f2347;display:inline-block;margin:2px 4px 2px 0;">🏌️ ' + teeLabel + '</span>';
       }
       if (comp.date) pills += '<span style="background:rgba(212,160,23,.3);border:1px solid rgba(212,160,23,.6);border-radius:6px;padding:4px 10px;font-size:.78rem;font-weight:600;color:#0f2347;display:inline-block;margin:2px 4px 2px 0;">📅 ' + comp.date + '</span>';
       if (comp.notes) pills += '<div style="font-size:.72rem;color:rgba(255,255,255,.55);margin-top:6px;">'+comp.notes+'</div>';
@@ -1327,6 +1348,10 @@ function showScr(id) {
 window.addEventListener('load', function() {
   loadAdminSettings();
   checkForSavedRound();
+  // Refresh competitions every 15 seconds so new competitions appear without refreshing
+  setInterval(function() {
+    loadAdminSettings();
+  }, 15000);
 });
 
 

@@ -386,7 +386,11 @@ select.finp option{background:#1a3a6b;color:#fff;}
 
 <div class="toast" id="toast"></div>
 
+
+</body>
+</html>
 <script>
+
 
 // ── STORAGE PROXY ──
 var PROXY_URL = 'https://stanmore-proxy.vercel.app/api/proxy';
@@ -1064,6 +1068,209 @@ function printResultsPDF(comp, results) {
   var fmt  = comp.format ? comp.format.replace(/_/g,' ') : '';
 
   var w = window.open('','_blank');
-  w.document.write('<!DOCTYPE html>
+  w.document.write('<!DOCTYPE html><html><head><meta charset="UTF-8">'
+    + '<title>'+comp.name+' — Results</title>'
+    + '<style>'
+    + '@page{size:A4;margin:18mm 15mm;}'
+    + '*{box-sizing:border-box;margin:0;padding:0;}'
+    + 'body{font-family:Poppins,sans-serif;color:#141e30;}'
+    + '.hdr{background:#0f2347;color:#fff;padding:20px 24px;display:flex;align-items:center;gap:16px;}'
+    + '.hdr img{width:52px;height:52px;object-fit:contain;}'
+    + '.gold-bar{height:4px;background:linear-gradient(to right,#d4a017,#f0c040,#d4a017);}'
+    + '.body{padding:20px 24px;}'
+    + 'table{width:100%;border-collapse:collapse;margin-top:16px;}'
+    + 'th{background:#0f2347;color:rgba(212,160,23,.9);padding:9px 12px;font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;}'
+    + 'th:nth-child(2){text-align:left;}'
+    + 'th:not(:nth-child(2)){text-align:center;}'
+    + '.footer{margin-top:20px;padding-top:12px;border-top:1px solid #e0d8cc;display:flex;justify-content:space-between;font-size:.7rem;color:#8896a8;}'
+    + '.print-btn{position:fixed;bottom:20px;right:20px;background:#d4a017;color:#0f2347;border:none;border-radius:8px;padding:12px 24px;font-size:.9rem;font-weight:700;cursor:pointer;box-shadow:0 4px 16px rgba(0,0,0,.2);}'
+    + '@media print{.print-btn{display:none;}}'
+    + '</style></head><body>'
+    + '<div class="hdr">'
+    + '<img src="https://stanmore1893.github.io/Stanmore-Leaderboard/club-logo.png" alt="">'
+    + '<div>'
+    + '<div style="font-family:Poppins,sans-serif;font-size:1.3rem;font-weight:bold;color:#f0c040;">Stanmore Golf Club</div>'
+    + '<div style="font-size:.95rem;color:rgba(255,255,255,.85);margin-top:2px;">'+comp.name+' — Final Results</div>'
+    + '<div style="font-size:.72rem;color:rgba(255,255,255,.5);margin-top:3px;font-family:monospace;">'+date+(fmt?' &nbsp;·&nbsp; '+fmt:'')+'</div>'
+    + '</div></div>'
+    + '<div class="gold-bar"></div>'
+    + '<div class="body">'
+    + '<table><thead><tr>'
+    + '<th style="width:50px">Pos</th>'
+    + '<th style="text-align:left">Player</th>'
+    + '<th>P.HCP</th><th>Gross</th><th>Nett</th><th>Points</th>'
+    + '</tr></thead><tbody>'+rows+'</tbody></table>'
+    + '<div class="footer">'
+    + '<span>Stanmore Golf Club &nbsp;·&nbsp; '+comp.name+'</span>'
+    + '<span>Printed '+new Date().toLocaleString('en-GB')+'</span>'
+    + '</div>'
+    + '</div>'
+    + '<button class="print-btn" onclick="window.print()">🖨️ Print / Save as PDF</button>'
+    + '</body></html>');
+  w.document.close();
+}
+
+
+// ── SCORE EDITOR ──
+var _editPlayer = null;
+var _editScores = [];
+
+var COURSE = {
+  par_men:   [4,4,4,3,4,3,4,3,4,3,5,4,4,4,4,4,3,5],
+  par_women: [4,5,4,3,4,3,4,3,4,3,5,4,5,4,5,4,3,5],
+  si_men:    [14,4,8,16,2,18,12,10,6,17,5,7,1,15,3,11,9,13],
+  si_women:  [12,4,8,18,2,16,10,14,6,17,7,1,3,15,5,11,13,9],
+};
+
+function strokesOnHole(ph,si){if(ph<=0)return 0;var s=Math.floor(ph/18);if(si<=(ph%18))s++;return s;}
+function stablefordPts(gross,par,ph,si){if(!gross||gross<=0)return 0;var n=gross-strokesOnHole(ph,si);return Math.max(0,(par-n)+2);}
+
+function openScoreEditor(player) {
+  _editPlayer = player;
+  // Build scores array - use stored hole scores if available
+  _editScores = Array.isArray(player.scores) && player.scores.some(function(s){return s;})
+    ? player.scores.slice()
+    : new Array(18).fill(null);
+  while (_editScores.length < 18) _editScores.push(null);
+
+  document.getElementById('editorPlayerName').textContent = '✏️ ' + player.name;
+  var ph = player.ph || player.hcp || 0;
+  var teeLabel = player.teeKey ? player.teeKey
+    .replace('_m',' (Men)').replace('_f',' (Women)')
+    .replace('white','White').replace('yellow','Yellow').replace('red','Red') : '';
+  var hasHoleScores = _editScores.some(function(s){return s;});
+  var meta = 'HCP ' + ph
+    + (teeLabel ? ' · ' + teeLabel : '')
+    + (player.competition ? ' · ' + player.competition : '')
+    + (player.gross && !hasHoleScores ? ' · Recorded gross: ' + player.gross : '');
+  document.getElementById('editorPlayerMeta').textContent = meta;
+
+  // Show a hint if no hole scores stored
+  var hint = document.getElementById('editorNoScoresHint');
+  if (hint) hint.style.display = hasHoleScores ? 'none' : 'block';
+
+  renderEditorGrid();
+  document.getElementById('scoreEditorOverlay').style.display = 'block';
+  document.body.style.overflow = 'hidden';
+}
+
+function closeScoreEditor() {
+  document.getElementById('scoreEditorOverlay').style.display = 'none';
+  document.body.style.overflow = '';
+  _editPlayer = null;
+  _editScores = [];
+}
+
+function renderEditorGrid() {
+  var grid = document.getElementById('editorHoleGrid');
+  var ph = _editPlayer.ph || _editPlayer.hcp || 0;
+  var isLadies = _editPlayer.gender === 'f';
+  var par = isLadies ? COURSE.par_women : COURSE.par_men;
+  var si  = isLadies ? COURSE.si_women  : COURSE.si_men;
+
+  grid.innerHTML = '';
+  for (var h = 0; h < 18; h++) {
+    var gross = _editScores[h];
+    var holePar = par[h];
+    var pts = gross ? stablefordPts(gross, holePar, ph, si[h]) : null;
+    var diff = gross ? (gross - strokesOnHole(ph, si[h]) - holePar) : null;
+    var col = diff === null ? 'rgba(255,255,255,.1)'
+      : diff <= -2 ? '#ffd700'
+      : diff === -1 ? '#3fa06e'
+      : diff === 0  ? '#1a3a6b'
+      : diff === 1  ? 'rgba(192,57,43,.5)'
+      : 'rgba(192,57,43,.8)';
+
+    var cell = document.createElement('div');
+    cell.style.cssText = 'background:' + col + ';border:1px solid rgba(255,255,255,.15);border-radius:8px;padding:6px 4px;text-align:center;cursor:pointer;';
+    cell.innerHTML = '<div style="font-size:.6rem;color:rgba(255,255,255,.5);">H'+(h+1)+'</div>'
+      + '<div style="font-size:1rem;font-weight:700;color:#fff;">' + (gross || '—') + '</div>'
+      + '<div style="font-size:.6rem;color:rgba(255,255,255,.6);">' + (pts !== null ? pts+'pts' : 'p'+holePar) + '</div>';
+    cell.dataset.hole = h;
+    cell.addEventListener('click', function() { promptHoleScore(parseInt(this.dataset.hole)); });
+    grid.appendChild(cell);
+  }
+  updateEditorSummary();
+}
+
+function promptHoleScore(holeIdx) {
+  var ph = _editPlayer.ph || _editPlayer.hcp || 0;
+  var isLadies = _editPlayer.gender === 'f';
+  var par = isLadies ? COURSE.par_women : COURSE.par_men;
+  var holePar = par[holeIdx];
+  var current = _editScores[holeIdx] || '';
+  var strokes = strokesOnHole(ph, si[holeIdx]);
+  var val = prompt(
+    'Hole ' + (holeIdx+1) + '  |  Par ' + holePar + '  |  SI ' + si[holeIdx] + '  |  You receive ' + strokes + ' stroke' + (strokes!==1?'s':'') + '\n\nEnter gross score (blank or 0 to clear):',
+    current
+  );
+  if (val === null) return;
+  var num = parseInt(val);
+  _editScores[holeIdx] = (!val || val.trim() === '' || num === 0) ? null : num;
+  renderEditorGrid();
+}
+
+function updateEditorSummary() {
+  var ph = _editPlayer.ph || _editPlayer.hcp || 0;
+  var isLadies = _editPlayer.gender === 'f';
+  var par = isLadies ? COURSE.par_women : COURSE.par_men;
+  var si  = isLadies ? COURSE.si_women  : COURSE.si_men;
+  var gross = 0, pts = 0, holesPlayed = 0;
+  _editScores.forEach(function(g, i) {
+    if (g) { gross += g; pts += stablefordPts(g, par[i], ph, si[i]); holesPlayed++; }
+  });
+  var nett = gross - ph;
+  document.getElementById('editorSummary').innerHTML =
+    '<div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:8px;text-align:center;">'
+    + '<div><div style="font-size:.6rem;color:rgba(255,255,255,.4);margin-bottom:2px;">HOLES</div><div style="font-weight:700;color:#fff;">'+holesPlayed+'</div></div>'
+    + '<div><div style="font-size:.6rem;color:rgba(255,255,255,.4);margin-bottom:2px;">GROSS</div><div style="font-weight:700;color:#fff;">'+gross+'</div></div>'
+    + '<div><div style="font-size:.6rem;color:rgba(255,255,255,.4);margin-bottom:2px;">NETT</div><div style="font-weight:700;color:#fff;">'+nett+'</div></div>'
+    + '<div><div style="font-size:.6rem;color:rgba(255,255,255,.4);margin-bottom:2px;">PTS</div><div style="font-weight:700;color:#f0c040;">'+pts+'</div></div>'
+    + '</div>';
+}
+
+async function saveEditedScores() {
+  if (!_editPlayer) return;
+  var ph = _editPlayer.ph || _editPlayer.hcp || 0;
+  var isLadies = _editPlayer.gender === 'f';
+  var par = isLadies ? COURSE.par_women : COURSE.par_men;
+  var si  = isLadies ? COURSE.si_women  : COURSE.si_men;
+  var gross = 0, pts = 0, holesPlayed = 0;
+  _editScores.forEach(function(g, i) {
+    if (g) { gross += g; pts += stablefordPts(g, par[i], ph, si[i]); holesPlayed++; }
+  });
+  var nett = gross - ph;
+  try {
+    var record = await SGC._read();
+    var players = Array.isArray(record.scores) ? record.scores : [];
+    var idx = players.findIndex(function(p){ return p.name.toLowerCase() === _editPlayer.name.toLowerCase(); });
+    if (idx < 0) { toast('Player not found'); return; }
+    players[idx] = Object.assign({}, players[idx], {
+      scores: _editScores,
+      gross:  gross,
+      nett:   nett,
+      pts:    pts,
+      thru:   holesPlayed,
+      fin:    holesPlayed >= (_editPlayer.holes || 18),
+      ts:     Date.now(),
+    });
+    record.scores = players;
+    var ok = await SGC._write(record);
+    if (ok) {
+      toast('✓ Scores updated for ' + _editPlayer.name);
+      closeScoreEditor();
+      loadScores();
+    } else {
+      toast('Save failed — check connection');
+    }
+  } catch(e) {
+    toast('Error: ' + e.message);
+  }
+}
+
+function onAdminLoad(){ loadLocalSettings(); loadScores(); loadCompetitions(); loadProfanityList(); loadAdminPrizes(); initPrizeHoles(); }
+
+
+</script>
 </body>
 </html>

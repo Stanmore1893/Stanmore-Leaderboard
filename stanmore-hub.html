@@ -306,8 +306,9 @@ html,body{min-height:100%;background:linear-gradient(175deg,#060e1e 0%,#0f2347 1
 
 <div class="toast" id="toast">✓ Copied to clipboard</div>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js">
 <script>
+
 // ── URL CONFIG ──
 // When hosted on Netlify (or similar), these will be the real URLs.
 // The hub detects its own base URL automatically.
@@ -391,4 +392,95 @@ function printQRSheet() {
       + '</div>';
   }).join('');
 
-  var w = window.open('', '_blank');</html>
+  var w = window.open('', '_blank');
+  w.document.write('<!DOCTYPE html><html><head><meta charset="UTF-8">'
+    + '<title>Stanmore GC — QR Codes</title>'
+    + '<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&display=swap" rel="stylesheet">'
+    + '<style>'
+    + '@page{size:A4 portrait;margin:10mm 8mm;}'
+    + '*{box-sizing:border-box;margin:0;padding:0;}'
+    + 'body{font-family:Poppins,Arial,sans-serif;background:#060e1e;color:#fff;}'
+    + '.header{display:flex;align-items:center;gap:16px;padding:18px 20px;background:rgba(0,0,0,.4);border-bottom:3px solid #d4a017;margin-bottom:14px;border-radius:10px;}'
+    + '.header img{width:60px;height:60px;object-fit:contain;}'
+    + '.header-text h1{font-size:22px;font-weight:800;color:#f0c040;letter-spacing:.02em;}'
+    + '.header-text p{font-size:11px;color:rgba(255,255,255,.55);margin-top:2px;letter-spacing:.08em;text-transform:uppercase;}'
+    + '.header-text .dateline{font-size:10px;color:rgba(255,255,255,.35);margin-top:3px;font-family:monospace;}'
+    + '.how-to{background:linear-gradient(135deg,rgba(212,160,23,.15),rgba(212,160,23,.05));border:2px solid rgba(212,160,23,.4);border-radius:12px;padding:16px 20px;margin-bottom:16px;}'
+    + '.how-to-title{font-size:15px;font-weight:800;color:#f0c040;margin-bottom:10px;display:flex;align-items:center;gap:8px;}'
+    + '.how-to-steps{display:grid;grid-template-columns:1fr 1fr;gap:8px;}'
+    + '.step{display:flex;align-items:flex-start;gap:10px;}'
+    + '.step-num{width:24px;height:24px;border-radius:50%;background:#d4a017;color:#0f2347;font-size:12px;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px;}'
+    + '.step-text{font-size:11px;color:rgba(255,255,255,.85);line-height:1.6;}'
+    + '.step-text strong{color:#f0c040;}'
+    + '.grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px;}'
+    + '.footer{text-align:center;font-size:9px;color:rgba(255,255,255,.3);border-top:1px solid rgba(255,255,255,.08);padding-top:10px;font-family:monospace;}'
+    + '.print-btn{position:fixed;bottom:16px;right:16px;background:#d4a017;color:#0f2347;border:none;border-radius:10px;padding:12px 24px;font-size:13px;font-weight:800;cursor:pointer;letter-spacing:.04em;}'
+    + '@media print{.print-btn{display:none;}body{background:#060e1e;}}'
+    + '</style></head><body>'
+
+    + '<div class="header">'
+    + '<img src="https://stanmore1893.github.io/Stanmore-Leaderboard/club-logo.png" alt="">'
+    + '<div class="header-text">'
+    + '<h1>Stanmore Golf Club</h1>'
+    + '<p>Digital Competition Hub — Quick Access Guide</p>'
+    + '<div class="dateline">' + date + '</div>'
+    + '</div></div>'
+
+    + '<div class="how-to">'
+    + '<div class="how-to-title">📱 How to use these QR codes</div>'
+    + '<div class="how-to-steps">'
+    + '<div class="step"><div class="step-num">1</div><div class="step-text"><strong>Open your camera app</strong> on any iPhone or Android phone — no need to download anything.</div></div>'
+    + '<div class="step"><div class="step-num">2</div><div class="step-text"><strong>Point it at a QR code</strong> below and hold steady for a second until a link appears.</div></div>'
+    + '<div class="step"><div class="step-num">3</div><div class="step-text"><strong>Tap the link</strong> that pops up — the page opens instantly in your browser.</div></div>'
+    + '<div class="step"><div class="step-num">4</div><div class="step-text"><strong>Add to your home screen</strong> for quick access throughout the day — tap Share then "Add to Home Screen".</div></div>'
+    + '</div></div>'
+
+    + '<div class="grid">' + cards + '</div>'
+
+    + '<div class="footer">Stanmore Golf Club &nbsp;·&nbsp; stanmore1893.github.io &nbsp;·&nbsp; Designed &amp; built by Alex Persaud &middot; PGA Professional</div>'
+    + '<button class="print-btn" onclick="window.print()">🖨️ Print</button>'
+    + '</body></html>');
+  w.document.close();
+}
+
+
+function openApp(key) {
+  window.open(APPS[key], '_blank');
+}
+
+
+function copyUrl(boxId) {
+  const txt = document.getElementById(boxId).textContent.trim();
+  if (navigator.clipboard) {
+    navigator.clipboard.writeText(txt).then(() => showToast('✓ Link copied!'));
+  } else {
+    // fallback
+    const ta = document.createElement('textarea');
+    ta.value = txt; document.body.appendChild(ta);
+    ta.select(); document.execCommand('copy');
+    document.body.removeChild(ta);
+    showToast('✓ Link copied!');
+  }
+}
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2200);
+}
+
+function openNav(){
+  document.getElementById('sgcNavDrawer').classList.add('open');
+  document.getElementById('sgcNavOverlay').classList.add('open');
+  document.body.style.overflow='hidden';
+}
+function closeNav(){
+  document.getElementById('sgcNavDrawer').classList.remove('open');
+  document.getElementById('sgcNavOverlay').classList.remove('open');
+  document.body.style.overflow='';
+}
+document.addEventListener('keydown',function(e){if(e.key==='Escape')closeNav();});
+
+</script>
+</body>
+</html>
