@@ -440,6 +440,13 @@ select.cinp:focus,select.finp:focus{border-color:rgba(212,160,23,.7);}
       <div style="font-size:.65rem;letter-spacing:.14em;text-transform:uppercase;color:#a8c4f0;font-weight:600;margin-bottom:10px;" id="mpLabelA">Player A</div>
       <div class="frow" style="margin-bottom:0">
         <div class="fld"><div class="flbl">Handicap Index</div><input class="finp" id="mpA_hi" type="number" placeholder="e.g. 5.1" step="0.1" min="-5" max="54" style="margin-bottom:0"></div>
+        <div class="fld"><div class="flbl">Gender</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:6px;">
+            <div onclick="setMpGender('mpA','m',this)" id="mpA_genM" style="background:rgba(0,0,0,.35);border:1.5px solid #f0c040;border-radius:9px;padding:9px 4px;text-align:center;cursor:pointer;font-size:.82rem;font-weight:600;color:#f0c040;">Male</div>
+            <div onclick="setMpGender('mpA','f',this)" id="mpA_genF" style="background:rgba(0,0,0,.25);border:1.5px solid rgba(255,255,255,.12);border-radius:9px;padding:9px 4px;text-align:center;cursor:pointer;font-size:.82rem;font-weight:600;color:rgba(255,255,255,.4);">Female</div>
+          </div>
+          <input type="hidden" id="mpA_gen" value="m">
+        </div>
         <div class="fld"><div class="flbl">Tee</div><div class="tee-pick" id="mpA_teeGrid">
   <div class="tee-opt" data-tee="white_m" onclick="selectTeeOpt(this,'mpA_tee')">
     <div class="tdot" style="background:#ffffff;border:1px solid rgba(255,255,255,.4);"></div>
@@ -468,6 +475,13 @@ select.cinp:focus,select.finp:focus{border-color:rgba(212,160,23,.7);}
       <div style="font-size:.65rem;letter-spacing:.14em;text-transform:uppercase;color:#8ee0b4;font-weight:600;margin-bottom:10px;" id="mpLabelB">Player B</div>
       <div class="frow" style="margin-bottom:0">
         <div class="fld"><div class="flbl">Handicap Index</div><input class="finp" id="mpB_hi" type="number" placeholder="e.g. 14.2" step="0.1" min="-5" max="54" style="margin-bottom:0"></div>
+        <div class="fld"><div class="flbl">Gender</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:6px;">
+            <div onclick="setMpGender('mpB','m',this)" id="mpB_genM" style="background:rgba(0,0,0,.35);border:1.5px solid #f0c040;border-radius:9px;padding:9px 4px;text-align:center;cursor:pointer;font-size:.82rem;font-weight:600;color:#f0c040;">Male</div>
+            <div onclick="setMpGender('mpB','f',this)" id="mpB_genF" style="background:rgba(0,0,0,.25);border:1.5px solid rgba(255,255,255,.12);border-radius:9px;padding:9px 4px;text-align:center;cursor:pointer;font-size:.82rem;font-weight:600;color:rgba(255,255,255,.4);">Female</div>
+          </div>
+          <input type="hidden" id="mpB_gen" value="m">
+        </div>
         <div class="fld"><div class="flbl">Tee</div><div class="tee-pick" id="mpB_teeGrid">
   <div class="tee-opt" data-tee="white_m" onclick="selectTeeOpt(this,'mpB_tee')">
     <div class="tdot" style="background:#ffffff;border:1px solid rgba(255,255,255,.4);"></div>
@@ -496,6 +510,13 @@ select.cinp:focus,select.finp:focus{border-color:rgba(212,160,23,.7);}
         <div style="font-size:.65rem;letter-spacing:.14em;text-transform:uppercase;color:rgba(212,160,23,.8);font-weight:600;margin-bottom:10px;" id="mpLabelC">Player C</div>
         <div class="frow" style="margin-bottom:0">
           <div class="fld"><div class="flbl">Handicap Index</div><input class="finp" id="mpC_hi" type="number" placeholder="e.g. 8.0" step="0.1" min="-5" max="54" style="margin-bottom:0"></div>
+        <div class="fld"><div class="flbl">Gender</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:6px;">
+            <div onclick="setMpGender('mpC','m',this)" id="mpC_genM" style="background:rgba(0,0,0,.35);border:1.5px solid #f0c040;border-radius:9px;padding:9px 4px;text-align:center;cursor:pointer;font-size:.82rem;font-weight:600;color:#f0c040;">Male</div>
+            <div onclick="setMpGender('mpC','f',this)" id="mpC_genF" style="background:rgba(0,0,0,.25);border:1.5px solid rgba(255,255,255,.12);border-radius:9px;padding:9px 4px;text-align:center;cursor:pointer;font-size:.82rem;font-weight:600;color:rgba(255,255,255,.4);">Female</div>
+          </div>
+          <input type="hidden" id="mpC_gen" value="m">
+        </div>
           <div class="fld"><div class="flbl">Tee</div><div class="tee-pick" id="mpC_teeGrid">
   <div class="tee-opt" data-tee="white_m" onclick="selectTeeOpt(this,'mpC_tee')">
     <div class="tdot" style="background:#ffffff;border:1px solid rgba(255,255,255,.4);"></div>
@@ -520,6 +541,13 @@ select.cinp:focus,select.finp:focus{border-color:rgba(212,160,23,.7);}
         <div style="font-size:.65rem;letter-spacing:.14em;text-transform:uppercase;color:rgba(212,160,23,.8);font-weight:600;margin-bottom:10px;" id="mpLabelD">Player D</div>
         <div class="frow" style="margin-bottom:0">
           <div class="fld"><div class="flbl">Handicap Index</div><input class="finp" id="mpD_hi" type="number" placeholder="e.g. 18.5" step="0.1" min="-5" max="54" style="margin-bottom:0"></div>
+        <div class="fld"><div class="flbl">Gender</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:6px;">
+            <div onclick="setMpGender('mpD','m',this)" id="mpD_genM" style="background:rgba(0,0,0,.35);border:1.5px solid #f0c040;border-radius:9px;padding:9px 4px;text-align:center;cursor:pointer;font-size:.82rem;font-weight:600;color:#f0c040;">Male</div>
+            <div onclick="setMpGender('mpD','f',this)" id="mpD_genF" style="background:rgba(0,0,0,.25);border:1.5px solid rgba(255,255,255,.12);border-radius:9px;padding:9px 4px;text-align:center;cursor:pointer;font-size:.82rem;font-weight:600;color:rgba(255,255,255,.4);">Female</div>
+          </div>
+          <input type="hidden" id="mpD_gen" value="m">
+        </div>
           <div class="fld"><div class="flbl">Tee</div><div class="tee-pick" id="mpD_teeGrid">
   <div class="tee-opt" data-tee="white_m" onclick="selectTeeOpt(this,'mpD_tee')">
     <div class="tdot" style="background:#ffffff;border:1px solid rgba(255,255,255,.4);"></div>
@@ -704,6 +732,31 @@ function equalisationShots(teeKeyA, teeKeyB) {
 }
 
 // ── MAIN MATCHPLAY CALCULATOR ──
+function setMpGender(pid, gender, el) {
+  // Update hidden gender input
+  document.getElementById(pid + '_gen').value = gender;
+  // Update button styles
+  var mBtn = document.getElementById(pid + '_genM');
+  var fBtn = document.getElementById(pid + '_genF');
+  if (mBtn && fBtn) {
+    var activeStyle = 'background:rgba(0,0,0,.35);border:1.5px solid #f0c040;border-radius:9px;padding:9px 4px;text-align:center;cursor:pointer;font-size:.82rem;font-weight:600;color:#f0c040;';
+    var inactiveStyle = 'background:rgba(0,0,0,.25);border:1.5px solid rgba(255,255,255,.12);border-radius:9px;padding:9px 4px;text-align:center;cursor:pointer;font-size:.82rem;font-weight:600;color:rgba(255,255,255,.4);';
+    mBtn.style.cssText = gender === 'm' ? activeStyle : inactiveStyle;
+    fBtn.style.cssText = gender === 'f' ? activeStyle : inactiveStyle;
+  }
+  // Update tee grid data-tee suffixes and hidden tee value
+  var grid = document.getElementById(pid + '_teeGrid');
+  if (grid) {
+    var currentTee = document.getElementById(pid + '_tee').value;
+    var teeBase = currentTee.replace('_m','').replace('_f','');
+    grid.querySelectorAll('.tee-opt').forEach(function(opt) {
+      var base = opt.dataset.tee.replace('_m','').replace('_f','');
+      opt.dataset.tee = base + '_' + gender;
+    });
+    document.getElementById(pid + '_tee').value = teeBase + '_' + gender;
+  }
+}
+
 function toggleMixedTeeNote() {
   var note = document.getElementById('mixedTeeNote');
   var checked = document.getElementById('mpMixed').checked;
@@ -715,8 +768,13 @@ function calcMatchplay() {
   var isMixed = document.getElementById('mpMixed').checked;
   var hiA = parseFloat(document.getElementById('mpA_hi').value);
   var hiB = parseFloat(document.getElementById('mpB_hi').value);
-  var teeA = document.getElementById('mpA_tee').value;
-  var teeB = document.getElementById('mpB_tee').value;
+  // Build tee keys using gender suffix from gender toggles
+  var genA = document.getElementById('mpA_gen') ? document.getElementById('mpA_gen').value : 'm';
+  var genB = document.getElementById('mpB_gen') ? document.getElementById('mpB_gen').value : 'm';
+  var teeARaw = document.getElementById('mpA_tee').value.replace('_m','').replace('_f','');
+  var teeBRaw = document.getElementById('mpB_tee').value.replace('_m','').replace('_f','');
+  var teeA = teeARaw + '_' + genA;
+  var teeB = teeBRaw + '_' + genB;
 
   var fmtMap = {
     'singles_100': {label:'Singles Matchplay',   allow:1.00},
@@ -733,8 +791,12 @@ function calcMatchplay() {
   if (isTeam) {
     hiC  = parseFloat(document.getElementById('mpC_hi').value);
     hiD  = parseFloat(document.getElementById('mpD_hi').value);
-    teeC = document.getElementById('mpC_tee').value;
-    teeD = document.getElementById('mpD_tee').value;
+    var genC = document.getElementById('mpC_gen') ? document.getElementById('mpC_gen').value : 'm';
+    var genD = document.getElementById('mpD_gen') ? document.getElementById('mpD_gen').value : 'm';
+    var teeCRaw = document.getElementById('mpC_tee').value.replace('_m','').replace('_f','');
+    var teeDRaw = document.getElementById('mpD_tee').value.replace('_m','').replace('_f','');
+    teeC = teeCRaw + '_' + genC;
+    teeD = teeDRaw + '_' + genD;
     if (isNaN(hiC) || isNaN(hiD)) { alert('Please enter Handicap Indexes for all four players'); return; }
   }
 
