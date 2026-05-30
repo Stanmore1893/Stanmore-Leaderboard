@@ -580,9 +580,6 @@ select.cinp:focus,select.finp:focus{border-color:rgba(212,160,23,.7);}
     <div id="mpResult" style="margin-top:13px;"></div>
   </div>
 
-  <!-- ── GREENSOMES CALCULATOR ── -->
-  <div class="calc-card">
-    <div class="calc-title">Greensomes / Foursomes — Combined Handicap</div>
     <div style="font-size:.74rem;color:var(--grey);margin-bottom:12px;line-height:1.6;">
       Greensomes: 60% of lower + 40% of higher Course Handicap.<br>
       Foursomes: 50% of each player's Course Handicap combined.
@@ -860,12 +857,15 @@ function calcSinglesResult(hiA, teeA, hiB, teeB, allow, isMixed, labelA, labelB)
   var phA = Math.round(chA_raw * allow);
   var phB = Math.round(chB_raw * allow);
 
-  // Equalisation
+  // Equalisation: player on HIGHER CR tee receives extra shots
+  // Female playing from men's course has higher CR so she gets the shots
   var eqA = 0, eqB = 0;
-  if (isMixed && teeA !== teeB) {
-    var eq = equalisationShots(teeA, teeB);
-    // eq > 0 means teeA has higher CR — player B gets eq shots added
-    if (eq > 0) { eqB += eq; } else if (eq < 0) { eqA += Math.abs(eq); }
+  if (isMixed) {
+    var crA = COURSE.ratings[teeA] ? COURSE.ratings[teeA].cr : 0;
+    var crB = COURSE.ratings[teeB] ? COURSE.ratings[teeB].cr : 0;
+    var eqShots = Math.round(Math.abs(crA - crB));
+    if (crA > crB) { eqA += eqShots; }
+    else if (crB > crA) { eqB += eqShots; }
   }
 
   var finalA = phA + eqA;
@@ -879,12 +879,16 @@ function calcSinglesResult(hiA, teeA, hiB, teeB, allow, isMixed, labelA, labelB)
   var out = colHeaders();
   out += playerSummaryRow(labelA, hiA, teeA, phA, eqA, finalA);
   out += playerSummaryRow(labelB, hiB, teeB, phB, eqB, finalB);
-  if (isMixed && teeA !== teeB) {
-    var eq2 = equalisationShots(teeA, teeB);
-    out += '<div style="font-size:.68rem;color:rgba(255,255,255,.45);padding:4px 10px;line-height:1.6;">Mixed tees: CR diff = '
-      + Math.abs(COURSE.ratings[teeA].cr - COURSE.ratings[teeB].cr).toFixed(1)
-      + ' → ' + Math.abs(eq2) + ' equalisation shot' + (Math.abs(eq2)!==1?'s':'')
-      + ' added to ' + (eq2>=0?labelB:labelA) + '</div>';
+  if (isMixed) {
+    var crA2 = COURSE.ratings[teeA] ? COURSE.ratings[teeA].cr : 0;
+    var crB2 = COURSE.ratings[teeB] ? COURSE.ratings[teeB].cr : 0;
+    var eqShots2 = Math.round(Math.abs(crA2 - crB2));
+    if (eqShots2 > 0) {
+      var eqWho = crA2 > crB2 ? labelA : labelB;
+      out += '<div style="font-size:.68rem;color:rgba(255,255,255,.45);padding:4px 10px;line-height:1.6;">⚖️ Equalisation: CR diff '
+        + Math.abs(crA2 - crB2).toFixed(1) + ' → ' + eqShots2 + ' shot' + (eqShots2!==1?'s':'')
+        + ' added to ' + eqWho + ' (higher-rated tee)</div>';
+    }
   }
   out += strokeDiffBlock(higher||'neither', absDiff, holes);
   return out;
