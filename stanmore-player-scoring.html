@@ -872,6 +872,7 @@ function saveRoundState() {
         prizeClaims: R.prizeClaims,
         team:        R.team,
       },
+      activeComp: window._activeComp || null,
       compIdx: document.getElementById('compPicker') ? document.getElementById('compPicker').value : '',
       ts: Date.now()
     };
@@ -911,26 +912,49 @@ function checkForSavedRound() {
 function resumeRound() {
   try {
     var state = window._savedRoundState;
-    if (!state || !state.R) throw new Error('No saved state');
+    if (!state || !state.R) throw new Error('No saved state found');
+    
+    // Restore round object
     R = state.R;
+    
     // Ensure all required fields exist
-    if (!R.prizeClaims) R.prizeClaims = {ntp:[],ntp2:[],ld:[]};
+    if (!R.prizeClaims) R.prizeClaims = {ntp:[], ntp2:[], ld:[]};
+    if (!Array.isArray(R.scores)) R.scores = new Array(18).fill(null);
+    
+    // Rebuild holeIndexes if missing
     if (!R.holeIndexes || !R.holeIndexes.length) {
-      // Rebuild holeIndexes from holes count
       var total = R.holes || 18;
       var start = R.nineHole === 'back' ? 9 : 0;
       R.holeIndexes = [];
-      for (var i = start; i < start + total; i++) R.holeIndexes.push(i);
+      for (var i2 = start; i2 < start + total; i2++) R.holeIndexes.push(i2);
     }
-    if (typeof R.holeStep === 'undefined') R.holeStep = 0;
-    if (typeof R.curIdx === 'undefined') R.curIdx = R.holeIndexes[R.holeStep] || 0;
-    if (!Array.isArray(R.scores)) R.scores = new Array(18).fill(null);
+    if (typeof R.holeStep !== 'number') R.holeStep = 0;
+    if (typeof R.curIdx !== 'number') R.curIdx = R.holeIndexes[R.holeStep] || 0;
+    
+    // Restore active competition so prize flags work
+    if (state.activeComp) {
+      window._activeComp = state.activeComp;
+    }
+    
+    // Hide banner and jump to scoring card
     document.getElementById('resumeBanner').style.display = 'none';
     showScr('scrCard');
-    renderHole();
+    
+    // Small delay to ensure DOM is ready
+    setTimeout(function() {
+      try {
+        renderHole();
+      } catch(e2) {
+        console.error('renderHole failed:', e2);
+        showScr('scrSetup');
+        alert('Could not restore hole display — please start again.');
+      }
+    }, 50);
+    
   } catch(e) {
     console.error('Resume failed:', e);
     clearRoundState();
+    window._savedRoundState = null;
     alert('Could not restore round — please start again.');
   }
 }
@@ -1297,6 +1321,7 @@ function saveRoundState() {
         prizeClaims: R.prizeClaims,
         team:        R.team,
       },
+      activeComp: window._activeComp || null,
       compIdx: document.getElementById('compPicker') ? document.getElementById('compPicker').value : '',
       ts: Date.now()
     };
@@ -1336,26 +1361,49 @@ function checkForSavedRound() {
 function resumeRound() {
   try {
     var state = window._savedRoundState;
-    if (!state || !state.R) throw new Error('No saved state');
+    if (!state || !state.R) throw new Error('No saved state found');
+    
+    // Restore round object
     R = state.R;
+    
     // Ensure all required fields exist
-    if (!R.prizeClaims) R.prizeClaims = {ntp:[],ntp2:[],ld:[]};
+    if (!R.prizeClaims) R.prizeClaims = {ntp:[], ntp2:[], ld:[]};
+    if (!Array.isArray(R.scores)) R.scores = new Array(18).fill(null);
+    
+    // Rebuild holeIndexes if missing
     if (!R.holeIndexes || !R.holeIndexes.length) {
-      // Rebuild holeIndexes from holes count
       var total = R.holes || 18;
       var start = R.nineHole === 'back' ? 9 : 0;
       R.holeIndexes = [];
-      for (var i = start; i < start + total; i++) R.holeIndexes.push(i);
+      for (var i2 = start; i2 < start + total; i2++) R.holeIndexes.push(i2);
     }
-    if (typeof R.holeStep === 'undefined') R.holeStep = 0;
-    if (typeof R.curIdx === 'undefined') R.curIdx = R.holeIndexes[R.holeStep] || 0;
-    if (!Array.isArray(R.scores)) R.scores = new Array(18).fill(null);
+    if (typeof R.holeStep !== 'number') R.holeStep = 0;
+    if (typeof R.curIdx !== 'number') R.curIdx = R.holeIndexes[R.holeStep] || 0;
+    
+    // Restore active competition so prize flags work
+    if (state.activeComp) {
+      window._activeComp = state.activeComp;
+    }
+    
+    // Hide banner and jump to scoring card
     document.getElementById('resumeBanner').style.display = 'none';
     showScr('scrCard');
-    renderHole();
+    
+    // Small delay to ensure DOM is ready
+    setTimeout(function() {
+      try {
+        renderHole();
+      } catch(e2) {
+        console.error('renderHole failed:', e2);
+        showScr('scrSetup');
+        alert('Could not restore hole display — please start again.');
+      }
+    }, 50);
+    
   } catch(e) {
     console.error('Resume failed:', e);
     clearRoundState();
+    window._savedRoundState = null;
     alert('Could not restore round — please start again.');
   }
 }
