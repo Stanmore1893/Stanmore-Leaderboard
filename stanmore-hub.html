@@ -64,12 +64,11 @@ html,body{min-height:100%;font-family:'Poppins',sans-serif;color:#fff;overflow-x
 .card-pill-text{font-size:.8rem;font-weight:800;color:#f0c040;letter-spacing:.02em;}
 .card-title{font-size:.9rem;color:rgba(255,255,255,.8);line-height:1.5;}
 .card-body{background:rgba(255,255,255,.03);padding:14px 16px 16px;}
-.qr-section{display:flex;align-items:center;gap:14px;margin-bottom:12px;}
+.qr-section{display:flex;justify-content:center;margin-bottom:14px;}
 .qr-wrap{width:110px;height:110px;flex-shrink:0;background:#fff;border-radius:10px;overflow:hidden;padding:4px;}
 .qr-wrap canvas{width:102px !important;height:102px !important;display:block;}
-.qr-info{flex:1;min-width:0;}
-.qr-label{font-size:.65rem;color:rgba(255,255,255,.4);letter-spacing:.1em;text-transform:uppercase;margin-bottom:6px;}
-.url-box{background:rgba(0,0,0,.3);border:1px solid rgba(255,255,255,.12);border-radius:8px;padding:7px 11px;font-size:.65rem;font-family:'DM Mono',monospace;color:rgba(255,255,255,.65);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;cursor:pointer;}
+
+
 .btn-row{display:flex;gap:8px;}
 .btn{flex:1;padding:11px 8px;border-radius:10px;border:none;font-family:'Poppins',sans-serif;font-size:.84rem;font-weight:600;cursor:pointer;transition:all .2s;}
 .btn.primary{background:rgba(212,160,23,.2);border:1.5px solid rgba(212,160,23,.45);color:#f0c040;}
@@ -140,11 +139,10 @@ html,body{min-height:100%;font-family:'Poppins',sans-serif;color:#fff;overflow-x
     <div class="card-body">
       <div class="qr-section">
         <div class="qr-wrap"><canvas id="qr1" width="102" height="102"></canvas></div>
-        <div class="qr-info"><div class="qr-label">Scan to open on phone</div><div class="url-box" id="url1" onclick="copyUrl('url1')">Loading&hellip;</div></div>
       </div>
       <div class="btn-row">
-        <button class="btn primary" onclick="openApp('scoring')">&#128247; Open App</button>
-        <button class="btn copy" onclick="copyUrl('url1')">&#128203; Copy</button>
+        <button class="btn primary" style="flex:1;" onclick="openApp('scoring')">&#128247; Open App</button>
+        
       </div>
     </div>
   </div>
@@ -160,11 +158,10 @@ html,body{min-height:100%;font-family:'Poppins',sans-serif;color:#fff;overflow-x
     <div class="card-body">
       <div class="qr-section">
         <div class="qr-wrap"><canvas id="qr2" width="102" height="102"></canvas></div>
-        <div class="qr-info"><div class="qr-label">Scan to open on tablet</div><div class="url-box" id="url2" onclick="copyUrl('url2')">Loading&hellip;</div></div>
       </div>
       <div class="btn-row">
-        <button class="btn primary" onclick="openApp('leaderboard')">&#128202; Open App</button>
-        <button class="btn copy" onclick="copyUrl('url2')">&#128203; Copy</button>
+        <button class="btn primary" style="flex:1;" onclick="openApp('leaderboard')">&#128202; Open App</button>
+        
       </div>
     </div>
   </div>
@@ -180,11 +177,10 @@ html,body{min-height:100%;font-family:'Poppins',sans-serif;color:#fff;overflow-x
     <div class="card-body">
       <div class="qr-section">
         <div class="qr-wrap"><canvas id="qr-results" width="102" height="102"></canvas></div>
-        <div class="qr-info"><div class="qr-label">Scan to open results</div><div class="url-box" id="url-results" onclick="copyUrl('url-results')">Loading&hellip;</div></div>
       </div>
       <div class="btn-row">
-        <button class="btn primary" onclick="openApp('results')">&#127941; Open Results</button>
-        <button class="btn copy" onclick="copyUrl('url-results')">&#128203; Copy</button>
+        <button class="btn primary" style="flex:1;" onclick="openApp('results')">&#127941; Open Results</button>
+        
       </div>
     </div>
   </div>
@@ -200,11 +196,10 @@ html,body{min-height:100%;font-family:'Poppins',sans-serif;color:#fff;overflow-x
     <div class="card-body">
       <div class="qr-section">
         <div class="qr-wrap"><canvas id="qr3" width="102" height="102"></canvas></div>
-        <div class="qr-info"><div class="qr-label">Scan to open</div><div class="url-box" id="url3" onclick="copyUrl('url3')">Loading&hellip;</div></div>
       </div>
       <div class="btn-row">
-        <button class="btn primary" onclick="openApp('guide')">&#128214; Open App</button>
-        <button class="btn copy" onclick="copyUrl('url3')">&#128203; Copy</button>
+        <button class="btn primary" style="flex:1;" onclick="openApp('guide')">&#128214; Open App</button>
+        
       </div>
     </div>
   </div>
@@ -219,7 +214,7 @@ html,body{min-height:100%;font-family:'Poppins',sans-serif;color:#fff;overflow-x
     </div>
     <div class="card-body">
       <div class="btn-row">
-        <button class="btn primary" onclick="openApp('admin')" style="flex:2;border-color:rgba(192,57,43,.4);color:#e87878;background:rgba(192,57,43,.12);">&#128274; Open Admin Panel</button>
+        <button class="btn primary" style="flex:1;" onclick="openApp('admin')" style="flex:2;border-color:rgba(192,57,43,.4);color:#e87878;background:rgba(192,57,43,.12);">&#128274; Open Admin Panel</button>
       </div>
     </div>
   </div>
@@ -269,22 +264,7 @@ window.addEventListener('load', function() {
   setTimeout(generateQRCodes, 500);
 });
 
-function setUrls() {
-  var labels = {
-    url1:          'stanmore1893.github.io  ·  Score Entry',
-    url2:          'stanmore1893.github.io  ·  Live Leaderboard',
-    'url-results': 'stanmore1893.github.io  ·  Results & Prizes',
-    url3:          'stanmore1893.github.io  ·  Course Guide'
-  };
-  var urls = {url1:'scoring', url2:'leaderboard', 'url-results':'results', url3:'guide'};
-  Object.keys(labels).forEach(function(id) {
-    var el = document.getElementById(id);
-    if (el) {
-      el.textContent = labels[id];
-      el.title = APPS[urls[id]]; // full URL on hover
-    }
-  });
-}
+function setUrls() { /* URLs removed */ }
 
 function generateQRCodes() {
   var map = {qr1:'scoring', qr2:'leaderboard', 'qr-results':'results', qr3:'guide'};
