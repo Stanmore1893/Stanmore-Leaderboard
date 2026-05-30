@@ -338,7 +338,7 @@ select.finp option{background:#1a3a6b;color:#fff;}
         </div>
       </div>
 
-      <button class="save-btn green" onclick="addComp()">+ Add Competition</button>
+      <button class="save-btn green" id="addCompBtn" onclick="addComp()">+ Add Competition</button>
     </div>
 
     <!-- COMP LIST -->
@@ -773,9 +773,10 @@ function editComp(idx) {
     if (bc) bc.textContent = '▲';
   }
 
-  // Change button to Save
-  var addBtn = document.querySelector('button.save-btn.green');
+  // Change button to Save - use id and removeAttribute to avoid inline onclick conflict
+  var addBtn = document.getElementById('addCompBtn');
   if (addBtn) {
+    addBtn.removeAttribute('onclick');
     addBtn.textContent = '💾 Save Changes to ' + c.name;
     addBtn.onclick = function(){ saveEditComp(idx); };
   }
@@ -827,8 +828,11 @@ async function saveEditComp(idx) {
   if (!ok) { toast('Could not save — check connection'); return; }
 
   // Reset button
-  var addBtn = document.querySelector('button.save-btn.green');
-  if (addBtn) { addBtn.textContent = '+ Add Competition'; addBtn.onclick = addComp; }
+  var addBtn = document.getElementById('addCompBtn');
+  if (addBtn) {
+    addBtn.textContent = '+ Add Competition';
+    addBtn.onclick = addComp;
+  }
 
   renderCompList();
   toast('✓ Competition updated live');
