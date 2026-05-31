@@ -185,7 +185,12 @@ html,body{height:100%;background:linear-gradient(175deg,#060e1e 0%,#0f2347 18%,#
       <div class="cdate" id="compDate"></div>
     </div>
   </div>
-  <div class="stats-bar">
+  <div id="compFilterBar" style="display:none;padding:8px 12px;background:rgba(0,0,0,.25);border-bottom:1px solid rgba(255,255,255,.08);">
+  <select id="compFilterPicker" onchange="setCompFilter(this.value)" style="width:100%;background:rgba(0,0,0,.3);border:1.5px solid rgba(212,160,23,.4);border-radius:8px;padding:9px 12px;color:#fff;font-family:'Poppins',sans-serif;font-size:.88rem;outline:none;">
+    <option value="">All Competitions</option>
+  </select>
+</div>
+<div class="stats-bar">
     <div class="si"><div class="sv" id="stTotal">0</div><div class="sl">Entered</div></div>
     <div class="si"><div class="sv" id="stPlay">0</div><div class="sl">On Course</div></div>
     <div class="si"><div class="sv" id="stFin">0</div><div class="sl">Finished</div></div>
@@ -515,6 +520,21 @@ async function loadScores(){
   } catch(e) {
     console.warn('loadScores error:', e.message);
   }
+  // Populate comp filter dropdown
+  var comps = [...new Set(players.map(function(p){ return p.competition; }).filter(Boolean))];
+  var bar = document.getElementById('compFilterBar');
+  var picker = document.getElementById('compFilterPicker');
+  if (picker) {
+    // Rebuild options
+    while (picker.options.length > 1) picker.remove(1);
+    comps.forEach(function(c) {
+      var opt = document.createElement('option');
+      opt.value = c; opt.textContent = c;
+      if (c === _compFilter) opt.selected = true;
+      picker.appendChild(opt);
+    });
+    if (bar) bar.style.display = comps.length > 1 ? 'block' : 'none';
+  }
   render(); stamp();
 }
 
@@ -523,7 +543,19 @@ async function doRefresh(){
   await loadScores();setTimeout(()=>ic.classList.remove('spinning'),600);
 }
 
-function sorted(){return [...players].sort((a,b)=>b.pts-a.pts||b.thru-a.thru);}
+var _compFilter = '';
+
+function setCompFilter(val) {
+  _compFilter = val;
+  render();
+}
+
+function sorted(){
+  var filtered = _compFilter
+    ? players.filter(function(p){ return p.competition === _compFilter; })
+    : players;
+  return filtered.slice().sort(function(a,b){ return b.pts-a.pts||b.thru-a.thru; });
+}
 
 function setTab(t, el) {
   tab = t;
@@ -569,9 +601,10 @@ function render(){
       : '<div class="pthru"><span style="display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;border-radius:50%;background:rgba(45,110,78,.5);border:1.5px solid rgba(45,110,78,.8);font-size:.8rem;font-weight:700;color:#fff;font-family:monospace;">'+(p.thru||0)+'</span><span class="tl" style="font-size:.6rem;color:rgba(255,255,255,.5);margin-top:2px;">thru</span></div>';
     const thruH = thruDisplay;
     const ph=p.ph||p.hcp||0;
-    const teeLabel=p.teeKey?(p.teeKey.includes('white')?'W':p.teeKey.includes('yellow')?'Y':'R'):'';
+    const teeColour=p.teeKey?(p.teeKey.includes('white')?'#f0f0f0':p.teeKey.includes('yellow')?'#f0c040':'#e87878'):'';
+    const teeOrb=teeColour?`<span style="display:inline-block;width:9px;height:9px;border-radius:50%;background:${teeColour};border:1px solid rgba(255,255,255,.3);margin-left:4px;vertical-align:middle;flex-shrink:0;" title="${p.teeKey.includes('white')?'White':p.teeKey.includes('yellow')?'Yellow':'Red'} Tees"></span>`:'';
     const compTag=p.competition?` · ${p.competition}`:'';
-    card.innerHTML=`${posH}<div><div class="pname">${p.name}</div><div class="pmeta">HCP ${ph}${teeLabel?' · '+teeLabel:''}${compTag}</div></div><div class="pcell"><span class="pv">${ph}</span></div><div class="pcell"><span class="pv">${p.gross||0}</span><span class="pl">gross</span></div>${thruH}<div class="pscore"><span class="ptv">${p.pts}</span><span class="psl">pts</span></div>`;
+    card.innerHTML=`${posH}<div><div class="pname">${p.name}</div><div class="pmeta">HCP ${ph}${teeOrb}</div></div><div class="pcell"><span class="pv">${ph}</span></div><div class="pcell"><span class="pv">${p.gross||0}</span><span class="pl">gross</span></div>${thruH}<div class="pscore"><span class="ptv">${p.pts}</span><span class="psl">pts</span></div>`;
     board.appendChild(card);
   });
 }
