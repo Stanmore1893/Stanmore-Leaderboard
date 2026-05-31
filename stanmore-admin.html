@@ -860,6 +860,7 @@ async function deleteComp(idx) {
   competitions.splice(idx, 1);
   var ok = await SGC.set('competitions', competitions);
   renderCompList();
+  loadScores(); // refresh live scores panel
   toast(ok ? '✓ Competition and scores deleted' : 'Deleted locally — check connection');
 }
 async function saveCompetitions(){
@@ -1364,6 +1365,7 @@ async function closeCompetition(idx) {
     toast('✓ Competition closed and results saved');
     renderCompList();
     loadArchive();
+    loadScores(); // refresh live scores panel
     printResultsPDF(comp, compScores);
   } catch(e) {
     console.error(e);
