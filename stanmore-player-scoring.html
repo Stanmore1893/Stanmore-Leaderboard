@@ -52,7 +52,7 @@ html,body{min-height:100%;background:linear-gradient(175deg,#060e1e 0%,#0f2347 1
 
 /* HOLE CARD */
 .hole-card{background:rgba(255,255,255,.06);border-radius:14px;border:1.5px solid rgba(255,255,255,.12);margin-bottom:12px;}
-.hc-head{position:relative;background:linear-gradient(to right,var(--navy-dk),var(--navy));padding:11px 15px;display:flex;align-items:center;justify-content:space-between;}
+.hc-head{position:relative;background:linear-gradient(to right,var(--navy-dk),var(--navy));border-radius:13px 13px 0 0;padding:11px 15px;display:flex;align-items:center;justify-content:space-between;}
 .hc-num{font-family:'Poppins',sans-serif;font-size:1.25rem;font-weight:700;color:var(--white);}
 .hc-info{font-size:1.1rem;font-weight:700;color:#ffe066;font-family:'DM Mono',monospace;text-align:right;line-height:1.6;}
 .hc-body{padding:15px;}
@@ -288,7 +288,7 @@ html,body{min-height:100%;background:linear-gradient(175deg,#060e1e 0%,#0f2347 1
   <div class="hole-card" id="holeCard">
     <div class="hc-head">
       <div style="display:flex;align-items:center;flex-wrap:wrap;gap:6px;margin-bottom:4px;">
-        <div class="hc-num" id="hcNum" onclick="toggleHoleJump()" style="cursor:pointer;user-select:none;" title="Tap to jump to a hole">Hole 1 ▾</div>
+        <div class="hc-num" id="hcNum" onclick="toggleHoleJump()" style="cursor:pointer;user-select:none;display:inline-flex;align-items:center;gap:6px;" title="Tap to jump to a hole">Hole 1 <span style="background:rgba(212,160,23,.3);border:1px solid rgba(212,160,23,.6);border-radius:4px;padding:1px 5px;font-size:.65rem;color:#f0c040;font-weight:700;line-height:1.4;">▾</span></div>
         <div id="holeJumpMenu" style="display:none;position:absolute;top:100%;left:0;right:0;background:#0f2347;border:1.5px solid rgba(212,160,23,.5);border-radius:0 0 10px 10px;z-index:200;padding:8px;box-shadow:0 8px 24px rgba(0,0,0,.5);">
           <div style="font-size:.65rem;color:rgba(255,255,255,.5);text-transform:uppercase;letter-spacing:.1em;margin-bottom:8px;text-align:center;">Jump to hole</div>
           <div id="holeJumpGrid" style="display:grid;grid-template-columns:repeat(6,1fr);gap:6px;"></div>
@@ -747,7 +747,7 @@ function renderHole(){
   const par=getPar(i); const si=getSI(i);
   const strokes=strokesOnHole(R.ph,si);
   document.getElementById('holeBadge').textContent='Hole '+(R.curIdx+1)+' / '+(R.holes===9?'9 ('+R.holeIndexes.map(function(x){return x+1;}).join(',').substring(0,10)+'…)':'18');
-  document.getElementById('hcNum').textContent=`Hole ${i+1}`;
+  document.getElementById('hcNum').innerHTML='Hole '+(i+1)+' <span style="background:rgba(212,160,23,.3);border:1px solid rgba(212,160,23,.6);border-radius:4px;padding:1px 5px;font-size:.65rem;color:#f0c040;font-weight:700;line-height:1.4;">&#9660;</span>';
   document.getElementById('hcInfo').textContent=`Par ${par} · SI ${si}${strokes>0?' · +'+strokes+' stroke'+(strokes>1?'s':''):''}`;
   document.getElementById('pbPts').textContent=runningPts();
   // Always show player name
