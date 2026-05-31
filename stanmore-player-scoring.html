@@ -1223,7 +1223,37 @@ function resumeRound() {
   showScr('scrCard');
   renderHole();
 }
-function dismissResume() {
+async function dismissResume() {
+  // Confirm before wiping the previous score off the leaderboard
+  if (!confirm('Start Fresh will remove your previous score from the live leaderboard. Are you sure?')) return;
+
+  var prevName = '';
+  try {
+    var raw = localStorage.getItem(ROUND_KEY);
+    if (raw) {
+      var saved = JSON.parse(raw);
+      if (saved && saved.R && saved.R.name) prevName = saved.R.name;
+    }
+  } catch(e) {}
+
+  // Remove from Supabase if we know the name
+  if (prevName) {
+    try {
+      var allScores = await SGC.get('scores');
+      if (Array.isArray(allScores)) {
+        var filtered = allScores.filter(function(s) {
+          return s.name.toLowerCase() !== prevName.toLowerCase();
+        });
+        if (filtered.length < allScores.length) {
+          await SGC.set('scores', filtered);
+          console.log('Previous score removed from leaderboard for:', prevName);
+        }
+      }
+    } catch(e) {
+      console.log('Could not remove score from leaderboard:', e);
+    }
+  }
+
   clearRoundState();
   document.getElementById('resumeBanner').style.display = 'none';
 }
