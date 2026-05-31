@@ -414,50 +414,61 @@ function showToast(msg) {
 
 // ── PRINT QR SHEET ──
 function printQRSheet() {
-  var urls = window._appUrls || {};
   var date = new Date().toLocaleDateString('en-GB',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
 
   var pages = [
-    {id:'qr1',     label:'Score Entry',        icon:'⛳', desc:'Scan to enter your scores hole by hole', colour:'#1a3a6b'},
-    {id:'qr2',     label:'Live Leaderboard',   icon:'🏆', desc:'Follow the live standings', colour:'#1a5c35'},
-    {id:'qr-results', label:'Results',         icon:'🥇', desc:'Final standings and prize winners', colour:'#7a5200'},
-    {id:'qr-guide', label:'Course Guide',      icon:'📋', desc:'Scorecard and handicap calculators', colour:'#3d1f6e'},
+    {id:'qr1',        label:'Score Entry',      icon:'⛳', desc:'Scan to enter your scores hole by hole', bg:'#0f2347', accent:'#4a90d9'},
+    {id:'qr2',        label:'Live Leaderboard', icon:'🏆', desc:'Follow live standings updated every 5 seconds', bg:'#0a3320', accent:'#3fa06e'},
+    {id:'qr-results', label:'Results',          icon:'🥇', desc:'Final standings, podium and prize winners', bg:'#3d2800', accent:'#d4a017'},
+    {id:'qr-guide',   label:'Course Guide',     icon:'📋', desc:'Scorecard, tee ratings and handicap calculators', bg:'#2a0f4a', accent:'#9b6dff'},
   ];
 
   var qrBlocks = pages.map(function(p) {
     var canvas = document.getElementById(p.id);
     var dataUrl = canvas ? canvas.toDataURL('image/png') : '';
-    return '<div style="break-inside:avoid;display:flex;flex-direction:column;align-items:center;border:2px solid #e8e0d0;border-radius:16px;padding:24px 20px;background:#fff;">'
-      + '<div style="font-size:2.2rem;margin-bottom:8px;">'+p.icon+'</div>'
-      + '<div style="font-size:1.1rem;font-weight:800;color:#0f2347;margin-bottom:4px;">'+p.label+'</div>'
-      + '<div style="font-size:.8rem;color:#666;margin-bottom:16px;text-align:center;">'+p.desc+'</div>'
-      + (dataUrl ? '<img src="'+dataUrl+'" style="width:200px;height:200px;image-rendering:pixelated;border:8px solid #fff;box-shadow:0 0 0 1px #e0d8cc;border-radius:4px;">' : '')
+    return '<div class="qr-card">'
+      + '<div class="qr-card-head" style="background:'+p.bg+';border-bottom:3px solid '+p.accent+';">'
+      + '<span class="qr-icon">'+p.icon+'</span>'
+      + '<div>'
+      + '<div class="qr-label">'+p.label+'</div>'
+      + '<div class="qr-desc">'+p.desc+'</div>'
+      + '</div>'
+      + '</div>'
+      + '<div class="qr-card-body">'
+      + (dataUrl ? '<img src="'+dataUrl+'" class="qr-img">' : '<div class="qr-img" style="background:#f0f0f0;display:flex;align-items:center;justify-content:center;color:#999;font-size:14px;">No QR</div>')
+      + '<div class="qr-url">stanmore1893.github.io/Stanmore-Leaderboard</div>'
+      + '</div>'
       + '</div>';
   }).join('');
 
   var w = window.open('','_blank');
   w.document.write('<!DOCTYPE html><html><head><meta charset="UTF-8"><title>QR Codes — Stanmore Golf Club</title>'
     + '<style>'
-    + '@page{size:A4;margin:15mm;}'
+    + '@page{size:A4 portrait;margin:12mm;}'
     + '*{box-sizing:border-box;margin:0;padding:0;}'
-    + 'body{font-family:Poppins,Georgia,sans-serif;color:#0f2347;background:#fff;}'
-    + '.header{text-align:center;padding:0 0 20px;border-bottom:3px solid #d4a017;margin-bottom:24px;}'
-    + '.logo-row{display:flex;align-items:center;justify-content:center;gap:14px;margin-bottom:8px;}'
-    + '.club-name{font-size:1.6rem;font-weight:800;color:#0f2347;}'
-    + '.gold-bar{height:3px;background:linear-gradient(to right,#d4a017,#f0c040,#d4a017);border-radius:2px;margin-bottom:6px;}'
-    + '.subtitle{font-size:.85rem;color:#666;}'
-    + '.grid{display:grid;grid-template-columns:1fr 1fr;gap:20px;}'
-    + '.print-btn{position:fixed;bottom:20px;right:20px;background:#d4a017;color:#0f2347;border:none;border-radius:8px;padding:12px 24px;font-size:.9rem;font-weight:700;cursor:pointer;box-shadow:0 4px 16px rgba(0,0,0,.2);}'
+    + 'body{font-family:Georgia,serif;background:#fff;color:#0f2347;}'
+    + '.header{text-align:center;padding-bottom:14px;margin-bottom:18px;border-bottom:3px solid #d4a017;}'
+    + '.logo-row{display:flex;align-items:center;justify-content:center;gap:14px;margin-bottom:6px;}'
+    + '.club-name{font-size:22px;font-weight:800;color:#0f2347;font-family:Georgia,serif;}'
+    + '.header-sub{font-size:12px;color:#666;}'
+    + '.grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;}'
+    + '.qr-card{border-radius:12px;overflow:hidden;border:1.5px solid #e0d8cc;}'
+    + '.qr-card-head{padding:16px;display:flex;align-items:center;gap:12px;}'
+    + '.qr-icon{font-size:28px;flex-shrink:0;}'
+    + '.qr-label{font-size:18px;font-weight:800;color:#fff;font-family:Georgia,serif;line-height:1.2;}'
+    + '.qr-desc{font-size:12px;color:rgba(255,255,255,.75);margin-top:3px;line-height:1.4;}'
+    + '.qr-card-body{padding:16px;display:flex;flex-direction:column;align-items:center;background:#fff;}'
+    + '.qr-img{width:220px;height:220px;image-rendering:pixelated;border:6px solid #fff;outline:1px solid #e0d8cc;}'
+    + '.qr-url{font-size:10px;color:#999;margin-top:10px;text-align:center;font-family:monospace;}'
+    + '.print-btn{position:fixed;bottom:16px;right:16px;background:#d4a017;color:#0f2347;border:none;border-radius:8px;padding:10px 20px;font-size:14px;font-weight:700;cursor:pointer;}'
     + '@media print{.print-btn{display:none;}}'
     + '</style></head><body>'
     + '<div class="header">'
-    + '<div class="gold-bar"></div>'
     + '<div class="logo-row">'
-    + '<img src="https://stanmore1893.github.io/Stanmore-Leaderboard/club-logo.png" style="width:52px;height:52px;object-fit:contain;">'
+    + '<img src="https://stanmore1893.github.io/Stanmore-Leaderboard/club-logo.png" style="width:48px;height:48px;object-fit:contain;">'
     + '<div class="club-name">Stanmore Golf Club</div>'
     + '</div>'
-    + '<div class="subtitle">Digital Competition Hub &nbsp;·&nbsp; '+date+'</div>'
-    + '<div class="gold-bar" style="margin-top:12px;"></div>'
+    + '<div class="header-sub">Digital Competition Hub &nbsp;·&nbsp; '+date+'</div>'
     + '</div>'
     + '<div class="grid">'+qrBlocks+'</div>'
     + '<button class="print-btn" onclick="window.print()">🖨️ Print / Save PDF</button>'
