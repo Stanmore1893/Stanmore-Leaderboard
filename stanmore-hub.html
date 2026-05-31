@@ -220,6 +220,14 @@ html,body{min-height:100%;font-family:'Poppins',sans-serif;color:#fff;overflow-x
 
 </div>
 
+<!-- Hidden canvases for QR code generation -->
+<div style="display:none;" aria-hidden="true">
+  <canvas id="qr1" width="200" height="200"></canvas>
+  <canvas id="qr2" width="200" height="200"></canvas>
+  <canvas id="qr-results" width="200" height="200"></canvas>
+  <canvas id="qr-guide" width="200" height="200"></canvas>
+</div>
+
 <div class="print-section">
   <button class="print-qr-btn" onclick="printQRSheet()">&#128424;&#65039; Print QR Sheet &mdash; A4 reference card</button>
   <div class="print-hint">Print all QR codes on one sheet for societies &amp; competitions</div>
@@ -335,7 +343,7 @@ async function applyBranding() {
 function setUrls() { /* URLs removed */ }
 
 function generateQRCodes() {
-  var map = {qr1:'scoring', qr2:'leaderboard', 'qr-results':'results', qr3:'guide'};
+  var map = {qr1:'scoring', qr2:'leaderboard', 'qr-results':'results', 'qr-guide':'guide'};
   Object.keys(map).forEach(function(canvasId) {
     try {
       var canvas = document.getElementById(canvasId);
