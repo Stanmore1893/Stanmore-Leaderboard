@@ -1046,6 +1046,19 @@ function shareScorecard() {
 var ROUND_KEY = 'sgc_round_state';
 var OFFLINE_QUEUE_KEY = 'sgc_offline_queue';
 
+// ── TOAST / NOTIFICATION ──
+function showToast(msg, duration) {
+  duration = duration || 3000;
+  var existing = document.getElementById('sgcToast');
+  if (existing) existing.remove();
+  var toast = document.createElement('div');
+  toast.id = 'sgcToast';
+  toast.textContent = msg;
+  toast.style.cssText = 'position:fixed;bottom:90px;left:50%;transform:translateX(-50%);background:rgba(15,35,71,.95);color:#fff;padding:10px 20px;border-radius:20px;font-family:Poppins,sans-serif;font-size:.85rem;font-weight:600;z-index:9999;border:1px solid rgba(255,255,255,.2);box-shadow:0 4px 20px rgba(0,0,0,.4);white-space:nowrap;';
+  document.body.appendChild(toast);
+  setTimeout(function(){ if(toast.parentNode) toast.remove(); }, duration);
+}
+
 // ── OFFLINE SYNC ──
 function setSyncStatus(status) {
   // status: 'synced' | 'pending' | 'offline'
