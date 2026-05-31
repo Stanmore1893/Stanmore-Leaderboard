@@ -201,7 +201,6 @@ html,body{min-height:100%;background:linear-gradient(175deg,#060e1e 0%,#0f2347 1
       <div><div class="club-name">Stanmore Golf Club</div><div class="club-sub" id="headerCompName">Stanmore Golf Club</div></div>
     </div>
     <div class="hole-badge" id="holeBadge" style="display:none;">Hole 1</div>
-      <div id="syncPill" style="display:none;font-size:.65rem;font-weight:600;font-family:'Poppins',sans-serif;border-radius:20px;padding:3px 10px;margin-left:6px;"></div>
   </div>
 </div>
 
@@ -279,6 +278,7 @@ html,body{min-height:100%;background:linear-gradient(175deg,#060e1e 0%,#0f2347 1
 
 <!-- SCORECARD -->
 <div class="screen" id="scrCard">
+  <div id="syncPill" style="display:none;text-align:center;padding:4px 16px;font-size:.72rem;font-weight:600;font-family:'Poppins',sans-serif;border-radius:0;"></div>
   <div class="pbar">
     <div><div style="display:flex;align-items:center;gap:6px;"><div class="pb-name" id="pbName">Player</div><span id="proPill" style="display:none;background:#f0c040;color:#0f2347;font-size:.6rem;font-weight:800;border-radius:4px;padding:2px 6px;letter-spacing:.05em;">PRO</span></div><div class="pb-meta" id="pbMeta">—</div></div>
     <div class="pb-right"><div class="pb-pts" id="pbPts">0</div><div class="pb-lbl">Points</div></div>
@@ -302,15 +302,15 @@ html,body{min-height:100%;background:linear-gradient(175deg,#060e1e 0%,#0f2347 1
   <div id="prizeClaim" style="display:none;margin:8px 0;">
     <div style="font-size:.65rem;letter-spacing:.1em;text-transform:uppercase;color:rgba(212,160,23,.6);font-weight:600;margin-bottom:8px;">🎯 Special Prize — Claim</div>
     <div id="ntpClaim"  style="display:none;">
-      <button type="button" id="ntpBtn" onclick="togglePrizeClaim('ntp')" style="width:100%;background:rgba(212,160,23,.35);border:2px solid rgba(212,160,23,.8);color:#ffffff;border-radius:9px;padding:12px;font-family:Poppins,sans-serif;font-size:.88rem;font-weight:600;cursor:pointer;margin-bottom:6px;">📍 I'm nearest the pin — claim it</button>
+      <button type="button" id="ntpBtn" onclick="togglePrizeClaim('ntp')" style="width:100%;background:#d4a017;border:2px solid #f0c040;color:#0f2347;font-weight:700;border-radius:9px;padding:12px;font-family:Poppins,sans-serif;font-size:.88rem;font-weight:600;cursor:pointer;margin-bottom:6px;">📍 I'm nearest the pin — claim it</button>
       <div id="ntpStatus" style="font-size:.72rem;color:rgba(255,255,255,.5);text-align:center;margin-bottom:4px;"></div>
     </div>
     <div id="ntp2Claim" style="display:none;">
-      <button type="button" id="ntp2Btn" onclick="togglePrizeClaim('ntp2')" style="width:100%;background:rgba(212,160,23,.35);border:2px solid rgba(212,160,23,.8);color:#ffffff;border-radius:9px;padding:12px;font-family:Poppins,sans-serif;font-size:.88rem;font-weight:600;cursor:pointer;margin-bottom:6px;">📍 I'm nearest the pin in 2 — claim it</button>
+      <button type="button" id="ntp2Btn" onclick="togglePrizeClaim('ntp2')" style="width:100%;background:#d4a017;border:2px solid #f0c040;color:#0f2347;font-weight:700;border-radius:9px;padding:12px;font-family:Poppins,sans-serif;font-size:.88rem;font-weight:600;cursor:pointer;margin-bottom:6px;">📍 I'm nearest the pin in 2 — claim it</button>
       <div id="ntp2Status" style="font-size:.72rem;color:rgba(255,255,255,.5);text-align:center;margin-bottom:4px;"></div>
     </div>
     <div id="ldClaim" style="display:none;">
-      <button type="button" id="ldBtn" onclick="togglePrizeClaim('ld')" style="width:100%;background:rgba(212,160,23,.35);border:2px solid rgba(212,160,23,.8);color:#ffffff;border-radius:9px;padding:12px;font-family:Poppins,sans-serif;font-size:.88rem;font-weight:600;cursor:pointer;margin-bottom:6px;">🏌️ I had the longest drive — claim it</button>
+      <button type="button" id="ldBtn" onclick="togglePrizeClaim('ld')" style="width:100%;background:#d4a017;border:2px solid #f0c040;color:#0f2347;font-weight:700;border-radius:9px;padding:12px;font-family:Poppins,sans-serif;font-size:.88rem;font-weight:600;cursor:pointer;margin-bottom:6px;">🏌️ I had the longest drive — claim it</button>
       <div id="ldStatus" style="font-size:.72rem;color:rgba(255,255,255,.5);text-align:center;margin-bottom:4px;"></div>
     </div>
   </div>
@@ -1078,25 +1078,26 @@ function showToast(msg, duration) {
 
 // ── OFFLINE SYNC ──
 function setSyncStatus(status) {
-  // status: 'synced' | 'pending' | 'offline'
   var pill = document.getElementById('syncPill');
   if (!pill) return;
-  pill.style.display = 'inline-block';
+  pill.style.display = 'block';
+  pill.style.border = 'none';
+  pill.style.borderRadius = '0';
+  pill.style.padding = '5px 16px';
   if (status === 'synced') {
-    pill.textContent = '✓ Synced';
-    pill.style.background = 'rgba(45,110,78,.3)';
-    pill.style.border = '1px solid rgba(45,110,78,.5)';
-    pill.style.color = '#8ee0b4';
+    pill.textContent = '✓ Synced to leaderboard';
+    pill.style.background = 'rgba(45,110,78,.5)';
+    pill.style.color = '#ffffff';
+    // Auto-hide after 3 seconds
+    setTimeout(function(){ if(pill) pill.style.display='none'; }, 3000);
   } else if (status === 'pending') {
-    pill.textContent = '⏳ Saved locally';
-    pill.style.background = 'rgba(212,160,23,.2)';
-    pill.style.border = '1px solid rgba(212,160,23,.4)';
-    pill.style.color = '#f0c040';
+    pill.textContent = '⏳ Saved locally — will sync when online';
+    pill.style.background = 'rgba(212,160,23,.4)';
+    pill.style.color = '#ffffff';
   } else if (status === 'offline') {
-    pill.textContent = '⚠ No signal';
-    pill.style.background = 'rgba(192,57,43,.2)';
-    pill.style.border = '1px solid rgba(192,57,43,.4)';
-    pill.style.color = '#e87878';
+    pill.textContent = '⚠ No signal — score saved locally';
+    pill.style.background = 'rgba(192,57,43,.5)';
+    pill.style.color = '#ffffff';
   }
 }
 
@@ -1623,9 +1624,9 @@ async function togglePrizeClaim(type) {
       await SGC._write(record);
       if (btn) {
         btn.disabled = false;
-        btn.style.background = 'rgba(212,160,23,.35)';
-        btn.style.borderColor = 'rgba(212,160,23,.8)';
-        btn.style.color = '#ffffff';
+        btn.style.background = '#d4a017';
+        btn.style.borderColor = '#f0c040';
+        btn.style.color = '#0f2347';
         var labels = {ntp:"📍 Nearest the pin", ntp2:"📍 Nearest the pin in 2", ld:"🏌 Longest drive"};
         btn.textContent = labels[type];
       }
