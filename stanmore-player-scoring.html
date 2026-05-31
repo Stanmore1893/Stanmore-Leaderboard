@@ -304,15 +304,15 @@ html,body{min-height:100%;background:linear-gradient(175deg,#060e1e 0%,#0f2347 1
   <div id="prizeClaim" style="display:none;margin:8px 0;">
     <div style="font-size:.65rem;letter-spacing:.1em;text-transform:uppercase;color:rgba(212,160,23,.6);font-weight:600;margin-bottom:8px;">🎯 Special Prize — Claim</div>
     <div id="ntpClaim"  style="display:none;">
-      <button type="button" id="ntpBtn" onclick="togglePrizeClaim('ntp')" style="width:100%;background:#d4a017;border:2px solid #f0c040;color:#0f2347;font-weight:700;border-radius:9px;padding:12px;font-family:Poppins,sans-serif;font-size:.88rem;font-weight:600;cursor:pointer;margin-bottom:6px;">📍 I'm nearest the pin — claim it</button>
+      <button type="button" id="ntpBtn" onclick="togglePrizeClaim('ntp')" style="width:100%;background:#d4a017;border:2px solid #f0c040;color:#ffffff;font-weight:700;border-radius:9px;padding:12px;font-family:Poppins,sans-serif;font-size:.88rem;font-weight:600;cursor:pointer;margin-bottom:6px;">📍 I'm nearest the pin — claim it</button>
       <div id="ntpStatus" style="font-size:.72rem;color:rgba(255,255,255,.75);text-align:center;margin-bottom:4px;"></div>
     </div>
     <div id="ntp2Claim" style="display:none;">
-      <button type="button" id="ntp2Btn" onclick="togglePrizeClaim('ntp2')" style="width:100%;background:#d4a017;border:2px solid #f0c040;color:#0f2347;font-weight:700;border-radius:9px;padding:12px;font-family:Poppins,sans-serif;font-size:.88rem;font-weight:600;cursor:pointer;margin-bottom:6px;">📍 I'm nearest the pin in 2 — claim it</button>
+      <button type="button" id="ntp2Btn" onclick="togglePrizeClaim('ntp2')" style="width:100%;background:#d4a017;border:2px solid #f0c040;color:#ffffff;font-weight:700;border-radius:9px;padding:12px;font-family:Poppins,sans-serif;font-size:.88rem;font-weight:600;cursor:pointer;margin-bottom:6px;">📍 I'm nearest the pin in 2 — claim it</button>
       <div id="ntp2Status" style="font-size:.72rem;color:rgba(255,255,255,.75);text-align:center;margin-bottom:4px;"></div>
     </div>
     <div id="ldClaim" style="display:none;">
-      <button type="button" id="ldBtn" onclick="togglePrizeClaim('ld')" style="width:100%;background:#d4a017;border:2px solid #f0c040;color:#0f2347;font-weight:700;border-radius:9px;padding:12px;font-family:Poppins,sans-serif;font-size:.88rem;font-weight:600;cursor:pointer;margin-bottom:6px;">🏌️ I had the longest drive — claim it</button>
+      <button type="button" id="ldBtn" onclick="togglePrizeClaim('ld')" style="width:100%;background:#d4a017;border:2px solid #f0c040;color:#ffffff;font-weight:700;border-radius:9px;padding:12px;font-family:Poppins,sans-serif;font-size:.88rem;font-weight:600;cursor:pointer;margin-bottom:6px;">🏌️ I had the longest drive — claim it</button>
       <div id="ldStatus" style="font-size:.72rem;color:rgba(255,255,255,.75);text-align:center;margin-bottom:4px;"></div>
     </div>
   </div>
@@ -1582,21 +1582,21 @@ function onCompSelect() {
     // Build gold pill badges for competition details
       var pills = '';
       pills += '<span style="background:#f0c040;border-radius:6px;padding:5px 12px;font-size:.88rem;font-weight:700;color:#0f2347;display:inline-block;margin:2px 4px 2px 0;">' + comp.name + '</span>';
-      pills += '<span style="background:rgba(212,160,23,.3);border:1px solid rgba(212,160,23,.6);border-radius:6px;padding:4px 10px;font-size:.78rem;font-weight:600;color:#0f2347;display:inline-block;margin:2px 4px 2px 0;">📋 ' + (fmt.label||comp.format) + '</span>';
+      pills += '<span style="background:rgba(212,160,23,.3);border:1px solid rgba(212,160,23,.6);border-radius:6px;padding:4px 10px;font-size:.78rem;font-weight:600;color:#ffffff;display:inline-block;margin:2px 4px 2px 0;">📋 ' + (fmt.label||comp.format) + '</span>';
       // Show tee based on gender — for mixed show both clearly
       var compGender = comp.gender || 'mixed';
       if (compGender === 'mixed') {
         var menTeeLabel   = TEE_LABELS[comp.teeMen   || comp.tee] || comp.tee;
         var ladiesTeeKey2 = comp.teeLadies || comp.tee;
         var ladiesTeeLabel2 = TEE_LABELS[ladiesTeeKey2] || ladiesTeeKey2;
-        pills += '<span style="background:rgba(212,160,23,.3);border:1px solid rgba(212,160,23,.6);border-radius:6px;padding:4px 10px;font-size:.78rem;font-weight:600;color:#0f2347;display:inline-block;margin:2px 4px 2px 0;">👨 ' + menTeeLabel + '</span>';
+        pills += '<span style="background:rgba(212,160,23,.3);border:1px solid rgba(212,160,23,.6);border-radius:6px;padding:4px 10px;font-size:.78rem;font-weight:600;color:#ffffff;display:inline-block;margin:2px 4px 2px 0;">👨 ' + menTeeLabel + '</span>';
         if (ladiesTeeKey2 !== (comp.teeMen || comp.tee)) {
-          pills += '<span style="background:rgba(212,160,23,.3);border:1px solid rgba(212,160,23,.6);border-radius:6px;padding:4px 10px;font-size:.78rem;font-weight:600;color:#0f2347;display:inline-block;margin:2px 4px 2px 0;">👩 ' + ladiesTeeLabel2 + '</span>';
+          pills += '<span style="background:rgba(212,160,23,.3);border:1px solid rgba(212,160,23,.6);border-radius:6px;padding:4px 10px;font-size:.78rem;font-weight:600;color:#ffffff;display:inline-block;margin:2px 4px 2px 0;">👩 ' + ladiesTeeLabel2 + '</span>';
         }
       } else {
-        pills += '<span style="background:rgba(212,160,23,.3);border:1px solid rgba(212,160,23,.6);border-radius:6px;padding:4px 10px;font-size:.78rem;font-weight:600;color:#0f2347;display:inline-block;margin:2px 4px 2px 0;">🏌️ ' + teeLabel + '</span>';
+        pills += '<span style="background:rgba(212,160,23,.3);border:1px solid rgba(212,160,23,.6);border-radius:6px;padding:4px 10px;font-size:.78rem;font-weight:600;color:#ffffff;display:inline-block;margin:2px 4px 2px 0;">🏌️ ' + teeLabel + '</span>';
       }
-      if (comp.date) pills += '<span style="background:rgba(212,160,23,.3);border:1px solid rgba(212,160,23,.6);border-radius:6px;padding:4px 10px;font-size:.78rem;font-weight:600;color:#0f2347;display:inline-block;margin:2px 4px 2px 0;">📅 ' + comp.date + '</span>';
+      if (comp.date) pills += '<span style="background:rgba(212,160,23,.3);border:1px solid rgba(212,160,23,.6);border-radius:6px;padding:4px 10px;font-size:.78rem;font-weight:600;color:#ffffff;display:inline-block;margin:2px 4px 2px 0;">📅 ' + comp.date + '</span>';
       if (comp.notes) pills += '<div style="font-size:.72rem;color:rgba(255,255,255,.55);margin-top:6px;">'+comp.notes+'</div>';
 
       // Add prize holes section
@@ -1605,17 +1605,17 @@ function onCompSelect() {
       var ldH   = comp.ldHoles   || [];
       if (ntpH.length || ntp2H.length || ldH.length) {
         pills += '<div style="margin-top:10px;padding-top:10px;border-top:1.5px solid rgba(15,35,71,.3);">';
-        pills += '<div style="font-size:.65rem;letter-spacing:.12em;text-transform:uppercase;color:#0f2347;font-weight:700;margin-bottom:8px;">🎯 Special Prizes</div>';
+        pills += '<div style="font-size:.65rem;letter-spacing:.12em;text-transform:uppercase;color:#ffffff;font-weight:700;margin-bottom:8px;">🎯 Special Prizes</div>';
         if (ntpH.length) {
-          pills += '<div style="margin-bottom:5px;font-size:.82rem;color:#0f2347;"><strong style="color:#0f2347;">📍 Nearest the Pin:</strong> ' + ntpH.sort(function(a,b){return a-b;}).map(function(h){ return 'Hole '+h; }).join(', ') + '</div>';
+          pills += '<div style="margin-bottom:5px;font-size:.82rem;color:#fff;"><strong style="color:#ffe066;">📍 Nearest the Pin:</strong> ' + ntpH.sort(function(a,b){return a-b;}).map(function(h){ return 'Hole '+h; }).join(', ') + '</div>';
         }
         if (ntp2H.length) {
-          pills += '<div style="margin-bottom:5px;font-size:.82rem;color:#0f2347;"><strong style="color:#0f2347;">📍 Nearest the Pin in 2:</strong> ' + ntp2H.sort(function(a,b){return a-b;}).map(function(h){ return 'Hole '+h; }).join(', ') + '</div>';
+          pills += '<div style="margin-bottom:5px;font-size:.82rem;color:#fff;"><strong style="color:#ffe066;">📍 Nearest the Pin in 2:</strong> ' + ntp2H.sort(function(a,b){return a-b;}).map(function(h){ return 'Hole '+h; }).join(', ') + '</div>';
         }
         if (ldH.length) {
-          pills += '<div style="margin-bottom:5px;font-size:.82rem;color:#0f2347;"><strong style="color:#0f2347;">🏌️ Longest Drive:</strong> ' + ldH.sort(function(a,b){return a-b;}).map(function(h){ return 'Hole '+h; }).join(', ') + '</div>';
+          pills += '<div style="margin-bottom:5px;font-size:.82rem;color:#fff;"><strong style="color:#ffe066;">🏌️ Longest Drive:</strong> ' + ldH.sort(function(a,b){return a-b;}).map(function(h){ return 'Hole '+h; }).join(', ') + '</div>';
         }
-        pills += '<div style="font-size:.72rem;color:#0f2347;margin-top:6px;opacity:.8;">⛳ A flag will appear on these holes during your round.</div>';
+        pills += '<div style="font-size:.72rem;color:rgba(255,255,255,.7);margin-top:6px;opacity:.8;">⛳ A flag will appear on these holes during your round.</div>';
         pills += '</div>';
       }
 
