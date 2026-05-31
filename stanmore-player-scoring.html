@@ -681,6 +681,7 @@ function startRound(){
   var fmtLabel = _comp ? (_fmt.label || _comp.format) : 'General Play';
   var nineStr = R.nineHole==='front'?' · Front 9':R.nineHole==='back'?' · Back 9':'';
   document.getElementById('pbMeta').textContent='HI '+hi.toFixed(1)+' · Playing HCP '+R.ph+' · '+fmtLabel+(R.holes===9?nineStr:'');
+  saveRoundState();
   showScr('scrCard'); renderHole();
 }
 function getPar(i){return R.gender==='f'?COURSE.par_women[i]:COURSE.par_men[i];}
@@ -871,12 +872,14 @@ function nextHole(){
   if(R.holeStep >= R.holeIndexes.length - 1){finishRound();return;}
   R.holeStep++;
   R.curIdx = R.holeIndexes[R.holeStep];
+  saveRoundState();
   renderHole();
 }
 function prevHole(){
   if(R.holeStep <= 0) return;
   R.holeStep--;
   R.curIdx = R.holeIndexes[R.holeStep];
+  saveRoundState();
   renderHole();
 }
 function finishRound(){
@@ -1270,7 +1273,15 @@ async function dismissResume() {
 }
 
 
-function showScr(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active');window.scrollTo(0,0);}
+function showScr(id){
+  document.querySelectorAll('.screen').forEach(function(s){s.classList.remove('active');});
+  document.getElementById(id).classList.add('active');
+  window.scrollTo(0,0);
+  var badge = document.getElementById('holeBadge');
+  if (badge) badge.style.display = (id === 'scrCard') ? 'block' : 'none';
+  var pill = document.getElementById('syncPill');
+  if (pill) pill.style.display = (id === 'scrCard') ? 'inline-block' : 'none';
+}
 
 window.addEventListener('load', function() {
   loadAdminSettings();
