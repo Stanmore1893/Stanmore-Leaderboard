@@ -838,7 +838,30 @@ async function saveEditComp(idx) {
   toast('✓ Competition updated live');
 }
 
-function deleteComp(idx){ competitions.splice(idx,1); renderCompList(); toast('Removed — tap Save to publish'); }
+async function deleteComp(idx) {
+  var comp = competitions[idx];
+  if (!confirm('Delete "' + comp.name + '"? This will also remove all live scores for this competition from the leaderboard.')) return;
+
+  // Remove live scores for this competition
+  try {
+    var allScores = await SGC.get('scores');
+    if (Array.isArray(allScores)) {
+      var filtered = allScores.filter(function(s) {
+        return s.competition !== comp.name;
+      });
+      if (filtered.length < allScores.length) {
+        await SGC.set('scores', filtered);
+      }
+    }
+  } catch(e) {
+    console.log('Could not clear scores:', e);
+  }
+
+  competitions.splice(idx, 1);
+  var ok = await SGC.set('competitions', competitions);
+  renderCompList();
+  toast(ok ? '✓ Competition and scores deleted' : 'Deleted locally — check connection');
+}
 async function saveCompetitions(){
   var ok=await SGC.set('competitions',competitions);
   toast(ok?'Competitions saved':'Save failed — check connection');
@@ -1340,6 +1363,7 @@ async function closeCompetition(idx) {
     await SGC._write(record);
     toast('✓ Competition closed and results saved');
     renderCompList();
+    loadArchive();
     printResultsPDF(comp, compScores);
   } catch(e) {
     console.error(e);
