@@ -32,12 +32,12 @@ html,body{min-height:100%;background:linear-gradient(175deg,#060e1e 0%,#0f2347 1
 .wlogo img{width:86px;height:86px;object-fit:contain;}
 .ptitle{font-family:'Poppins',sans-serif;font-size:1.55rem;font-weight:700;color:#fff;text-align:center;margin-bottom:3px;}
 .psub{font-size:.73rem;color:var(--grey);text-align:center;letter-spacing:.1em;text-transform:uppercase;margin-bottom:20px;}
-.flbl{font-size:.63rem;letter-spacing:.15em;text-transform:uppercase;color:var(--grey);margin-bottom:6px;display:block;}
+.flbl{font-size:.92rem;font-weight:600;color:#ffffff;margin-bottom:6px;display:block;letter-spacing:0;text-transform:none;}
 .finp{width:100%;background:rgba(255,255,255,.06);border:1.5px solid rgba(255,255,255,.12);border-radius:10px;padding:13px 15px;font-family:'Poppins',sans-serif;font-size:.95rem;color:#fff;outline:none;margin-bottom:14px;transition:border-color .2s;-webkit-appearance:none;}
 .finp:focus{border-color:var(--navy);}
 .finp option{background:rgba(255,255,255,.05);}
 .frow2{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
-.info-card{background:rgba(26,58,107,.06);border:1px solid rgba(26,58,107,.11);border-radius:10px;padding:12px 14px;font-size:.77rem;color:var(--navy);line-height:1.6;margin-bottom:14px;}
+.info-card{background:rgba(212,160,23,.08);border:1px solid rgba(212,160,23,.25);border-radius:10px;padding:14px 16px;font-size:.88rem;color:#ffffff;font-weight:500;line-height:1.6;line-height:1.6;margin-bottom:14px;}
 .hcp-calc-preview{background:rgba(212,160,23,.1);border:1px solid rgba(212,160,23,.25);border-radius:10px;padding:12px 14px;font-size:.77rem;color:#fff;line-height:1.7;margin-bottom:14px;display:none;}
 .start-btn{width:100%;background:var(--navy);color:var(--white);border:none;border-radius:12px;padding:15px;font-family:'Poppins',sans-serif;font-size:.95rem;font-weight:600;cursor:pointer;letter-spacing:.04em;transition:all .2s;margin-top:2px;}
 .start-btn:active{transform:scale(.98);}
@@ -216,26 +216,28 @@ html,body{min-height:100%;background:linear-gradient(175deg,#060e1e 0%,#0f2347 1
   <div class="ptitle">Score Entry</div>
   <div class="psub" id="setupCompName">Stanmore Golf Club</div>
   <div class="info-card">⛳ Enter your WHS Handicap Index and your playing handicap will be calculated automatically. Stableford points are worked out hole by hole as you play.</div>
+  <div style="border-left:3px solid #f0c040;padding-left:14px;margin-bottom:4px;">
+  <div style="font-size:.72rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#f0c040;margin-bottom:12px;">Player Details</div>
   <label class="flbl">Your Name</label>
   <input class="finp" id="pName" type="text" placeholder="e.g. Brian Holloway" autocomplete="name">
   <div class="frow2">
     <div><label class="flbl">WHS Handicap Index</label><input class="finp" id="pHI" type="number" placeholder="e.g. 14.2 or +2 (enter -2)" step="0.1" min="-5" max="54" oninput="previewHcp()"></div>
     <div><label class="flbl">Gender</label><select class="finp" id="pGender" onchange="onGenderChange()"><option value="m">Male</option><option value="f">Female</option></select></div>
   </div>
-  <label style="display:flex;align-items:center;gap:10px;padding:11px 13px;background:rgba(212,160,23,.1);border:1px solid rgba(212,160,23,.25);border-radius:9px;cursor:pointer;margin-bottom:10px;font-size:.88rem;color:#fff;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:12px;padding:14px 16px;">
-    <!-- hidden checkbox for JS compatibility -->
-    <input type="checkbox" id="pPro" style="display:none;" onchange="onProChange()">
-    <!-- Visual toggle -->
-    <div style="display:flex;align-items:center;justify-content:space-between;gap:14px;width:100%;">
-      <div>
-        <div style="font-size:.95rem;font-weight:700;color:#f0c040;">🏆 Professional Player</div>
-        <div id="proScratchText" style="font-size:.75rem;color:rgba(255,255,255,.55);margin-top:3px;line-height:1.5;">Playing off scratch · Handicap 0 from any tee</div>
-      </div>
-      <div id="proToggle" class="pro-toggle" onclick="togglePro()">
-        <div id="proToggleKnob" class="pro-toggle-knob"></div>
-      </div>
+  </div><!-- end player details section -->
+
+  <!-- hidden checkbox -->
+  <input type="checkbox" id="pPro" style="display:none;" onchange="onProChange()">
+  <!-- Pro toggle card - onclick on whole card -->
+  <div onclick="togglePro()" style="display:flex;align-items:center;justify-content:space-between;gap:14px;width:100%;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:12px;padding:14px 16px;margin-bottom:10px;cursor:pointer;">
+    <div>
+      <div style="font-size:.95rem;font-weight:700;color:#f0c040;">🏆 Professional Player</div>
+      <div id="proScratchText" style="font-size:.75rem;color:rgba(255,255,255,.55);margin-top:3px;line-height:1.5;">Playing off scratch · Handicap 0 from any tee</div>
     </div>
-  </label>
+    <div id="proToggle" class="pro-toggle">
+      <div id="proToggleKnob" class="pro-toggle-knob"></div>
+    </div>
+  </div>
   <div class="frow2">
     <div>
       <label class="flbl">Tee Colour <span id="teeLockLabel" style="color:rgba(212,160,23,.7);font-size:.55rem;">(set by competition)</span></label>
@@ -447,6 +449,24 @@ function totalNett(scores,ph){return scores.reduce((s,g)=>s+(g||0),0)-ph;}
 
 
 const R = { name:'', hi:0, teeKey:'yellow_m', gender:'m', ph:0, startIdx:0, scores:new Array(18).fill(null), curIdx:0 };
+
+function togglePro() {
+  var cb = document.getElementById('pPro');
+  if (cb) cb.checked = !cb.checked;
+  updateProToggleUI();
+  onProChange();
+}
+
+function updateProToggleUI() {
+  var cb = document.getElementById('pPro');
+  var toggle = document.getElementById('proToggle');
+  if (!toggle || !cb) return;
+  if (cb.checked) {
+    toggle.classList.add('on');
+  } else {
+    toggle.classList.remove('on');
+  }
+}
 
 function onProChange() {
   var isPro = document.getElementById('pPro').checked;
