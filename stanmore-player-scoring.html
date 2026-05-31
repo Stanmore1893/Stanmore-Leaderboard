@@ -686,12 +686,14 @@ function startRound(){
   var nineStr = R.nineHole==='front'?' · Front 9':R.nineHole==='back'?' · Back 9':'';
   document.getElementById('pbMeta').textContent='HI '+hi.toFixed(1)+' · Playing HCP '+R.ph+' · '+fmtLabel+(R.holes===9?nineStr:'');
   saveRoundState();
+  console.log('startRound complete, R:', R.name, R.ph, R.competition);
   showScr('scrCard'); renderHole();
 }
 function getPar(i){return R.gender==='f'?COURSE.par_women[i]:COURSE.par_men[i];}
 function getSI(i){return R.gender==='f'?COURSE.si_women[i]:COURSE.si_men[i];}
 
 function renderHole(){
+  console.log('renderHole called, curIdx:', R.curIdx, 'name:', R.name);
   const i=R.curIdx;
   const par=getPar(i); const si=getSI(i);
   const strokes=strokesOnHole(R.ph,si);
@@ -782,6 +784,7 @@ function renderHole(){
 }
 
 function selectScore(s){
+  console.log('selectScore called:', s, 'curIdx:', R.curIdx);
   R.scores[R.curIdx] = s;
   var inp = document.getElementById('scoreInput');
   if (inp && s > 0) inp.value = s;
@@ -791,6 +794,7 @@ function selectScore(s){
 }
 
 function stepScore(dir) {
+  console.log('stepScore called:', dir);
   var inp = document.getElementById('scoreInput');
   var par = getPar(R.curIdx);
   var current = parseInt(inp ? inp.value : par) || par;
