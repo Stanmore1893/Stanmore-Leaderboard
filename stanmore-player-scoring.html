@@ -59,8 +59,8 @@ html,body{min-height:100%;background:linear-gradient(175deg,#060e1e 0%,#0f2347 1
 .sc-lbl{font-size:.6rem;letter-spacing:.13em;text-transform:uppercase;color:rgba(255,255,255,.5);margin-bottom:9px;display:block;}
 .sc-btns{display:grid;grid-template-columns:repeat(8,1fr);gap:5px;}
 .sb{display:none;} /* legacy - hidden */
-.stepper-wrap{display:flex;flex-direction:column;align-items:center;gap:10px;padding:8px 0;}
-.stepper-row{display:flex;align-items:center;gap:0;background:rgba(0,0,0,.3);border:2px solid rgba(212,160,23,.4);border-radius:14px;overflow:hidden;}
+.stepper-wrap{display:flex;flex-direction:column;align-items:center;gap:12px;padding:8px 0;width:100%;}
+.stepper-row{display:flex;align-items:center;gap:0;background:rgba(0,0,0,.3);border:2px solid rgba(212,160,23,.4);border-radius:14px;overflow:hidden;margin:0 auto;}
 .stepper-btn{width:60px;height:64px;background:rgba(212,160,23,.2);border:none;color:#f0c040;font-size:1.4rem;cursor:pointer;font-family:'Poppins',sans-serif;transition:background .15s;flex-shrink:0;}
 .stepper-btn:active{background:rgba(212,160,23,.4);}
 .stepper-input{width:100px;height:64px;background:transparent;border:none;border-left:1px solid rgba(212,160,23,.3);border-right:1px solid rgba(212,160,23,.3);color:#fff;font-size:2rem;font-weight:700;font-family:'DM Mono',monospace;text-align:center;outline:none;-moz-appearance:textfield;}
@@ -694,6 +694,16 @@ function renderHole(){
   document.getElementById('hcNum').textContent=`Hole ${i+1}`;
   document.getElementById('hcInfo').textContent=`Par ${par} · SI ${si}${strokes>0?' · +'+strokes+' stroke'+(strokes>1?'s':''):''}`;
   document.getElementById('pbPts').textContent=runningPts();
+  // Always show player name
+  // Always show player name and meta
+  if (R.name) {
+    var pbNameEl = document.getElementById('pbName');
+    if (pbNameEl) pbNameEl.textContent = R.name;
+    var pbMetaEl = document.getElementById('pbMeta');
+    if (pbMetaEl && R.ph !== undefined) {
+      pbMetaEl.textContent = 'HI ' + (R.hi||0).toFixed(1) + ' · HCP ' + R.ph + (R.competition ? ' · ' + R.competition : '');
+    }
+  }
   // Determine format
   var comp = window._activeComp || {};
   var fmt = (comp.format || '').toLowerCase();
@@ -705,16 +715,16 @@ function renderHole(){
   var btns = document.getElementById('scBtns');
   
   var blobOption = (isStableford || !isStrokeplay) ?
-    '<button type="button" class="blob-btn" onclick="selectScore(0)" style="'+(R.scores[i]===0?'background:rgba(192,57,43,.3);border-color:#e87878;color:#e87878;':'')+'">— Blob</button>' : '';
+    '<button type="button" class="blob-btn" onclick="selectScore(0)" style="'+(R.scores[i]===0?'background:rgba(192,57,43,.3);border-color:#e87878;color:#e87878;':'')+'">— Blob (no score)</button>' : '';
 
   btns.innerHTML = '<div class="stepper-wrap">'
-    + blobOption
     + '<div class="stepper-row">'
     + '<button type="button" class="stepper-btn" onclick="stepScore(-1)">&#9660;</button>'
     + '<input type="number" class="stepper-input" id="scoreInput" value="'+(R.scores[i]||par)+'" min="1" max="'+(par+9)+'" oninput="onScoreInput(this.value)" onclick="this.select()">'
     + '<button type="button" class="stepper-btn" onclick="stepScore(1)">&#9650;</button>'
     + '</div>'
     + '<div class="stepper-label" id="scoreDiffLabel"></div>'
+    + blobOption
     + '</div>';
 
   // Update diff label
