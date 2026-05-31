@@ -326,6 +326,38 @@ html,body{min-height:100%;background:linear-gradient(175deg,#060e1e 0%,#0f2347 1
   </div>
 </div>
 
+<!-- 9-HOLE CHECK -->
+<div class="screen" id="scrCard2">
+  <div class="pbar">
+    <div><div class="pb-name" id="sc2Name">Player</div><div class="pb-meta" id="sc2Header"></div></div>
+    <div class="pb-right"><div class="pb-pts" id="sc2Pts" style="color:#ffe066;font-size:1.4rem;font-weight:800;font-family:'DM Mono',monospace;">0</div><div class="pb-lbl">pts</div></div>
+  </div>
+  <div style="text-align:center;padding:14px 16px 6px;">
+    <div style="font-size:1.1rem;font-weight:700;color:#fff;margin-bottom:4px;">⛳ Halfway Check</div>
+    <div style="font-size:.82rem;color:rgba(255,255,255,.6);">Please check your scores for holes 1–9 are correct before continuing.</div>
+  </div>
+  <div style="margin:0 15px 10px;overflow-x:auto;">
+    <table style="width:100%;border-collapse:collapse;font-family:'DM Mono',monospace;font-size:.82rem;">
+      <thead>
+        <tr style="background:rgba(0,0,0,.35);color:rgba(255,255,255,.6);">
+          <th style="padding:7px 6px;text-align:center;font-weight:600;">Hole</th>
+          <th style="padding:7px 6px;text-align:center;font-weight:600;">Par</th>
+          <th style="padding:7px 6px;text-align:center;font-weight:600;">SI</th>
+          <th style="padding:7px 6px;text-align:center;font-weight:600;">Score</th>
+          <th style="padding:7px 6px;text-align:center;font-weight:600;">Nett</th>
+          <th style="padding:7px 6px;text-align:center;font-weight:600;">Pts</th>
+        </tr>
+      </thead>
+      <tbody id="sc2Body"></tbody>
+    </table>
+  </div>
+  <div id="sc2TotRow" style="display:flex;gap:8px;padding:0 15px 14px;font-family:'DM Mono',monospace;font-size:.85rem;font-weight:700;color:#fff;"></div>
+  <div style="padding:0 15px 20px;display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+    <button class="nav-btn prev" onclick="goBackToHole9()">← Fix a score</button>
+    <button class="nav-btn next" onclick="continueToBack9()">Correct ✓</button>
+  </div>
+</div>
+
 <!-- COMPLETE -->
 <div class="screen" id="scrDone">
   <div class="done-card">
@@ -882,6 +914,11 @@ function renderDone(){
 
 function nextHole(){
   if(R.holeStep >= R.holeIndexes.length - 1){finishRound();return;}
+  // Show 9-hole check after completing hole 9 (index 8) on a full 18-hole round
+  if(R.holes === 18 && R.holeStep === 8 && !R.nineHole){
+    buildAndShowScorecard();
+    return;
+  }
   R.holeStep++;
   R.curIdx = R.holeIndexes[R.holeStep];
   saveRoundState();
@@ -1047,6 +1084,23 @@ function buildAndShowScorecard() {
   rTot.innerHTML='<td colspan="4">TOTAL</td><td>'+(outG+inG)+'</td><td>'+(outN+inN)+'</td><td>'+(outP+inP)+'</td>';
   tbody.appendChild(rTot);
   showScr('scrCard2');
+}
+
+function goBackToHole9() {
+  // Go back to hole 9 so player can navigate to incorrect hole
+  R.holeStep = 8;
+  R.curIdx = R.holeIndexes[8];
+  showScr('scrCard');
+  renderHole();
+}
+
+function continueToBack9() {
+  // Move on to hole 10
+  R.holeStep = 9;
+  R.curIdx = R.holeIndexes[9];
+  saveRoundState();
+  showScr('scrCard');
+  renderHole();
 }
 
 function shareScorecard() {
@@ -1711,6 +1765,23 @@ function buildAndShowScorecard() {
   rTot.innerHTML='<td colspan="4">TOTAL</td><td>'+(outG+inG)+'</td><td>'+(outN+inN)+'</td><td>'+(outP+inP)+'</td>';
   tbody.appendChild(rTot);
   showScr('scrCard2');
+}
+
+function goBackToHole9() {
+  // Go back to hole 9 so player can navigate to incorrect hole
+  R.holeStep = 8;
+  R.curIdx = R.holeIndexes[8];
+  showScr('scrCard');
+  renderHole();
+}
+
+function continueToBack9() {
+  // Move on to hole 10
+  R.holeStep = 9;
+  R.curIdx = R.holeIndexes[9];
+  saveRoundState();
+  showScr('scrCard');
+  renderHole();
 }
 
 function shareScorecard() {
