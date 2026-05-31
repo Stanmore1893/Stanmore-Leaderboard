@@ -670,6 +670,10 @@ function startRound(){
   R.holeStep = 0;
   R.curIdx   = R.holeIndexes[0];
   R.scores   = new Array(18).fill(null);
+  // Set competition name from picker
+  var _compPicker = document.getElementById('compPicker');
+  var _compIdx = parseInt(_compPicker ? _compPicker.value : -1);
+  R.competition = (!isNaN(_compIdx) && _competitions[_compIdx]) ? _competitions[_compIdx].name : '';
 
   document.getElementById('pbName').textContent = name;
   // Show pro pill if needed
@@ -929,6 +933,9 @@ async function submitScore(pts,gross,nett){
 async function saveProgress(){
   saveRoundState(); // Always save locally first
 
+  // Guard: don't save if round not started
+  if (!R.name) return;
+
   // Check connectivity
   if (!navigator.onLine) {
     setSyncStatus('offline');
@@ -986,6 +993,7 @@ async function saveProgress(){
       setSyncStatus('offline');
     }
   }catch(e){
+    console.error('saveProgress error:', e.message, e.stack);
     // Server unreachable - queue locally
     var gross2 = R.scores.reduce(function(s,g){return s+(g||0);},0);
     queueOfflineScore({
@@ -997,7 +1005,7 @@ async function saveProgress(){
       team:R.team||'', holes:R.holes||18, ts:Date.now()
     });
     setSyncStatus('offline');
-    showToast('⚠ No signal — score saved locally');
+    showToast('⚠ Save failed: ' + e.message);
   }
 }
 
