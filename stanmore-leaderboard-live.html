@@ -32,8 +32,9 @@ html,body{height:100%;background:linear-gradient(175deg,#060e1e 0%,#0f2347 18%,#
 .sv{font-family:monospace;font-size:.95rem;font-weight:500;color:var(--gold-lt);}
 .sl{font-size:.5rem;color:rgba(255,255,255,.5);letter-spacing:.09em;text-transform:uppercase;margin-top:1px;}
 .tab-bar{display:flex;background:rgba(0,0,0,.3);border-bottom:1px solid rgba(212,160,23,.2);flex-shrink:0;}
-.tab{flex:1;padding:11px 5px;text-align:center;font-size:.72rem;font-weight:600;letter-spacing:.06em;color:rgba(255,255,255,.4);cursor:pointer;border-bottom:2.5px solid transparent;transition:all .2s;text-transform:uppercase;color:rgba(255,255,255,.5);cursor:pointer;border-bottom:2px solid transparent;transition:all .2s;}
-.tab.active{color:#f0c040;border-bottom-color:#f0c040;background:rgba(212,160,23,.06);}
+.tab{flex:1;padding:11px 5px;text-align:center;font-size:.72rem;font-weight:600;letter-spacing:.06em;color:rgba(255,255,255,.75);cursor:pointer;border-bottom:2.5px solid transparent;border-right:1px solid rgba(255,255,255,.08);transition:all .2s;}
+.tab:last-child{border-right:none;}
+.tab.active{color:#f0c040;border-bottom-color:#f0c040;background:rgba(212,160,23,.1);font-weight:700;}
 .col-hdr{display:grid;grid-template-columns:42px 1fr 52px 52px 46px 62px;padding:6px 14px;background:rgba(0,0,0,.3);flex-shrink:0;border-bottom:1px solid rgba(255,255,255,.06);}
 .ch{font-size:.58rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.45);text-align:right;}
 .ch.r{text-align:right;}.ch.c{text-align:center;}
@@ -55,8 +56,8 @@ html,body{height:100%;background:linear-gradient(175deg,#060e1e 0%,#0f2347 18%,#
 .tv.fin{font-size:.56rem;color:var(--green);letter-spacing:.09em;font-weight:700;text-transform:uppercase;}
 .tl{font-size:.49rem;color:rgba(255,255,255,.5);display:block;letter-spacing:.09em;}
 .pscore{text-align:right;}
-.ptv{font-family:monospace;font-size:1.12rem;font-weight:500;color:#fff;display:block;}
-.leader .ptv{color:var(--gold);font-size:1.3rem;}
+.ptv{font-family:monospace;font-size:1.12rem;font-weight:700;color:#f0c040;display:block;}
+.leader .ptv{color:#ffe066;font-size:1.3rem;text-shadow:0 0 12px rgba(255,224,102,.4);}
 .psl{font-size:.49rem;color:rgba(255,255,255,.5);letter-spacing:.09em;text-transform:uppercase;display:block;}
 .bempty{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:46px 22px;gap:10px;color:rgba(255,255,255,.5);text-align:center;}
 .bempty .ei{font-size:2.2rem;}
