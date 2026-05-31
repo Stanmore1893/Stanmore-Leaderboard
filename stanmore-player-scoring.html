@@ -51,7 +51,7 @@ html,body{min-height:100%;background:linear-gradient(175deg,#060e1e 0%,#0f2347 1
 .pb-lbl{font-size:.6rem;color:rgba(255,255,255,.5);text-transform:uppercase;letter-spacing:.08em;display:block;margin-top:1px;}
 
 /* HOLE CARD */
-.hole-card{background:rgba(255,255,255,.06);border-radius:14px;border:1.5px solid rgba(255,255,255,.12);overflow:hidden;margin-bottom:12px;}
+.hole-card{background:rgba(255,255,255,.06);border-radius:14px;border:1.5px solid rgba(255,255,255,.12);margin-bottom:12px;}
 .hc-head{background:linear-gradient(to right,var(--navy-dk),var(--navy));padding:11px 15px;display:flex;align-items:center;justify-content:space-between;}
 .hc-num{font-family:'Poppins',sans-serif;font-size:1.25rem;font-weight:700;color:var(--white);}
 .hc-info{font-size:1.1rem;font-weight:700;color:#ffe066;font-family:'DM Mono',monospace;text-align:right;line-height:1.6;}
@@ -686,14 +686,12 @@ function startRound(){
   var nineStr = R.nineHole==='front'?' · Front 9':R.nineHole==='back'?' · Back 9':'';
   document.getElementById('pbMeta').textContent='HI '+hi.toFixed(1)+' · Playing HCP '+R.ph+' · '+fmtLabel+(R.holes===9?nineStr:'');
   saveRoundState();
-  console.log('startRound complete, R:', R.name, R.ph, R.competition);
   showScr('scrCard'); renderHole();
 }
 function getPar(i){return R.gender==='f'?COURSE.par_women[i]:COURSE.par_men[i];}
 function getSI(i){return R.gender==='f'?COURSE.si_women[i]:COURSE.si_men[i];}
 
 function renderHole(){
-  console.log('renderHole called, curIdx:', R.curIdx, 'name:', R.name);
   const i=R.curIdx;
   const par=getPar(i); const si=getSI(i);
   const strokes=strokesOnHole(R.ph,si);
@@ -784,7 +782,6 @@ function renderHole(){
 }
 
 function selectScore(s){
-  console.log('selectScore called:', s, 'curIdx:', R.curIdx);
   R.scores[R.curIdx] = s;
   var inp = document.getElementById('scoreInput');
   if (inp && s > 0) inp.value = s;
@@ -794,7 +791,6 @@ function selectScore(s){
 }
 
 function stepScore(dir) {
-  console.log('stepScore called:', dir);
   var inp = document.getElementById('scoreInput');
   var par = getPar(R.curIdx);
   var current = parseInt(inp ? inp.value : par) || par;
