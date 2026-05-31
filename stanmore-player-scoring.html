@@ -734,8 +734,14 @@ function renderHole(){
     + blobOption
     + '</div>';
 
+  // If no score yet recorded for this hole, pre-select par as default
+  if (R.scores[i] === null || R.scores[i] === undefined) {
+    R.scores[i] = par;
+    saveProgress();
+  }
+
   // Update diff label
-  updateScoreDiffLabel(R.scores[i] !== null ? R.scores[i] : null, par, i);
+  updateScoreDiffLabel(R.scores[i], par, i);
   updatePtsPreview();
   document.getElementById('prevBtn').disabled=(R.holeStep===0);
 
