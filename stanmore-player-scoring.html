@@ -328,46 +328,46 @@ html,body{min-height:100%;background:linear-gradient(175deg,#060e1e 0%,#0f2347 1
 
 <!-- 9-HOLE CHECK -->
 <div class="screen" id="scrCard2">
+
+  <!-- Exact same pbar as scrCard -->
   <div class="pbar">
-    <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;">
-      <div class="pb-name" id="sc2Name" style="font-size:1.05rem;font-weight:700;color:#fff;">Player</div>
-      <span id="sc2ProPill" style="display:none;background:#f0c040;color:#0f2347;font-size:.6rem;font-weight:800;border-radius:4px;padding:2px 6px;letter-spacing:.05em;">PRO</span>
-    </div>
-    <div class="pb-meta" id="sc2Header" style="font-size:.65rem;color:rgba(255,255,255,.55);margin-top:2px;"></div>
-    <div class="pb-right" style="display:flex;flex-direction:column;align-items:flex-end;">
-      <div class="pb-pts" id="sc2Pts" style="color:#ffe066;font-size:1.4rem;font-weight:800;font-family:'DM Mono',monospace;">0</div>
-      <div class="pb-lbl">Points</div>
-    </div>
+    <div><div style="display:flex;align-items:center;gap:6px;"><div class="pb-name" id="sc2Name">Player</div><span id="sc2ProPill" style="display:none;background:#f0c040;color:#0f2347;font-size:.6rem;font-weight:800;border-radius:4px;padding:2px 6px;letter-spacing:.05em;">PRO</span></div><div class="pb-meta" id="sc2Header">—</div></div>
+    <div class="pb-right"><div class="pb-pts" id="sc2Pts" style="color:#ffe066;font-size:1.4rem;font-weight:800;font-family:'DM Mono',monospace;">0</div><div class="pb-lbl">Points</div></div>
   </div>
 
-  <div style="text-align:center;padding:16px 16px 8px;">
+  <div style="text-align:center;padding:14px 16px 8px;">
     <div id="sc2CheckTitle" style="font-size:1.2rem;font-weight:800;color:#fff;margin-bottom:6px;">⛳ Halfway Check</div>
-    <div id="sc2CheckSub" style="font-size:.92rem;color:rgba(255,255,255,.65);line-height:1.5;">Check your scores for holes 1–9 are correct before continuing to the back nine.</div>
+    <div id="sc2CheckSub" style="font-size:.9rem;color:rgba(255,255,255,.65);line-height:1.5;">Check your scores for holes 1–9 are correct before continuing.</div>
   </div>
 
-  <!-- Scorecard table -->
-  <div style="margin:0 12px 12px;">
-    <table style="width:100%;border-collapse:collapse;">
+  <!-- 5 col table: Hole | Par | Score | Nett | Pts -->
+  <div style="margin:0 12px 10px;">
+    <table style="width:100%;border-collapse:collapse;font-family:'DM Mono',monospace;">
+      <colgroup>
+        <col style="width:20%">
+        <col style="width:15%">
+        <col style="width:20%">
+        <col style="width:20%">
+        <col style="width:25%">
+      </colgroup>
       <thead>
-        <tr style="background:rgba(0,0,0,.4);">
-          <th style="padding:10px 8px;font-size:.78rem;font-weight:700;color:#f0c040;text-align:center;letter-spacing:.04em;">Hole</th>
-          <th style="padding:10px 8px;font-size:.78rem;font-weight:700;color:#f0c040;text-align:center;letter-spacing:.04em;">Par</th>
-          <th style="padding:10px 8px;font-size:.78rem;font-weight:700;color:#f0c040;text-align:center;letter-spacing:.04em;">Score</th>
-          <th style="padding:10px 8px;font-size:.78rem;font-weight:700;color:#f0c040;text-align:center;letter-spacing:.04em;">Nett</th>
-          <th style="padding:10px 8px;font-size:.78rem;font-weight:700;color:#f0c040;text-align:center;letter-spacing:.04em;">Pts</th>
+        <tr style="background:rgba(0,0,0,.4);border-bottom:2px solid rgba(212,160,23,.3);">
+          <th style="padding:10px 4px;font-size:.82rem;font-weight:700;color:#f0c040;text-align:center;">Hole</th>
+          <th style="padding:10px 4px;font-size:.82rem;font-weight:700;color:#f0c040;text-align:center;">Par</th>
+          <th style="padding:10px 4px;font-size:.82rem;font-weight:700;color:#f0c040;text-align:center;">Score</th>
+          <th style="padding:10px 4px;font-size:.82rem;font-weight:700;color:#f0c040;text-align:center;">Nett</th>
+          <th style="padding:10px 4px;font-size:.82rem;font-weight:700;color:#f0c040;text-align:center;">Pts</th>
         </tr>
       </thead>
       <tbody id="sc2Body"></tbody>
     </table>
   </div>
 
-  <!-- Totals -->
-  <div id="sc2TotRow" style="display:flex;gap:8px;padding:0 12px 16px;"></div>
+  <div id="sc2TotRow" style="display:flex;gap:8px;padding:0 12px 14px;"></div>
 
-  <!-- Buttons -->
   <div style="padding:0 12px 30px;display:grid;grid-template-columns:1fr 1fr;gap:12px;">
     <button class="nav-btn prev" style="font-size:1rem;padding:16px;" onclick="goBackToHole9()">← Fix a score</button>
-    <button id="sc2ConfirmBtn" onclick="continueToBack9()" style="flex:1;background:#d4a017;border:2px solid #f0c040;color:#0f2347;border-radius:12px;padding:16px;font-family:Poppins,sans-serif;font-size:1rem;font-weight:800;cursor:pointer;">✅ Correct</button>
+    <button id="sc2ConfirmBtn" onclick="continueToBack9()" style="background:#d4a017;border:2px solid #f0c040;color:#0f2347;border-radius:12px;padding:16px;font-family:Poppins,sans-serif;font-size:1rem;font-weight:800;cursor:pointer;">✅ Correct</button>
   </div>
 </div>
 
@@ -1135,13 +1135,13 @@ function buildFullScorecard() {
 
     var bg = diff<=-2?'rgba(212,160,23,.25)':diff===-1?'rgba(45,110,78,.25)':diff===0?'rgba(26,58,107,.4)':diff===1?'rgba(192,57,43,.2)':'rgba(192,57,43,.4)';
     var tr = document.createElement('tr');
-    tr.style.borderBottom = '1px solid rgba(255,255,255,.08)';
+    tr.style.cssText = 'border-bottom:1px solid rgba(255,255,255,.08);';
     tr.innerHTML =
-      '<td style="padding:12px 8px;text-align:center;font-size:1rem;font-weight:700;color:#fff;">'+(hIdx+1)+'</td>'
-      +'<td style="padding:12px 8px;text-align:center;font-size:1rem;color:rgba(255,255,255,.6);">'+holePar+'</td>'
-      +'<td style="padding:12px 8px;text-align:center;background:'+bg+';font-size:1.1rem;font-weight:800;color:#fff;border-radius:6px;">'+gross+'</td>'
-      +'<td style="padding:12px 8px;text-align:center;font-size:1rem;color:rgba(255,255,255,.7);">'+nett+'</td>'
-      +'<td style="padding:12px 8px;text-align:center;font-size:1.1rem;font-weight:800;color:#ffe066;">'+pts+'</td>';
+      '<td style="padding:12px 4px;text-align:center;font-size:1rem;font-weight:700;color:#fff;">'+(hIdx+1)+'</td>'
+      +'<td style="padding:12px 4px;text-align:center;font-size:1rem;color:rgba(255,255,255,.55);">'+holePar+'</td>'
+      +'<td style="padding:10px 4px;text-align:center;"><span style="display:inline-block;background:'+bg+';font-size:1.1rem;font-weight:800;color:#fff;border-radius:8px;padding:4px 10px;min-width:36px;">'+gross+'</span></td>'
+      +'<td style="padding:12px 4px;text-align:center;font-size:1rem;color:rgba(255,255,255,.7);">'+nett+'</td>'
+      +'<td style="padding:12px 4px;text-align:center;font-size:1.1rem;font-weight:800;color:#ffe066;">'+pts+'</td>';
     tbody.appendChild(tr);
   });
 
@@ -1908,13 +1908,13 @@ function buildFullScorecard() {
 
     var bg = diff<=-2?'rgba(212,160,23,.25)':diff===-1?'rgba(45,110,78,.25)':diff===0?'rgba(26,58,107,.4)':diff===1?'rgba(192,57,43,.2)':'rgba(192,57,43,.4)';
     var tr = document.createElement('tr');
-    tr.style.borderBottom = '1px solid rgba(255,255,255,.08)';
+    tr.style.cssText = 'border-bottom:1px solid rgba(255,255,255,.08);';
     tr.innerHTML =
-      '<td style="padding:12px 8px;text-align:center;font-size:1rem;font-weight:700;color:#fff;">'+(hIdx+1)+'</td>'
-      +'<td style="padding:12px 8px;text-align:center;font-size:1rem;color:rgba(255,255,255,.6);">'+holePar+'</td>'
-      +'<td style="padding:12px 8px;text-align:center;background:'+bg+';font-size:1.1rem;font-weight:800;color:#fff;border-radius:6px;">'+gross+'</td>'
-      +'<td style="padding:12px 8px;text-align:center;font-size:1rem;color:rgba(255,255,255,.7);">'+nett+'</td>'
-      +'<td style="padding:12px 8px;text-align:center;font-size:1.1rem;font-weight:800;color:#ffe066;">'+pts+'</td>';
+      '<td style="padding:12px 4px;text-align:center;font-size:1rem;font-weight:700;color:#fff;">'+(hIdx+1)+'</td>'
+      +'<td style="padding:12px 4px;text-align:center;font-size:1rem;color:rgba(255,255,255,.55);">'+holePar+'</td>'
+      +'<td style="padding:10px 4px;text-align:center;"><span style="display:inline-block;background:'+bg+';font-size:1.1rem;font-weight:800;color:#fff;border-radius:8px;padding:4px 10px;min-width:36px;">'+gross+'</span></td>'
+      +'<td style="padding:12px 4px;text-align:center;font-size:1rem;color:rgba(255,255,255,.7);">'+nett+'</td>'
+      +'<td style="padding:12px 4px;text-align:center;font-size:1.1rem;font-weight:800;color:#ffe066;">'+pts+'</td>';
     tbody.appendChild(tr);
   });
 
