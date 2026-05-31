@@ -842,15 +842,16 @@ async function deleteComp(idx) {
   var comp = competitions[idx];
   if (!confirm('Delete "' + comp.name + '"? This will also remove all live scores for this competition from the leaderboard.')) return;
 
-  // Remove live scores for this competition
+  // Remove live scores using _read/_write to bypass merge logic
   try {
-    var allScores = await SGC.get('scores');
-    if (Array.isArray(allScores)) {
-      var filtered = allScores.filter(function(s) {
+    var record = await SGC._read();
+    if (Array.isArray(record.scores)) {
+      var before = record.scores.length;
+      record.scores = record.scores.filter(function(s) {
         return s.competition !== comp.name;
       });
-      if (filtered.length < allScores.length) {
-        await SGC.set('scores', filtered);
+      if (record.scores.length < before) {
+        await SGC._write(record);
       }
     }
   } catch(e) {
