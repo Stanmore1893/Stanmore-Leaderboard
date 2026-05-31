@@ -35,8 +35,8 @@ html,body{height:100%;background:linear-gradient(175deg,#060e1e 0%,#0f2347 18%,#
 .tab{flex:1;padding:11px 5px;text-align:center;font-size:.72rem;font-weight:600;letter-spacing:.06em;color:rgba(255,255,255,.75);cursor:pointer;border-bottom:2.5px solid transparent;border-right:1px solid rgba(255,255,255,.08);transition:all .2s;}
 .tab:last-child{border-right:none;}
 .tab.active{color:#f0c040;border-bottom-color:#f0c040;background:rgba(212,160,23,.1);font-weight:700;}
-.col-hdr{display:grid;grid-template-columns:42px 1fr 52px 52px 46px 62px;padding:6px 14px;background:rgba(0,0,0,.3);flex-shrink:0;border-bottom:1px solid rgba(255,255,255,.06);}
-.ch{font-size:.58rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.45);text-align:right;}
+.col-hdr{display:grid;grid-template-columns:42px 1fr 52px 52px 46px 62px;padding:8px 14px;background:rgba(0,0,0,.35);flex-shrink:0;border-bottom:2px solid rgba(212,160,23,.3);}
+.ch{font-size:.72rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:rgba(255,255,255,.9);text-align:right;}
 .ch.r{text-align:right;}.ch.c{text-align:center;}
 .board{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;}
 .pcard{display:grid;grid-template-columns:42px 1fr 52px 52px 46px 62px;align-items:center;padding:0 14px;min-height:60px;border-bottom:1px solid rgba(255,255,255,.06);background:rgba(255,255,255,.04);position:relative;animation:su .28s ease both;}
@@ -220,7 +220,7 @@ html,body{height:100%;background:linear-gradient(175deg,#060e1e 0%,#0f2347 18%,#
   </div>
 
   <div class="col-hdr">
-    <div class="ch">Pos</div><div class="ch">Player</div>
+    <div class="ch" style="text-align:center;">Pos</div><div class="ch" style="text-align:left;">Player</div>
     <div class="ch r">P.HCP</div><div class="ch r">Gross</div>
     <div class="ch c">Thru</div><div class="ch r">Pts</div>
   </div>
