@@ -1064,104 +1064,9 @@ async function saveProgress(){
 
 
 // ── HOLE BY HOLE SCORECARD ──
-function buildAndShowScorecard() {
-  var gender = R.gender||'m';
-  var par    = gender==='f' ? COURSE.par_women : COURSE.par_men;
-  var si     = gender==='f' ? COURSE.si_women  : COURSE.si_men;
-  var t      = COURSE.ratings[R.teeKey]||{};
-  document.getElementById('sc2Header').innerHTML =
-    '<strong style="color:#fff;">'+R.name+'</strong> &nbsp;·&nbsp; HI '+(R.hi||0).toFixed(1)+' &nbsp;·&nbsp; Playing HCP '+(R.ph||0)+'<br>'
-    +(t.name||'')+' &nbsp;·&nbsp; '+(R.competition||'')+' &nbsp;·&nbsp; '+new Date().toLocaleDateString('en-GB',{weekday:'short',day:'numeric',month:'short',year:'numeric'});
-  var tbody=document.getElementById('sc2Body'); tbody.innerHTML='';
-  var outG=0,outN=0,outP=0,inG=0,inN=0,inP=0;
-  R.holeIndexes.forEach(function(hIdx,step) {
-    var gross=R.scores[hIdx]; if(!gross) return;
-    var holePar=par[hIdx]; var holeSI=si[hIdx];
-    var strokes=strokesOnHole(R.ph,holeSI);
-    var nett=gross-strokes; var pts=stablefordPts(gross,holePar,R.ph,holeSI);
-    var diff=nett-holePar;
-    var cls=diff<=-2?'eagle':diff===-1?'birdie':diff===0?'par-score':diff===1?'bogey':'double';
-    var tr=document.createElement('tr');
-    tr.innerHTML='<td class="hole-num">'+(hIdx+1)+'</td><td>'+holePar+'</td><td style="color:rgba(255,255,255,.4)">'+holeSI+'</td><td style="color:rgba(212,160,23,.6)">'+strokes+'</td><td class="gross-score '+cls+'">'+gross+'</td><td style="font-family:monospace">'+nett+'</td><td class="pts-cell">'+pts+'</td>';
-    tbody.appendChild(tr);
-    if(hIdx<9){outG+=gross;outN+=nett;outP+=pts;}else{inG+=gross;inN+=nett;inP+=pts;}
-    if(hIdx===8&&R.holeIndexes.length>9){var r9=document.createElement('tr');r9.className='sc-nine-row';r9.innerHTML='<td colspan="4">OUT</td><td>'+outG+'</td><td>'+outN+'</td><td>'+outP+'</td>';tbody.appendChild(r9);}
-  });
-  var rTot=document.createElement('tr'); rTot.className='sc-total-row';
-  rTot.innerHTML='<td colspan="4">TOTAL</td><td>'+(outG+inG)+'</td><td>'+(outN+inN)+'</td><td>'+(outP+inP)+'</td>';
-  tbody.appendChild(rTot);
-  showScr('scrCard2');
-}
 
-function buildFullScorecard() {
-  var gender = R.gender||'m';
-  var par = gender==='f' ? COURSE.par_women : COURSE.par_men;
-  var si  = gender==='f' ? COURSE.si_women  : COURSE.si_men;
 
-  // Update header
-  var sc2Name = document.getElementById('sc2Name');
-  if (sc2Name) sc2Name.textContent = R.name;
-  var sc2Pro = document.getElementById('sc2ProPill');
-  if (sc2Pro) sc2Pro.style.display = R.isPro ? 'inline-flex' : 'none';
-  var sc2Hdr = document.getElementById('sc2Header');
-  if (sc2Hdr) {
-    var activeComp4 = window._activeComp || {};
-    var fmtLabel4 = activeComp4.format ? activeComp4.format.replace(/_/g,' ').replace(/\b\w/g,function(c){return c.toUpperCase();}) : '';
-    sc2Hdr.textContent = 'HI ' + (R.hi||0).toFixed(1) + ' · HCP ' + R.ph + (R.competition ? ' · ' + R.competition : '') + (fmtLabel4 ? ' · ' + fmtLabel4 : '');
-  }
 
-  // Update title and buttons for final check
-  var title = document.querySelector('#scrCard2 .halfway-title');
-  var subtitle = document.querySelector('#scrCard2 .halfway-sub');
-
-  // Swap button behaviour for final submission
-  var fixBtn = document.querySelector('#scrCard2 button.nav-btn.prev');
-  var confirmBtn = document.querySelector('#scrCard2 button[onclick="continueToBack9()"]');
-  if (fixBtn) { fixBtn.textContent = '← Fix a score'; fixBtn.onclick = goBackToLastHole; }
-  if (confirmBtn) { confirmBtn.textContent = '✅ Submit Round'; confirmBtn.setAttribute('onclick','confirmFinalScore()'); }
-
-  var tbody = document.getElementById('sc2Body');
-  tbody.innerHTML = '';
-  var totG=0, totN=0, totP=0;
-
-  R.holeIndexes.forEach(function(hIdx) {
-    var gross = R.scores[hIdx] || 0;
-    var holePar = par[hIdx]; var holeSI = si[hIdx];
-    var strokes = strokesOnHole(R.ph, holeSI);
-    var nett = gross - strokes;
-    var pts  = stablefordPts(gross, holePar, R.ph, holeSI);
-    var diff = nett - holePar;
-    totG += gross; totN += nett; totP += pts;
-
-    var bg = diff<=-2?'rgba(212,160,23,.25)':diff===-1?'rgba(45,110,78,.25)':diff===0?'rgba(26,58,107,.4)':diff===1?'rgba(192,57,43,.2)':'rgba(192,57,43,.4)';
-    var tr = document.createElement('tr');
-    tr.style.cssText = 'border-bottom:1px solid rgba(255,255,255,.08);';
-    tr.innerHTML =
-      '<td style="padding:12px 4px;text-align:center;font-size:1rem;font-weight:700;color:#fff;">'+(hIdx+1)+'</td>'
-      +'<td style="padding:12px 4px;text-align:center;font-size:1rem;color:rgba(255,255,255,.55);">'+holePar+'</td>'
-      +'<td style="padding:10px 4px;text-align:center;"><span style="display:inline-block;background:'+bg+';font-size:1.1rem;font-weight:800;color:#fff;border-radius:8px;padding:4px 10px;min-width:36px;">'+gross+'</span></td>'
-      +'<td style="padding:12px 4px;text-align:center;font-size:1rem;color:rgba(255,255,255,.7);">'+nett+'</td>'
-      +'<td style="padding:12px 4px;text-align:center;font-size:1.1rem;font-weight:800;color:#ffe066;">'+pts+'</td>';
-    tbody.appendChild(tr);
-  });
-
-  var totRow = document.getElementById('sc2TotRow');
-  if (totRow) totRow.innerHTML =
-    '<div style="flex:1;background:rgba(0,0,0,.3);border-radius:10px;padding:12px 8px;text-align:center;"><div style="font-size:.72rem;font-weight:600;color:rgba(255,255,255,.5);margin-bottom:4px;text-transform:uppercase;">Gross</div><div style="font-size:1.2rem;font-weight:700;color:#fff;">'+totG+'</div></div>'
-    +'<div style="flex:1;background:rgba(0,0,0,.3);border-radius:10px;padding:12px 8px;text-align:center;"><div style="font-size:.72rem;font-weight:600;color:rgba(255,255,255,.5);margin-bottom:4px;text-transform:uppercase;">Nett</div><div style="font-size:1.2rem;font-weight:700;color:#fff;">'+totN+'</div></div>'
-    +'<div style="flex:1;background:rgba(212,160,23,.25);border:1.5px solid rgba(212,160,23,.5);border-radius:10px;padding:12px 8px;text-align:center;"><div style="font-size:.72rem;font-weight:600;color:rgba(255,255,255,.6);margin-bottom:4px;text-transform:uppercase;">Points</div><div style="font-size:1.4rem;font-weight:800;color:#ffe066;">'+totP+'</div></div>';
-
-  var sc2Pts = document.getElementById('sc2Pts');
-  if (sc2Pts) sc2Pts.textContent = totP;
-
-  // Update title text
-  var titleEl = document.getElementById('sc2CheckTitle');
-  if (titleEl) titleEl.textContent = '📋 Final Scorecard Check';
-  var subEl = document.getElementById('sc2CheckSub');
-  if (subEl) subEl.textContent = 'Please check all 18 holes are correct before submitting.';
-
-  showScr('scrCard2');
-}
 
 function confirmFinalScore() {
   var pending = window._pendingSubmit;
@@ -1936,44 +1841,13 @@ function buildFullScorecard() {
   showScr('scrCard2');
 }
 
-function confirmFinalScore() {
-  var pending = window._pendingSubmit;
-  if (!pending) return;
-  var isNR = pending.isNR;
-  document.getElementById('doneSubtitle').textContent = isNR ? 'Round submitted as NR — No Return' : 'Well played, ' + R.name + '!';
-  document.getElementById('donePts').textContent = pending.pts;
-  document.getElementById('doneGross').textContent = pending.gross;
-  document.getElementById('doneNett').textContent = pending.nett;
-  document.getElementById('donePH').textContent = R.ph;
-  document.getElementById('holeBadge').textContent = (R.holes===9?'9 Holes':'18 Holes') + ' Complete';
-  clearRoundState();
-  showScr('scrDone');
-  submitScore(pending.pts, pending.gross, pending.nett);
-}
 
-function goBackToLastHole() {
-  R.holeStep = R.holeIndexes.length - 1;
-  R.curIdx = R.holeIndexes[R.holeStep];
-  showScr('scrCard');
-  renderHole();
-}
 
-function goBackToHole9() {
-  // Go back to hole 9 so player can navigate to incorrect hole
-  R.holeStep = 8;
-  R.curIdx = R.holeIndexes[8];
-  showScr('scrCard');
-  renderHole();
-}
 
-function continueToBack9() {
-  // Move on to hole 10
-  R.holeStep = 9;
-  R.curIdx = R.holeIndexes[9];
-  saveRoundState();
-  showScr('scrCard');
-  renderHole();
-}
+
+
+
+
 
 function shareScorecard() {
   var t=COURSE.ratings[R.teeKey]||{};
