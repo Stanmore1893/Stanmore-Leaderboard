@@ -278,10 +278,12 @@ html,body{min-height:100%;background:linear-gradient(175deg,#060e1e 0%,#0f2347 1
 
 <!-- SCORECARD -->
 <div class="screen" id="scrCard">
-  <div id="syncPill" style="display:none;text-align:center;padding:4px 16px;font-size:.72rem;font-weight:600;font-family:'Poppins',sans-serif;border-radius:0;"></div>
   <div class="pbar">
     <div><div style="display:flex;align-items:center;gap:6px;"><div class="pb-name" id="pbName">Player</div><span id="proPill" style="display:none;background:#f0c040;color:#0f2347;font-size:.6rem;font-weight:800;border-radius:4px;padding:2px 6px;letter-spacing:.05em;">PRO</span></div><div class="pb-meta" id="pbMeta">—</div></div>
     <div class="pb-right"><div class="pb-pts" id="pbPts">0</div><div class="pb-lbl">Points</div></div>
+  </div>
+  <div style="text-align:right;padding:2px 15px 4px;">
+    <span id="syncPill" style="display:none;font-size:.6rem;font-weight:600;font-family:'Poppins',sans-serif;border-radius:20px;padding:2px 8px;"></span>
   </div>
   <div class="hole-card" id="holeCard">
     <div class="hc-head">
@@ -1080,24 +1082,21 @@ function showToast(msg, duration) {
 function setSyncStatus(status) {
   var pill = document.getElementById('syncPill');
   if (!pill) return;
-  pill.style.display = 'block';
-  pill.style.border = 'none';
-  pill.style.borderRadius = '0';
-  pill.style.padding = '5px 16px';
+  pill.style.display = 'inline-block';
+  pill.style.padding = '2px 8px';
   if (status === 'synced') {
-    pill.textContent = '✓ Synced to leaderboard';
-    pill.style.background = 'rgba(45,110,78,.5)';
-    pill.style.color = '#ffffff';
-    // Auto-hide after 3 seconds
+    pill.textContent = '✓ Synced';
+    pill.style.background = 'rgba(45,110,78,.4)';
+    pill.style.color = '#8ee0b4';
     setTimeout(function(){ if(pill) pill.style.display='none'; }, 3000);
   } else if (status === 'pending') {
-    pill.textContent = '⏳ Saved locally — will sync when online';
-    pill.style.background = 'rgba(212,160,23,.4)';
-    pill.style.color = '#ffffff';
+    pill.textContent = '⏳ Saved locally';
+    pill.style.background = 'rgba(212,160,23,.25)';
+    pill.style.color = '#f0c040';
   } else if (status === 'offline') {
-    pill.textContent = '⚠ No signal — score saved locally';
-    pill.style.background = 'rgba(192,57,43,.5)';
-    pill.style.color = '#ffffff';
+    pill.textContent = '⚠ No signal';
+    pill.style.background = 'rgba(192,57,43,.4)';
+    pill.style.color = '#e87878';
   }
 }
 
