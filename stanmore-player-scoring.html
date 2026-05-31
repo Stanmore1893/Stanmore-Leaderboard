@@ -1122,7 +1122,7 @@ window.addEventListener('offline', function() {
   showToast('⚠ No signal — scores saved locally');
 });
 
-var ROUND_KEY = 'sgc_round_state';
+
 
 function saveRoundState() {
   try {
@@ -1236,21 +1236,19 @@ async function dismissResume() {
     }
   } catch(e) {}
 
-  // Remove from Supabase if we know the name
+  // Remove from Supabase using _read/_write to bypass the merge logic in SGC.set
   if (prevName) {
     try {
-      var allScores = await SGC.get('scores');
-      if (Array.isArray(allScores)) {
-        var filtered = allScores.filter(function(s) {
+      var record = await SGC._read();
+      if (Array.isArray(record.scores)) {
+        record.scores = record.scores.filter(function(s) {
           return s.name.toLowerCase() !== prevName.toLowerCase();
         });
-        if (filtered.length < allScores.length) {
-          await SGC.set('scores', filtered);
-          console.log('Previous score removed from leaderboard for:', prevName);
-        }
+        await SGC._write(record);
+        console.log('Score removed from leaderboard for:', prevName);
       }
     } catch(e) {
-      console.log('Could not remove score from leaderboard:', e);
+      console.log('Could not remove score:', e);
     }
   }
 
