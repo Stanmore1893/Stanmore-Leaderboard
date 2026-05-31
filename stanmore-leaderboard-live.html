@@ -7,7 +7,7 @@
 <title>Stanmore GC · Leaderboard</title>
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Cormorant+Garamond:wght@400;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
-:root{--navy:#1a3a6b;--navy-dk:#0f2347;--navy-mid:#1e4480;--gold:#d4a017;--gold-lt:#f0c040;--gold-pale:#faf0d0;--red:#c0392b;--cream:#f8f5ef;--text:#141e30;--grey:#8896a8;--green:#2d6e4e;--green-lt:#3fa06e;--white:#fff;}
+:root{--navy:#1a3a6b;--navy-dk:#0f2347;--navy-mid:#1e4480;--gold:#d4a017;--gold-lt:#f0c040;--gold-pale:#faf0d0;--red:#c0392b;--cream:rgba(255,255,255,.04);--text:#141e30;--grey:#8896a8;--green:#2d6e4e;--green-lt:#3fa06e;--white:#fff;}
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
 html,body{height:100%;background:linear-gradient(175deg,#060e1e 0%,#0f2347 18%,#1a3a6b 38%,#162d5c 55%,#1e4a8a 68%,#0f2347 82%,#060e1e 100%);background-attachment:fixed;font-family:'Poppins',sans-serif;color:#fff;overscroll-behavior:none;}
 #app{display:flex;flex-direction:column;height:100vh;}
@@ -26,7 +26,7 @@ html,body{height:100%;background:linear-gradient(175deg,#060e1e 0%,#0f2347 18%,#
 .cstrip{display:flex;align-items:baseline;justify-content:space-between;padding:7px 0 0;}
 .cname{font-family:'Poppins',sans-serif;font-size:1rem;font-weight:600;color:var(--gold-lt);}
 .cdate{font-size:.6rem;color:rgba(255,255,255,.5);font-family:monospace;}
-.stats-bar{display:flex;background:var(--navy-mid);padding:7px 15px;flex-shrink:0;}
+.stats-bar{display:flex;background:rgba(0,0,0,.25);padding:7px 15px;flex-shrink:0;border-bottom:1px solid rgba(255,255,255,.06);}
 .si{flex:1;text-align:center;border-right:1px solid rgba(255,255,255,.08);}
 .si:last-child{border-right:none;}
 .sv{font-family:monospace;font-size:.95rem;font-weight:500;color:var(--gold-lt);}
@@ -34,14 +34,14 @@ html,body{height:100%;background:linear-gradient(175deg,#060e1e 0%,#0f2347 18%,#
 .tab-bar{display:flex;background:rgba(0,0,0,.3);border-bottom:1px solid rgba(212,160,23,.2);flex-shrink:0;}
 .tab{flex:1;padding:11px 5px;text-align:center;font-size:.72rem;font-weight:600;letter-spacing:.06em;color:rgba(255,255,255,.4);cursor:pointer;border-bottom:2.5px solid transparent;transition:all .2s;text-transform:uppercase;color:rgba(255,255,255,.5);cursor:pointer;border-bottom:2px solid transparent;transition:all .2s;}
 .tab.active{color:#f0c040;border-bottom-color:#f0c040;background:rgba(212,160,23,.06);}
-.col-hdr{display:grid;grid-template-columns:42px 1fr 52px 52px 46px 62px;padding:6px 14px;background:var(--navy);flex-shrink:0;}
-.ch{font-size:.54rem;font-weight:600;letter-spacing:.13em;text-transform:uppercase;color:rgba(212,160,23,.72);}
+.col-hdr{display:grid;grid-template-columns:42px 1fr 52px 52px 46px 62px;padding:6px 14px;background:rgba(0,0,0,.3);flex-shrink:0;border-bottom:1px solid rgba(255,255,255,.06);}
+.ch{font-size:.58rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.45);text-align:right;}
 .ch.r{text-align:right;}.ch.c{text-align:center;}
 .board{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;}
 .pcard{display:grid;grid-template-columns:42px 1fr 52px 52px 46px 62px;align-items:center;padding:0 14px;min-height:60px;border-bottom:1px solid rgba(255,255,255,.06);background:rgba(255,255,255,.04);position:relative;animation:su .28s ease both;}
 @keyframes su{from{transform:translateY(8px);opacity:0}to{transform:translateY(0);opacity:1}}
-.pcard:nth-child(even){background:rgba(248,245,239,.85);}
-.pcard.leader{background:linear-gradient(to right,rgba(212,160,23,.1),rgba(248,245,239,.7));border-bottom:1px solid rgba(212,160,23,.13);}
+.pcard:nth-child(even){background:rgba(15,35,71,.85);}
+.pcard.leader{background:linear-gradient(to right,rgba(212,160,23,.12),rgba(212,160,23,.04));border-bottom:1px solid rgba(212,160,23,.13);}
 .pcard.leader::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;background:linear-gradient(to bottom,var(--gold),var(--gold-lt));border-radius:0 2px 2px 0;}
 .ppos{font-family:monospace;font-size:.79rem;font-weight:500;color:rgba(255,255,255,.5);}
 .ppos.top{color:var(--gold);font-size:.9rem;}
