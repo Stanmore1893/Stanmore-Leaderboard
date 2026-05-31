@@ -554,6 +554,19 @@ function sorted(){
   var filtered = _compFilter
     ? players.filter(function(p){ return p.competition === _compFilter; })
     : players;
+  // Check if active competition is scratch (lowest gross wins)
+  var ac = (window._competitions||[]).find(function(c){ return c.active; }) || {};
+  var isScratchComp = (ac.format||'').indexOf('scratch') > -1;
+  if (isScratchComp) {
+    // Scratch: lowest gross wins
+    return filtered.slice().sort(function(a,b){ return (a.gross||999)-(b.gross||999); });
+  }
+  var isStrokeplay = (ac.format||'').indexOf('strokeplay') > -1 || (ac.format||'').indexOf('stroke') > -1;
+  if (isStrokeplay) {
+    // Strokeplay with handicap: lowest nett wins
+    return filtered.slice().sort(function(a,b){ return (a.nett||999)-(b.nett||999)||b.thru-a.thru; });
+  }
+  // Stableford and all others: highest points wins
   return filtered.slice().sort(function(a,b){ return b.pts-a.pts||b.thru-a.thru; });
 }
 

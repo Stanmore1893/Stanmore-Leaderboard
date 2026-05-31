@@ -763,6 +763,9 @@ function renderHole(){
   document.getElementById('hcNum').innerHTML='Hole '+(i+1)+' <span style="background:rgba(212,160,23,.3);border:1px solid rgba(212,160,23,.6);border-radius:4px;padding:1px 5px;font-size:.65rem;color:#f0c040;font-weight:700;line-height:1.4;">&#9660;</span>';
   document.getElementById('hcInfo').textContent=`Par ${par} · SI ${si}${strokes>0?' · +'+strokes+' stroke'+(strokes>1?'s':''):''}`;
   document.getElementById('pbPts').textContent=runningPts();
+  // Update Points label for scratch
+  var lblEl = document.querySelector('.pb-lbl');
+  if (lblEl) lblEl.textContent = isScratch() ? 'Gross' : 'Points';
   // Always show player name
   // Always show player name and meta
   if (R.name) {
@@ -935,8 +938,12 @@ function updateScoreDiffLabel(score, par, holeIdx) {
   var labelIdx = diff + 3;
   var label = labelIdx >= 0 && labelIdx < labels.length ? labels[labelIdx] : (diff > 3 ? '+'+diff : diff+'');
   var colour = labelIdx >= 0 && labelIdx < colours.length ? colours[labelIdx] : 'rgba(255,255,255,.6)';
-  var pts = stablefordPts(score, par, R.ph, getSI(holeIdx));
-  el.textContent = label + ' · ' + pts + ' pt' + (pts !== 1 ? 's' : '');
+  if (isScratch()) {
+    el.textContent = label + ' · ' + score + ' strokes';
+  } else {
+    var pts = stablefordPts(score, par, R.ph, getSI(holeIdx));
+    el.textContent = label + ' · ' + pts + ' pt' + (pts !== 1 ? 's' : '');
+  }
   el.style.color = colour;
 }
 
@@ -964,10 +971,21 @@ function updatePtsPreview(){
   const strokes=strokesOnHole(R.ph,si);
   const nett=s-strokes; const diff=nett-par;
   const rel=diff<=-2?'Eagle':diff===-1?'Birdie':diff===0?'Par':diff===1?'Bogey':diff===2?'Double Bogey':'+ '+(diff);
-  el.innerHTML=`${rel}<span class="strokes-badge">Nett ${nett}</span> · <strong>${pts} point${pts!==1?'s':''}</strong>`;
+  if (isScratch()) {
+    el.innerHTML=rel+' · <strong>'+s+' gross strokes</strong>';
+  } else {
+    el.innerHTML=`${rel}<span class="strokes-badge">Nett ${nett}</span> · <strong>${pts} point${pts!==1?'s':''}</strong>`;
+  }
 }
 
+function isScratch(){
+  var comp = window._activeComp || {};
+  return (comp.format||'').toLowerCase().indexOf('scratch') > -1;
+}
 function runningPts(){
+  if (isScratch()) {
+    return R.scores.reduce(function(s,g){return s+(g||0);},0);
+  }
   const par=R.gender==='f'?COURSE.par_women:COURSE.par_men;
   const si=R.gender==='f'?COURSE.si_women:COURSE.si_men;
   return R.scores.reduce((sum,g,i)=>sum+stablefordPts(g||0,par[i],R.ph,si[i]),0);
@@ -1436,6 +1454,7 @@ window.addEventListener('load', function() {
 // FORMAT_MAP covers both old keys (backwards compat) and new admin keys
 var FORMAT_MAP = {
   // New admin keys
+  'ind_scratch':        {label:'Scratch (Gross)',       allowance:0,    holes:18, matchplay:false, nineHole:null},
   'ind_stableford':    {label:'Stableford',           allowance:0.95, holes:18, matchplay:false, nineHole:null},
   'ind_strokeplay':    {label:'Stroke Play',           allowance:0.95, holes:18, matchplay:false, nineHole:null},
   'ind_parbogey':      {label:'Par / Bogey',           allowance:0.95, holes:18, matchplay:false, nineHole:null},
@@ -1709,6 +1728,16 @@ function onCompSelect() {
   }
 
   // Store for startRound to use
+  // Scratch: disable handicap input, force ph=0
+  var isScratchFmt = (comp.format||'').indexOf('scratch') > -1;
+  var hiInput = document.getElementById('pHI');
+  var hiLabel = document.querySelector('label[for="pHI"]') || document.querySelector('.flbl');
+  if (hiInput) {
+    hiInput.disabled = isScratchFmt;
+    hiInput.style.opacity = isScratchFmt ? '.4' : '1';
+    if (isScratchFmt) { hiInput.value = '0'; hiInput.placeholder = 'Scratch competition'; }
+    else { hiInput.placeholder = 'e.g. 14.2'; }
+  }
   window._activeComp = comp;
   window._activeFmt  = fmt;
   previewHcp();
