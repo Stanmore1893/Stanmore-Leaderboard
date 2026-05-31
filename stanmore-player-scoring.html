@@ -377,19 +377,32 @@ html,body{min-height:100%;background:linear-gradient(175deg,#060e1e 0%,#0f2347 1
 
 <!-- COMPLETE -->
 <div class="screen" id="scrDone">
-  <div class="done-card">
-    <div class="done-icon">🏆</div>
-    <div class="done-title">Round Complete!</div>
-    <div class="done-sub" id="doneSubtitle">Well played</div>
-    <div class="big-pts" id="donePts">0</div>
-    <div class="big-lbl">Stableford Points</div>
-    <div class="stat-row">
-      <div class="stat"><div class="sv" id="doneGross">0</div><div class="sl">Gross</div></div>
-      <div class="stat"><div class="sv" id="doneNett">0</div><div class="sl">Nett</div></div>
-      <div class="stat"><div class="sv" id="donePH">0</div><div class="sl">Playing HCP</div></div>
+  <div style="text-align:center;padding:30px 20px 10px;">
+    <div style="font-size:3rem;margin-bottom:10px;">🏆</div>
+    <div style="font-size:1.6rem;font-weight:800;color:#ffffff;margin-bottom:6px;">Round Complete!</div>
+    <div id="doneSubtitle" style="font-size:.92rem;color:rgba(255,255,255,.7);margin-bottom:24px;">Well played</div>
+    <div id="donePts" style="font-family:'DM Mono',monospace;font-size:4rem;font-weight:800;color:#ffe066;line-height:1;">0</div>
+    <div style="font-size:.68rem;color:rgba(255,255,255,.5);letter-spacing:.14em;text-transform:uppercase;margin-top:4px;margin-bottom:28px;">Stableford Points</div>
+  </div>
+
+  <div style="display:flex;justify-content:space-around;border-top:1px solid rgba(255,255,255,.1);border-bottom:1px solid rgba(255,255,255,.1);padding:20px 16px;margin:0 0 20px;">
+    <div style="text-align:center;">
+      <div id="doneGross" style="font-family:'DM Mono',monospace;font-size:1.4rem;font-weight:700;color:#ffffff;">0</div>
+      <div style="font-size:.6rem;color:rgba(255,255,255,.5);letter-spacing:.1em;text-transform:uppercase;margin-top:4px;">Gross</div>
+    </div>
+    <div style="text-align:center;">
+      <div id="doneNett" style="font-family:'DM Mono',monospace;font-size:1.4rem;font-weight:700;color:#ffffff;">0</div>
+      <div style="font-size:.6rem;color:rgba(255,255,255,.5);letter-spacing:.1em;text-transform:uppercase;margin-top:4px;">Nett</div>
+    </div>
+    <div style="text-align:center;">
+      <div id="donePH" style="font-family:'DM Mono',monospace;font-size:1.4rem;font-weight:700;color:#ffffff;">0</div>
+      <div style="font-size:.6rem;color:rgba(255,255,255,.5);letter-spacing:.1em;text-transform:uppercase;margin-top:4px;">Playing HCP</div>
     </div>
   </div>
-  <div class="success-msg" id="submitMsg">✓ Submitting your score to the leaderboard…</div>
+
+  <div style="padding:0 16px 20px;">
+    <div class="success-msg" id="submitMsg">✓ Submitting your score to the leaderboard…</div>
+  </div>
 </div>
 
 <script>
