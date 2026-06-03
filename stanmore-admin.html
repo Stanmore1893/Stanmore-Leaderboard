@@ -1073,6 +1073,13 @@ async function loadScores(){
   try{
     var record=await SGC._read();
     var players=Array.isArray(record.scores)?record.scores:[];
+    // Decode h field into scores[] immediately on load
+    players.forEach(function(p){
+      if (typeof p.h === 'string' && p.h.length > 0) {
+        var decoded = p.h.split(',').map(function(v){ var n=parseInt(v); return n>0?n:null; });
+        if (decoded.some(function(s){return s;})) p.scores = decoded;
+      }
+    });
     renderScores(players);
 
   }catch(e){
