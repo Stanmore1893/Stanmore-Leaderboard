@@ -1137,7 +1137,7 @@ async function submitScore(pts,gross,nett){
     const picker=document.getElementById('compPicker');
     const compIdx=parseInt(picker?picker.value:-1);
     const compName=(!isNaN(compIdx)&&_competitions[compIdx])?_competitions[compIdx].name:'';
-    const entry={name:R.name,hi:R.hi,teeKey:R.teeKey,gender:R.gender,ph:R.ph,gross,nett,thru:R.holes,pts,fin:true,competition:compName,holes:R.holes,nineHole:R.nineHole||null,ts:Date.now()};
+    const entry={name:R.name,hi:R.hi,teeKey:R.teeKey,gender:R.gender,ph:R.ph,gross,nett,thru:R.holes,pts,fin:true,competition:compName,holes:R.holes,nineHole:R.nineHole||null,scores:R.scores.slice(),h:R.scores.map(function(s){return s===null?0:s;}).join(','),ts:Date.now()};
     let scores=[];
     try{const ex=await SGC.get('scores');if(ex&&Array.isArray(ex))scores=ex;else if(ex)scores=JSON.parse(ex);}catch(e){}
     const idx=scores.findIndex(s=>s.name.toLowerCase()===R.name.toLowerCase());
