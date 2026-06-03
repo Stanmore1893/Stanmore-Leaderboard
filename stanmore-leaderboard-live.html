@@ -632,8 +632,14 @@ function sumSfPts(p, from, to) {
   var t=0; for(var i=from;i<to;i++) t+=holeStablefordPts(p,i); return t;
 }
 
+function hasHoleScores(p) {
+  return Array.isArray(p.scores) && p.scores.some(function(s){ return s && s > 0; });
+}
+
 function stablefordCountback(a, b) {
   if (!a.fin || !b.fin) return b.thru - a.thru;
+  // If no hole-by-hole data, fall back to gross score
+  if (!hasHoleScores(a) || !hasHoleScores(b)) return (a.gross||99)-(b.gross||99);
 
   // ── BACK 9 (holes 9-17) ──
   var d = sumSfPts(b,9,18) - sumSfPts(a,9,18); if(d!==0) return d;
@@ -666,6 +672,7 @@ function sumNett(p, from, to) {
 
 function strokeplayCountback(a, b) {
   if (!a.fin || !b.fin) return a.thru - b.thru;
+  if (!hasHoleScores(a) || !hasHoleScores(b)) return (a.nett||99)-(b.nett||99);
 
   // ── BACK 9 (lowest nett wins) ──
   var d = sumNett(a,9,18) - sumNett(b,9,18); if(d!==0) return d;
@@ -786,12 +793,21 @@ function render(){
     // Check if genuinely tied with adjacent player (countback exhausted)
     if (sameAsAbove && !isPlayoff && p.fin) {
       var peer = show[i-1];
-      var cb = (isScratchFmt || isStrokeFmt) ? strokeplayCountback(p, peer) : stablefordCountback(p, peer);
-      isTie = cb === 0;
+      // Quick gross check first — if grosses differ, countback already separated them
+      if ((a_gross = p.gross||0) !== (peer.gross||0) && !isScratchFmt) {
+        isTie = false; // countback separated them
+      } else {
+        var cb = (isScratchFmt || isStrokeFmt) ? strokeplayCountback(p, peer) : stablefordCountback(p, peer);
+        isTie = cb === 0;
+      }
     } else if (!sameAsAbove && i < show.length-1 && show[i+1] && show[i+1].fin && p.fin && scoreOf(show[i+1]) === scoreOf(p) && !isPlayoff) {
       var peer2 = show[i+1];
-      var cb2 = (isScratchFmt || isStrokeFmt) ? strokeplayCountback(p, peer2) : stablefordCountback(p, peer2);
-      isTie = cb2 === 0;
+      if ((p.gross||0) !== (peer2.gross||0) && !isScratchFmt) {
+        isTie = false;
+      } else {
+        var cb2 = (isScratchFmt || isStrokeFmt) ? strokeplayCountback(p, peer2) : stablefordCountback(p, peer2);
+        isTie = cb2 === 0;
+      }
     }
 
     posMap.push({ rank: displayRank, isPlayoff: isPlayoff, isTie: isTie });
