@@ -425,7 +425,7 @@ let players=[], tab='all', refreshTimer=null;
     if(iv) return;
     iv = setInterval(function(){
       if(paused) return;
-      var max = Math.max(0, document.body.scrollHeight - window.innerHeight);
+      var max = Math.max(0, Math.max(document.body.scrollHeight, document.documentElement.scrollHeight) - window.innerHeight);
       if(max < 50) return; // not enough content to scroll
       var y = window.scrollY;
       if(y >= max - 2){
@@ -477,7 +477,8 @@ async function loadAdminSettings() {
     if (!s) return;
     // s may be an object already or a JSON string
     const settings = (typeof s === 'string') ? JSON.parse(s) : s;
-    if (settings.name) document.getElementById('compNameHdr').textContent = settings.name;
+    var _cn = document.getElementById('compNameHdr');
+    if (_cn && settings.name && _cn.textContent !== settings.name) _cn.textContent = settings.name;
     // Check if active competition has a welcome message - it takes priority over ticker
     var compsForWelcome = Array.isArray(record.competitions) ? record.competitions : [];
     var activeForWelcome = compsForWelcome.find(function(c){ return c.active; });
@@ -751,8 +752,12 @@ function render(){
   if(tab==='inplay')    show = all.filter(p=>!p.fin);
   if(tab==='finished')  show = all.filter(p=>p.fin);
 
+  if(!show.length && players.length === 0){
+    board.innerHTML = '<div class="bempty"><div class="ei">⛳</div><div class="em">Waiting for players to submit scores.<br>Share the scoring link so players can enter live!</div></div>';
+    return;
+  }
   if(!show.length){
-    board.innerHTML = '<div class="bempty"><div class="ei">⛳</div><div class="em">'+(players.length===0?'Waiting for players to submit scores.<br>Share the scoring link so players can enter live!':'No players in this view yet.')+'</div></div>';
+    // Don't wipe board — just leave existing cards while filter returns nothing
     return;
   }
 
@@ -764,24 +769,32 @@ function render(){
   function scoreOf(x){ return isScratchFmt?(x.gross||999):isStrokeFmt?(x.nett||999):(-(x.pts||0)); }
 
   // ── Pre-compute positions with countback ──
+  // Work out true positions accounting for ties
   var posMap = [];
+  var displayRank = 1;
   show.forEach(function(p, i) {
     var sameAsAbove = i > 0 && show[i-1].fin && p.fin && scoreOf(show[i-1]) === scoreOf(p);
-    var isPlayoff   = isScratchFmt && i === 0 && show.length > 1 && show[1].fin && p.fin && scoreOf(show[1]) === scoreOf(p);
-    var isTie       = false;
+    // Scratch 1st only: playoff if same score as player below, no countback
+    var isPlayoff = isScratchFmt && i === 0 && show.length > 1 && show[1] && show[1].fin && p.fin && scoreOf(show[1]) === scoreOf(p);
+    var isTie = false;
 
-    if (sameAsAbove && !isPlayoff) {
-      var peer = show[i-1];
-      var cbResult = isScratchFmt || isStrokeFmt ? strokeplayCountback(p, peer) : stablefordCountback(p, peer);
-      isTie = cbResult === 0;
-    } else if (!sameAsAbove && i < show.length-1 && show[i+1].fin && p.fin && scoreOf(show[i+1]) === scoreOf(p)) {
-      var peer2 = show[i+1];
-      if (!isPlayoff) {
-        var cbResult2 = isScratchFmt || isStrokeFmt ? strokeplayCountback(p, peer2) : stablefordCountback(p, peer2);
-        isTie = cbResult2 === 0;
-      }
+    if (!sameAsAbove) {
+      // New score group — assign next rank
+      displayRank = i + 1;
     }
-    posMap.push({ rank: all.indexOf(p)+1, isPlayoff: isPlayoff, isTie: isTie });
+
+    // Check if genuinely tied with adjacent player (countback exhausted)
+    if (sameAsAbove && !isPlayoff && p.fin) {
+      var peer = show[i-1];
+      var cb = (isScratchFmt || isStrokeFmt) ? strokeplayCountback(p, peer) : stablefordCountback(p, peer);
+      isTie = cb === 0;
+    } else if (!sameAsAbove && i < show.length-1 && show[i+1] && show[i+1].fin && p.fin && scoreOf(show[i+1]) === scoreOf(p) && !isPlayoff) {
+      var peer2 = show[i+1];
+      var cb2 = (isScratchFmt || isStrokeFmt) ? strokeplayCountback(p, peer2) : stablefordCountback(p, peer2);
+      isTie = cb2 === 0;
+    }
+
+    posMap.push({ rank: displayRank, isPlayoff: isPlayoff, isTie: isTie });
   });
 
   // ── Build new cards off-screen ──
