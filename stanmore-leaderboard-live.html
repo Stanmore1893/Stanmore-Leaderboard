@@ -1,4 +1,3 @@
-<!-- v1780494079 -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -149,9 +148,6 @@ html,body{height:100%;background:linear-gradient(175deg,#060e1e 0%,#0f2347 18%,#
   100% { transform: translateX(-50%); }
 }
 </style>
-  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-  <meta http-equiv="Pragma" content="no-cache">
-  <meta http-equiv="Expires" content="0">
 </head>
 <body>
 
@@ -240,7 +236,9 @@ html,body{height:100%;background:linear-gradient(175deg,#060e1e 0%,#0f2347 18%,#
     <div class="ch r">P.HCP</div><div class="ch r">Gross</div>
     <div class="ch c">Thru</div><div class="ch r">Pts</div>
   </div>
-  <div class="board" id="board"></div>
+  <div class="board" id="board">
+    <div class="bempty"><div class="ei">⛳</div><div class="em">Waiting for players to submit scores.<br>Share the scoring link so players can enter live!</div></div>
+  </div>
   <div class="app-footer">
     <div class="ftxt">Stanmore GC · Stableford · Par 69/72</div>
     <div class="fbtns">
@@ -412,46 +410,6 @@ function totalNett(scores,ph){return scores.reduce((s,g)=>s+(g||0),0)-ph;}
 const MEDALS=['🥇','🥈','🥉'];
 let players=[], tab='all', refreshTimer=null;
 
-// ── AUTO SCROLL ──
-(function(){
-  var timer = null, iv = null, paused = false, pauseTimer = null;
-  var SPEED = 0.8, TICK = 20, IDLE = 10000, WAIT_BTM = 10000, WAIT_TOP = 10000;
-
-  function stop(){ if(iv){ clearInterval(iv); iv=null; } paused=false; if(pauseTimer){ clearTimeout(pauseTimer); pauseTimer=null; } }
-
-  function start(){
-    if(iv) return;
-    iv = setInterval(function(){
-      if(paused) return;
-      var max = Math.max(0, Math.max(document.body.scrollHeight, document.documentElement.scrollHeight) - window.innerHeight);
-      if(max < 50) return; // not enough content to scroll
-      var y = window.scrollY;
-      if(y >= max - 2){
-        paused = true;
-        pauseTimer = setTimeout(function(){
-          window.scrollTo({top:0, behavior:'smooth'});
-          pauseTimer = setTimeout(function(){ paused=false; }, WAIT_TOP);
-        }, WAIT_BTM);
-      } else {
-        window.scrollBy(0, SPEED);
-      }
-    }, TICK);
-  }
-
-  function reset(){
-    stop();
-    if(timer) clearTimeout(timer);
-    timer = setTimeout(start, IDLE);
-  }
-
-  ['scroll','touchstart','mousedown','wheel','keydown'].forEach(function(e){
-    window.addEventListener(e, reset, {passive:true});
-  });
-
-  // Start after page settles
-  setTimeout(reset, 3000);
-})();
-
 window.addEventListener('load', async ()=>{
   document.getElementById('compDate').textContent=new Date().toLocaleDateString('en-GB',{weekday:'short',day:'numeric',month:'long',year:'numeric'});
   applyBranding();
@@ -475,8 +433,7 @@ async function loadAdminSettings() {
     if (!s) return;
     // s may be an object already or a JSON string
     const settings = (typeof s === 'string') ? JSON.parse(s) : s;
-    var _cn = document.getElementById('compNameHdr');
-    if (_cn && settings.name && _cn.textContent !== settings.name) _cn.textContent = settings.name;
+    if (settings.name) document.getElementById('compNameHdr').textContent = settings.name;
     // Check if active competition has a welcome message - it takes priority over ticker
     var compsForWelcome = Array.isArray(record.competitions) ? record.competitions : [];
     var activeForWelcome = compsForWelcome.find(function(c){ return c.active; });
@@ -600,129 +557,24 @@ function setCompFilter(val) {
   render();
 }
 
-// ── COUNTBACK HELPERS (R&A official method) ──
-function holeStablefordPts(p, holeIdx) {
-  // Returns stableford pts for a specific hole index (0-based)
-  var scores = p.scores || [];
-  var gross = scores[holeIdx];
-  if (!gross || gross <= 0) return 0;
-  var gender = p.gender || 'm';
-  var par = gender === 'f' ? COURSE.par_women[holeIdx] : COURSE.par_men[holeIdx];
-  var si  = gender === 'f' ? COURSE.si_women[holeIdx]  : COURSE.si_men[holeIdx];
-  var ph  = p.ph || 0;
-  var strokes = ph > 0 ? (si <= (ph % 18) ? Math.floor(ph/18)+1 : Math.floor(ph/18)) : 0;
-  var nett = gross - strokes;
-  return Math.max(0, par - nett + 2);
-}
-
-function holeNett(p, holeIdx) {
-  var scores = p.scores || [];
-  var gross = scores[holeIdx];
-  if (!gross || gross <= 0) return 99;
-  var gender = p.gender || 'm';
-  var si  = gender === 'f' ? COURSE.si_women[holeIdx] : COURSE.si_men[holeIdx];
-  var ph  = p.ph || 0;
-  var strokes = ph > 0 ? (si <= (ph % 18) ? Math.floor(ph/18)+1 : Math.floor(ph/18)) : 0;
-  return gross - strokes;
-}
-
-function sumSfPts(p, from, to) {
-  var t=0; for(var i=from;i<to;i++) t+=holeStablefordPts(p,i); return t;
-}
-
-function hasHoleScores(p) {
-  return Array.isArray(p.scores) && p.scores.some(function(s){ return s && s > 0; });
-}
-
-function stablefordCountback(a, b) {
-  if (!a.fin || !b.fin) return b.thru - a.thru;
-  // If no hole-by-hole data, fall back to gross score
-  if (!hasHoleScores(a) || !hasHoleScores(b)) return (a.gross||99)-(b.gross||99);
-
-  // ── BACK 9 (holes 9-17) ──
-  var d = sumSfPts(b,9,18) - sumSfPts(a,9,18); if(d!==0) return d;
-  // Back 6 (holes 12-17)
-  d = sumSfPts(b,12,18) - sumSfPts(a,12,18); if(d!==0) return d;
-  // Back 3 (holes 15-17)
-  d = sumSfPts(b,15,18) - sumSfPts(a,15,18); if(d!==0) return d;
-  // Back 2 (holes 16-17)
-  d = sumSfPts(b,16,18) - sumSfPts(a,16,18); if(d!==0) return d;
-  // 18th hole only
-  d = holeStablefordPts(b,17) - holeStablefordPts(a,17); if(d!==0) return d;
-
-  // ── FRONT 9 (holes 0-8) ──
-  d = sumSfPts(b,0,9) - sumSfPts(a,0,9); if(d!==0) return d;
-  // Front 6 (holes 0-5)
-  d = sumSfPts(b,0,6) - sumSfPts(a,0,6); if(d!==0) return d;
-  // Front 3 (holes 0-2)
-  d = sumSfPts(b,0,3) - sumSfPts(a,0,3); if(d!==0) return d;
-  // Front 2 (holes 0-1)
-  d = sumSfPts(b,0,2) - sumSfPts(a,0,2); if(d!==0) return d;
-  // 9th hole only
-  d = holeStablefordPts(b,8) - holeStablefordPts(a,8); if(d!==0) return d;
-
-  return 0; // True tie — committee decides
-}
-
-function sumNett(p, from, to) {
-  var t=0; for(var i=from;i<to;i++) t+=holeNett(p,i); return t;
-}
-
-function strokeplayCountback(a, b) {
-  if (!a.fin || !b.fin) return a.thru - b.thru;
-  if (!hasHoleScores(a) || !hasHoleScores(b)) return (a.nett||99)-(b.nett||99);
-
-  // ── BACK 9 (lowest nett wins) ──
-  var d = sumNett(a,9,18) - sumNett(b,9,18); if(d!==0) return d;
-  // Back 6
-  d = sumNett(a,12,18) - sumNett(b,12,18); if(d!==0) return d;
-  // Back 3
-  d = sumNett(a,15,18) - sumNett(b,15,18); if(d!==0) return d;
-  // Back 2
-  d = sumNett(a,16,18) - sumNett(b,16,18); if(d!==0) return d;
-  // 18th hole
-  d = holeNett(a,17) - holeNett(b,17); if(d!==0) return d;
-
-  // ── FRONT 9 ──
-  d = sumNett(a,0,9) - sumNett(b,0,9); if(d!==0) return d;
-  // Front 6
-  d = sumNett(a,0,6) - sumNett(b,0,6); if(d!==0) return d;
-  // Front 3
-  d = sumNett(a,0,3) - sumNett(b,0,3); if(d!==0) return d;
-  // Front 2
-  d = sumNett(a,0,2) - sumNett(b,0,2); if(d!==0) return d;
-  // 9th hole
-  d = holeNett(a,8) - holeNett(b,8); if(d!==0) return d;
-
-  return 0; // True tie — committee decides
-}
-
 function sorted(){
   var filtered = _compFilter
     ? players.filter(function(p){ return p.competition === _compFilter; })
     : players;
+  // Check if active competition is scratch (lowest gross wins)
   var ac = (window._competitions||[]).find(function(c){ return c.active; }) || {};
   var isScratchComp = (ac.format||'').indexOf('scratch') > -1;
-  var isStrokeplay = (ac.format||'').indexOf('strokeplay') > -1 || (ac.format||'').indexOf('stroke') > -1;
-
   if (isScratchComp) {
-    // Sort by gross first — no countback applied initially
-    return filtered.slice().sort(function(a,b){
-      return (a.gross||999)-(b.gross||999);
-      // Countback applied in render for non-1st positions only
-    });
+    // Scratch: lowest gross wins
+    return filtered.slice().sort(function(a,b){ return (a.gross||999)-(b.gross||999); });
   }
+  var isStrokeplay = (ac.format||'').indexOf('strokeplay') > -1 || (ac.format||'').indexOf('stroke') > -1;
   if (isStrokeplay) {
-    return filtered.slice().sort(function(a,b){
-      var diff = (a.nett||999)-(b.nett||999);
-      return diff !== 0 ? diff : strokeplayCountback(a,b);
-    });
+    // Strokeplay with handicap: lowest nett wins
+    return filtered.slice().sort(function(a,b){ return (a.nett||999)-(b.nett||999)||b.thru-a.thru; });
   }
-  // Stableford
-  return filtered.slice().sort(function(a,b){
-    var diff = b.pts - a.pts;
-    return diff !== 0 ? diff : stablefordCountback(a,b);
-  });
+  // Stableford and all others: highest points wins
+  return filtered.slice().sort(function(a,b){ return b.pts-a.pts||b.thru-a.thru; });
 }
 
 function setTab(t, el) {
@@ -746,129 +598,36 @@ function setTab(t, el) {
 }
 
 function render(){
-  const all = sorted();
-  document.getElementById('stTotal').textContent = players.length;
-  document.getElementById('stPlay').textContent = players.filter(p=>!p.fin).length;
-  document.getElementById('stFin').textContent = players.filter(p=>p.fin).length;
-  document.getElementById('stLead').textContent = all.length ? all[0].pts : '—';
-
-  const board = document.getElementById('board');
-  let show = all;
-  if(tab==='inplay')    show = all.filter(p=>!p.fin);
-  if(tab==='finished')  show = all.filter(p=>p.fin);
-
-  if(!show.length && players.length === 0){
-    board.innerHTML = '<div class="bempty"><div class="ei">⛳</div><div class="em">Waiting for players to submit scores.<br>Share the scoring link so players can enter live!</div></div>';
-    return;
-  }
-  if(!show.length){
-    // Don't wipe board — just leave existing cards while filter returns nothing
-    return;
-  }
-
-  // ── Determine format ──
-  var ac2 = (window._competitions||[]).find(function(c){ return c.active; }) || {};
-  var isScratchFmt = (ac2.format||'').indexOf('scratch') > -1;
-  var isStrokeFmt  = !isScratchFmt && ((ac2.format||'').indexOf('strokeplay') > -1 || (ac2.format||'').indexOf('stroke') > -1);
-
-  function scoreOf(x){ return isScratchFmt?(x.gross||999):isStrokeFmt?(x.nett||999):(-(x.pts||0)); }
-
-  // ── Pre-compute positions with countback ──
-  // Work out true positions accounting for ties
-  var posMap = [];
-  var displayRank = 1;
-  show.forEach(function(p, i) {
-    var sameAsAbove = i > 0 && show[i-1].fin && p.fin && scoreOf(show[i-1]) === scoreOf(p);
-    // Scratch 1st only: playoff if same score as player below, no countback
-    var isPlayoff = isScratchFmt && i === 0 && show.length > 1 && show[1] && show[1].fin && p.fin && scoreOf(show[1]) === scoreOf(p);
-    var isTie = false;
-
-    if (!sameAsAbove) {
-      // New score group — assign next rank
-      displayRank = i + 1;
-    }
-
-    // Check if genuinely tied with adjacent player (countback exhausted)
-    if (sameAsAbove && !isPlayoff && p.fin) {
-      var peer = show[i-1];
-      // Quick gross check first — if grosses differ, countback already separated them
-      if ((a_gross = p.gross||0) !== (peer.gross||0) && !isScratchFmt) {
-        isTie = false; // countback separated them
-      } else {
-        var cb = (isScratchFmt || isStrokeFmt) ? strokeplayCountback(p, peer) : stablefordCountback(p, peer);
-        isTie = cb === 0;
-      }
-    } else if (!sameAsAbove && i < show.length-1 && show[i+1] && show[i+1].fin && p.fin && scoreOf(show[i+1]) === scoreOf(p) && !isPlayoff) {
-      var peer2 = show[i+1];
-      if ((p.gross||0) !== (peer2.gross||0) && !isScratchFmt) {
-        isTie = false;
-      } else {
-        var cb2 = (isScratchFmt || isStrokeFmt) ? strokeplayCountback(p, peer2) : stablefordCountback(p, peer2);
-        isTie = cb2 === 0;
-      }
-    }
-
-    posMap.push({ rank: displayRank, isPlayoff: isPlayoff, isTie: isTie });
-  });
-
-  // ── Build new cards off-screen ──
-  var frag = document.createDocumentFragment();
-  show.forEach(function(p, i) {
-    var pm = posMap[i];
-    var rank = pm.rank;
-
-    var posH;
-    if (pm.isPlayoff) {
-      posH = '<div class="ppos" style="font-size:.62rem;color:#e87878;font-weight:800;">⚡ P/O</div>';
-    } else if (pm.isTie) {
-      posH = '<div class="ppos" style="font-size:.72rem;">T'+rank+'</div>';
-    } else if (rank <= 3) {
-      posH = '<div class="ppos top">'+MEDALS[rank-1]+'</div>';
-    } else {
-      posH = '<div class="ppos">'+rank+'</div>';
-    }
-
+  const all=sorted();
+  document.getElementById('stTotal').textContent=players.length;
+  document.getElementById('stPlay').textContent=players.filter(p=>!p.fin).length;
+  document.getElementById('stFin').textContent=players.filter(p=>p.fin).length;
+  document.getElementById('stLead').textContent=all.length?all[0].pts:'—';
+  const board=document.getElementById('board');
+  let show=all;
+  if(tab==='inplay') show=all.filter(p=>!p.fin);
+  if(tab==='finished') show=all.filter(p=>p.fin);
+  if(!show.length){board.innerHTML='<div class="bempty"><div class="ei">⛳</div><div class="em">'+(players.length===0?'Waiting for players to submit scores.<br>Share the scoring link so players can enter live!':'No players in this view yet.')+'</div></div>';return;}
+  board.innerHTML='';
+  show.forEach((p,i)=>{
+    const rank=all.indexOf(p)+1;
+    const card=document.createElement('div');
+    card.className='pcard'+(rank===1?' leader':'');
+    card.style.animationDelay=(i*.025)+'s';
+    const posH=rank<=3?`<div class="ppos top">${MEDALS[rank-1]}</div>`:`<div class="ppos">${rank}</div>`;
     var finLabel = p.fin ? (p.nineHole==='front'?'✓ F9':p.nineHole==='back'?'✓ B9':'✓ F') : null;
     var thruDisplay = p.fin
       ? '<div class="pthru"><span class="tv fin">'+finLabel+'</span></div>'
       : '<div class="pthru"><span style="display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;border-radius:50%;background:rgba(45,110,78,.5);border:1.5px solid rgba(45,110,78,.8);font-size:.8rem;font-weight:700;color:#fff;font-family:monospace;">'+(p.thru||0)+'</span><span class="tl" style="font-size:.6rem;color:rgba(255,255,255,.5);margin-top:2px;">thru</span></div>';
-
-    var ph = p.ph||p.hcp||0;
-    var teeColour = p.teeKey?(p.teeKey.includes('white')?'#f0f0f0':p.teeKey.includes('yellow')?'#f0c040':'#e87878'):'';
-    var teeOrb = teeColour?'<span style="display:inline-block;width:9px;height:9px;border-radius:50%;background:'+teeColour+';border:1px solid rgba(255,255,255,.3);margin-left:4px;vertical-align:middle;"></span>':'';
-
-    var card = document.createElement('div');
-    card.className = 'pcard'+(rank===1?' leader':'');
-    card.style.animationDelay = (i*.025)+'s';
-    card.innerHTML = posH+'<div><div class="pname">'+p.name+'</div><div class="pmeta">HCP '+ph+teeOrb+'</div></div><div class="pcell"><span class="pv">'+ph+'</span></div><div class="pcell"><span class="pv">'+(p.gross||0)+'</span><span class="pl">gross</span></div>'+thruDisplay+'<div class="pscore"><span class="ptv">'+p.pts+'</span><span class="psl">pts</span></div>';
-    frag.appendChild(card);
+    const thruH = thruDisplay;
+    const ph=p.ph||p.hcp||0;
+    const teeColour=p.teeKey?(p.teeKey.includes('white')?'#f0f0f0':p.teeKey.includes('yellow')?'#f0c040':'#e87878'):'';
+    const teeOrb=teeColour?`<span style="display:inline-block;width:9px;height:9px;border-radius:50%;background:${teeColour};border:1px solid rgba(255,255,255,.3);margin-left:4px;vertical-align:middle;flex-shrink:0;" title="${p.teeKey.includes('white')?'White':p.teeKey.includes('yellow')?'Yellow':'Red'} Tees"></span>`:'';
+    const compTag=p.competition?` · ${p.competition}`:'';
+    card.innerHTML=`${posH}<div><div class="pname">${p.name}</div><div class="pmeta">HCP ${ph}${teeOrb}</div></div><div class="pcell"><span class="pv">${ph}</span></div><div class="pcell"><span class="pv">${p.gross||0}</span><span class="pl">gross</span></div>${thruH}<div class="pscore"><span class="ptv">${p.pts}</span><span class="psl">pts</span></div>`;
+    board.appendChild(card);
   });
-
-  // ── True in-place update — no wipe, no flash ──
-  var existingCards = board.querySelectorAll('.pcard');
-  var newCards = frag.querySelectorAll('.pcard');
-
-  // Update existing cards or add new ones
-  newCards.forEach(function(newCard, i) {
-    if (existingCards[i]) {
-      // Only update innerHTML if content changed
-      if (existingCards[i].innerHTML !== newCard.innerHTML) {
-        existingCards[i].innerHTML = newCard.innerHTML;
-        existingCards[i].className = newCard.className;
-      }
-    } else {
-      board.appendChild(newCard);
-    }
-  });
-
-  // Remove surplus cards
-  for (var i = newCards.length; i < existingCards.length; i++) {
-    board.removeChild(existingCards[i]);
-  }
-
-  applyBranding();
 }
-
 
 // MANUAL ENTRY with auto-calc
 function openEntry(){
