@@ -1180,6 +1180,7 @@ async function saveProgress(){
       name:R.name, hi:R.hi, teeKey:R.teeKey, gender:R.gender, ph:R.ph,
       gross:gross, nett:nett, thru:thru, pts:pts, fin:false,
       scores:R.scores.slice(),
+      h:R.scores.map(function(s){return s===null?0:s;}).join(','),
       competition:R.competition||'', team:R.team||'',
       holes:R.holes||18, ts:Date.now()
     };

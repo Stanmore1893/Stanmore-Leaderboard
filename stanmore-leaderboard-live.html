@@ -535,6 +535,12 @@ async function loadScores(){
     });
     if (bar) bar.style.display = comps.length > 1 ? 'block' : 'none';
   }
+  // Decode 'h' field to scores[] for countback
+  players.forEach(function(p) {
+    if ((!Array.isArray(p.scores) || !p.scores.some(function(s){return s;})) && typeof p.h === 'string' && p.h.length > 0) {
+      p.scores = p.h.split(',').map(function(v){ var n=parseInt(v); return n>0?n:null; });
+    }
+  });
   render(); stamp();
 }
 

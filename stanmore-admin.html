@@ -1469,9 +1469,16 @@ function stablefordPts(gross,par,ph,si){if(!gross||gross<=0)return 0;var n=gross
 function openScoreEditor(player) {
   _editPlayer = player;
   // Build scores array - use stored hole scores if available
-  _editScores = Array.isArray(player.scores) && player.scores.some(function(s){return s;})
-    ? player.scores.slice()
-    : new Array(18).fill(null);
+  // Try scores[] first, then decode from 'h' string field
+  var decodedScores = null;
+  if (typeof player.h === 'string' && player.h.length > 0) {
+    decodedScores = player.h.split(',').map(function(v){ var n=parseInt(v); return n>0?n:null; });
+  }
+  _editScores = (decodedScores && decodedScores.some(function(s){return s;}))
+    ? decodedScores
+    : Array.isArray(player.scores) && player.scores.some(function(s){return s;})
+      ? player.scores.slice()
+      : new Array(18).fill(null);
   while (_editScores.length < 18) _editScores.push(null);
 
   document.getElementById('editorPlayerName').textContent = '✏️ ' + player.name;
