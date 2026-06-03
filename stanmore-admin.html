@@ -1464,6 +1464,7 @@ function stablefordPts(gross,par,ph,si){if(!gross||gross<=0)return 0;var n=gross
 
 function openScoreEditor(player) {
   _editPlayer = player;
+  console.log('openScoreEditor player.h:', player.h, 'player.scores:', JSON.stringify(player.scores));
   // Build scores array - use stored hole scores if available
   // Try scores[] first, then decode from 'h' string field
   var decodedScores = null;
