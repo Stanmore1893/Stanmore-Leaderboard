@@ -214,6 +214,7 @@ select.cinp:focus,select.finp:focus{border-color:rgba(212,160,23,.7);}
   <div class="tnav active" onclick="showPage('pgR',this)">📊 Tee Ratings</div>
   <div class="tnav" onclick="showPage('pgC',this)">📋 Scorecard</div>
   <div class="tnav" onclick="showPage('pgH',this)">🧮 Hcp Calc</div>
+  <div class="tnav" onclick="showPage('pgMap',this)">🗺️ Course Map</div>
 </div>
 
 <!-- RATINGS -->
@@ -589,6 +590,36 @@ select.cinp:focus,select.finp:focus{border-color:rgba(212,160,23,.7);}
   </div>
 
 </div>
+<!-- COURSE MAP -->
+<div class="page" id="pgMap">
+  <div class="sec-title">Course Map</div>
+  <div class="sec-sub">Stanmore GC · 18 Holes · Par 69 · Designed by Alister MacKenzie (1921)</div>
+
+  <div style="margin:16px 0;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);border-radius:14px;overflow:hidden;">
+
+    <!-- Zoom hint -->
+    <div style="padding:10px 14px;background:rgba(212,160,23,.1);border-bottom:1px solid rgba(212,160,23,.2);display:flex;align-items:center;gap:8px;">
+      <span style="font-size:1rem;">🔍</span>
+      <span style="font-size:.8rem;color:rgba(255,255,255,.7);font-family:'Poppins',sans-serif;">Tap the map to zoom in · Pinch to zoom · Double-tap to reset</span>
+    </div>
+
+    <!-- Map container -->
+    <div id="mapContainer" style="overflow:hidden;position:relative;touch-action:none;cursor:zoom-in;background:#0a1628;">
+      <img id="courseMapImg"
+        src="stanmore-course-guide-map.png"
+        alt="Stanmore Golf Club Course Map"
+        style="width:100%;display:block;transform-origin:center center;transition:transform .25s ease;user-select:none;-webkit-user-select:none;"
+        draggable="false">
+    </div>
+
+    <!-- Hole quick reference -->
+    <div style="padding:14px;border-top:1px solid rgba(255,255,255,.08);">
+      <div style="font-size:.72rem;font-weight:700;color:rgba(212,160,23,.7);letter-spacing:.1em;text-transform:uppercase;margin-bottom:10px;">Quick Reference</div>
+      <div style="display:grid;grid-template-columns:repeat(6,1fr);gap:6px;" id="holeRefGrid"></div>
+    </div>
+  </div>
+</div>
+
 <script>
 
 // ── COURSE DATA (from official Stanmore GC scorecard) ──
@@ -1138,4 +1169,6 @@ renderSC();
     </div>
   </div>
 </body>
-</html>
+</html
+
+>
