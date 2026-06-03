@@ -412,78 +412,42 @@ let players=[], tab='all', refreshTimer=null;
 
 // ── AUTO SCROLL ──
 (function(){
-  var scrollTimer = null;
-  var autoScrollInterval = null;
-  var isAutoScrolling = false;
-  var scrollPaused = false;
-  var SCROLL_SPEED = 1;       // px per tick
-  var SCROLL_TICK = 30;       // ms per tick
-  var IDLE_BEFORE_START = 10000; // 10s idle before auto-scroll starts
-  var PAUSE_AT_BOTTOM = 10000;   // 10s pause at bottom
-  var PAUSE_AT_TOP = 10000;      // 10s pause at top
+  var timer = null, iv = null, paused = false, pauseTimer = null;
+  var SPEED = 0.8, TICK = 20, IDLE = 10000, WAIT_BTM = 10000, WAIT_TOP = 10000;
 
-  function startAutoScroll() {
-    if (autoScrollInterval) return;
-    isAutoScrolling = true;
-    var direction = 1; // 1 = down, -1 = up (not used, we control manually)
-    var pauseTimer = null;
+  function stop(){ if(iv){ clearInterval(iv); iv=null; } paused=false; if(pauseTimer){ clearTimeout(pauseTimer); pauseTimer=null; } }
 
-    autoScrollInterval = setInterval(function() {
-      if (scrollPaused) return;
-
-      var maxScroll = document.body.scrollHeight - window.innerHeight;
-      if (maxScroll <= 0) return;
-
-      var current = window.scrollY;
-
-      if (current >= maxScroll - 2) {
-        // At bottom — pause then scroll back to top
-        if (!pauseTimer) {
-          scrollPaused = true;
-          pauseTimer = setTimeout(function() {
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-            pauseTimer = null;
-            setTimeout(function() {
-              scrollPaused = false;
-            }, PAUSE_AT_TOP);
-          }, PAUSE_AT_BOTTOM);
-        }
-      } else if (current <= 2) {
-        // At top — brief pause already handled, just scroll down
-        scrollPaused = false;
-        window.scrollBy(0, SCROLL_SPEED);
+  function start(){
+    if(iv) return;
+    iv = setInterval(function(){
+      if(paused) return;
+      var max = Math.max(0, document.body.scrollHeight - window.innerHeight);
+      if(max < 50) return; // not enough content to scroll
+      var y = window.scrollY;
+      if(y >= max - 2){
+        paused = true;
+        pauseTimer = setTimeout(function(){
+          window.scrollTo({top:0, behavior:'smooth'});
+          pauseTimer = setTimeout(function(){ paused=false; }, WAIT_TOP);
+        }, WAIT_BTM);
       } else {
-        window.scrollBy(0, SCROLL_SPEED);
+        window.scrollBy(0, SPEED);
       }
-    }, SCROLL_TICK);
+    }, TICK);
   }
 
-  function stopAutoScroll() {
-    if (autoScrollInterval) {
-      clearInterval(autoScrollInterval);
-      autoScrollInterval = null;
-    }
-    isAutoScrolling = false;
-    scrollPaused = false;
+  function reset(){
+    stop();
+    if(timer) clearTimeout(timer);
+    timer = setTimeout(start, IDLE);
   }
 
-  function resetIdleTimer() {
-    stopAutoScroll();
-    if (scrollTimer) clearTimeout(scrollTimer);
-    scrollTimer = setTimeout(function() {
-      startAutoScroll();
-    }, IDLE_BEFORE_START);
-  }
-
-  // Start idle timer on load
-  window.addEventListener('load', function() {
-    setTimeout(function() { resetIdleTimer(); }, 2000);
+  ['scroll','touchstart','mousedown','wheel','keydown'].forEach(function(e){
+    window.addEventListener(e, reset, {passive:true});
   });
 
-  // Reset on user interaction
-  ['scroll','touchstart','touchmove','mousedown','wheel'].forEach(function(evt) {
-    window.addEventListener(evt, resetIdleTimer, { passive: true });
-  });
+  // Start after page settles
+  setTimeout(reset, 3000);
 })();
 
 window.addEventListener('load', async ()=>{
@@ -772,78 +736,92 @@ function setTab(t, el) {
 }
 
 function render(){
-  const all=sorted();
-  document.getElementById('stTotal').textContent=players.length;
-  document.getElementById('stPlay').textContent=players.filter(p=>!p.fin).length;
-  document.getElementById('stFin').textContent=players.filter(p=>p.fin).length;
-  document.getElementById('stLead').textContent=all.length?all[0].pts:'—';
-  const board=document.getElementById('board');
-  // Save scroll position before render so screen doesn't flash/jump
-  var savedScroll = window.scrollY;
-  let show=all;
-  if(tab==='inplay') show=all.filter(p=>!p.fin);
-  if(tab==='finished') show=all.filter(p=>p.fin);
-  if(!show.length){board.innerHTML='<div class="bempty"><div class="ei">⛳</div><div class="em">'+(players.length===0?'Waiting for players to submit scores.<br>Share the scoring link so players can enter live!':'No players in this view yet.')+'</div></div>';return;}
-  // Silent update - build new cards then swap in one operation
-  var newBoard = document.createDocumentFragment();
-  show.forEach((p,i)=>{
-    const rank=all.indexOf(p)+1;
-    const card=document.createElement('div');
-    card.className='pcard'+(rank===1?' leader':'');
-    card.style.animationDelay=(i*.025)+'s';
-    // Tie detection
-    var ac2 = (window._competitions||[]).find(function(c){ return c.active; }) || {};
-    var isScratchFmt = (ac2.format||'').indexOf('scratch') > -1;
+  const all = sorted();
+  document.getElementById('stTotal').textContent = players.length;
+  document.getElementById('stPlay').textContent = players.filter(p=>!p.fin).length;
+  document.getElementById('stFin').textContent = players.filter(p=>p.fin).length;
+  document.getElementById('stLead').textContent = all.length ? all[0].pts : '—';
 
-    // For scratch: compare gross scores. For others: pts already sorted with countback
-    // Tie detection — compare adjacent players in the sorted list
-    var ac2 = (window._competitions||[]).find(function(c){ return c.active; }) || {};
-    var isScratchFmt = (ac2.format||'').indexOf('scratch') > -1;
-    var isStrokeFmt  = (ac2.format||'').indexOf('strokeplay') > -1 || (ac2.format||'').indexOf('stroke') > -1;
+  const board = document.getElementById('board');
+  let show = all;
+  if(tab==='inplay')    show = all.filter(p=>!p.fin);
+  if(tab==='finished')  show = all.filter(p=>p.fin);
 
-    function scoreOf(x){ return isScratchFmt?(x.gross||999):isStrokeFmt?(x.nett||999):x.pts; }
-    var above = rank > 1 ? show[rank-2] : null;
-    var below = rank < show.length ? show[rank] : null;
-    var tiedAbove = above && above.fin && p.fin && scoreOf(above)===scoreOf(p);
-    var tiedBelow = below && below.fin && p.fin && scoreOf(below)===scoreOf(p);
-    var isTied = tiedAbove || tiedBelow;
+  if(!show.length){
+    board.innerHTML = '<div class="bempty"><div class="ei">⛳</div><div class="em">'+(players.length===0?'Waiting for players to submit scores.<br>Share the scoring link so players can enter live!':'No players in this view yet.')+'</div></div>';
+    return;
+  }
 
-    // Scratch 1st tie = playoff (no countback). All other ties = countback then T if still equal.
-    var isPlayoff = isScratchFmt && rank===1 && tiedBelow;
-    var isTrueCountbackTie = false;
-    if (isTied && !isPlayoff) {
-      var peer = tiedAbove ? above : below;
-      if (isScratchFmt || isStrokeFmt) {
-        isTrueCountbackTie = strokeplayCountback(p, peer) === 0;
-      } else {
-        isTrueCountbackTie = stablefordCountback(p, peer) === 0;
+  // ── Determine format ──
+  var ac2 = (window._competitions||[]).find(function(c){ return c.active; }) || {};
+  var isScratchFmt = (ac2.format||'').indexOf('scratch') > -1;
+  var isStrokeFmt  = !isScratchFmt && ((ac2.format||'').indexOf('strokeplay') > -1 || (ac2.format||'').indexOf('stroke') > -1);
+
+  function scoreOf(x){ return isScratchFmt?(x.gross||999):isStrokeFmt?(x.nett||999):(-(x.pts||0)); }
+
+  // ── Pre-compute positions with countback ──
+  var posMap = [];
+  show.forEach(function(p, i) {
+    var sameAsAbove = i > 0 && show[i-1].fin && p.fin && scoreOf(show[i-1]) === scoreOf(p);
+    var isPlayoff   = isScratchFmt && i === 0 && show.length > 1 && show[1].fin && p.fin && scoreOf(show[1]) === scoreOf(p);
+    var isTie       = false;
+
+    if (sameAsAbove && !isPlayoff) {
+      var peer = show[i-1];
+      var cbResult = isScratchFmt || isStrokeFmt ? strokeplayCountback(p, peer) : stablefordCountback(p, peer);
+      isTie = cbResult === 0;
+    } else if (!sameAsAbove && i < show.length-1 && show[i+1].fin && p.fin && scoreOf(show[i+1]) === scoreOf(p)) {
+      var peer2 = show[i+1];
+      if (!isPlayoff) {
+        var cbResult2 = isScratchFmt || isStrokeFmt ? strokeplayCountback(p, peer2) : stablefordCountback(p, peer2);
+        isTie = cbResult2 === 0;
       }
     }
+    posMap.push({ rank: all.indexOf(p)+1, isPlayoff: isPlayoff, isTie: isTie });
+  });
 
-    var posLabel = isPlayoff ? '⚡ P/O' : (isTrueCountbackTie ? 'T'+rank : rank);
-    const posH = isPlayoff
-      ? '<div class="ppos" style="font-size:.65rem;color:#e87878;">⚡ P/O</div>'
-      : (rank<=3 && !isTrueCountbackTie)
-        ? '<div class="ppos top">'+MEDALS[rank-1]+'</div>'
-        : '<div class="ppos" style="font-size:'+(isTrueCountbackTie?'.75rem':'.9rem')+'">'+posLabel+'</div>';
+  // ── Build new cards off-screen ──
+  var frag = document.createDocumentFragment();
+  show.forEach(function(p, i) {
+    var pm = posMap[i];
+    var rank = pm.rank;
+
+    var posH;
+    if (pm.isPlayoff) {
+      posH = '<div class="ppos" style="font-size:.62rem;color:#e87878;font-weight:800;">⚡ P/O</div>';
+    } else if (pm.isTie) {
+      posH = '<div class="ppos" style="font-size:.72rem;">T'+rank+'</div>';
+    } else if (rank <= 3) {
+      posH = '<div class="ppos top">'+MEDALS[rank-1]+'</div>';
+    } else {
+      posH = '<div class="ppos">'+rank+'</div>';
+    }
+
     var finLabel = p.fin ? (p.nineHole==='front'?'✓ F9':p.nineHole==='back'?'✓ B9':'✓ F') : null;
     var thruDisplay = p.fin
       ? '<div class="pthru"><span class="tv fin">'+finLabel+'</span></div>'
       : '<div class="pthru"><span style="display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;border-radius:50%;background:rgba(45,110,78,.5);border:1.5px solid rgba(45,110,78,.8);font-size:.8rem;font-weight:700;color:#fff;font-family:monospace;">'+(p.thru||0)+'</span><span class="tl" style="font-size:.6rem;color:rgba(255,255,255,.5);margin-top:2px;">thru</span></div>';
-    const thruH = thruDisplay;
-    const ph=p.ph||p.hcp||0;
-    const teeColour=p.teeKey?(p.teeKey.includes('white')?'#f0f0f0':p.teeKey.includes('yellow')?'#f0c040':'#e87878'):'';
-    const teeOrb=teeColour?`<span style="display:inline-block;width:9px;height:9px;border-radius:50%;background:${teeColour};border:1px solid rgba(255,255,255,.3);margin-left:4px;vertical-align:middle;flex-shrink:0;" title="${p.teeKey.includes('white')?'White':p.teeKey.includes('yellow')?'Yellow':'Red'} Tees"></span>`:'';
-    const compTag=p.competition?` · ${p.competition}`:'';
-    card.innerHTML=`${posH}<div><div class="pname">${p.name}</div><div class="pmeta">HCP ${ph}${teeOrb}</div></div><div class="pcell"><span class="pv">${ph}</span></div><div class="pcell"><span class="pv">${p.gross||0}</span><span class="pl">gross</span></div>${thruH}<div class="pscore"><span class="ptv">${p.pts}</span><span class="psl">pts</span></div>`;
-    newBoard.appendChild(card);
+
+    var ph = p.ph||p.hcp||0;
+    var teeColour = p.teeKey?(p.teeKey.includes('white')?'#f0f0f0':p.teeKey.includes('yellow')?'#f0c040':'#e87878'):'';
+    var teeOrb = teeColour?'<span style="display:inline-block;width:9px;height:9px;border-radius:50%;background:'+teeColour+';border:1px solid rgba(255,255,255,.3);margin-left:4px;vertical-align:middle;"></span>':'';
+
+    var card = document.createElement('div');
+    card.className = 'pcard'+(rank===1?' leader':'');
+    card.style.animationDelay = (i*.025)+'s';
+    card.innerHTML = posH+'<div><div class="pname">'+p.name+'</div><div class="pmeta">HCP '+ph+teeOrb+'</div></div><div class="pcell"><span class="pv">'+ph+'</span></div><div class="pcell"><span class="pv">'+(p.gross||0)+'</span><span class="pl">gross</span></div>'+thruDisplay+'<div class="pscore"><span class="ptv">'+p.pts+'</span><span class="psl">pts</span></div>';
+    frag.appendChild(card);
   });
-  // Swap DOM silently — save/restore scroll
-  var _sy = window.scrollY;
+
+  // ── Swap in silently — no scroll jump ──
+  var sy = window.scrollY;
   board.innerHTML = '';
-  board.appendChild(newBoard);
-  window.scrollTo(0, _sy);
+  board.appendChild(frag);
+  if(sy > 0) window.scrollTo(0, sy);
+
+  applyBranding();
 }
+
 
 // MANUAL ENTRY with auto-calc
 function openEntry(){
