@@ -817,11 +817,27 @@ function render(){
     frag.appendChild(card);
   });
 
-  // ── Swap in silently — no scroll jump ──
-  var sy = window.scrollY;
-  board.innerHTML = '';
-  board.appendChild(frag);
-  if(sy > 0) window.scrollTo(0, sy);
+  // ── True in-place update — no wipe, no flash ──
+  var existingCards = board.querySelectorAll('.pcard');
+  var newCards = frag.querySelectorAll('.pcard');
+
+  // Update existing cards or add new ones
+  newCards.forEach(function(newCard, i) {
+    if (existingCards[i]) {
+      // Only update innerHTML if content changed
+      if (existingCards[i].innerHTML !== newCard.innerHTML) {
+        existingCards[i].innerHTML = newCard.innerHTML;
+        existingCards[i].className = newCard.className;
+      }
+    } else {
+      board.appendChild(newCard);
+    }
+  });
+
+  // Remove surplus cards
+  for (var i = newCards.length; i < existingCards.length; i++) {
+    board.removeChild(existingCards[i]);
+  }
 
   applyBranding();
 }
