@@ -50,20 +50,21 @@ html,body{min-height:100%;font-family:'Poppins',sans-serif;color:#fff;overflow-x
 .hero-date{font-size:.88rem;color:rgba(212,160,23,.75);font-family:'DM Mono',monospace;margin-top:10px;}
 .hero-divider{width:60px;height:2px;background:linear-gradient(to right,transparent,rgba(212,160,23,.6),transparent);margin:14px auto 0;}
 /* INTRO */
-.intro{max-width:500px;margin:0 auto;padding:12px 20px 18px;text-align:center;}
+
 .intro p{font-size:.88rem;color:rgba(255,255,255,.55);line-height:1.75;}
 /* CARDS */
 .cards{padding:0 14px 8px;max-width:560px;margin:0 auto;}
-.hub-card{display:flex;align-items:center;justify-content:space-between;border-radius:16px;padding:16px;margin-bottom:12px;text-decoration:none;transition:transform .15s,box-shadow .15s;border:1px solid rgba(255,255,255,.08);position:relative;overflow:hidden;-webkit-tap-highlight-color:transparent;}
+.hub-card{display:flex;flex-direction:column;border-radius:18px;padding:0;margin-bottom:14px;text-decoration:none;transition:transform .15s,box-shadow .15s;border:1px solid rgba(255,255,255,.08);position:relative;overflow:hidden;-webkit-tap-highlight-color:transparent;}
+.hub-card-header{width:100%;padding:0 0 12px;border-bottom:1px solid rgba(255,255,255,.08);overflow:hidden;border-radius:18px 18px 0 0;}
 .hub-card:active{transform:scale(.98);}
-.hub-card::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(255,255,255,.06) 0%,transparent 60%);pointer-events:none;}
+.hub-card-header::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(255,255,255,.07) 0%,transparent 55%);pointer-events:none;border-radius:18px 18px 0 0;}
 .hub-card-left{display:flex;align-items:center;gap:14px;flex:1;}
-.hub-card-icon{font-size:2rem;width:52px;height:52px;border-radius:14px;display:flex;align-items:center;justify-content:center;flex-shrink:0;background:rgba(255,255,255,.08);}
-.hub-card-pill{display:inline-block;font-size:.62rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;border-radius:20px;padding:2px 10px;margin-bottom:4px;}
-.hub-card-title{font-size:1rem;font-weight:700;color:#ffffff;line-height:1.2;margin-bottom:3px;}
-.hub-card-features{display:flex;flex-direction:column;gap:5px;margin-top:7px;}
-.hub-card-features span{font-size:.88rem;color:rgba(255,255,255,.85);line-height:1.4;font-weight:500;display:flex;align-items:center;gap:6px;}
-.hub-card-arrow{font-size:1.6rem;font-weight:300;color:rgba(255,255,255,.3);flex-shrink:0;margin-left:8px;}
+.hub-card-icon{font-size:2.2rem;width:58px;height:58px;border-radius:14px;display:flex;align-items:center;justify-content:center;flex-shrink:0;background:rgba(255,255,255,.08);}
+.hub-card-pill{display:block;font-size:1.25rem;font-weight:800;letter-spacing:.04em;text-transform:uppercase;border-radius:0;padding:12px 16px;margin-bottom:0;width:100%;text-align:center;}
+.hub-card-title{font-size:1.2rem;font-weight:800;color:#ffffff;line-height:1.2;margin-bottom:6px;letter-spacing:-.01em;}
+.hub-card-features{display:flex;flex-direction:column;gap:5px;padding:12px 16px 14px;}
+.hub-card-features span{font-size:.9rem;color:rgba(255,255,255,.85);line-height:1.5;font-weight:500;display:flex;align-items:center;gap:6px;}
+.hub-card-arrow{font-size:2rem;font-weight:200;color:rgba(255,255,255,.35);flex-shrink:0;margin-left:10px;}
 .scoring-card{background:linear-gradient(135deg,rgba(26,58,107,.6),rgba(15,35,71,.8));}
 .scoring-card .hub-card-pill{background:rgba(100,180,255,.2);color:#7ec8ff;}
 .scoring-card .hub-card-icon{background:rgba(100,180,255,.15);}
@@ -155,105 +156,93 @@ html,body{min-height:100%;font-family:'Poppins',sans-serif;color:#fff;overflow-x
   </div>
 </div>
 
-<div class="intro">
-  <p>Welcome to the Stanmore Golf Club digital hub. Select an option below to enter scores, follow the live leaderboard, or check the course guide.</p>
+<div style="max-width:560px;margin:0 auto 14px;padding:0 14px;box-sizing:border-box;"><div style="background:rgba(212,160,23,.1);border:1.5px solid rgba(212,160,23,.3);border-radius:16px;padding:18px 16px;text-align:center;">
+  <div style="display:flex;align-items:center;justify-content:center;gap:10px;margin-bottom:10px;">
+    <span style="font-size:1.6rem;">⛳</span>
+    <div style="font-size:1rem;font-weight:700;color:#ffe066;font-family:'Poppins',sans-serif;">Welcome to the Digital Hub</div>
+  </div>
+  <div style="font-size:.88rem;color:rgba(255,255,255,.8);line-height:1.7;font-family:'Poppins',sans-serif;">Select an option below to enter your scores, follow the live leaderboard, or check the course guide and handicap calculators.</div>
+</div>
 </div>
 
 <div class="cards">
 
-  <!-- Score Entry -->
-  <a href="stanmore-player-scoring.html" class="hub-card scoring-card">
-    <div class="hub-card-left">
-      <div class="hub-card-icon">⛳</div>
-      <div style="flex:1;">
-        <div class="hub-card-pill">Score Entry</div>
-        <div class="hub-card-title">Enter Your Scores</div>
-        <div class="hub-card-features">
-          <span>📊 WHS handicap calculated live</span>
-          <span>🏅 Stableford points per hole</span>
-          <span>💾 Saves automatically</span>
-        </div>
-      </div>
-    </div>
-    <div class="hub-card-arrow">›</div>
-  </a>
-
-  <!-- Live Leaderboard -->
-  <a href="stanmore-leaderboard-live.html" class="hub-card leaderboard-card">
-    <div class="hub-card-left">
-      <div class="hub-card-icon">🏆</div>
-      <div style="flex:1;">
-        <div class="hub-card-pill">Live Leaderboard</div>
-        <div class="hub-card-title">Follow the Action</div>
-        <div class="hub-card-features">
-          <span>🔄 Updates every 5 seconds</span>
-          <span>🎯 Prize hole leaders shown</span>
-          <span>👥 Team scores included</span>
-        </div>
-      </div>
-    </div>
-    <div class="hub-card-arrow">›</div>
-  </a>
-
-  <!-- Results -->
-  <a href="stanmore-results.html" class="hub-card results-card">
-    <div class="hub-card-left">
-      <div class="hub-card-icon">🥇</div>
-      <div style="flex:1;">
-        <div class="hub-card-pill">Results &amp; Prizes</div>
-        <div class="hub-card-title">Final Standings</div>
-        <div class="hub-card-features">
-          <span>🏅 Podium &amp; prize winners</span>
-          <span>📄 Export PDF or CSV</span>
-          <span>📁 Past results archive</span>
-        </div>
-      </div>
-    </div>
-    <div class="hub-card-arrow">›</div>
-  </a>
-
-  <!-- Course Guide -->
   <a href="stanmore-course-guide.html" class="hub-card guide-card">
-    <div class="hub-card-left">
-      <div class="hub-card-icon">📋</div>
-      <div style="flex:1;">
-        <div class="hub-card-pill">Course Guide</div>
-        <div class="hub-card-title">Scorecard &amp; Calculators</div>
-        <div class="hub-card-features">
-          <span>⛳ Full course scorecard</span>
-          <span>🧮 WHS handicap calculator</span>
-          <span>⚔️ Matchplay stroke allocator</span>
+    <div class="hub-card-header">
+      <!-- Full width pill label -->
+      <div class="hub-card-pill" style="color:#c49dff;background:rgba(190,140,255,.15);border-bottom:1px solid #c49dff33;">Course Guide</div>
+      <!-- Icon + title + arrow -->
+      <div style="display:flex;align-items:center;justify-content:space-between;padding:12px 16px 0;">
+        <div style="display:flex;align-items:center;gap:12px;">
+          <span class="hub-card-icon">📋</span>
+          <div class="hub-card-title">Scorecard &amp; Calculators</div>
         </div>
+        <div class="hub-card-arrow">›</div>
       </div>
     </div>
-    <div class="hub-card-arrow">›</div>
+    <div class="hub-card-features"><span>⛳ Full course scorecard</span><span>🧮 WHS handicap calculator</span><span>⚔️ Matchplay stroke allocator</span></div>
   </a>
-
-  <!-- Admin -->
+  <a href="stanmore-player-scoring.html" class="hub-card scoring-card">
+    <div class="hub-card-header">
+      <!-- Full width pill label -->
+      <div class="hub-card-pill" style="color:#7ec8ff;background:rgba(100,180,255,.15);border-bottom:1px solid #7ec8ff33;">Score Entry</div>
+      <!-- Icon + title + arrow -->
+      <div style="display:flex;align-items:center;justify-content:space-between;padding:12px 16px 0;">
+        <div style="display:flex;align-items:center;gap:12px;">
+          <span class="hub-card-icon">⛳</span>
+          <div class="hub-card-title">Enter Your Scores</div>
+        </div>
+        <div class="hub-card-arrow">›</div>
+      </div>
+    </div>
+    <div class="hub-card-features"><span>📊 WHS handicap calculated live</span><span>🏅 Stableford points per hole</span><span>💾 Saves automatically</span></div>
+  </a>
+  <a href="stanmore-leaderboard-live.html" class="hub-card leaderboard-card">
+    <div class="hub-card-header">
+      <!-- Full width pill label -->
+      <div class="hub-card-pill" style="color:#4cd98a;background:rgba(100,220,140,.15);border-bottom:1px solid #4cd98a33;">Live Leaderboard</div>
+      <!-- Icon + title + arrow -->
+      <div style="display:flex;align-items:center;justify-content:space-between;padding:12px 16px 0;">
+        <div style="display:flex;align-items:center;gap:12px;">
+          <span class="hub-card-icon">🏆</span>
+          <div class="hub-card-title">Follow the Action</div>
+        </div>
+        <div class="hub-card-arrow">›</div>
+      </div>
+    </div>
+    <div class="hub-card-features"><span>🔄 Updates every 5 seconds</span><span>🎯 Prize hole leaders shown</span><span>👥 Team scores included</span></div>
+  </a>
+  <a href="stanmore-results.html" class="hub-card results-card">
+    <div class="hub-card-header">
+      <!-- Full width pill label -->
+      <div class="hub-card-pill" style="color:#ffe066;background:rgba(255,224,102,.15);border-bottom:1px solid #ffe06633;">Results &amp; Prizes</div>
+      <!-- Icon + title + arrow -->
+      <div style="display:flex;align-items:center;justify-content:space-between;padding:12px 16px 0;">
+        <div style="display:flex;align-items:center;gap:12px;">
+          <span class="hub-card-icon">🥇</span>
+          <div class="hub-card-title">Final Standings</div>
+        </div>
+        <div class="hub-card-arrow">›</div>
+      </div>
+    </div>
+    <div class="hub-card-features"><span>🏅 Podium &amp; prize winners</span><span>📄 Export PDF or CSV</span><span>📁 Past results archive</span></div>
+  </a>
   <a href="stanmore-admin.html" class="hub-card admin-card">
-    <div class="hub-card-left">
-      <div class="hub-card-icon">🔐</div>
-      <div style="flex:1;">
-        <div class="hub-card-pill">Admin</div>
-        <div class="hub-card-title">Competition Management</div>
-        <div class="hub-card-features">
-          <span>🏌️ Set up competitions</span>
-          <span>✏️ Edit &amp; manage scores</span>
-          <span>🏆 Close &amp; archive results</span>
+    <div class="hub-card-header">
+      <!-- Full width pill label -->
+      <div class="hub-card-pill" style="color:#ff9080;background:rgba(255,120,100,.15);border-bottom:1px solid #ff908033;">Admin</div>
+      <!-- Icon + title + arrow -->
+      <div style="display:flex;align-items:center;justify-content:space-between;padding:12px 16px 0;">
+        <div style="display:flex;align-items:center;gap:12px;">
+          <span class="hub-card-icon">🔐</span>
+          <div class="hub-card-title">Competition Management</div>
         </div>
+        <div class="hub-card-arrow">›</div>
       </div>
     </div>
-    <div class="hub-card-arrow">›</div>
+    <div class="hub-card-features"><span>🏌️ Set up competitions</span><span>✏️ Edit &amp; manage scores</span><span>🏆 Close &amp; archive results</span></div>
   </a>
 
-</div>
-
-<!-- Hidden canvases for QR code generation -->
-<div style="display:none;" aria-hidden="true">
-  <canvas id="qr1" width="400" height="400"></canvas>
-  <canvas id="qr2" width="400" height="400"></canvas>
-  <canvas id="qr-results" width="400" height="400"></canvas>
-  <canvas id="qr-guide" width="400" height="400"></canvas>
 </div>
 
 <div class="print-section">

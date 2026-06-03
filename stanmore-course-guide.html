@@ -211,14 +211,14 @@ select.cinp:focus,select.finp:focus{border-color:rgba(212,160,23,.7);}
   </div>
 </div>
 <div class="tab-nav">
-  <div class="tnav active" onclick="showPage('pgR',this)">📊 Tee Ratings</div>
+  <div class="tnav active" onclick="showPage('pgH',this)">🧮 Hcp Calc</div>
+  <div class="tnav" onclick="showPage('pgR',this)">📊 Tee Ratings</div>
   <div class="tnav" onclick="showPage('pgC',this)">📋 Scorecard</div>
-  <div class="tnav" onclick="showPage('pgH',this)">🧮 Hcp Calc</div>
   <div class="tnav" onclick="showPage('pgMap',this)">🗺️ Course Map</div>
 </div>
 
 <!-- RATINGS -->
-<div class="page active" id="pgR">
+<div class="page" id="pgR">
   <div class="sec-title">Course & Slope Ratings</div>
   <div class="sec-sub">Stanmore GC · Men Par 69 · Women Par 72 · Designed by Alister MacKenzie (1921)</div>
   <div class="tee-card"><div class="tee-head wh"><div class="tee-name">⚪ White Tees</div><div class="tee-yds">6,025 yds</div></div>
@@ -310,7 +310,7 @@ select.cinp:focus,select.finp:focus{border-color:rgba(212,160,23,.7);}
 </div>
 
 <!-- HANDICAP CALC -->
-<div class="page" id="pgH">
+<div class="page active" id="pgH">
   <div class="pg-title">🧮 Handicap Calculator</div>
   <div class="pg-sub">WHS: Handicap Index → Course Handicap → Playing Handicap</div>
 
