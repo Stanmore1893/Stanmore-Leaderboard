@@ -1081,6 +1081,13 @@ async function loadScores(){
   }
 }
 function renderScores(players){
+  // Decode 'h' string field into scores[] for each player
+  players.forEach(function(p){
+    if (typeof p.h === 'string' && p.h.length > 0) {
+      var decoded = p.h.split(',').map(function(v){ var n=parseInt(v); return n>0?n:null; });
+      if (decoded.some(function(s){return s;})) p.scores = decoded;
+    }
+  });
   var body=document.getElementById('scoresBody');
   if(!players.length){body.innerHTML='<tr><td colspan="7" style="text-align:center;padding:18px;color:var(--grey);">No scores yet</td></tr>';return;}
   var sorted=[...players].sort(function(a,b){return b.pts-a.pts;});
@@ -1464,7 +1471,6 @@ function stablefordPts(gross,par,ph,si){if(!gross||gross<=0)return 0;var n=gross
 
 function openScoreEditor(player) {
   _editPlayer = player;
-  console.log('openScoreEditor player.h:', player.h, 'player.scores:', JSON.stringify(player.scores));
   // Build scores array - use stored hole scores if available
   // Try scores[] first, then decode from 'h' string field
   var decodedScores = null;
