@@ -671,7 +671,8 @@ function render(){
   if(tab==='inplay') show=all.filter(p=>!p.fin);
   if(tab==='finished') show=all.filter(p=>p.fin);
   if(!show.length){board.innerHTML='<div class="bempty"><div class="ei">⛳</div><div class="em">'+(players.length===0?'Waiting for players to submit scores.<br>Share the scoring link so players can enter live!':'No players in this view yet.')+'</div></div>';return;}
-  board.innerHTML='';
+  // Build cards off-screen then swap — no blink
+  var frag = document.createDocumentFragment();
   show.forEach((p,i)=>{
     const rank=all.indexOf(p)+1;
     const card=document.createElement('div');
@@ -684,13 +685,10 @@ function render(){
     if (isSF) {
       var prev = rank > 1 ? show[rank-2] : null;
       var next = rank < show.length ? show[rank] : null;
-      // Tied with player above?
       if (prev && prev.pts === p.pts) {
-        // Both finished — only T if countback exhausted
         if (p.fin && prev.fin) { isTied = stablefordCB(p, prev) === 0; }
-        else { isTied = true; } // in-progress — show as tied
+        else { isTied = true; }
       }
-      // Tied with player below? (only needed if not already tied above)
       if (!isTied && next && next.pts === p.pts) {
         if (p.fin && next.fin) { isTied = stablefordCB(p, next) === 0; }
         else { isTied = true; }
@@ -709,10 +707,14 @@ function render(){
     const ph=p.ph||p.hcp||0;
     const teeColour=p.teeKey?(p.teeKey.includes('white')?'#f0f0f0':p.teeKey.includes('yellow')?'#f0c040':'#e87878'):'';
     const teeOrb=teeColour?`<span style="display:inline-block;width:9px;height:9px;border-radius:50%;background:${teeColour};border:1px solid rgba(255,255,255,.3);margin-left:4px;vertical-align:middle;flex-shrink:0;" title="${p.teeKey.includes('white')?'White':p.teeKey.includes('yellow')?'Yellow':'Red'} Tees"></span>`:'';
-    const compTag=p.competition?` · ${p.competition}`:'';
     card.innerHTML=`${posH}<div><div class="pname">${p.name}</div><div class="pmeta">HCP ${ph}${teeOrb}</div></div><div class="pcell"><span class="pv">${ph}</span></div><div class="pcell"><span class="pv">${p.gross||0}</span><span class="pl">gross</span></div>${thruH}<div class="pscore"><span class="ptv">${p.pts}</span><span class="psl">pts</span></div>`;
-    board.appendChild(card);
+    frag.appendChild(card);
   });
+  // Swap in one operation — no visual flash
+  var sy = window.scrollY;
+  board.innerHTML = '';
+  board.appendChild(frag);
+  window.scrollTo(0, sy);
   window._hasRendered = true;
 }
 
