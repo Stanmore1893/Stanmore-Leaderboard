@@ -676,7 +676,7 @@ function render(){
     const rank=all.indexOf(p)+1;
     const card=document.createElement('div');
     card.className='pcard'+(rank===1?' leader':'');
-    card.style.animationDelay=(i*.025)+'s';
+    if (!window._hasRendered) card.style.animationDelay=(i*.025)+'s';
     // Check for tie — only if countback couldn't separate them
     var isTied = false;
     var ac3 = (window._competitions||[]).find(function(c){return c.active;})||{};
@@ -713,6 +713,7 @@ function render(){
     card.innerHTML=`${posH}<div><div class="pname">${p.name}</div><div class="pmeta">HCP ${ph}${teeOrb}</div></div><div class="pcell"><span class="pv">${ph}</span></div><div class="pcell"><span class="pv">${p.gross||0}</span><span class="pl">gross</span></div>${thruH}<div class="pscore"><span class="ptv">${p.pts}</span><span class="psl">pts</span></div>`;
     board.appendChild(card);
   });
+  window._hasRendered = true;
 }
 
 // MANUAL ENTRY with auto-calc
