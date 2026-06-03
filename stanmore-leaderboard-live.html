@@ -426,7 +426,7 @@ async function loadAdminSettings() {
     if (!s) return;
     // s may be an object already or a JSON string
     const settings = (typeof s === 'string') ? JSON.parse(s) : s;
-    if (settings.name) document.getElementById('compNameHdr').textContent = settings.name;
+    var _cn=document.getElementById('compNameHdr'); if(settings.name && _cn && _cn.textContent!==settings.name) _cn.textContent=settings.name;
     // Check if active competition has a welcome message - it takes priority over ticker
     var compsForWelcome = Array.isArray(record.competitions) ? record.competitions : [];
     var activeForWelcome = compsForWelcome.find(function(c){ return c.active; });
@@ -437,9 +437,9 @@ async function loadAdminSettings() {
       const txt1 = document.getElementById('tickerText');
       const txt2 = document.getElementById('tickerText2');
       const msg  = '📢 ' + settings.ticker + '  ·  ';
-      if (txt1) txt1.textContent = msg;
-      if (txt2) txt2.textContent = msg;
-      if (bar)  bar.style.display = 'block';
+      if (txt1 && txt1.textContent !== msg) txt1.textContent = msg;
+      if (txt2 && txt2.textContent !== msg) txt2.textContent = msg;
+      if (bar && bar.style.display !== 'block') bar.style.display = 'block';
     } else {
       const bar = document.getElementById('tickerBar');
       if (bar) bar.style.display = 'none';
@@ -498,9 +498,9 @@ async function applyBranding() {
       var txt1 = document.getElementById('tickerText');
       var txt2 = document.getElementById('tickerText2');
       var msg  = '👋 ' + b.welcome + '  ·  ';
-      if (txt1) txt1.textContent = msg;
-      if (txt2) txt2.textContent = msg;
-      if (bar)  bar.style.display = 'block';
+      if (txt1 && txt1.textContent !== msg) txt1.textContent = msg;
+      if (txt2 && txt2.textContent !== msg) txt2.textContent = msg;
+      if (bar && bar.style.display !== 'block') bar.style.display = 'block';
     }
   } catch(e) { console.log('Branding load failed'); }
 }
@@ -662,10 +662,10 @@ function setTab(t, el) {
 
 function render(){
   const all=sorted();
-  document.getElementById('stTotal').textContent=players.length;
-  document.getElementById('stPlay').textContent=players.filter(p=>!p.fin).length;
-  document.getElementById('stFin').textContent=players.filter(p=>p.fin).length;
-  document.getElementById('stLead').textContent=all.length?all[0].pts:'—';
+  (function(){var _e=document.getElementById('stTotal');var _v=String(players.length);if(_e&&_e.textContent!==_v)_e.textContent=_v;})();
+  (function(){var _e=document.getElementById('stPlay');var _v=String(players.filter(p=>!p.fin).length);if(_e&&_e.textContent!==_v)_e.textContent=_v;})();
+  (function(){var _e=document.getElementById('stFin');var _v=String(players.filter(p=>p.fin).length);if(_e&&_e.textContent!==_v)_e.textContent=_v;})();
+  (function(){var _e=document.getElementById('stLead');var _v=String(all.length?all[0].pts:'—');if(_e&&_e.textContent!==_v)_e.textContent=_v;})();
   const board=document.getElementById('board');
   let show=all;
   if(tab==='inplay') show=all.filter(p=>!p.fin);
@@ -710,11 +710,27 @@ function render(){
     card.innerHTML=`${posH}<div><div class="pname">${p.name}</div><div class="pmeta">HCP ${ph}${teeOrb}</div></div><div class="pcell"><span class="pv">${ph}</span></div><div class="pcell"><span class="pv">${p.gross||0}</span><span class="pl">gross</span></div>${thruH}<div class="pscore"><span class="ptv">${p.pts}</span><span class="psl">pts</span></div>`;
     frag.appendChild(card);
   });
-  // Swap in one operation — no visual flash
-  var sy = window.scrollY;
-  board.innerHTML = '';
-  board.appendChild(frag);
-  window.scrollTo(0, sy);
+  // Update in place — never wipe the board
+  var newCards = Array.from(frag.children);
+  var oldCards = Array.from(board.children);
+
+  newCards.forEach(function(newCard, i) {
+    if (oldCards[i]) {
+      // Update existing card content if changed
+      if (oldCards[i].innerHTML !== newCard.innerHTML || oldCards[i].className !== newCard.className) {
+        oldCards[i].innerHTML = newCard.innerHTML;
+        oldCards[i].className = newCard.className;
+      }
+    } else {
+      board.appendChild(newCard);
+    }
+  });
+
+  // Remove extra cards if list shrank
+  while (board.children.length > newCards.length) {
+    board.removeChild(board.lastChild);
+  }
+
   window._hasRendered = true;
 }
 
@@ -779,7 +795,11 @@ function shareUrl(){
   else window.open('https://wa.me/?text='+encodeURIComponent(t),'_blank');
 }
 
-function stamp(){document.getElementById('updTxt').textContent='Updated '+new Date().toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit',second:'2-digit'});}
+function stamp(){
+  var t='Updated '+new Date().toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit',second:'2-digit'});
+  var el=document.getElementById('updTxt');
+  if(el && el.textContent!==t) el.textContent=t;
+}
 
 
 // ── TEAMS LEADERBOARD ──
