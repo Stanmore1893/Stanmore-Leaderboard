@@ -561,7 +561,7 @@ function stablefordPts(gross,par,ph,si){if(!gross||gross<=0)return 0;const n=gro
 // WHS correct: allowance on unrounded course handicap
 function courseHcpRaw(hi,teeKey){const t=COURSE.ratings[teeKey];return hi*(t.slope/113)+(t.cr-t.par);}
 function calcCourseHcp(hi,teeKey){return Math.round(courseHcpRaw(hi,teeKey));}
-function calcPlayingHcp(hi,teeKey,allowance){return Math.round(courseHcpRaw(hi,teeKey)*allowance);}
+function calcPlayingHcp(hi,teeKey,allowance){if(hi===0)return 0;return Math.round(courseHcpRaw(hi,teeKey)*allowance);}
 function totalStableford(scores,ph,gender){
   const par=gender==='f'?COURSE.par_women:COURSE.par_men;
   const si=gender==='f'?COURSE.si_women:COURSE.si_men;
