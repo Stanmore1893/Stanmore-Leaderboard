@@ -1160,6 +1160,128 @@ function renderSC() {
 
 
 renderSC();
+// ── COURSE MAP ZOOM / PAN ──
+(function() {
+  var scale = 1, lastScale = 1, startDist = 0;
+  var isDragging = false, startX = 0, startY = 0, translateX = 0, translateY = 0;
+
+  function getImg() { return document.getElementById('courseMapImg'); }
+  function getContainer() { return document.getElementById('mapContainer'); }
+
+  function applyTransform(transition) {
+    var img = getImg();
+    if (!img) return;
+    if (transition) { img.style.transition = 'transform .3s ease'; setTimeout(function(){ img.style.transition = ''; }, 320); }
+    img.style.transform = 'translate(' + translateX + 'px,' + translateY + 'px) scale(' + scale + ')';
+  }
+
+  function clamp() {
+    var img = getImg();
+    if (!img) return;
+    var maxX = Math.max(0, (scale - 1) * img.offsetWidth / 2);
+    var maxY = Math.max(0, (scale - 1) * img.offsetHeight / 2);
+    translateX = Math.max(-maxX, Math.min(maxX, translateX));
+    translateY = Math.max(-maxY, Math.min(maxY, translateY));
+  }
+
+  function reset(animate) {
+    scale = 1; translateX = 0; translateY = 0;
+    applyTransform(animate);
+    var c = getContainer();
+    if (c) c.style.cursor = 'zoom-in';
+  }
+
+  function initMap() {
+    var img = getImg();
+    var container = getContainer();
+    if (!img || !container) return;
+
+    // ── Touch: pinch to zoom + drag ──
+    container.addEventListener('touchstart', function(e) {
+      if (e.touches.length === 2) {
+        e.preventDefault();
+        startDist = Math.hypot(e.touches[1].pageX - e.touches[0].pageX, e.touches[1].pageY - e.touches[0].pageY);
+        lastScale = scale;
+      } else if (e.touches.length === 1 && scale > 1) {
+        e.preventDefault();
+        isDragging = true;
+        startX = e.touches[0].pageX - translateX;
+        startY = e.touches[0].pageY - translateY;
+      }
+    }, { passive: false });
+
+    container.addEventListener('touchmove', function(e) {
+      if (e.touches.length === 2) {
+        e.preventDefault();
+        var dist = Math.hypot(e.touches[1].pageX - e.touches[0].pageX, e.touches[1].pageY - e.touches[0].pageY);
+        scale = Math.max(1, Math.min(5, lastScale * dist / startDist));
+        clamp(); applyTransform(false);
+      } else if (isDragging && e.touches.length === 1) {
+        e.preventDefault();
+        translateX = e.touches[0].pageX - startX;
+        translateY = e.touches[0].pageY - startY;
+        clamp(); applyTransform(false);
+      }
+    }, { passive: false });
+
+    container.addEventListener('touchend', function(e) {
+      isDragging = false;
+    });
+
+    // ── Double-tap to reset ──
+    var lastTap = 0;
+    container.addEventListener('touchend', function(e) {
+      var now = Date.now();
+      if (now - lastTap < 280) { reset(true); }
+      lastTap = now;
+    });
+
+    // ── Click to zoom in/out on desktop ──
+    container.addEventListener('click', function(e) {
+      if (scale > 1) {
+        reset(true);
+      } else {
+        scale = 2.5;
+        var rect = container.getBoundingClientRect();
+        translateX = (rect.width / 2 - (e.clientX - rect.left)) * 0.7;
+        translateY = (rect.height / 2 - (e.clientY - rect.top)) * 0.7;
+        clamp();
+        applyTransform(true);
+        container.style.cursor = 'zoom-out';
+      }
+    });
+  }
+
+  // ── Build hole reference grid ──
+  function buildHoleGrid() {
+    var grid = document.getElementById('holeRefGrid');
+    if (!grid) return;
+    var parM = [4,4,4,3,4,3,4,3,4,3,4,4,4,4,4,4,4,4];
+    var siM  = [14,4,8,16,2,18,12,10,6,17,5,7,1,15,3,11,9,13];
+    for (var h = 0; h < 18; h++) {
+      var cell = document.createElement('div');
+      cell.style.cssText = 'background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:8px;padding:6px 4px;text-align:center;';
+      cell.innerHTML = '<div style="font-size:.75rem;font-weight:700;color:#ffe066;font-family:Poppins,sans-serif;">' + (h+1) + '</div>'
+        + '<div style="font-size:.65rem;color:rgba(255,255,255,.5);">P' + parM[h] + '</div>'
+        + '<div style="font-size:.6rem;color:rgba(255,255,255,.3);">SI' + siM[h] + '</div>';
+      grid.appendChild(cell);
+    }
+  }
+
+  window.addEventListener('load', function() {
+    initMap();
+    buildHoleGrid();
+    // Re-init if tab is opened after load (image may not have rendered)
+    document.querySelectorAll('.tnav').forEach(function(btn) {
+      btn.addEventListener('click', function() {
+        if (this.textContent.indexOf('Course Map') > -1) {
+          setTimeout(initMap, 100);
+        }
+      });
+    });
+  });
+})();
+
 </script>
   <div style="text-align:center;padding:14px 16px;border-top:1px solid rgba(212,160,23,.15);">
     <div style="display:inline-flex;align-items:center;gap:10px;">
