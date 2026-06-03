@@ -410,6 +410,82 @@ function totalNett(scores,ph){return scores.reduce((s,g)=>s+(g||0),0)-ph;}
 const MEDALS=['🥇','🥈','🥉'];
 let players=[], tab='all', refreshTimer=null;
 
+// ── AUTO SCROLL ──
+(function(){
+  var scrollTimer = null;
+  var autoScrollInterval = null;
+  var isAutoScrolling = false;
+  var scrollPaused = false;
+  var SCROLL_SPEED = 1;       // px per tick
+  var SCROLL_TICK = 30;       // ms per tick
+  var IDLE_BEFORE_START = 10000; // 10s idle before auto-scroll starts
+  var PAUSE_AT_BOTTOM = 10000;   // 10s pause at bottom
+  var PAUSE_AT_TOP = 10000;      // 10s pause at top
+
+  function startAutoScroll() {
+    if (autoScrollInterval) return;
+    isAutoScrolling = true;
+    var direction = 1; // 1 = down, -1 = up (not used, we control manually)
+    var pauseTimer = null;
+
+    autoScrollInterval = setInterval(function() {
+      if (scrollPaused) return;
+
+      var maxScroll = document.body.scrollHeight - window.innerHeight;
+      if (maxScroll <= 0) return;
+
+      var current = window.scrollY;
+
+      if (current >= maxScroll - 2) {
+        // At bottom — pause then scroll back to top
+        if (!pauseTimer) {
+          scrollPaused = true;
+          pauseTimer = setTimeout(function() {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+            pauseTimer = null;
+            setTimeout(function() {
+              scrollPaused = false;
+            }, PAUSE_AT_TOP);
+          }, PAUSE_AT_BOTTOM);
+        }
+      } else if (current <= 2) {
+        // At top — brief pause already handled, just scroll down
+        scrollPaused = false;
+        window.scrollBy(0, SCROLL_SPEED);
+      } else {
+        window.scrollBy(0, SCROLL_SPEED);
+      }
+    }, SCROLL_TICK);
+  }
+
+  function stopAutoScroll() {
+    if (autoScrollInterval) {
+      clearInterval(autoScrollInterval);
+      autoScrollInterval = null;
+    }
+    isAutoScrolling = false;
+    scrollPaused = false;
+  }
+
+  function resetIdleTimer() {
+    stopAutoScroll();
+    if (scrollTimer) clearTimeout(scrollTimer);
+    scrollTimer = setTimeout(function() {
+      startAutoScroll();
+    }, IDLE_BEFORE_START);
+  }
+
+  // Start idle timer on load
+  window.addEventListener('load', function() {
+    setTimeout(function() { resetIdleTimer(); }, 2000);
+  });
+
+  // Reset on user interaction
+  ['scroll','touchstart','touchmove','mousedown','wheel'].forEach(function(evt) {
+    window.addEventListener(evt, resetIdleTimer, { passive: true });
+  });
+})();
+
 window.addEventListener('load', async ()=>{
   document.getElementById('compDate').textContent=new Date().toLocaleDateString('en-GB',{weekday:'short',day:'numeric',month:'long',year:'numeric'});
   applyBranding();
@@ -557,24 +633,122 @@ function setCompFilter(val) {
   render();
 }
 
+// ── COUNTBACK HELPERS (R&A official method) ──
+function holeStablefordPts(p, holeIdx) {
+  // Returns stableford pts for a specific hole index (0-based)
+  var scores = p.scores || [];
+  var gross = scores[holeIdx];
+  if (!gross || gross <= 0) return 0;
+  var gender = p.gender || 'm';
+  var par = gender === 'f' ? COURSE.par_women[holeIdx] : COURSE.par_men[holeIdx];
+  var si  = gender === 'f' ? COURSE.si_women[holeIdx]  : COURSE.si_men[holeIdx];
+  var ph  = p.ph || 0;
+  var strokes = ph > 0 ? (si <= (ph % 18) ? Math.floor(ph/18)+1 : Math.floor(ph/18)) : 0;
+  var nett = gross - strokes;
+  return Math.max(0, par - nett + 2);
+}
+
+function holeNett(p, holeIdx) {
+  var scores = p.scores || [];
+  var gross = scores[holeIdx];
+  if (!gross || gross <= 0) return 99;
+  var gender = p.gender || 'm';
+  var si  = gender === 'f' ? COURSE.si_women[holeIdx] : COURSE.si_men[holeIdx];
+  var ph  = p.ph || 0;
+  var strokes = ph > 0 ? (si <= (ph % 18) ? Math.floor(ph/18)+1 : Math.floor(ph/18)) : 0;
+  return gross - strokes;
+}
+
+function sumSfPts(p, from, to) {
+  var t=0; for(var i=from;i<to;i++) t+=holeStablefordPts(p,i); return t;
+}
+
+function stablefordCountback(a, b) {
+  if (!a.fin || !b.fin) return b.thru - a.thru;
+
+  // ── BACK 9 (holes 9-17) ──
+  var d = sumSfPts(b,9,18) - sumSfPts(a,9,18); if(d!==0) return d;
+  // Back 6 (holes 12-17)
+  d = sumSfPts(b,12,18) - sumSfPts(a,12,18); if(d!==0) return d;
+  // Back 3 (holes 15-17)
+  d = sumSfPts(b,15,18) - sumSfPts(a,15,18); if(d!==0) return d;
+  // Back 2 (holes 16-17)
+  d = sumSfPts(b,16,18) - sumSfPts(a,16,18); if(d!==0) return d;
+  // 18th hole only
+  d = holeStablefordPts(b,17) - holeStablefordPts(a,17); if(d!==0) return d;
+
+  // ── FRONT 9 (holes 0-8) ──
+  d = sumSfPts(b,0,9) - sumSfPts(a,0,9); if(d!==0) return d;
+  // Front 6 (holes 0-5)
+  d = sumSfPts(b,0,6) - sumSfPts(a,0,6); if(d!==0) return d;
+  // Front 3 (holes 0-2)
+  d = sumSfPts(b,0,3) - sumSfPts(a,0,3); if(d!==0) return d;
+  // Front 2 (holes 0-1)
+  d = sumSfPts(b,0,2) - sumSfPts(a,0,2); if(d!==0) return d;
+  // 9th hole only
+  d = holeStablefordPts(b,8) - holeStablefordPts(a,8); if(d!==0) return d;
+
+  return 0; // True tie — committee decides
+}
+
+function sumNett(p, from, to) {
+  var t=0; for(var i=from;i<to;i++) t+=holeNett(p,i); return t;
+}
+
+function strokeplayCountback(a, b) {
+  if (!a.fin || !b.fin) return a.thru - b.thru;
+
+  // ── BACK 9 (lowest nett wins) ──
+  var d = sumNett(a,9,18) - sumNett(b,9,18); if(d!==0) return d;
+  // Back 6
+  d = sumNett(a,12,18) - sumNett(b,12,18); if(d!==0) return d;
+  // Back 3
+  d = sumNett(a,15,18) - sumNett(b,15,18); if(d!==0) return d;
+  // Back 2
+  d = sumNett(a,16,18) - sumNett(b,16,18); if(d!==0) return d;
+  // 18th hole
+  d = holeNett(a,17) - holeNett(b,17); if(d!==0) return d;
+
+  // ── FRONT 9 ──
+  d = sumNett(a,0,9) - sumNett(b,0,9); if(d!==0) return d;
+  // Front 6
+  d = sumNett(a,0,6) - sumNett(b,0,6); if(d!==0) return d;
+  // Front 3
+  d = sumNett(a,0,3) - sumNett(b,0,3); if(d!==0) return d;
+  // Front 2
+  d = sumNett(a,0,2) - sumNett(b,0,2); if(d!==0) return d;
+  // 9th hole
+  d = holeNett(a,8) - holeNett(b,8); if(d!==0) return d;
+
+  return 0; // True tie — committee decides
+}
+
 function sorted(){
   var filtered = _compFilter
     ? players.filter(function(p){ return p.competition === _compFilter; })
     : players;
-  // Check if active competition is scratch (lowest gross wins)
   var ac = (window._competitions||[]).find(function(c){ return c.active; }) || {};
   var isScratchComp = (ac.format||'').indexOf('scratch') > -1;
-  if (isScratchComp) {
-    // Scratch: lowest gross wins
-    return filtered.slice().sort(function(a,b){ return (a.gross||999)-(b.gross||999); });
-  }
   var isStrokeplay = (ac.format||'').indexOf('strokeplay') > -1 || (ac.format||'').indexOf('stroke') > -1;
-  if (isStrokeplay) {
-    // Strokeplay with handicap: lowest nett wins
-    return filtered.slice().sort(function(a,b){ return (a.nett||999)-(b.nett||999)||b.thru-a.thru; });
+
+  if (isScratchComp) {
+    // Sort by gross first — no countback applied initially
+    return filtered.slice().sort(function(a,b){
+      return (a.gross||999)-(b.gross||999);
+      // Countback applied in render for non-1st positions only
+    });
   }
-  // Stableford and all others: highest points wins
-  return filtered.slice().sort(function(a,b){ return b.pts-a.pts||b.thru-a.thru; });
+  if (isStrokeplay) {
+    return filtered.slice().sort(function(a,b){
+      var diff = (a.nett||999)-(b.nett||999);
+      return diff !== 0 ? diff : strokeplayCountback(a,b);
+    });
+  }
+  // Stableford
+  return filtered.slice().sort(function(a,b){
+    var diff = b.pts - a.pts;
+    return diff !== 0 ? diff : stablefordCountback(a,b);
+  });
 }
 
 function setTab(t, el) {
@@ -604,6 +778,8 @@ function render(){
   document.getElementById('stFin').textContent=players.filter(p=>p.fin).length;
   document.getElementById('stLead').textContent=all.length?all[0].pts:'—';
   const board=document.getElementById('board');
+  // Save scroll position before render so screen doesn't flash/jump
+  var savedScroll = window.scrollY;
   let show=all;
   if(tab==='inplay') show=all.filter(p=>!p.fin);
   if(tab==='finished') show=all.filter(p=>p.fin);
@@ -614,7 +790,38 @@ function render(){
     const card=document.createElement('div');
     card.className='pcard'+(rank===1?' leader':'');
     card.style.animationDelay=(i*.025)+'s';
-    const posH=rank<=3?`<div class="ppos top">${MEDALS[rank-1]}</div>`:`<div class="ppos">${rank}</div>`;
+    // Tie detection
+    var ac2 = (window._competitions||[]).find(function(c){ return c.active; }) || {};
+    var isScratchFmt = (ac2.format||'').indexOf('scratch') > -1;
+
+    // For scratch: compare gross scores. For others: pts already sorted with countback
+    function sameScore(pa, pb) {
+      if (isScratchFmt) return pa.fin && pb.fin && (pa.gross||999) === (pb.gross||999);
+      return pa.fin && pb.fin && pa.pts === pb.pts;
+    }
+
+    var tiedAbove = rank > 1 && show[rank-2] && sameScore(p, show[rank-2]);
+    var tiedBelow = rank < show.length && show[rank] && sameScore(p, show[rank]);
+    var isTied = tiedAbove || tiedBelow;
+
+    // Scratch 1st place tie → playoff. Scratch other positions → countback already applied in sort, show tie if still equal
+    var isPlayoff = isScratchFmt && rank === 1 && tiedBelow && p.fin;
+    // For scratch non-1st: apply countback now to determine if truly tied
+    var isTrueCountbackTie = isTied && !isPlayoff && (function(){
+      if (!isScratchFmt) return true; // already countback sorted
+      // Apply countback between tied scratch players
+      var tied = show.filter(function(x){ return sameScore(p,x); });
+      if (tied.length < 2) return false;
+      var cb = strokeplayCountback(p, tied[0] === p ? tied[1] : tied[0]);
+      return cb === 0;
+    })();
+
+    var posLabel = isPlayoff ? '⚡ P/O' : (isTrueCountbackTie ? 'T'+rank : rank);
+    const posH = isPlayoff
+      ? '<div class="ppos" style="font-size:.65rem;color:#e87878;">⚡ P/O</div>'
+      : (rank<=3 && !isTrueCountbackTie)
+        ? '<div class="ppos top">'+MEDALS[rank-1]+'</div>'
+        : '<div class="ppos" style="font-size:'+(isTrueCountbackTie?'.75rem':'.9rem')+'">'+posLabel+'</div>';
     var finLabel = p.fin ? (p.nineHole==='front'?'✓ F9':p.nineHole==='back'?'✓ B9':'✓ F') : null;
     var thruDisplay = p.fin
       ? '<div class="pthru"><span class="tv fin">'+finLabel+'</span></div>'
