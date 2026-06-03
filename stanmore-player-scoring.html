@@ -1202,19 +1202,8 @@ async function saveProgress(){
     var idx=allScores.findIndex(function(s){return s.name&&s.name.toLowerCase()===R.name.toLowerCase();});
     if(idx>=0)allScores[idx]=partial;else allScores.push(partial);
 
-    // Debug: log what we're about to save
-    var myEntry = allScores.find(function(s){return s.name&&s.name.toLowerCase()===R.name.toLowerCase();});
-    console.log('Saving to Supabase:', R.name, 'scores[]:', JSON.stringify(myEntry && myEntry.scores));
-
     var ok = await SGC.set('scores', allScores);
-
-    // Debug: verify what was actually saved
     if (ok) {
-      try {
-        var verify = await SGC.get('scores');
-        var saved = verify && verify.find(function(s){return s.name&&s.name.toLowerCase()===R.name.toLowerCase();});
-        console.log('Verified in Supabase:', R.name, 'scores[]:', JSON.stringify(saved && saved.scores));
-      } catch(e) {}
       localStorage.removeItem(OFFLINE_QUEUE_KEY);
       setSyncStatus('synced');
     } else {

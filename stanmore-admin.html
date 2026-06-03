@@ -1073,10 +1073,6 @@ async function loadScores(){
   try{
     var record=await SGC._read();
     var players=Array.isArray(record.scores)?record.scores:[];
-    // Debug: log scores array to see if hole data exists
-    if(players.length) {
-      console.log('First player scores[]:', players[0].name, 'scores:', JSON.stringify(players[0].scores));
-    }
     renderScores(players);
 
   }catch(e){
