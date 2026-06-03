@@ -677,15 +677,24 @@ function render(){
     const card=document.createElement('div');
     card.className='pcard'+(rank===1?' leader':'');
     card.style.animationDelay=(i*.025)+'s';
-    // Check for tie with adjacent player (same pts)
+    // Check for tie — only if countback couldn't separate them
     var isTied = false;
     var ac3 = (window._competitions||[]).find(function(c){return c.active;})||{};
     var isSF = (ac3.format||'').indexOf('scratch') === -1 && (ac3.format||'').indexOf('strokeplay') === -1;
     if (isSF) {
-      // Tied above
-      if (rank > 1 && show[rank-2] && show[rank-2].pts === p.pts) isTied = true;
-      // Tied below
-      if (!isTied && rank < show.length && show[rank] && show[rank].pts === p.pts) isTied = true;
+      var prev = rank > 1 ? show[rank-2] : null;
+      var next = rank < show.length ? show[rank] : null;
+      // Tied with player above?
+      if (prev && prev.pts === p.pts) {
+        // Both finished — only T if countback exhausted
+        if (p.fin && prev.fin) { isTied = stablefordCB(p, prev) === 0; }
+        else { isTied = true; } // in-progress — show as tied
+      }
+      // Tied with player below? (only needed if not already tied above)
+      if (!isTied && next && next.pts === p.pts) {
+        if (p.fin && next.fin) { isTied = stablefordCB(p, next) === 0; }
+        else { isTied = true; }
+      }
     }
     var posLabel = isTied ? 'T'+rank : rank;
     const posH = isTied
