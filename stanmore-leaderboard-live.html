@@ -784,7 +784,8 @@ function render(){
   if(tab==='inplay') show=all.filter(p=>!p.fin);
   if(tab==='finished') show=all.filter(p=>p.fin);
   if(!show.length){board.innerHTML='<div class="bempty"><div class="ei">⛳</div><div class="em">'+(players.length===0?'Waiting for players to submit scores.<br>Share the scoring link so players can enter live!':'No players in this view yet.')+'</div></div>';return;}
-  board.innerHTML='';
+  // Silent update - build new cards then swap in one operation
+  var newBoard = document.createDocumentFragment();
   show.forEach((p,i)=>{
     const rank=all.indexOf(p)+1;
     const card=document.createElement('div');
@@ -795,26 +796,29 @@ function render(){
     var isScratchFmt = (ac2.format||'').indexOf('scratch') > -1;
 
     // For scratch: compare gross scores. For others: pts already sorted with countback
-    function sameScore(pa, pb) {
-      if (isScratchFmt) return pa.fin && pb.fin && (pa.gross||999) === (pb.gross||999);
-      return pa.fin && pb.fin && pa.pts === pb.pts;
-    }
+    // Tie detection — compare adjacent players in the sorted list
+    var ac2 = (window._competitions||[]).find(function(c){ return c.active; }) || {};
+    var isScratchFmt = (ac2.format||'').indexOf('scratch') > -1;
+    var isStrokeFmt  = (ac2.format||'').indexOf('strokeplay') > -1 || (ac2.format||'').indexOf('stroke') > -1;
 
-    var tiedAbove = rank > 1 && show[rank-2] && sameScore(p, show[rank-2]);
-    var tiedBelow = rank < show.length && show[rank] && sameScore(p, show[rank]);
+    function scoreOf(x){ return isScratchFmt?(x.gross||999):isStrokeFmt?(x.nett||999):x.pts; }
+    var above = rank > 1 ? show[rank-2] : null;
+    var below = rank < show.length ? show[rank] : null;
+    var tiedAbove = above && above.fin && p.fin && scoreOf(above)===scoreOf(p);
+    var tiedBelow = below && below.fin && p.fin && scoreOf(below)===scoreOf(p);
     var isTied = tiedAbove || tiedBelow;
 
-    // Scratch 1st place tie → playoff. Scratch other positions → countback already applied in sort, show tie if still equal
-    var isPlayoff = isScratchFmt && rank === 1 && tiedBelow && p.fin;
-    // For scratch non-1st: apply countback now to determine if truly tied
-    var isTrueCountbackTie = isTied && !isPlayoff && (function(){
-      if (!isScratchFmt) return true; // already countback sorted
-      // Apply countback between tied scratch players
-      var tied = show.filter(function(x){ return sameScore(p,x); });
-      if (tied.length < 2) return false;
-      var cb = strokeplayCountback(p, tied[0] === p ? tied[1] : tied[0]);
-      return cb === 0;
-    })();
+    // Scratch 1st tie = playoff (no countback). All other ties = countback then T if still equal.
+    var isPlayoff = isScratchFmt && rank===1 && tiedBelow;
+    var isTrueCountbackTie = false;
+    if (isTied && !isPlayoff) {
+      var peer = tiedAbove ? above : below;
+      if (isScratchFmt || isStrokeFmt) {
+        isTrueCountbackTie = strokeplayCountback(p, peer) === 0;
+      } else {
+        isTrueCountbackTie = stablefordCountback(p, peer) === 0;
+      }
+    }
 
     var posLabel = isPlayoff ? '⚡ P/O' : (isTrueCountbackTie ? 'T'+rank : rank);
     const posH = isPlayoff
@@ -832,8 +836,13 @@ function render(){
     const teeOrb=teeColour?`<span style="display:inline-block;width:9px;height:9px;border-radius:50%;background:${teeColour};border:1px solid rgba(255,255,255,.3);margin-left:4px;vertical-align:middle;flex-shrink:0;" title="${p.teeKey.includes('white')?'White':p.teeKey.includes('yellow')?'Yellow':'Red'} Tees"></span>`:'';
     const compTag=p.competition?` · ${p.competition}`:'';
     card.innerHTML=`${posH}<div><div class="pname">${p.name}</div><div class="pmeta">HCP ${ph}${teeOrb}</div></div><div class="pcell"><span class="pv">${ph}</span></div><div class="pcell"><span class="pv">${p.gross||0}</span><span class="pl">gross</span></div>${thruH}<div class="pscore"><span class="ptv">${p.pts}</span><span class="psl">pts</span></div>`;
-    board.appendChild(card);
+    newBoard.appendChild(card);
   });
+  // Swap DOM silently — save/restore scroll
+  var _sy = window.scrollY;
+  board.innerHTML = '';
+  board.appendChild(newBoard);
+  window.scrollTo(0, _sy);
 }
 
 // MANUAL ENTRY with auto-calc
