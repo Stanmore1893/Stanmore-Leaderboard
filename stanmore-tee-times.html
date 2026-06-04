@@ -24,7 +24,7 @@ body{font-family:'Poppins',sans-serif;background:linear-gradient(175deg,#060e1e,
 .nav-drawer{position:fixed;top:0;right:0;bottom:0;width:300px;transform:translateX(100%);transition:transform .3s cubic-bezier(.4,0,.2,1);background:linear-gradient(180deg,#09132a,#0f2347 60%,#1a3a6b);z-index:501;display:flex;flex-direction:column;overflow-y:auto;}
 
 /* ── HEADER ── */
-.hdr{background:linear-gradient(to bottom,rgba(6,14,30,.98),rgba(15,35,71,.95));padding:calc(env(safe-area-inset-top,0px)+18px) 70px 18px 16px;border-bottom:1px solid rgba(212,160,23,.25);}
+.hdr{background:linear-gradient(to bottom,rgba(6,14,30,.98),rgba(15,35,71,.95));padding-top:calc(env(safe-area-inset-top,0px)+16px);padding-right:70px;padding-bottom:16px;padding-left:16px;border-bottom:1px solid rgba(212,160,23,.25);}
 .hdr-row{display:flex;align-items:center;gap:10px;}
 .logo{width:44px;height:44px;object-fit:contain;background:transparent;border:none;}
 .club-name{font-size:1rem;font-weight:700;color:#fff;}
@@ -106,6 +106,9 @@ select option{background:#0f2347;color:#fff;}
 </style>
 </head>
 <body>
+
+<!-- Safe area spacer - navy bar that fills behind status bar -->
+<div style="position:fixed;top:0;left:0;right:0;height:env(safe-area-inset-top,0px);background:#0a1220;z-index:600;"></div>
 
 <div class="sgc-burger" onclick="openNav()">&#9776;</div>
 <div class="nav-overlay" id="sgcNavOverlay" onclick="closeNav()"></div>
