@@ -1103,15 +1103,17 @@ function renderScores(players){
     var tr=document.createElement('tr');
     var ph=p.ph||p.hcp||0;
     var status=p.fin?'<span class="fin-badge">Fin</span>':(p.thru||0)+' holes';
-    tr.innerHTML='<td class="nm" style="cursor:pointer;text-decoration:underline;color:var(--gold-lt);" title="Click to edit scores">'+p.name+'</td>'
-      +'<td class="mn">'+ph+'</td><td class="mn">'+(p.gross||0)+'</td>'
+    tr.innerHTML='<td class="nm">'
+        +'<div style="color:var(--gold-lt);font-weight:600;cursor:pointer;" title="Click to edit scores">'+p.name+'</div>'
+        +'<div style="margin-top:4px;display:flex;gap:5px;">'
+          +'<button class="edit-row-btn" title="Edit scores" style="font-size:.72rem;padding:3px 8px;">✏️ Edit</button>'
+          +'<button class="del-row-btn" style="font-size:.72rem;padding:3px 8px;">✕ Delete</button>'
+        +'</div>'
+      +'</td>'
+      +'<td class="mn">'+ph+'</td>'
+      +'<td class="mn">'+(p.gross||0)+'</td>'
       +'<td class="mn" style="color:var(--gold-lt);font-weight:500">'+p.pts+'</td>'
-      +'<td>'+status+'</td>'
-      +'<td style="font-size:.65rem;color:var(--grey)">'+(p.competition||'—')+'</td>'
-      +'<td style="white-space:nowrap;">'
-        +'<button class="edit-row-btn" title="Edit scores">✏️</button>'
-        +'<button class="del-row-btn">&#10005;</button>'
-      +'</td>';
+      +'<td>'+status+'</td>';
     tr.dataset.playerName=p.name;
     tr.querySelector('.del-row-btn').addEventListener('click',function(e){e.stopPropagation();deletePlayer(tr.dataset.playerName);});
     tr.querySelector('.edit-row-btn').addEventListener('click',function(e){e.stopPropagation();openScoreEditor(p);});
