@@ -77,6 +77,7 @@ html,body{min-height:100%;font-family:'Poppins',sans-serif;color:#fff;overflow-x
 .guide-card{background:linear-gradient(135deg,rgba(80,40,120,.5),rgba(50,20,90,.8));}
 .guide-card .hub-card-pill{background:rgba(190,140,255,.2);color:#c49dff;}
 .guide-card .hub-card-icon{background:rgba(190,140,255,.15);}
+.teetimes-card{background:linear-gradient(135deg,rgba(20,120,120,.5),rgba(10,70,80,.8));}
 .admin-card{background:linear-gradient(135deg,rgba(192,57,43,.35),rgba(120,30,20,.7));}
 .admin-card .hub-card-pill{background:rgba(255,120,100,.2);color:#ff9080;}
 .admin-card .hub-card-icon{background:rgba(255,120,100,.15);}
@@ -152,6 +153,10 @@ html,body{min-height:100%;font-family:'Poppins',sans-serif;color:#fff;overflow-x
     <div class="hero-sub">Est. 1893 &nbsp;·&nbsp; Middlesex</div>
     <div class="hero-date" id="heroDate" style="font-size:1rem;font-weight:600;color:rgba(255,255,255,.8);">Loading&hellip;</div>
     <div id="hubClock" style="font-size:2rem;font-weight:700;color:#f0c040;font-family:'DM Mono',monospace;letter-spacing:.06em;margin-top:8px;">00:00:00</div>
+    <div id="nextTeeTimes" style="margin-top:10px;display:none;">
+      <div style="font-size:.6rem;font-weight:700;color:rgba(212,160,23,.6);letter-spacing:.12em;text-transform:uppercase;margin-bottom:6px;">Next Tee Times</div>
+      <div id="nextTeeList" style="display:flex;flex-direction:column;gap:4px;"></div>
+    </div>
     <div class="hero-divider"></div>
   </div>
 </div>
@@ -167,11 +172,23 @@ html,body{min-height:100%;font-family:'Poppins',sans-serif;color:#fff;overflow-x
 
 <div class="cards">
 
+  <a href="stanmore-tee-times.html" class="hub-card teetimes-card">
+    <div class="hub-card-header">
+      <div class="hub-card-pill" style="color:#4cd9d9;background:rgba(76,217,217,.15);border-bottom:1px solid #4cd9d933;">Tee Times</div>
+      <div style="display:flex;align-items:center;justify-content:space-between;padding:12px 16px 0;">
+        <div style="display:flex;align-items:center;gap:12px;">
+          <span class="hub-card-icon">🕐</span>
+          <div class="hub-card-title">Competition Draw</div>
+        </div>
+        <div class="hub-card-arrow">›</div>
+      </div>
+    </div>
+    <div class="hub-card-features"><span>🎲 Random draw or by handicap</span><span>📋 Full tee sheet for all players</span><span>🖨️ Printable tee sheet</span></div>
+  </a>
+
   <a href="stanmore-course-guide.html" class="hub-card guide-card">
     <div class="hub-card-header">
-      <!-- Full width pill label -->
       <div class="hub-card-pill" style="color:#c49dff;background:rgba(190,140,255,.15);border-bottom:1px solid #c49dff33;">Course Guide</div>
-      <!-- Icon + title + arrow -->
       <div style="display:flex;align-items:center;justify-content:space-between;padding:12px 16px 0;">
         <div style="display:flex;align-items:center;gap:12px;">
           <span class="hub-card-icon">📋</span>
@@ -294,6 +311,41 @@ window.addEventListener('DOMContentLoaded', function() {
   tickClock();
   setInterval(tickClock, 1000);
 });
+
+// ── NEXT TEE TIMES ──
+async function loadNextTeeTimes() {
+  try {
+    var record = await (async function() {
+      var res = await fetch('https://stanmore-proxy.vercel.app/api/proxy');
+      if (!res.ok) return {};
+      var d = await res.json();
+      return d.record || d;
+    })();
+    var sheet = Array.isArray(record.teeSheet) ? record.teeSheet : [];
+    if (!sheet.length) return;
+
+    var now = new Date();
+    var nowMins = now.getHours() * 60 + now.getMinutes();
+
+    var upcoming = sheet.filter(function(s) {
+      var parts = s.time.split(':').map(Number);
+      return parts[0]*60 + parts[1] >= nowMins;
+    }).slice(0, 3);
+
+    if (!upcoming.length) return;
+
+    var list = document.getElementById('nextTeeList');
+    var wrap = document.getElementById('nextTeeTimes');
+    list.innerHTML = upcoming.map(function(s) {
+      var names = s.players.filter(Boolean).map(function(p){ return p.name; }).join(', ') || 'TBA';
+      return '<div style="display:flex;align-items:center;gap:8px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:8px;padding:6px 10px;">'
+        + '<span style="font-family:monospace;font-size:.88rem;font-weight:700;color:#ffe066;flex-shrink:0;">' + s.time + '</span>'
+        + '<span style="font-size:.78rem;color:rgba(255,255,255,.7);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">' + names + '</span>'
+        + '</div>';
+    }).join('');
+    wrap.style.display = 'block';
+  } catch(e) {}
+}
 
 window.addEventListener('load', function() {
   setTimeout(generateQRCodes, 500);

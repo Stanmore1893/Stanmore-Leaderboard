@@ -1,0 +1,534 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Stanmore GC">
+<meta name="theme-color" content="#0f2347">
+<link rel="apple-touch-icon" href="club-logo.png">
+<link rel="manifest" href="manifest.json">
+<title>Tee Times · Stanmore Golf Club</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&family=DM+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+:root{--navy:#1a3a6b;--navy-dk:#0f2347;--gold:#d4a017;--gold-lt:#f0c040;--grey:#8896a8;}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Poppins',sans-serif;background:linear-gradient(175deg,#060e1e,#0f2347 40%,#1a3a6b);min-height:100vh;color:#fff;padding-bottom:40px;}
+
+/* ── BURGER ── */
+.sgc-burger{position:fixed;top:calc(env(safe-area-inset-top,0px)+12px);right:12px;z-index:499;width:42px;height:42px;background:#1a3a6b;border:1.5px solid rgba(212,160,23,.5);border-radius:9px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:1.3rem;color:#fff;box-shadow:0 2px 12px rgba(0,0,0,.5);}
+.nav-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.65);z-index:500;backdrop-filter:blur(4px);}
+.nav-drawer{position:fixed;top:0;right:0;bottom:0;width:300px;transform:translateX(100%);transition:transform .3s cubic-bezier(.4,0,.2,1);background:linear-gradient(180deg,#09132a,#0f2347 60%,#1a3a6b);z-index:501;display:flex;flex-direction:column;overflow-y:auto;}
+
+/* ── HEADER ── */
+.hdr{background:linear-gradient(to bottom,rgba(6,14,30,.98),rgba(15,35,71,.95));padding:calc(env(safe-area-inset-top,0px)+14px) 70px 14px 16px;border-bottom:1px solid rgba(212,160,23,.25);}
+.hdr-row{display:flex;align-items:center;gap:10px;}
+.logo{width:44px;height:44px;object-fit:contain;background:transparent;border:none;}
+.club-name{font-size:1rem;font-weight:700;color:#fff;}
+.club-sub{font-size:.6rem;color:rgba(212,160,23,.7);letter-spacing:.1em;text-transform:uppercase;}
+
+/* ── PAGE TITLE ── */
+.page-title{text-align:center;padding:20px 16px 8px;}
+.page-title h1{font-size:1.4rem;font-weight:800;color:#fff;margin-bottom:4px;}
+.page-title p{font-size:.82rem;color:rgba(255,255,255,.55);}
+
+/* ── COMPETITION BANNER ── */
+.comp-banner{margin:0 14px 16px;background:rgba(212,160,23,.1);border:1.5px solid rgba(212,160,23,.3);border-radius:12px;padding:12px 14px;display:flex;align-items:center;gap:10px;}
+.comp-banner-icon{font-size:1.4rem;}
+.comp-banner-name{font-size:.95rem;font-weight:700;color:#ffe066;}
+.comp-banner-meta{font-size:.72rem;color:rgba(255,255,255,.6);margin-top:2px;}
+
+/* ── CARDS ── */
+.card{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:14px;margin:0 14px 14px;overflow:hidden;}
+.card-head{background:rgba(0,0,0,.3);padding:12px 14px;font-size:.7rem;font-weight:700;color:#f0c040;letter-spacing:.1em;text-transform:uppercase;border-bottom:1px solid rgba(255,255,255,.08);}
+.card-body{padding:14px;}
+
+/* ── FORM ELEMENTS ── */
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px;}
+.form-row.single{grid-template-columns:1fr;}
+.form-row.three{grid-template-columns:1fr 1fr 1fr;}
+.flbl{font-size:.7rem;font-weight:600;color:rgba(255,255,255,.55);letter-spacing:.06em;text-transform:uppercase;margin-bottom:4px;display:block;}
+input,select{width:100%;background:rgba(255,255,255,.08);border:1.5px solid rgba(255,255,255,.15);border-radius:8px;padding:10px 12px;color:#fff;font-family:'Poppins',sans-serif;font-size:.88rem;outline:none;}
+input:focus,select:focus{border-color:rgba(212,160,23,.6);}
+select option{background:#0f2347;color:#fff;}
+
+/* ── BUTTONS ── */
+.btn{width:100%;padding:13px;border-radius:10px;font-family:'Poppins',sans-serif;font-size:.9rem;font-weight:700;cursor:pointer;border:none;transition:all .15s;}
+.btn-gold{background:#d4a017;color:#0f2347;border:2px solid #f0c040;}
+.btn-outline{background:transparent;color:#fff;border:2px solid rgba(255,255,255,.3);}
+.btn-green{background:rgba(45,110,78,.4);color:#8ee0b4;border:1.5px solid rgba(45,110,78,.6);}
+.btn-red{background:rgba(192,57,43,.3);color:#e87878;border:1.5px solid rgba(192,57,43,.5);}
+.btn-row{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px;}
+.btn-row.single{grid-template-columns:1fr;}
+
+/* ── DRAW METHOD TABS ── */
+.draw-tabs{display:flex;gap:6px;margin-bottom:14px;}
+.draw-tab{flex:1;padding:9px 6px;border-radius:8px;font-size:.75rem;font-weight:700;text-align:center;cursor:pointer;border:1.5px solid rgba(255,255,255,.15);color:rgba(255,255,255,.5);background:rgba(255,255,255,.04);transition:all .2s;}
+.draw-tab.active{background:rgba(212,160,23,.2);border-color:rgba(212,160,23,.6);color:#ffe066;}
+
+/* ── TEE SHEET ── */
+.tee-group{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:10px;margin-bottom:8px;overflow:hidden;}
+.tee-group-head{display:flex;align-items:center;justify-content:space-between;padding:10px 14px;background:rgba(0,0,0,.2);border-bottom:1px solid rgba(255,255,255,.06);}
+.tee-time{font-size:1rem;font-weight:800;color:#ffe066;font-family:'DM Mono',monospace;}
+.tee-hole{font-size:.72rem;color:rgba(255,255,255,.5);}
+.tee-players{padding:8px 14px;}
+.tee-player{display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid rgba(255,255,255,.05);}
+.tee-player:last-child{border-bottom:none;}
+.tee-player-num{width:20px;height:20px;border-radius:50%;background:rgba(212,160,23,.2);border:1px solid rgba(212,160,23,.4);font-size:.65rem;font-weight:700;color:#f0c040;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.tee-player-name{font-size:.88rem;font-weight:600;color:#fff;flex:1;}
+.tee-player-hcp{font-size:.72rem;color:rgba(255,255,255,.45);}
+.tee-empty{font-size:.8rem;color:rgba(255,255,255,.3);font-style:italic;padding:4px 0;}
+
+/* ── MANUAL DRAG PLAYER ── */
+.player-pool{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px;}
+.pool-player{background:rgba(26,58,107,.5);border:1px solid rgba(100,180,255,.25);border-radius:6px;padding:5px 10px;font-size:.78rem;font-weight:600;color:#7ec8ff;cursor:pointer;transition:all .15s;}
+.pool-player.assigned{background:rgba(45,110,78,.3);border-color:rgba(45,110,78,.6);color:#8ee0b4;cursor:default;}
+.slot-btn{background:rgba(255,255,255,.06);border:1.5px dashed rgba(255,255,255,.2);border-radius:6px;padding:5px 10px;font-size:.78rem;color:rgba(255,255,255,.35);cursor:pointer;min-width:80px;}
+.slot-btn:hover{border-color:rgba(212,160,23,.5);color:#f0c040;}
+
+/* ── STATUS ── */
+.status-pill{display:inline-block;padding:3px 10px;border-radius:20px;font-size:.68rem;font-weight:700;}
+.status-pill.saved{background:rgba(45,110,78,.3);color:#8ee0b4;border:1px solid rgba(45,110,78,.5);}
+.status-pill.unsaved{background:rgba(212,160,23,.2);color:#f0c040;border:1px solid rgba(212,160,23,.4);}
+
+/* ── PRINT ── */
+@media print {
+  .sgc-burger,.nav-drawer,.nav-overlay,.no-print{display:none!important;}
+  body{background:#fff;color:#000;padding:0;}
+  .hdr{background:#0f2347;-webkit-print-color-adjust:exact;print-color-adjust:exact;}
+  .tee-group{border:1px solid #ccc;break-inside:avoid;}
+  .tee-time{color:#0f2347;}
+  .tee-player-name{color:#000;}
+}
+</style>
+</head>
+<body>
+
+<div class="sgc-burger" onclick="openNav()">&#9776;</div>
+<div class="nav-overlay" id="sgcNavOverlay" onclick="closeNav()"></div>
+<div class="nav-drawer" id="sgcNavDrawer">
+  <div style="padding:20px 16px 14px;border-bottom:1px solid rgba(212,160,23,.25);display:flex;align-items:center;justify-content:space-between;">
+    <div style="display:flex;align-items:center;gap:10px;">
+      <img src="club-logo.png" alt="" style="width:42px;height:42px;object-fit:contain;">
+      <div><div style="font-size:.95rem;font-weight:700;color:#fff;">Stanmore Golf Club</div><div style="font-size:.65rem;color:rgba(212,160,23,.7);letter-spacing:.08em;text-transform:uppercase;">Digital Hub</div></div>
+    </div>
+    <button onclick="closeNav()" style="background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);border-radius:8px;color:#fff;font-size:1.2rem;width:34px;height:34px;cursor:pointer;">✕</button>
+  </div>
+  <div style="padding:12px 10px;flex:1;">
+    <a href="stanmore-hub.html" style="display:flex;align-items:center;gap:12px;padding:12px;border-radius:12px;text-decoration:none;margin-bottom:4px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.06);"><span style="font-size:1.4rem;width:36px;text-align:center;">🏠</span><div><div style="font-size:.92rem;font-weight:600;color:#fff;">Hub</div><div style="font-size:.72rem;color:rgba(255,255,255,.5);">Home page</div></div></a>
+    <a href="stanmore-tee-times.html" style="display:flex;align-items:center;gap:12px;padding:12px;border-radius:12px;text-decoration:none;margin-bottom:4px;background:rgba(26,58,107,.5);border:1px solid rgba(100,180,255,.2);"><span style="font-size:1.4rem;width:36px;text-align:center;">🕐</span><div><div style="font-size:.92rem;font-weight:700;color:#7ec8ff;">Tee Times</div><div style="font-size:.72rem;color:rgba(255,255,255,.5);">Competition draw</div></div><span style="margin-left:auto;font-size:.6rem;background:rgba(100,180,255,.2);color:#7ec8ff;border-radius:4px;padding:2px 6px;font-weight:700;">HERE</span></a>
+    <a href="stanmore-player-scoring.html" style="display:flex;align-items:center;gap:12px;padding:12px;border-radius:12px;text-decoration:none;margin-bottom:4px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.06);"><span style="font-size:1.4rem;width:36px;text-align:center;">⛳</span><div><div style="font-size:.92rem;font-weight:600;color:#fff;">Score Entry</div><div style="font-size:.72rem;color:rgba(255,255,255,.5);">Enter your round</div></div></a>
+    <a href="stanmore-leaderboard-live.html" style="display:flex;align-items:center;gap:12px;padding:12px;border-radius:12px;text-decoration:none;margin-bottom:4px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.06);"><span style="font-size:1.4rem;width:36px;text-align:center;">🏆</span><div><div style="font-size:.92rem;font-weight:600;color:#fff;">Live Leaderboard</div><div style="font-size:.72rem;color:rgba(255,255,255,.5);">Live standings</div></div></a>
+    <a href="stanmore-results.html" style="display:flex;align-items:center;gap:12px;padding:12px;border-radius:12px;text-decoration:none;margin-bottom:4px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.06);"><span style="font-size:1.4rem;width:36px;text-align:center;">🥇</span><div><div style="font-size:.92rem;font-weight:600;color:#fff;">Results</div><div style="font-size:.72rem;color:rgba(255,255,255,.5);">Final standings</div></div></a>
+    <a href="stanmore-course-guide.html" style="display:flex;align-items:center;gap:12px;padding:12px;border-radius:12px;text-decoration:none;margin-bottom:4px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.06);"><span style="font-size:1.4rem;width:36px;text-align:center;">📋</span><div><div style="font-size:.92rem;font-weight:600;color:#fff;">Course Guide</div><div style="font-size:.72rem;color:rgba(255,255,255,.5);">Scorecard & calculators</div></div></a>
+    <a href="stanmore-admin.html" style="display:flex;align-items:center;gap:12px;padding:12px;border-radius:12px;text-decoration:none;margin-bottom:4px;background:rgba(192,57,43,.2);border:1px solid rgba(255,120,100,.2);"><span style="font-size:1.4rem;width:36px;text-align:center;">🔐</span><div><div style="font-size:.92rem;font-weight:600;color:#ff9080;">Admin Panel</div><div style="font-size:.72rem;color:rgba(255,255,255,.5);">Competition management</div></div></a>
+  </div>
+  <div style="padding:12px 16px;border-top:1px solid rgba(212,160,23,.2);text-align:center;font-size:.65rem;color:rgba(212,160,23,.5);">Designed &amp; built by <strong style="color:rgba(212,160,23,.8);">Alex Persaud · PGA Professional</strong></div>
+</div>
+
+<!-- HEADER -->
+<div class="hdr">
+  <div class="hdr-row">
+    <img class="logo" src="club-logo.png" alt="Stanmore GC">
+    <div><div class="club-name">Stanmore Golf Club</div><div class="club-sub">Tee Times</div></div>
+  </div>
+</div>
+
+<!-- COMPETITION BANNER -->
+<div id="compBanner" style="display:none;" class="comp-banner">
+  <span class="comp-banner-icon">🏌️</span>
+  <div><div class="comp-banner-name" id="compBannerName">Loading...</div><div class="comp-banner-meta" id="compBannerMeta"></div></div>
+</div>
+
+<!-- MAIN VIEW: toggle between setup (admin) and view (players) -->
+<div id="viewPublic">
+  <!-- Public tee sheet -->
+  <div class="page-title">
+    <h1>🕐 Tee Times</h1>
+    <p id="publicSubtitle">Loading tee sheet...</p>
+  </div>
+  <div id="publicSheet" style="padding:0 0 10px;"></div>
+  <div class="no-print" style="margin:0 14px;">
+    <button class="btn btn-outline" onclick="window.print()">🖨️ Print Tee Sheet</button>
+  </div>
+</div>
+
+<div id="viewAdmin" style="display:none;">
+  <div class="page-title no-print">
+    <h1>🕐 Tee Times Setup</h1>
+    <p>Configure and publish the draw</p>
+  </div>
+
+  <!-- Step 1: Setup -->
+  <div class="card no-print" id="setupCard">
+    <div class="card-head">⚙️ Step 1 — Configure Tee Times</div>
+    <div class="card-body">
+      <div class="form-row">
+        <div><label class="flbl">Start Time</label><input type="time" id="startTime" value="08:00"></div>
+        <div><label class="flbl">End Time</label><input type="time" id="endTime" value="11:00"></div>
+      </div>
+      <div class="form-row">
+        <div><label class="flbl">Interval (minutes)</label><input type="number" id="interval" value="8" min="1" max="30"></div>
+        <div><label class="flbl">Players per group</label><input type="number" id="groupSize" value="4" min="1" max="4"></div>
+      </div>
+      <div><label class="flbl">Starting Hole</label>
+        <select id="startHole">
+          <option value="1">Hole 1</option>
+          <option value="10">Hole 10</option>
+          <option value="shotgun">Shotgun Start</option>
+        </select>
+      </div>
+      <div class="btn-row single" style="margin-top:12px;">
+        <button class="btn btn-gold" onclick="generateSlots()">Generate Tee Times →</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Step 2: Draw Method -->
+  <div class="card no-print" id="drawCard" style="display:none;">
+    <div class="card-head">🎯 Step 2 — Assign Players</div>
+    <div class="card-body">
+      <div class="draw-tabs">
+        <div class="draw-tab active" onclick="setDrawMethod('random')">🎲 Random Draw</div>
+        <div class="draw-tab" onclick="setDrawMethod('handicap')">📊 By Handicap</div>
+        <div class="draw-tab" onclick="setDrawMethod('manual')">✏️ Manual</div>
+      </div>
+      <div id="drawMethodInfo" style="font-size:.82rem;color:rgba(255,255,255,.6);margin-bottom:12px;">Players will be randomly allocated to tee times.</div>
+      <div id="unassignedPool" style="display:none;">
+        <div style="font-size:.72rem;font-weight:700;color:rgba(255,255,255,.5);letter-spacing:.08em;text-transform:uppercase;margin-bottom:8px;">Unassigned Players — tap to assign</div>
+        <div class="player-pool" id="poolContainer"></div>
+      </div>
+      <div class="btn-row">
+        <button class="btn btn-outline" onclick="resetDraw()">↩ Reset</button>
+        <button class="btn btn-gold" id="applyDrawBtn" onclick="applyDraw()">Apply Draw →</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Step 3: Review & Publish -->
+  <div class="card no-print" id="publishCard" style="display:none;">
+    <div class="card-head">✅ Step 3 — Review &amp; Publish</div>
+    <div class="card-body">
+      <div style="font-size:.85rem;color:rgba(255,255,255,.7);margin-bottom:12px;">Review the tee sheet below then publish to make it visible to players.</div>
+      <div class="btn-row">
+        <button class="btn btn-outline" onclick="window.print()">🖨️ Print</button>
+        <button class="btn btn-green" onclick="publishTeeSheet()">📢 Publish</button>
+      </div>
+      <div style="margin-top:8px;">
+        <button class="btn btn-red" onclick="clearTeeSheet()">🗑 Clear Tee Sheet</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Admin tee sheet preview -->
+  <div id="adminSheet" style="padding:0 0 10px;"></div>
+</div>
+
+<!-- ADMIN TOGGLE -->
+<div class="no-print" style="margin:16px 14px 0;text-align:center;">
+  <button class="btn btn-outline" id="adminToggleBtn" onclick="toggleAdmin()" style="font-size:.78rem;padding:8px;">🔐 Admin Mode</button>
+</div>
+
+<script>
+var PROXY_URL = 'https://stanmore-proxy.vercel.app/api/proxy';
+var _cache = {};
+
+var SGC = {
+  _fetch: async function(url, opts, retries) {
+    retries = retries || 3;
+    for (var i = 0; i < retries; i++) {
+      try {
+        var res = await fetch(url, opts);
+        if (res.ok) return res;
+      } catch(e) {
+        if (i < retries - 1) await new Promise(function(r){ setTimeout(r, 800*(i+1)); });
+      }
+    }
+    return null;
+  },
+  _read: async function() {
+    var res = await SGC._fetch(PROXY_URL, { method: 'GET' });
+    if (!res) return _cache;
+    try { var data = await res.json(); _cache = data.record || data; return _cache; } catch(e) { return _cache; }
+  },
+  _write: async function(record) {
+    var res = await SGC._fetch(PROXY_URL, { method: 'PUT', headers: {'Content-Type':'application/json'}, body: JSON.stringify(record) });
+    if (res) { _cache = record; return true; } return false;
+  },
+  get: async function(key) { var r = await SGC._read(); return r[key] !== undefined ? r[key] : null; },
+  set: async function(key, value) {
+    var record = await SGC._read();
+    record[key] = value;
+    return await SGC._write(record);
+  }
+};
+
+// ── STATE ──
+var _isAdmin = false;
+var _competition = null;
+var _players = [];  // from live scores
+var _slots = [];    // [{time, hole, players:[]}]
+var _drawMethod = 'random';
+var _selectedPoolPlayer = null;
+var _selectedSlot = null;
+
+// ── NAV ──
+function openNav() { document.getElementById('sgcNavDrawer').style.transform='translateX(0)'; document.getElementById('sgcNavOverlay').style.display='block'; }
+function closeNav() { document.getElementById('sgcNavDrawer').style.transform='translateX(100%)'; document.getElementById('sgcNavOverlay').style.display='none'; }
+
+// ── TOGGLE ADMIN ──
+function toggleAdmin() {
+  _isAdmin = !_isAdmin;
+  document.getElementById('viewPublic').style.display = _isAdmin ? 'none' : 'block';
+  document.getElementById('viewAdmin').style.display = _isAdmin ? 'block' : 'none';
+  document.getElementById('adminToggleBtn').textContent = _isAdmin ? '👁 Player View' : '🔐 Admin Mode';
+  if (_isAdmin) renderAdminSheet();
+}
+
+// ── LOAD DATA ──
+async function loadData() {
+  var record = await SGC._read();
+
+  // Load active competition
+  var comps = Array.isArray(record.competitions) ? record.competitions : [];
+  _competition = comps.find(function(c){ return c.active; }) || null;
+
+  // Load live players from scores
+  var scores = Array.isArray(record.scores) ? record.scores : [];
+  _players = scores.map(function(p){ return { name: p.name, ph: p.ph || 0, hi: p.hi || 0, gender: p.gender || 'm', teeKey: p.teeKey || '' }; });
+
+  // Load existing tee sheet
+  if (Array.isArray(record.teeSheet) && record.teeSheet.length) {
+    _slots = record.teeSheet;
+    renderPublicSheet();
+    renderAdminSheet();
+    document.getElementById('publishCard').style.display = 'block';
+    document.getElementById('drawCard').style.display = 'block';
+  }
+
+  // Update competition banner
+  if (_competition) {
+    document.getElementById('compBanner').style.display = 'flex';
+    document.getElementById('compBannerName').textContent = _competition.name;
+    document.getElementById('compBannerMeta').textContent =
+      (_competition.date||'') + ' · ' + (_competition.format||'').replace(/_/g,' ') + ' · ' + (_competition.holes||18) + ' holes';
+  }
+
+  updatePublicSubtitle();
+}
+
+function updatePublicSubtitle() {
+  var el = document.getElementById('publicSubtitle');
+  if (!_slots.length) {
+    el.textContent = 'No tee sheet published yet.';
+  } else {
+    el.textContent = _slots.length + ' tee times · ' + _slots.reduce(function(t,s){ return t + s.players.filter(function(p){ return p; }).length; }, 0) + ' players';
+  }
+}
+
+// ── GENERATE SLOTS ──
+function generateSlots() {
+  var start = document.getElementById('startTime').value;
+  var end = document.getElementById('endTime').value;
+  var interval = parseInt(document.getElementById('interval').value) || 8;
+  var groupSize = parseInt(document.getElementById('groupSize').value) || 4;
+  var hole = document.getElementById('startHole').value;
+
+  if (!start || !end) { alert('Please set start and end times'); return; }
+
+  var [sh, sm] = start.split(':').map(Number);
+  var [eh, em] = end.split(':').map(Number);
+  var startMins = sh * 60 + sm;
+  var endMins = eh * 60 + em;
+
+  if (endMins <= startMins) { alert('End time must be after start time'); return; }
+
+  _slots = [];
+  var current = startMins;
+  var slotNum = 1;
+
+  while (current <= endMins) {
+    var h = Math.floor(current / 60);
+    var m = current % 60;
+    var timeStr = (h < 10 ? '0' : '') + h + ':' + (m < 10 ? '0' : '') + m;
+    var holeDisplay = hole === 'shotgun' ? 'Shotgun' : ('Hole ' + (hole === '10' ? (slotNum % 2 === 0 ? 1 : 10) : 1));
+    _slots.push({ time: timeStr, hole: holeDisplay, players: new Array(groupSize).fill(null), groupSize: groupSize });
+    current += interval;
+    slotNum++;
+  }
+
+  document.getElementById('drawCard').style.display = 'block';
+  document.getElementById('publishCard').style.display = 'none';
+  renderAdminSheet();
+  alert('Generated ' + _slots.length + ' tee times. Now assign players below.');
+}
+
+// ── DRAW METHOD ──
+function setDrawMethod(method) {
+  _drawMethod = method;
+  document.querySelectorAll('.draw-tab').forEach(function(t){ t.classList.remove('active'); });
+  event.target.classList.add('active');
+  var info = { random: 'Players will be randomly allocated to tee times.', handicap: 'Players allocated highest to lowest handicap, grouped together.', manual: 'Tap a player then tap a slot to assign them manually.' };
+  document.getElementById('drawMethodInfo').textContent = info[method];
+  document.getElementById('unassignedPool').style.display = method === 'manual' ? 'block' : 'none';
+  if (method === 'manual') buildPlayerPool();
+}
+
+function buildPlayerPool() {
+  var pool = document.getElementById('poolContainer');
+  pool.innerHTML = '';
+  var assigned = [];
+  _slots.forEach(function(s){ s.players.forEach(function(p){ if(p) assigned.push(p.name); }); });
+  _players.forEach(function(p) {
+    var isAssigned = assigned.indexOf(p.name) > -1;
+    var btn = document.createElement('div');
+    btn.className = 'pool-player' + (isAssigned ? ' assigned' : '');
+    btn.textContent = p.name + ' (' + p.ph + ')';
+    btn.dataset.name = p.name;
+    if (!isAssigned) btn.onclick = function() { selectPoolPlayer(p, btn); };
+    pool.appendChild(btn);
+  });
+}
+
+function selectPoolPlayer(player, el) {
+  document.querySelectorAll('.pool-player').forEach(function(b){ b.style.outline='none'; });
+  el.style.outline = '2px solid #f0c040';
+  _selectedPoolPlayer = player;
+}
+
+function applyDraw() {
+  if (_players.length === 0) { alert('No players found. Players must have submitted a score first.'); return; }
+
+  var available = _players.slice();
+
+  if (_drawMethod === 'random') {
+    // Fisher-Yates shuffle
+    for (var i = available.length - 1; i > 0; i--) {
+      var j = Math.floor(Math.random() * (i + 1));
+      var tmp = available[i]; available[i] = available[j]; available[j] = tmp;
+    }
+  } else if (_drawMethod === 'handicap') {
+    available.sort(function(a, b){ return b.ph - a.ph; });
+  }
+
+  // Assign to slots
+  var idx = 0;
+  _slots.forEach(function(slot) {
+    slot.players = [];
+    for (var i = 0; i < slot.groupSize; i++) {
+      slot.players.push(idx < available.length ? available[idx++] : null);
+    }
+  });
+
+  renderAdminSheet();
+  document.getElementById('publishCard').style.display = 'block';
+  if (_drawMethod === 'manual') buildPlayerPool();
+}
+
+function resetDraw() {
+  _slots.forEach(function(s){ s.players = new Array(s.groupSize).fill(null); });
+  renderAdminSheet();
+  document.getElementById('publishCard').style.display = 'none';
+  if (_drawMethod === 'manual') buildPlayerPool();
+}
+
+// ── RENDER ADMIN SHEET ──
+function renderAdminSheet() {
+  var el = document.getElementById('adminSheet');
+  if (!_slots.length) { el.innerHTML = ''; return; }
+  el.innerHTML = renderSheetHTML(true);
+  // Attach slot click handlers for manual mode
+  if (_drawMethod === 'manual') attachSlotHandlers();
+}
+
+function attachSlotHandlers() {
+  document.querySelectorAll('.slot-btn').forEach(function(btn) {
+    btn.onclick = function() {
+      if (!_selectedPoolPlayer) { alert('Tap a player from the pool first'); return; }
+      var slotIdx = parseInt(btn.dataset.slot);
+      var posIdx = parseInt(btn.dataset.pos);
+      _slots[slotIdx].players[posIdx] = _selectedPoolPlayer;
+      _selectedPoolPlayer = null;
+      renderAdminSheet();
+      buildPlayerPool();
+    };
+  });
+}
+
+// ── RENDER PUBLIC SHEET ──
+function renderPublicSheet() {
+  var el = document.getElementById('publicSheet');
+  el.innerHTML = renderSheetHTML(false);
+  updatePublicSubtitle();
+}
+
+function renderSheetHTML(isAdmin) {
+  if (!_slots.length) return '<div style="text-align:center;padding:30px;color:rgba(255,255,255,.4);font-size:.88rem;">No tee sheet generated yet.</div>';
+  var now = new Date();
+  var nowMins = now.getHours() * 60 + now.getMinutes();
+
+  return _slots.map(function(slot, si) {
+    var [th, tm] = slot.time.split(':').map(Number);
+    var slotMins = th * 60 + tm;
+    var isPast = slotMins < nowMins;
+    var isCurrent = !isPast && slotMins - nowMins <= 10;
+
+    var playerRows = slot.players.map(function(p, pi) {
+      if (!p) {
+        return isAdmin
+          ? '<div class="tee-player"><span class="tee-player-num">' + (pi+1) + '</span><button class="slot-btn" data-slot="' + si + '" data-pos="' + pi + '">+ Add player</button></div>'
+          : '<div class="tee-player"><span class="tee-player-num">' + (pi+1) + '</span><span class="tee-empty">TBA</span></div>';
+      }
+      return '<div class="tee-player">'
+        + '<span class="tee-player-num">' + (pi+1) + '</span>'
+        + '<span class="tee-player-name">' + p.name + '</span>'
+        + '<span class="tee-player-hcp">HCP ' + (p.ph||0) + '</span>'
+        + '</div>';
+    }).join('');
+
+    return '<div class="tee-group" style="margin:0 14px 8px;opacity:' + (isPast?'.45':'1') + ';' + (isCurrent?'border-color:rgba(212,160,23,.6);':'') + '">'
+      + '<div class="tee-group-head">'
+      + '<span class="tee-time">' + slot.time + '</span>'
+      + '<span class="tee-hole">' + slot.hole + (isPast?' · Teed off':isCurrent?' · On the tee':'') + '</span>'
+      + '</div>'
+      + '<div class="tee-players">' + playerRows + '</div>'
+      + '</div>';
+  }).join('');
+}
+
+// ── PUBLISH ──
+async function publishTeeSheet() {
+  var ok = await SGC.set('teeSheet', _slots);
+  if (ok) {
+    alert('✅ Tee sheet published! Players can now see it.');
+    renderPublicSheet();
+  } else {
+    alert('⚠️ Failed to publish. Check connection.');
+  }
+}
+
+async function clearTeeSheet() {
+  if (!confirm('Clear the tee sheet? This cannot be undone.')) return;
+  _slots = [];
+  await SGC.set('teeSheet', []);
+  renderPublicSheet();
+  renderAdminSheet();
+  document.getElementById('publishCard').style.display = 'none';
+  document.getElementById('drawCard').style.display = 'none';
+}
+
+// ── INIT ──
+window.addEventListener('load', function() {
+  loadData();
+  // Refresh tee sheet every minute to update past/current status
+  setInterval(function() {
+    renderPublicSheet();
+    if (_isAdmin) renderAdminSheet();
+  }, 60000);
+});
+</script>
+</body>
+</html>
