@@ -24,7 +24,7 @@ body{font-family:'Poppins',sans-serif;background:linear-gradient(175deg,#060e1e,
 .nav-drawer{position:fixed;top:0;right:0;bottom:0;width:300px;transform:translateX(100%);transition:transform .3s cubic-bezier(.4,0,.2,1);background:linear-gradient(180deg,#09132a,#0f2347 60%,#1a3a6b);z-index:501;display:flex;flex-direction:column;overflow-y:auto;}
 
 /* ── HEADER ── */
-.hdr{background:linear-gradient(to bottom,rgba(6,14,30,.98),rgba(15,35,71,.95));padding:calc(env(safe-area-inset-top,0px)+16px) 70px 16px 16px;border-bottom:1px solid rgba(212,160,23,.25);}
+.hdr{background:linear-gradient(to bottom,rgba(6,14,30,.98),rgba(15,35,71,.95));padding:calc(env(safe-area-inset-top,0px)+18px) 70px 18px 16px;border-bottom:1px solid rgba(212,160,23,.25);}
 .hdr-row{display:flex;align-items:center;gap:10px;}
 .logo{width:44px;height:44px;object-fit:contain;background:transparent;border:none;}
 .club-name{font-size:1rem;font-weight:700;color:#fff;}
@@ -313,8 +313,17 @@ async function loadData() {
   if (_competition) {
     document.getElementById('compBanner').style.display = 'flex';
     document.getElementById('compBannerName').textContent = _competition.name;
-    document.getElementById('compBannerMeta').textContent =
-      (_competition.date||'') + ' · ' + (_competition.format||'').replace(/_/g,' ') + ' · ' + (_competition.holes||18) + ' holes';
+    var fmtLabels = {
+      'ind_stableford':'Stableford','ind_strokeplay':'Strokeplay','ind_scratch':'Scratch',
+      'ind_parbogey':'Par/Bogey','ind_maxscore':'Max Score','ind_matchplay':'Matchplay',
+      'team_fourball_sf':'Fourball Stableford','team_betterball':'Betterball'
+    };
+    var fmtLabel = fmtLabels[_competition.format] || (_competition.format||'').replace(/_/g,' ');
+    var holesLabel = _competition.nineHole === 'front' ? 'Front 9'
+      : _competition.nineHole === 'back' ? 'Back 9'
+      : (_competition.holes||18) + ' Holes';
+    var dateLabel = _competition.date ? new Date(_competition.date+'T12:00:00').toLocaleDateString('en-GB',{weekday:'short',day:'numeric',month:'long',year:'numeric'}) : '';
+    document.getElementById('compBannerMeta').textContent = dateLabel + ' · ' + fmtLabel + ' · ' + holesLabel;
   }
 
   updatePublicSubtitle();
