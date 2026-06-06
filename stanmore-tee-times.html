@@ -224,8 +224,6 @@ select option{background:#0f2347;color:#fff;}
 
       <div style="font-size:.72rem;color:rgba(255,255,255,.4);margin-bottom:10px;" id="entryCount">0 players entered</div>
 
-      <!-- Import from live scores -->
-      <button class="btn btn-outline" onclick="importFromScores()" style="margin-bottom:8px;font-size:.82rem;">📥 Import from Live Scores</button>
 
       <div class="btn-row single" style="margin-top:4px;">
         <button class="btn btn-gold" onclick="proceedToDraw()" id="proceedBtn">Proceed to Draw →</button>
@@ -665,15 +663,6 @@ function renderEntryList() {
     row.appendChild(btn);
     list.appendChild(row);
   });
-}
-
-function importFromScores() {
-  // Already loaded from Supabase - just confirm
-  if (_players.length) {
-    if (!confirm('This will add ' + _players.length + ' players already loaded from live scores. Continue?')) return;
-  }
-  alert(_players.length + ' players imported from live scores.');
-  renderEntryList();
 }
 
 function proceedToDraw() {
