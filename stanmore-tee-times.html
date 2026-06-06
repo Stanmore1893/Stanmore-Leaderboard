@@ -24,7 +24,7 @@ body{font-family:'Poppins',sans-serif;background:linear-gradient(175deg,#060e1e,
 .nav-drawer{position:fixed;top:0;right:0;bottom:0;width:300px;transform:translateX(100%);transition:transform .3s cubic-bezier(.4,0,.2,1);background:linear-gradient(180deg,#09132a,#0f2347 60%,#1a3a6b);z-index:501;display:flex;flex-direction:column;overflow-y:auto;}
 
 /* ── HEADER ── */
-.hdr{background:linear-gradient(to bottom,rgba(6,14,30,.98),rgba(15,35,71,.95));padding:calc(env(safe-area-inset-top,0px)+14px) 70px 14px 16px;border-bottom:1px solid rgba(212,160,23,.25);}
+.hdr{background:linear-gradient(to bottom,rgba(6,14,30,.98),rgba(15,35,71,.95));padding:14px 70px 14px 16px;border-bottom:1px solid rgba(212,160,23,.25);}
 .hdr-row{display:flex;align-items:center;gap:10px;}
 .logo{width:44px;height:44px;object-fit:contain;background:transparent;border:none;}
 .club-name{font-size:1rem;font-weight:700;color:#fff;}
@@ -105,7 +105,7 @@ select option{background:#0f2347;color:#fff;}
 }
 </style>
 </head>
-<body>
+<body style="padding-top:env(safe-area-inset-top,0px);">
 
 <div class="sgc-burger" onclick="openNav()">&#9776;</div>
 <div class="nav-overlay" id="sgcNavOverlay" onclick="closeNav()"></div>
@@ -188,6 +188,50 @@ select option{background:#0f2347;color:#fff;}
   </div>
 
   <!-- Step 2: Draw Method -->
+  <!-- Step 1b: Enter Players -->
+  <div class="card no-print" id="entryCard" style="display:none;">
+    <div class="card-head">👥 Step 1b — Enter Players</div>
+    <div class="card-body">
+      <div style="font-size:.82rem;color:rgba(255,255,255,.6);margin-bottom:12px;">Add all players entering the competition. Handicap Index is used for the draw and scoring.</div>
+
+      <!-- Quick add row -->
+      <div class="form-row" style="margin-bottom:6px;">
+        <div><label class="flbl">Player Name</label><input type="text" id="entryName" placeholder="e.g. Alex Persaud" autocapitalize="words" autocomplete="off"></div>
+        <div><label class="flbl">Handicap Index</label><input type="number" id="entryHI" placeholder="e.g. 14.2" step="0.1" min="0" max="54"></div>
+      </div>
+      <div class="form-row" style="margin-bottom:12px;">
+        <div>
+          <label class="flbl">Gender</label>
+          <select id="entryGender">
+            <option value="m">Male</option>
+            <option value="f">Female</option>
+          </select>
+        </div>
+        <div>
+          <label class="flbl">Tee</label>
+          <select id="entryTee">
+            <option value="white_m">White</option>
+            <option value="yellow_m">Yellow</option>
+            <option value="red_f">Red</option>
+          </select>
+        </div>
+      </div>
+      <button class="btn btn-gold" onclick="addEntryPlayer()" style="margin-bottom:14px;">+ Add Player</button>
+
+      <!-- Player list -->
+      <div id="entryList" style="display:flex;flex-direction:column;gap:6px;margin-bottom:12px;"></div>
+
+      <div style="font-size:.72rem;color:rgba(255,255,255,.4);margin-bottom:10px;" id="entryCount">0 players entered</div>
+
+      <!-- Import from live scores -->
+      <button class="btn btn-outline" onclick="importFromScores()" style="margin-bottom:8px;font-size:.82rem;">📥 Import from Live Scores</button>
+
+      <div class="btn-row single" style="margin-top:4px;">
+        <button class="btn btn-gold" onclick="proceedToDraw()" id="proceedBtn">Proceed to Draw →</button>
+      </div>
+    </div>
+  </div>
+
   <div class="card no-print" id="drawCard" style="display:none;">
     <div class="card-head">🎯 Step 2 — Assign Players</div>
     <div class="card-body">
@@ -369,10 +413,11 @@ function generateSlots() {
     slotNum++;
   }
 
-  document.getElementById('drawCard').style.display = 'block';
+  document.getElementById('entryCard').style.display = 'block';
+  document.getElementById('drawCard').style.display = 'none';
   document.getElementById('publishCard').style.display = 'none';
   renderAdminSheet();
-  alert('Generated ' + _slots.length + ' tee times. Now assign players below.');
+  renderEntryList();
 }
 
 // ── DRAW METHOD ──
@@ -529,9 +574,101 @@ async function clearTeeSheet() {
   document.getElementById('drawCard').style.display = 'none';
 }
 
+// ── PLAYER ENTRY ──
+function addEntryPlayer() {
+  var name = document.getElementById('entryName').value.trim();
+  var hi   = parseFloat(document.getElementById('entryHI').value) || 0;
+  var gender = document.getElementById('entryGender').value;
+  var teeKey = document.getElementById('entryTee').value;
+
+  if (!name) { alert('Please enter a player name'); return; }
+
+  // Capitalise
+  name = name.replace(/\b\w/g, function(c){ return c.toUpperCase(); });
+
+  // Check duplicate
+  if (_players.find(function(p){ return p.name.toLowerCase() === name.toLowerCase(); })) {
+    alert(name + ' is already in the list'); return;
+  }
+
+  // Calculate playing handicap
+  var ph = calcPH(hi, teeKey);
+  _players.push({ name: name, hi: hi, ph: ph, gender: gender, teeKey: teeKey });
+
+  // Clear inputs
+  document.getElementById('entryName').value = '';
+  document.getElementById('entryHI').value = '';
+  document.getElementById('entryName').focus();
+
+  renderEntryList();
+}
+
+function calcPH(hi, teeKey) {
+  // Simple WHS playing handicap calc
+  var ratings = {
+    white_m:  { cr: 69.7, slope: 129, par: 69 },
+    yellow_m: { cr: 68.8, slope: 127, par: 69 },
+    red_f:    { cr: 72.1, slope: 127, par: 72 }
+  };
+  var t = ratings[teeKey] || ratings['white_m'];
+  return Math.round(hi * (t.slope / 113) + (t.cr - t.par));
+}
+
+function removePlayer(name) {
+  _players = _players.filter(function(p){ return p.name !== name; });
+  renderEntryList();
+}
+
+function renderEntryList() {
+  var list = document.getElementById('entryList');
+  var count = document.getElementById('entryCount');
+  count.textContent = _players.length + ' player' + (_players.length !== 1 ? 's' : '') + ' entered';
+
+  if (!_players.length) {
+    list.innerHTML = '<div style="font-size:.82rem;color:rgba(255,255,255,.3);text-align:center;padding:10px;">No players added yet</div>';
+    return;
+  }
+
+  // Build using DOM to avoid quote issues
+  list.innerHTML = '';
+  _players.forEach(function(p) {
+    var row = document.createElement('div');
+    row.style.cssText = 'display:flex;align-items:center;justify-content:space-between;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:8px;padding:8px 12px;';
+    var info = document.createElement('div');
+    info.innerHTML = '<div style="font-size:.88rem;font-weight:600;color:#fff;">' + p.name + '</div>'
+      + '<div style="font-size:.72rem;color:rgba(255,255,255,.45);">HI ' + p.hi + ' &middot; HCP ' + p.ph + ' &middot; ' + (p.gender === 'f' ? 'Female' : 'Male') + '</div>';
+    var btn = document.createElement('button');
+    btn.textContent = '✕';
+    btn.style.cssText = 'background:rgba(192,57,43,.3);border:1px solid rgba(192,57,43,.5);color:#e87878;border-radius:6px;padding:4px 10px;font-size:.75rem;cursor:pointer;flex-shrink:0;';
+    btn.onclick = (function(name){ return function(){ removePlayer(name); }; })(p.name);
+    row.appendChild(info);
+    row.appendChild(btn);
+    list.appendChild(row);
+  });
+}
+
+function importFromScores() {
+  // Already loaded from Supabase - just confirm
+  if (_players.length) {
+    if (!confirm('This will add ' + _players.length + ' players already loaded from live scores. Continue?')) return;
+  }
+  alert(_players.length + ' players imported from live scores.');
+  renderEntryList();
+}
+
+function proceedToDraw() {
+  if (!_players.length) { alert('Please add at least one player'); return; }
+  document.getElementById('drawCard').style.display = 'block';
+  document.getElementById('drawCard').scrollIntoView({ behavior: 'smooth' });
+}
+
 // ── INIT ──
 window.addEventListener('load', function() {
   loadData();
+  // Enter key on player entry
+  document.getElementById('entryName').addEventListener('keydown', function(e){ if(e.key==='Enter') document.getElementById('entryHI').focus(); });
+  document.getElementById('entryHI').addEventListener('keydown', function(e){ if(e.key==='Enter') addEntryPlayer(); });
+
   // Refresh tee sheet every minute to update past/current status
   setInterval(function() {
     renderPublicSheet();
