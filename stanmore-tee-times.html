@@ -582,10 +582,10 @@ function updatePlayerBtn(si, pi, player) {
 }
 
 function initEditDelegation() {
-  var sheet = document.getElementById('adminSheet');
-  if (!sheet || sheet._delegated) return;
-  sheet._delegated = true;
-  sheet.addEventListener('click', function(e) {
+  var container = document.getElementById('viewAdmin');
+  if (!container || container._delegated) return;
+  container._delegated = true;
+  container.addEventListener('click', function(e) {
     var btn = e.target.closest('.admin-player-btn');
     if (!btn) return;
     var si = parseInt(btn.dataset.slot);
@@ -594,7 +594,7 @@ function initEditDelegation() {
 
     if (!_editSelected) {
       // Deselect any previously selected
-      var prev = sheet.querySelector('[data-selected]');
+      var prev = document.querySelector('[data-selected]');
       if (prev) { prev.removeAttribute('data-selected'); prev.style.outline=''; prev.style.background=prev._origBg||''; }
       _editSelected = { slotIdx: si, posIdx: pi, player: player };
       btn._origBg = btn.style.background;
@@ -607,7 +607,7 @@ function initEditDelegation() {
       var fromSI = _editSelected.slotIdx, fromPI = _editSelected.posIdx;
       var fromPlayer = _editSelected.player;
       // Clear selection highlight
-      var selBtn = sheet.querySelector('[data-selected]');
+      var selBtn = document.querySelector('[data-selected]');
       if (selBtn) { selBtn.removeAttribute('data-selected'); }
       // Swap data
       _slots[fromSI].players[fromPI] = player;
