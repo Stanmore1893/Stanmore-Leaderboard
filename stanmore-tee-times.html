@@ -181,6 +181,16 @@ select option{background:#0f2347;color:#fff;}
           <option value="shotgun">Shotgun Start</option>
         </select>
       </div>
+      <div style="margin-top:10px;">
+        <label class="flbl">Link to Competition</label>
+        <select id="linkedComp">
+          <option value="">— No competition linked —</option>
+        </select>
+      </div>
+      <div style="margin-top:10px;">
+        <label class="flbl">Date (if no competition linked)</label>
+        <input type="date" id="sheetDate">
+      </div>
       <div id="capacityInfo" style="background:rgba(212,160,23,.1);border:1px solid rgba(212,160,23,.3);border-radius:8px;padding:10px 14px;margin-top:12px;font-size:.85rem;color:#ffe066;text-align:center;display:none;"></div>
       <div class="btn-row single" style="margin-top:10px;">
         <button class="btn btn-gold" onclick="generateSlots()">Generate Tee Times →</button>
@@ -375,8 +385,14 @@ async function loadData() {
   _players = scores.map(function(p){ return { name: p.name, ph: p.ph || 0, hi: p.hi || 0, gender: p.gender || 'm', teeKey: p.teeKey || '' }; });
 
   // Load existing tee sheet
-  if (Array.isArray(record.teeSheet) && record.teeSheet.length) {
-    _slots = record.teeSheet;
+  var ts = record.teeSheet;
+  if (ts && (Array.isArray(ts) || (ts.slots && ts.slots.length))) {
+    _slots = Array.isArray(ts) ? ts : ts.slots;
+    if (!Array.isArray(ts) && ts.competition) {
+      document.getElementById('compBanner').style.display = 'flex';
+      document.getElementById('compBannerName').textContent = ts.competition || ts.date || 'Tee Sheet';
+      document.getElementById('compBannerMeta').textContent = ts.date ? new Date(ts.date+'T12:00:00').toLocaleDateString('en-GB',{weekday:'short',day:'numeric',month:'long',year:'numeric'}) : '';
+    }
     renderPublicSheet();
     renderAdminSheet();
     document.getElementById('publishCard').style.display = 'block';
@@ -401,6 +417,28 @@ async function loadData() {
   }
 
   updatePublicSubtitle();
+
+  // Populate competition dropdown
+  var compSelect = document.getElementById('linkedComp');
+  if (compSelect && Array.isArray(record.competitions)) {
+    compSelect.innerHTML = '<option value="">— No competition linked —</option>';
+    record.competitions.forEach(function(c, i) {
+      var opt = document.createElement('option');
+      opt.value = i;
+      opt.textContent = c.name + (c.active ? ' ★' : '') + (c.date ? ' · ' + c.date : '');
+      if (c.active) opt.selected = true;
+      compSelect.appendChild(opt);
+    });
+  }
+
+  // Set default date to today
+  var dateInput = document.getElementById('sheetDate');
+  if (dateInput && !dateInput.value) {
+    dateInput.value = new Date().toISOString().split('T')[0];
+  }
+
+  // Auto-hide date field if competition selected
+  updateLinkedCompFields();
 }
 
 function updatePublicSubtitle() {
@@ -448,6 +486,15 @@ function generateSlots() {
   document.getElementById('publishCard').style.display = 'none';
   renderAdminSheet();
   renderEntryList();
+}
+
+// ── LINKED COMPETITION ──
+function updateLinkedCompFields() {
+  var compSelect = document.getElementById('linkedComp');
+  var dateRow = document.getElementById('sheetDate');
+  if (!compSelect || !dateRow) return;
+  var hasComp = compSelect.value !== '';
+  dateRow.parentElement.style.display = hasComp ? 'none' : 'block';
 }
 
 // ── CAPACITY CALCULATOR ──
@@ -652,6 +699,28 @@ function renderPublicSheet() {
   var el = document.getElementById('publicSheet');
   el.innerHTML = renderSheetHTML(false);
   updatePublicSubtitle();
+
+  // Populate competition dropdown
+  var compSelect = document.getElementById('linkedComp');
+  if (compSelect && Array.isArray(record.competitions)) {
+    compSelect.innerHTML = '<option value="">— No competition linked —</option>';
+    record.competitions.forEach(function(c, i) {
+      var opt = document.createElement('option');
+      opt.value = i;
+      opt.textContent = c.name + (c.active ? ' ★' : '') + (c.date ? ' · ' + c.date : '');
+      if (c.active) opt.selected = true;
+      compSelect.appendChild(opt);
+    });
+  }
+
+  // Set default date to today
+  var dateInput = document.getElementById('sheetDate');
+  if (dateInput && !dateInput.value) {
+    dateInput.value = new Date().toISOString().split('T')[0];
+  }
+
+  // Auto-hide date field if competition selected
+  updateLinkedCompFields();
 }
 
 function renderSheetHTML(isAdmin) {
@@ -693,7 +762,22 @@ function renderSheetHTML(isAdmin) {
 
 // ── PUBLISH ──
 async function publishTeeSheet() {
-  var ok = await SGC.set('teeSheet', _slots);
+  var compSelect = document.getElementById('linkedComp');
+  var dateInput = document.getElementById('sheetDate');
+  var record = await SGC._read();
+  var comps = Array.isArray(record.competitions) ? record.competitions : [];
+  var linkedComp = compSelect && compSelect.value !== '' ? comps[parseInt(compSelect.value)] : null;
+  var sheetDate = linkedComp ? linkedComp.date : (dateInput ? dateInput.value : '');
+  var sheetName = linkedComp ? linkedComp.name : '';
+
+  var teeSheetData = {
+    slots: _slots,
+    competition: sheetName,
+    date: sheetDate,
+    publishedAt: new Date().toISOString()
+  };
+
+  var ok = await SGC.set('teeSheet', teeSheetData);
   if (ok) {
     alert('✅ Tee sheet published! Players can now see it.');
     renderPublicSheet();
@@ -828,6 +912,8 @@ function proceedToDraw() {
 window.addEventListener('load', function() {
   loadData();
   // Live capacity update
+  document.getElementById('linkedComp').addEventListener('change', updateLinkedCompFields);
+
   ['startTime','endTime','interval','groupSize'].forEach(function(id) {
     document.getElementById(id).addEventListener('input', updateCapacity);
     document.getElementById(id).addEventListener('change', updateCapacity);
