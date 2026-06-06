@@ -234,7 +234,8 @@ select option{background:#0f2347;color:#fff;}
       <div style="font-size:.72rem;color:rgba(255,255,255,.4);margin-bottom:10px;" id="entryCount">0 players entered</div>
 
 
-      <div class="btn-row single" style="margin-top:4px;">
+      <div class="btn-row" style="margin-top:4px;">
+        <button class="btn btn-outline" onclick="fillTestPlayers()" style="font-size:.8rem;">🧪 Fill Test Players</button>
         <button class="btn btn-gold" onclick="proceedToDraw()" id="proceedBtn">Proceed to Draw →</button>
       </div>
     </div>
@@ -249,6 +250,14 @@ select option{background:#0f2347;color:#fff;}
         <div class="draw-tab" onclick="setDrawMethod('manual')">✏️ Manual</div>
       </div>
       <div id="drawMethodInfo" style="font-size:.82rem;color:rgba(255,255,255,.6);margin-bottom:12px;">Players will be randomly allocated to tee times.</div>
+      <div style="margin-bottom:12px;">
+        <label class="flbl">Empty slots position</label>
+        <select id="emptySlotPos" style="width:100%;">
+          <option value="end">At the end of the tee sheet</option>
+          <option value="start">At the beginning of the tee sheet</option>
+          <option value="spread">Spread evenly throughout</option>
+        </select>
+      </div>
       <div id="unassignedPool" style="display:none;">
         <div style="font-size:.72rem;font-weight:700;color:rgba(255,255,255,.5);letter-spacing:.08em;text-transform:uppercase;margin-bottom:8px;">Unassigned Players — tap to assign</div>
         <div class="player-pool" id="poolContainer"></div>
@@ -495,12 +504,36 @@ function applyDraw() {
     available.sort(function(a, b){ return b.ph - a.ph; });
   }
 
-  // Assign to slots
+  // Assign to slots based on empty slot position
+  var emptyPos = document.getElementById('emptySlotPos').value;
+  var totalSlots = _slots.reduce(function(t,s){ return t+s.groupSize; }, 0);
+  var emptyCount = totalSlots - available.length;
+
+  if (emptyPos === 'start' && emptyCount > 0) {
+    // Pad beginning with nulls
+    var nulls = new Array(emptyCount).fill(null);
+    available = nulls.concat(available);
+  } else if (emptyPos === 'end' || emptyPos === 'spread') {
+    // end: nulls go at back naturally; spread: fill evenly handled below
+  }
+
   var idx = 0;
-  _slots.forEach(function(slot) {
+  _slots.forEach(function(slot, si) {
     slot.players = [];
     for (var i = 0; i < slot.groupSize; i++) {
-      slot.players.push(idx < available.length ? available[idx++] : null);
+      if (emptyPos === 'spread') {
+        // Spread: calculate if this position should have a player
+        var totalPos = si * slot.groupSize + i;
+        var ratio = available.length / totalSlots;
+        var shouldHavePlayer = Math.floor((totalPos+1)*ratio) > Math.floor(totalPos*ratio);
+        if (shouldHavePlayer && idx < available.length) {
+          slot.players.push(available[idx++]);
+        } else {
+          slot.players.push(null);
+        }
+      } else {
+        slot.players.push(idx < available.length ? available[idx++] : null);
+      }
     }
   });
 
@@ -516,13 +549,48 @@ function resetDraw() {
   if (_drawMethod === 'manual') buildPlayerPool();
 }
 
+// ── EDIT/SWAP STATE ──
+var _editSelected = null; // {slotIdx, posIdx, player}
+
 // ── RENDER ADMIN SHEET ──
 function renderAdminSheet() {
   var el = document.getElementById('adminSheet');
   if (!_slots.length) { el.innerHTML = ''; return; }
   el.innerHTML = renderSheetHTML(true);
-  // Attach slot click handlers for manual mode
   if (_drawMethod === 'manual') attachSlotHandlers();
+  attachEditHandlers();
+}
+
+function attachEditHandlers() {
+  // Make each player clickable for move/swap
+  document.querySelectorAll('.admin-player-btn').forEach(function(btn) {
+    btn.onclick = function() {
+      var si = parseInt(btn.dataset.slot);
+      var pi = parseInt(btn.dataset.pos);
+      var player = _slots[si].players[pi];
+
+      if (!_editSelected) {
+        // Select this player/slot
+        _editSelected = { slotIdx: si, posIdx: pi, player: player };
+        btn.style.outline = '2px solid #f0c040';
+        btn.style.background = 'rgba(212,160,23,.3)';
+        document.getElementById('editModeInfo').style.display = 'block';
+        document.getElementById('editModeText').textContent =
+          (player ? player.name : 'Empty slot') + ' selected — tap another slot to move/swap';
+      } else {
+        // Swap/move
+        var fromSI = _editSelected.slotIdx, fromPI = _editSelected.posIdx;
+        var fromPlayer = _editSelected.player;
+        // Swap
+        _slots[fromSI].players[fromPI] = player;
+        _slots[si].players[pi] = fromPlayer;
+        _editSelected = null;
+        document.getElementById('editModeInfo').style.display = 'none';
+        renderAdminSheet();
+        document.getElementById('publishCard').style.display = 'block';
+      }
+    };
+  });
 }
 
 function attachSlotHandlers() {
@@ -560,13 +628,16 @@ function renderSheetHTML(isAdmin) {
     var playerRows = slot.players.map(function(p, pi) {
       if (!p) {
         return isAdmin
-          ? '<div class="tee-player"><span class="tee-player-num">' + (pi+1) + '</span><button class="slot-btn" data-slot="' + si + '" data-pos="' + pi + '">+ Add player</button></div>'
+          ? '<div class="tee-player"><span class="tee-player-num">' + (pi+1) + '</span>'
+            + '<button class="slot-btn admin-player-btn" data-slot="' + si + '" data-pos="' + pi + '" style="border-style:dashed;">+ Empty slot</button></div>'
           : '<div class="tee-player"><span class="tee-player-num">' + (pi+1) + '</span><span class="tee-empty">TBA</span></div>';
       }
       return '<div class="tee-player">'
         + '<span class="tee-player-num">' + (pi+1) + '</span>'
-        + '<span class="tee-player-name">' + p.name + '</span>'
-        + '<span class="tee-player-hcp">HCP ' + (p.ph||0) + '</span>'
+        + (isAdmin
+          ? '<button class="admin-player-btn" data-slot="' + si + '" data-pos="' + pi + '" style="background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.2);border-radius:6px;padding:4px 10px;color:#fff;font-size:.82rem;font-weight:600;cursor:pointer;text-align:left;flex:1;">'
+            + p.name + ' <span style="color:rgba(255,255,255,.4);font-size:.7rem;">HCP ' + (p.ph||0) + (p.isPro?' · PRO':'') + '</span></button>'
+          : '<span class="tee-player-name">' + p.name + '</span><span class="tee-player-hcp">HCP ' + (p.ph||0) + (p.isPro?' · PRO':'') + '</span>')
         + '</div>';
     }).join('');
 
@@ -685,6 +756,26 @@ function renderEntryList() {
     row.appendChild(btn);
     list.appendChild(row);
   });
+}
+
+function fillTestPlayers() {
+  _players = [];
+  var letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+  // Calculate capacity from slots
+  var capacity = _slots.reduce(function(t,s){ return t + s.groupSize; }, 0);
+  if (capacity === 0) capacity = 16; // default if no slots yet
+
+  for (var i = 0; i < capacity; i++) {
+    var letter = letters[i % 26];
+    var prefix = i < 26 ? 'A' : 'B';
+    var name = prefix + ' ' + letter;
+    var hi = Math.floor(Math.random() * 280) / 10; // 0.0 to 27.9
+    var teeKey = Math.random() > 0.3 ? 'white_m' : 'yellow_m';
+    var ph = calcPH(hi, teeKey);
+    _players.push({ name: name, hi: hi, ph: ph, gender: 'm', teeKey: teeKey, isPro: false });
+  }
+  renderEntryList();
+  alert(_players.length + ' test players added!');
 }
 
 function proceedToDraw() {
