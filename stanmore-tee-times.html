@@ -181,7 +181,8 @@ select option{background:#0f2347;color:#fff;}
           <option value="shotgun">Shotgun Start</option>
         </select>
       </div>
-      <div class="btn-row single" style="margin-top:12px;">
+      <div id="capacityInfo" style="background:rgba(212,160,23,.1);border:1px solid rgba(212,160,23,.3);border-radius:8px;padding:10px 14px;margin-top:12px;font-size:.85rem;color:#ffe066;text-align:center;display:none;"></div>
+      <div class="btn-row single" style="margin-top:10px;">
         <button class="btn btn-gold" onclick="generateSlots()">Generate Tee Times →</button>
       </div>
     </div>
@@ -418,6 +419,25 @@ function generateSlots() {
   document.getElementById('publishCard').style.display = 'none';
   renderAdminSheet();
   renderEntryList();
+}
+
+// ── CAPACITY CALCULATOR ──
+function updateCapacity() {
+  var start = document.getElementById('startTime').value;
+  var end   = document.getElementById('endTime').value;
+  var interval  = parseInt(document.getElementById('interval').value) || 0;
+  var groupSize = parseInt(document.getElementById('groupSize').value) || 0;
+  var info = document.getElementById('capacityInfo');
+  if (!start || !end || !interval || !groupSize) { info.style.display='none'; return; }
+  var parts1 = start.split(':').map(Number);
+  var parts2 = end.split(':').map(Number);
+  var startMins = parts1[0]*60+parts1[1];
+  var endMins   = parts2[0]*60+parts2[1];
+  if (endMins <= startMins) { info.style.display='none'; return; }
+  var numSlots = Math.floor((endMins - startMins) / interval) + 1;
+  var capacity = numSlots * groupSize;
+  info.style.display = 'block';
+  info.innerHTML = '<strong>' + numSlots + '</strong> tee times &nbsp;·&nbsp; <strong>' + groupSize + '</strong> players per group &nbsp;·&nbsp; <strong>' + capacity + '</strong> players total';
 }
 
 // ── DRAW METHOD ──
@@ -665,6 +685,12 @@ function proceedToDraw() {
 // ── INIT ──
 window.addEventListener('load', function() {
   loadData();
+  // Live capacity update
+  ['startTime','endTime','interval','groupSize'].forEach(function(id) {
+    document.getElementById(id).addEventListener('input', updateCapacity);
+    document.getElementById(id).addEventListener('change', updateCapacity);
+  });
+
   // Enter key on player entry
   document.getElementById('entryName').addEventListener('keydown', function(e){ if(e.key==='Enter') document.getElementById('entryHI').focus(); });
   document.getElementById('entryHI').addEventListener('keydown', function(e){ if(e.key==='Enter') addEntryPlayer(); });
