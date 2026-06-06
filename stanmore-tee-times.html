@@ -490,7 +490,7 @@ function selectPoolPlayer(player, el) {
 }
 
 function applyDraw() {
-  if (_players.length === 0) { alert('No players found. Players must have submitted a score first.'); return; }
+  if (_players.length === 0) { alert('No players added yet. Please add players in Step 1b first.'); return; }
 
   var available = _players.slice();
 
@@ -561,6 +561,47 @@ function renderAdminSheet() {
   attachEditHandlers();
 }
 
+function updatePlayerBtn(si, pi, player) {
+  var btn = document.querySelector('.admin-player-btn[data-slot="'+si+'"][data-pos="'+pi+'"]');
+  if (!btn) return;
+  if (!player) {
+    btn.textContent = '+ Empty slot';
+    btn.style.borderStyle = 'dashed';
+    btn.style.background = '';
+    btn.style.color = 'rgba(255,255,255,.35)';
+    btn.style.outline = '';
+  } else {
+    btn.innerHTML = player.name + ' <span style="color:rgba(255,255,255,.4);font-size:.7rem;">HCP ' + (player.ph||0) + (player.isPro?' · PRO':'') + '</span>';
+    btn.style.borderStyle = 'solid';
+    btn.style.background = 'rgba(255,255,255,.08)';
+    btn.style.color = '#fff';
+    btn.style.outline = '';
+  }
+  // Update the stored player reference in onclick closure
+  btn.onclick = (function(slotIdx, posIdx) {
+    return function() {
+      var p = _slots[slotIdx].players[posIdx];
+      if (!_editSelected) {
+        _editSelected = { slotIdx: slotIdx, posIdx: posIdx, player: p };
+        btn.style.outline = '2px solid #f0c040';
+        btn.style.background = 'rgba(212,160,23,.3)';
+        document.getElementById('editModeInfo').style.display = 'block';
+        document.getElementById('editModeText').textContent = (p ? p.name : 'Empty slot') + ' selected — tap another slot to move/swap';
+      } else {
+        var fromSI = _editSelected.slotIdx, fromPI = _editSelected.posIdx;
+        var fromPlayer = _editSelected.player;
+        _slots[fromSI].players[fromPI] = p;
+        _slots[slotIdx].players[posIdx] = fromPlayer;
+        _editSelected = null;
+        document.getElementById('editModeInfo').style.display = 'none';
+        document.getElementById('publishCard').style.display = 'block';
+        updatePlayerBtn(fromSI, fromPI, p);
+        updatePlayerBtn(slotIdx, posIdx, fromPlayer);
+      }
+    };
+  })(si, pi);
+}
+
 function attachEditHandlers() {
   // Make each player clickable for move/swap
   document.querySelectorAll('.admin-player-btn').forEach(function(btn) {
@@ -581,13 +622,14 @@ function attachEditHandlers() {
         // Swap/move
         var fromSI = _editSelected.slotIdx, fromPI = _editSelected.posIdx;
         var fromPlayer = _editSelected.player;
-        // Swap
         _slots[fromSI].players[fromPI] = player;
         _slots[si].players[pi] = fromPlayer;
         _editSelected = null;
         document.getElementById('editModeInfo').style.display = 'none';
-        renderAdminSheet();
         document.getElementById('publishCard').style.display = 'block';
+        // Fast update - just re-render affected buttons
+        updatePlayerBtn(fromSI, fromPI, player);
+        updatePlayerBtn(si, pi, fromPlayer);
       }
     };
   });
