@@ -198,7 +198,16 @@ select option{background:#0f2347;color:#fff;}
       <!-- Quick add row -->
       <div class="form-row" style="margin-bottom:6px;">
         <div><label class="flbl">Player Name</label><input type="text" id="entryName" placeholder="e.g. Alex Persaud" autocapitalize="words" autocomplete="off"></div>
-        <div><label class="flbl">Handicap Index</label><input type="number" id="entryHI" placeholder="e.g. 14.2" step="0.1" min="0" max="54"></div>
+        <div>
+          <label class="flbl">Handicap Index</label>
+          <input type="number" id="entryHI" placeholder="e.g. 14.2" step="0.1" min="0" max="54">
+          <div style="margin-top:6px;display:flex;align-items:center;gap:8px;">
+            <label style="display:flex;align-items:center;gap:6px;cursor:pointer;font-size:.78rem;color:rgba(255,255,255,.6);">
+              <input type="checkbox" id="entryPro" onchange="toggleEntryPro()" style="width:16px;height:16px;accent-color:#f0c040;cursor:pointer;">
+              Professional (HCP 0)
+            </label>
+          </div>
+        </div>
       </div>
       <div class="form-row" style="margin-bottom:12px;">
         <div>
@@ -328,7 +337,7 @@ function toggleAdmin() {
   document.getElementById('viewPublic').style.display = _isAdmin ? 'none' : 'block';
   document.getElementById('viewAdmin').style.display = _isAdmin ? 'block' : 'none';
   document.getElementById('adminToggleBtn').textContent = _isAdmin ? '👁 Player View' : '🔐 Admin Mode';
-  if (_isAdmin) renderAdminSheet();
+  if (_isAdmin) { renderAdminSheet(); updateCapacity(); }
 }
 
 // ── LOAD DATA ──
@@ -593,6 +602,14 @@ async function clearTeeSheet() {
 }
 
 // ── PLAYER ENTRY ──
+function toggleEntryPro() {
+  var isPro = document.getElementById('entryPro').checked;
+  var hiInput = document.getElementById('entryHI');
+  hiInput.disabled = isPro;
+  hiInput.style.opacity = isPro ? '.4' : '1';
+  if (isPro) hiInput.value = '0';
+}
+
 function addEntryPlayer() {
   var name = document.getElementById('entryName').value.trim();
   var hi   = parseFloat(document.getElementById('entryHI').value) || 0;
@@ -610,12 +627,16 @@ function addEntryPlayer() {
   }
 
   // Calculate playing handicap
-  var ph = calcPH(hi, teeKey);
-  _players.push({ name: name, hi: hi, ph: ph, gender: gender, teeKey: teeKey });
+  var isPro = document.getElementById('entryPro').checked;
+  var ph = isPro ? 0 : calcPH(hi, teeKey);
+  _players.push({ name: name, hi: hi, ph: ph, gender: gender, teeKey: teeKey, isPro: isPro });
 
   // Clear inputs
   document.getElementById('entryName').value = '';
   document.getElementById('entryHI').value = '';
+  document.getElementById('entryPro').checked = false;
+  document.getElementById('entryHI').disabled = false;
+  document.getElementById('entryHI').style.opacity = '1';
   document.getElementById('entryName').focus();
 
   renderEntryList();
@@ -653,7 +674,8 @@ function renderEntryList() {
     var row = document.createElement('div');
     row.style.cssText = 'display:flex;align-items:center;justify-content:space-between;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:8px;padding:8px 12px;';
     var info = document.createElement('div');
-    info.innerHTML = '<div style="font-size:.88rem;font-weight:600;color:#fff;">' + p.name + '</div>'
+    var proBadge = p.isPro ? ' <span style="background:#f0c040;color:#0f2347;font-size:.55rem;font-weight:800;border-radius:3px;padding:1px 5px;letter-spacing:.05em;">PRO</span>' : '';
+    info.innerHTML = '<div style="font-size:.88rem;font-weight:600;color:#fff;">' + p.name + proBadge + '</div>'
       + '<div style="font-size:.72rem;color:rgba(255,255,255,.45);">HI ' + p.hi + ' &middot; HCP ' + p.ph + ' &middot; ' + (p.gender === 'f' ? 'Female' : 'Male') + '</div>';
     var btn = document.createElement('button');
     btn.textContent = '✕';
