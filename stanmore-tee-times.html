@@ -558,81 +558,63 @@ function renderAdminSheet() {
   if (!_slots.length) { el.innerHTML = ''; return; }
   el.innerHTML = renderSheetHTML(true);
   if (_drawMethod === 'manual') attachSlotHandlers();
-  attachEditHandlers();
 }
 
 function updatePlayerBtn(si, pi, player) {
-  var btn = document.querySelector('.admin-player-btn[data-slot="'+si+'"][data-pos="'+pi+'"]');
+  var btn = document.querySelector('[data-slot="'+si+'"][data-pos="'+pi+'"]');
   if (!btn) return;
   if (!player) {
     btn.textContent = '+ Empty slot';
-    btn.style.borderStyle = 'dashed';
-    btn.style.background = '';
-    btn.style.color = 'rgba(255,255,255,.35)';
-    btn.style.outline = '';
+    btn.style.cssText = 'border-style:dashed;background:none;color:rgba(255,255,255,.35);outline:none;';
   } else {
-    btn.innerHTML = player.name + ' <span style="color:rgba(255,255,255,.4);font-size:.7rem;">HCP ' + (player.ph||0) + (player.isPro?' · PRO':'') + '</span>';
-    btn.style.borderStyle = 'solid';
-    btn.style.background = 'rgba(255,255,255,.08)';
-    btn.style.color = '#fff';
-    btn.style.outline = '';
+    btn.innerHTML = player.name + ' <span style="color:rgba(255,255,255,.4);font-size:.7rem;">HCP '+(player.ph||0)+(player.isPro?' · PRO':'')+'</span>';
+    btn.style.cssText = 'border-style:solid;background:rgba(255,255,255,.08);color:#fff;outline:none;';
   }
-  // Update the stored player reference in onclick closure
-  btn.onclick = (function(slotIdx, posIdx) {
-    return function() {
-      var p = _slots[slotIdx].players[posIdx];
-      if (!_editSelected) {
-        _editSelected = { slotIdx: slotIdx, posIdx: posIdx, player: p };
-        btn.style.outline = '2px solid #f0c040';
-        btn.style.background = 'rgba(212,160,23,.3)';
-        document.getElementById('editModeInfo').style.display = 'block';
-        document.getElementById('editModeText').textContent = (p ? p.name : 'Empty slot') + ' selected — tap another slot to move/swap';
-      } else {
-        var fromSI = _editSelected.slotIdx, fromPI = _editSelected.posIdx;
-        var fromPlayer = _editSelected.player;
-        _slots[fromSI].players[fromPI] = p;
-        _slots[slotIdx].players[posIdx] = fromPlayer;
-        _editSelected = null;
-        document.getElementById('editModeInfo').style.display = 'none';
-        document.getElementById('publishCard').style.display = 'block';
-        updatePlayerBtn(fromSI, fromPI, p);
-        updatePlayerBtn(slotIdx, posIdx, fromPlayer);
-      }
-    };
-  })(si, pi);
+}
+
+function initEditDelegation() {
+  var sheet = document.getElementById('adminSheet');
+  if (!sheet || sheet._delegated) return;
+  sheet._delegated = true;
+  sheet.addEventListener('click', function(e) {
+    var btn = e.target.closest('.admin-player-btn');
+    if (!btn) return;
+    var si = parseInt(btn.dataset.slot);
+    var pi = parseInt(btn.dataset.pos);
+    var player = _slots[si] ? _slots[si].players[pi] : null;
+
+    if (!_editSelected) {
+      // Deselect any previously selected
+      var prev = sheet.querySelector('[data-selected]');
+      if (prev) { prev.removeAttribute('data-selected'); prev.style.outline=''; prev.style.background=prev._origBg||''; }
+      _editSelected = { slotIdx: si, posIdx: pi, player: player };
+      btn._origBg = btn.style.background;
+      btn.setAttribute('data-selected','1');
+      btn.style.outline = '2px solid #f0c040';
+      btn.style.background = 'rgba(212,160,23,.3)';
+      document.getElementById('editModeInfo').style.display = 'block';
+      document.getElementById('editModeText').textContent = (player ? player.name : 'Empty slot') + ' selected — tap another slot to move/swap';
+    } else {
+      var fromSI = _editSelected.slotIdx, fromPI = _editSelected.posIdx;
+      var fromPlayer = _editSelected.player;
+      // Clear selection highlight
+      var selBtn = sheet.querySelector('[data-selected]');
+      if (selBtn) { selBtn.removeAttribute('data-selected'); }
+      // Swap data
+      _slots[fromSI].players[fromPI] = player;
+      _slots[si].players[pi] = fromPlayer;
+      _editSelected = null;
+      document.getElementById('editModeInfo').style.display = 'none';
+      document.getElementById('publishCard').style.display = 'block';
+      // Update just the two buttons
+      updatePlayerBtn(fromSI, fromPI, player);
+      updatePlayerBtn(si, pi, fromPlayer);
+    }
+  });
 }
 
 function attachEditHandlers() {
-  // Make each player clickable for move/swap
-  document.querySelectorAll('.admin-player-btn').forEach(function(btn) {
-    btn.onclick = function() {
-      var si = parseInt(btn.dataset.slot);
-      var pi = parseInt(btn.dataset.pos);
-      var player = _slots[si].players[pi];
-
-      if (!_editSelected) {
-        // Select this player/slot
-        _editSelected = { slotIdx: si, posIdx: pi, player: player };
-        btn.style.outline = '2px solid #f0c040';
-        btn.style.background = 'rgba(212,160,23,.3)';
-        document.getElementById('editModeInfo').style.display = 'block';
-        document.getElementById('editModeText').textContent =
-          (player ? player.name : 'Empty slot') + ' selected — tap another slot to move/swap';
-      } else {
-        // Swap/move
-        var fromSI = _editSelected.slotIdx, fromPI = _editSelected.posIdx;
-        var fromPlayer = _editSelected.player;
-        _slots[fromSI].players[fromPI] = player;
-        _slots[si].players[pi] = fromPlayer;
-        _editSelected = null;
-        document.getElementById('editModeInfo').style.display = 'none';
-        document.getElementById('publishCard').style.display = 'block';
-        // Fast update - just re-render affected buttons
-        updatePlayerBtn(fromSI, fromPI, player);
-        updatePlayerBtn(si, pi, fromPlayer);
-      }
-    };
-  });
+  initEditDelegation(); // one-time setup only
 }
 
 function attachSlotHandlers() {
