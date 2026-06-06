@@ -249,7 +249,14 @@ select option{background:#0f2347;color:#fff;}
         <div class="draw-tab" onclick="setDrawMethod('handicap')">📊 By Handicap</div>
         <div class="draw-tab" onclick="setDrawMethod('manual')">✏️ Manual</div>
       </div>
-      <div id="drawMethodInfo" style="font-size:.82rem;color:rgba(255,255,255,.6);margin-bottom:12px;">Players will be randomly allocated to tee times.</div>
+      <div id="drawMethodInfo" style="font-size:.82rem;color:rgba(255,255,255,.6);margin-bottom:8px;">Players will be randomly allocated to tee times.</div>
+      <div id="handicapOrderRow" style="display:none;margin-bottom:12px;">
+        <label class="flbl">Handicap Order</label>
+        <select id="handicapOrder">
+          <option value="desc">Highest to Lowest (highest hcp tees off first)</option>
+          <option value="asc">Lowest to Highest (lowest hcp tees off first)</option>
+        </select>
+      </div>
       <div style="margin-bottom:12px;">
         <label class="flbl">Empty slots position</label>
         <select id="emptySlotPos" style="width:100%;">
@@ -461,8 +468,9 @@ function setDrawMethod(method) {
   _drawMethod = method;
   document.querySelectorAll('.draw-tab').forEach(function(t){ t.classList.remove('active'); });
   event.target.classList.add('active');
-  var info = { random: 'Players will be randomly allocated to tee times.', handicap: 'Players allocated highest to lowest handicap, grouped together.', manual: 'Tap a player then tap a slot to assign them manually.' };
+  var info = { random: 'Players will be randomly allocated to tee times.', handicap: 'Players allocated by handicap, grouped together.', manual: 'Tap a player then tap a slot to assign them manually.' };
   document.getElementById('drawMethodInfo').textContent = info[method];
+  document.getElementById('handicapOrderRow').style.display = method === 'handicap' ? 'block' : 'none';
   document.getElementById('unassignedPool').style.display = method === 'manual' ? 'block' : 'none';
   if (method === 'manual') buildPlayerPool();
 }
@@ -501,7 +509,8 @@ function applyDraw() {
       var tmp = available[i]; available[i] = available[j]; available[j] = tmp;
     }
   } else if (_drawMethod === 'handicap') {
-    available.sort(function(a, b){ return b.ph - a.ph; });
+    var order = document.getElementById('handicapOrder').value;
+    available.sort(function(a, b){ return order === 'asc' ? a.ph - b.ph : b.ph - a.ph; });
   }
 
   // Assign to slots based on empty slot position
