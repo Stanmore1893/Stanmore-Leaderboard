@@ -353,7 +353,13 @@ function toggleAdmin() {
   document.getElementById('viewPublic').style.display = _isAdmin ? 'none' : 'block';
   document.getElementById('viewAdmin').style.display = _isAdmin ? 'block' : 'none';
   document.getElementById('adminToggleBtn').textContent = _isAdmin ? '👁 Player View' : '🔐 Admin Mode';
-  if (_isAdmin) { renderAdminSheet(); updateCapacity(); }
+  if (_isAdmin) {
+    renderAdminSheet();
+    updateCapacity();
+    // Set up click delegation now that viewAdmin is visible
+    var container = document.getElementById('viewAdmin');
+    if (container && !container._delegated) initEditDelegation();
+  }
 }
 
 // ── LOAD DATA ──
@@ -583,7 +589,8 @@ function updatePlayerBtn(si, pi, player) {
 
 function initEditDelegation() {
   var container = document.getElementById('viewAdmin');
-  if (!container || container._delegated) return;
+  if (!container) return;
+  if (container._delegated) return;
   container._delegated = true;
   container.addEventListener('click', function(e) {
     var btn = e.target.closest('.admin-player-btn');
