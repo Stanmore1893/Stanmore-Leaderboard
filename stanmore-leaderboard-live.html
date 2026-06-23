@@ -426,7 +426,10 @@ async function loadAdminSettings() {
     if (!s) return;
     // s may be an object already or a JSON string
     const settings = (typeof s === 'string') ? JSON.parse(s) : s;
-    var _cn=document.getElementById('compNameHdr'); if(settings.name && _cn && _cn.textContent!==settings.name) _cn.textContent=settings.name;
+    // Only set club name if no active competition (applyBranding owns the name when a comp is active)
+    var _cn=document.getElementById('compNameHdr');
+    var _hasActiveComp = (window._competitions||[]).some(function(c){ return c.active; });
+    if(!_hasActiveComp && settings.name && _cn && _cn.textContent!==settings.name) _cn.textContent=settings.name;
     // Check if active competition has a welcome message - it takes priority over ticker
     var compsForWelcome = Array.isArray(record.competitions) ? record.competitions : [];
     var activeForWelcome = compsForWelcome.find(function(c){ return c.active; });
