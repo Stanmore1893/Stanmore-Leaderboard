@@ -248,6 +248,14 @@ html,body{min-height:100%;font-family:'Poppins',sans-serif;color:#fff;overflow-x
 
 </div>
 
+<!-- Hidden canvases for QR code generation -->
+<div style="display:none;" aria-hidden="true">
+  <canvas id="qr1" width="400" height="400"></canvas>
+  <canvas id="qr2" width="400" height="400"></canvas>
+  <canvas id="qr-results" width="400" height="400"></canvas>
+  <canvas id="qr-guide" width="400" height="400"></canvas>
+</div>
+
 <div class="print-section">
   <button class="print-qr-btn" onclick="printQRSheet()">&#128424;&#65039; Print QR Sheet &mdash; A4 reference card</button>
   <div class="print-hint">Print all QR codes on one sheet for societies &amp; competitions</div>
