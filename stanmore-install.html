@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Stanmore GC">
+<meta name="theme-color" content="#0f2347">
+<link rel="apple-touch-icon" href="club-logo.png">
+<link rel="manifest" href="manifest.json">
+<title>Save to Home Screen · Stanmore Golf Club</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{--navy:#1a3a6b;--navy-dk:#0f2347;--gold:#d4a017;--gold-lt:#f0c040;--grey:#8896a8;}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Poppins',sans-serif;background:linear-gradient(175deg,#060e1e,#0f2347 40%,#1a3a6b);min-height:100vh;color:#fff;padding-bottom:60px;padding-top:env(safe-area-inset-top,0px);}
+
+/* BURGER */
+.sgc-burger{position:fixed;top:calc(env(safe-area-inset-top, 0px) + 12px);right:12px;z-index:499;width:42px;height:42px;background:#1a3a6b;border:1.5px solid rgba(212,160,23,.5);border-radius:9px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:1.3rem;color:#fff;box-shadow:0 2px 12px rgba(0,0,0,.5);}
+.nav-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.65);z-index:500;backdrop-filter:blur(4px);}
+.nav-drawer{position:fixed;top:0;right:0;bottom:0;width:300px;transform:translateX(100%);transition:transform .3s cubic-bezier(.4,0,.2,1);background:linear-gradient(180deg,#09132a,#0f2347 60%,#1a3a6b);z-index:501;display:flex;flex-direction:column;overflow-y:auto;}
+
+/* HEADER */
+.hdr{padding:14px 70px 14px 16px;border-bottom:1px solid rgba(212,160,23,.25);display:flex;align-items:center;gap:10px;}
+.hdr img{width:44px;height:44px;object-fit:contain;background:transparent;border:none;}
+.hdr .name{font-size:1rem;font-weight:700;color:#fff;}
+.hdr .sub{font-size:.6rem;color:rgba(212,160,23,.7);letter-spacing:.1em;text-transform:uppercase;}
+
+/* PAGE TITLE */
+.page-title{text-align:center;padding:24px 16px 8px;}
+.page-title h1{font-size:1.5rem;font-weight:800;color:#f0c040;margin-bottom:6px;}
+.page-title p{font-size:.85rem;color:rgba(255,255,255,.6);}
+
+/* PLATFORM TABS */
+.tabs{display:flex;gap:8px;margin:0 14px 16px;}
+.tab{flex:1;padding:12px;border-radius:10px;font-size:.82rem;font-weight:700;text-align:center;background:rgba(255,255,255,.05);color:rgba(255,255,255,.5);border:1.5px solid rgba(255,255,255,.1);cursor:pointer;transition:all .2s;}
+.tab.active{background:rgba(212,160,23,.15);color:#ffe066;border-color:rgba(212,160,23,.5);}
+
+/* STEPS */
+.steps-panel{margin:0 14px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);border-radius:14px;padding:16px;}
+.step{display:flex;gap:12px;padding:12px 0;border-bottom:1px solid rgba(255,255,255,.06);}
+.step:last-child{border-bottom:none;}
+.step-num{width:32px;height:32px;border-radius:50%;background:#d4a017;color:#0f2347;font-weight:800;font-size:.95rem;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.step-text{font-size:.9rem;line-height:1.55;color:rgba(255,255,255,.9);flex:1;padding-top:4px;}
+.step-text b{color:#ffe066;}
+.step-icon{display:inline-block;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);border-radius:6px;padding:1px 6px;font-size:.85rem;margin:0 2px;vertical-align:middle;}
+
+/* WHY CARD */
+.why{margin:20px 14px 0;background:rgba(212,160,23,.08);border:1px solid rgba(212,160,23,.25);border-radius:14px;padding:16px;}
+.why h3{font-size:.72rem;font-weight:700;color:#ffe066;letter-spacing:.1em;text-transform:uppercase;margin-bottom:10px;}
+.why ul{list-style:none;padding:0;}
+.why li{font-size:.85rem;color:rgba(255,255,255,.8);line-height:1.6;padding:4px 0;padding-left:22px;position:relative;}
+.why li::before{content:'✓';position:absolute;left:0;color:#d4a017;font-weight:800;}
+
+.footer-credit{text-align:center;padding:24px 14px;font-size:.68rem;color:rgba(212,160,23,.5);}
+</style>
+</head>
+<body>
+
+<div class="sgc-burger" onclick="openNav()">&#9776;</div>
+<div class="nav-overlay" id="sgcNavOverlay" onclick="closeNav()"></div>
+<div class="nav-drawer" id="sgcNavDrawer">
+  <div style="padding:20px 16px 14px;border-bottom:1px solid rgba(212,160,23,.25);display:flex;align-items:center;justify-content:space-between;">
+    <div style="display:flex;align-items:center;gap:10px;">
+      <img src="club-logo.png" alt="" style="width:42px;height:42px;object-fit:contain;">
+      <div><div style="font-size:.95rem;font-weight:700;color:#fff;">Stanmore Golf Club</div><div style="font-size:.65rem;color:rgba(212,160,23,.7);letter-spacing:.08em;text-transform:uppercase;">Digital Hub</div></div>
+    </div>
+    <button onclick="closeNav()" style="background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);border-radius:8px;color:#fff;font-size:1.2rem;width:34px;height:34px;cursor:pointer;">✕</button>
+  </div>
+  <div style="padding:12px 10px;flex:1;">
+    <a href="stanmore-hub.html" style="display:flex;align-items:center;gap:12px;padding:12px;border-radius:12px;text-decoration:none;margin-bottom:4px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.06);"><span style="font-size:1.4rem;width:36px;text-align:center;">🏠</span><div><div style="font-size:.92rem;font-weight:600;color:#fff;">Hub</div><div style="font-size:.72rem;color:rgba(255,255,255,.5);">Home page</div></div></a>
+    <a href="stanmore-course-guide.html" style="display:flex;align-items:center;gap:12px;padding:12px;border-radius:12px;text-decoration:none;margin-bottom:4px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.06);"><span style="font-size:1.4rem;width:36px;text-align:center;">📋</span><div><div style="font-size:.92rem;font-weight:600;color:#fff;">Course Guide</div><div style="font-size:.72rem;color:rgba(255,255,255,.5);">Scorecard &amp; calculators</div></div></a>
+    <a href="stanmore-player-scoring.html" style="display:flex;align-items:center;gap:12px;padding:12px;border-radius:12px;text-decoration:none;margin-bottom:4px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.06);"><span style="font-size:1.4rem;width:36px;text-align:center;">⛳</span><div><div style="font-size:.92rem;font-weight:600;color:#fff;">Score Entry</div><div style="font-size:.72rem;color:rgba(255,255,255,.5);">Enter your round</div></div></a>
+    <a href="stanmore-leaderboard-live.html" style="display:flex;align-items:center;gap:12px;padding:12px;border-radius:12px;text-decoration:none;margin-bottom:4px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.06);"><span style="font-size:1.4rem;width:36px;text-align:center;">🏆</span><div><div style="font-size:.92rem;font-weight:600;color:#fff;">Live Leaderboard</div><div style="font-size:.72rem;color:rgba(255,255,255,.5);">Live standings</div></div></a>
+    <a href="stanmore-results.html" style="display:flex;align-items:center;gap:12px;padding:12px;border-radius:12px;text-decoration:none;margin-bottom:4px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.06);"><span style="font-size:1.4rem;width:36px;text-align:center;">🥇</span><div><div style="font-size:.92rem;font-weight:600;color:#fff;">Results</div><div style="font-size:.72rem;color:rgba(255,255,255,.5);">Final standings</div></div></a>
+    <a href="stanmore-install.html" style="display:flex;align-items:center;gap:12px;padding:12px;border-radius:12px;text-decoration:none;margin-bottom:4px;background:rgba(26,58,107,.5);border:1px solid rgba(100,180,255,.2);"><span style="font-size:1.4rem;width:36px;text-align:center;">📱</span><div><div style="font-size:.92rem;font-weight:700;color:#7ec8ff;">Save to Phone</div><div style="font-size:.72rem;color:rgba(255,255,255,.5);">Add to home screen</div></div><span style="margin-left:auto;font-size:.6rem;background:rgba(100,180,255,.2);color:#7ec8ff;border-radius:4px;padding:2px 6px;font-weight:700;">HERE</span></a>
+    <a href="stanmore-admin.html" style="display:flex;align-items:center;gap:12px;padding:12px;border-radius:12px;text-decoration:none;margin-bottom:4px;background:rgba(192,57,43,.2);border:1px solid rgba(255,120,100,.2);"><span style="font-size:1.4rem;width:36px;text-align:center;">🔐</span><div><div style="font-size:.92rem;font-weight:600;color:#ff9080;">Admin Panel</div><div style="font-size:.72rem;color:rgba(255,255,255,.5);">Competition management</div></div></a>
+  </div>
+  <div style="padding:12px 16px;border-top:1px solid rgba(212,160,23,.2);text-align:center;font-size:.65rem;color:rgba(212,160,23,.5);">Designed &amp; built by <strong style="color:rgba(212,160,23,.8);">Alex Persaud · PGA Professional</strong></div>
+</div>
+
+<div class="hdr">
+  <img src="club-logo.png" alt="Stanmore GC">
+  <div>
+    <div class="name">Stanmore Golf Club</div>
+    <div class="sub">Save to Phone</div>
+  </div>
+</div>
+
+<div class="page-title">
+  <h1>📱 Add to Home Screen</h1>
+  <p>One-tap access to the Digital Hub — no app store needed</p>
+</div>
+
+<div class="tabs">
+  <div class="tab active" onclick="showTab('ios',this)">🍎 iPhone</div>
+  <div class="tab" onclick="showTab('android',this)">🤖 Android</div>
+</div>
+
+<div id="stepsIOS" class="steps-panel">
+  <div class="step"><div class="step-num">1</div><div class="step-text">Open this page in <b>Safari</b> — not Chrome, Instagram or another browser</div></div>
+  <div class="step"><div class="step-num">2</div><div class="step-text">Tap the <b>Share</b> button <span class="step-icon">⬆︎</span> at the bottom of Safari</div></div>
+  <div class="step"><div class="step-num">3</div><div class="step-text">Scroll down and tap <b>Add to Home Screen</b> <span class="step-icon">➕</span></div></div>
+  <div class="step"><div class="step-num">4</div><div class="step-text">Tap <b>Add</b> in the top right — the Stanmore crest will appear on your home screen</div></div>
+</div>
+
+<div id="stepsAndroid" class="steps-panel" style="display:none;">
+  <div class="step"><div class="step-num">1</div><div class="step-text">Open this page in <b>Chrome</b> (not the browser inside Facebook, Instagram etc.)</div></div>
+  <div class="step"><div class="step-num">2</div><div class="step-text">Tap the <b>three dots menu</b> <span class="step-icon">⋮</span> at the top right of Chrome</div></div>
+  <div class="step"><div class="step-num">3</div><div class="step-text">Tap <b>Add to Home screen</b> or <b>Install app</b></div></div>
+  <div class="step"><div class="step-num">4</div><div class="step-text">Tap <b>Add</b> or <b>Install</b> — the Stanmore crest will appear on your home screen</div></div>
+</div>
+
+<div class="why">
+  <h3>Why save it?</h3>
+  <ul>
+    <li>Tap the icon to open instantly — no typing addresses</li>
+    <li>Opens full-screen like a real app</li>
+    <li>Works offline once loaded</li>
+    <li>Nothing to download or update</li>
+  </ul>
+</div>
+
+<div class="footer-credit">
+  Designed &amp; built by <strong style="color:rgba(212,160,23,.7);">Alex Persaud · PGA Professional</strong>
+</div>
+
+<script>
+function openNav(){document.getElementById('sgcNavDrawer').style.transform='translateX(0)';document.getElementById('sgcNavOverlay').style.display='block';}
+function closeNav(){document.getElementById('sgcNavDrawer').style.transform='translateX(100%)';document.getElementById('sgcNavOverlay').style.display='none';}
+
+function showTab(name, el) {
+  document.querySelectorAll('.tab').forEach(function(t){ t.classList.remove('active'); });
+  el.classList.add('active');
+  document.getElementById('stepsIOS').style.display = name === 'ios' ? 'block' : 'none';
+  document.getElementById('stepsAndroid').style.display = name === 'android' ? 'block' : 'none';
+}
+
+// Auto-detect platform on load
+window.addEventListener('load', function() {
+  var ua = navigator.userAgent;
+  if (/Android/i.test(ua)) {
+    showTab('android', document.querySelectorAll('.tab')[1]);
+  }
+});
+</script>
+</body>
+</html>
