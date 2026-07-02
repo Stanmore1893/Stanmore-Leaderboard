@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Stanmore GC">
+<meta name="theme-color" content="#0f2347">
+<link rel="apple-touch-icon" href="club-logo.png">
+<link rel="manifest" href="manifest.json">
+<title>Win a Free Fourball · Stanmore Golf Club</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&family=Playfair+Display:wght@700;800&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Poppins',sans-serif;background:linear-gradient(175deg,#060e1e,#0f2347 40%,#1a3a6b);min-height:100vh;color:#fff;padding:env(safe-area-inset-top,0px) 0 40px;}
+
+/* HEADER */
+.hdr{padding:16px;border-bottom:1px solid rgba(212,160,23,.25);display:flex;align-items:center;gap:10px;justify-content:center;}
+.hdr img{width:46px;height:46px;object-fit:contain;}
+.hdr .name{font-size:1.05rem;font-weight:700;color:#fff;}
+.hdr .sub{font-size:.62rem;color:rgba(212,160,23,.7);letter-spacing:.12em;text-transform:uppercase;}
+
+/* HERO */
+.hero{text-align:center;padding:36px 22px 20px;max-width:520px;margin:0 auto;}
+.hero .prize-icon{font-size:3rem;margin-bottom:12px;}
+.hero h1{font-family:'Playfair Display',serif;font-size:1.7rem;font-weight:800;color:#f0c040;margin-bottom:10px;line-height:1.15;}
+.hero .sub{font-size:.95rem;line-height:1.55;color:rgba(255,255,255,.75);margin-bottom:6px;}
+.hero .highlight{color:#ffe066;font-weight:700;}
+
+/* CARD */
+.card{max-width:480px;margin:20px auto 0;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.12);border-radius:16px;padding:22px 20px;box-shadow:0 8px 40px rgba(0,0,0,.3);}
+.card-head{text-align:center;margin-bottom:18px;padding-bottom:16px;border-bottom:1px solid rgba(255,255,255,.08);}
+.card-head-title{font-size:.7rem;font-weight:700;color:#f0c040;letter-spacing:.14em;text-transform:uppercase;margin-bottom:4px;}
+.card-head-sub{font-size:.82rem;color:rgba(255,255,255,.65);}
+
+/* FORM */
+.field{margin-bottom:14px;}
+.flbl{display:block;font-size:.72rem;font-weight:600;color:rgba(255,255,255,.75);letter-spacing:.04em;text-transform:uppercase;margin-bottom:6px;}
+.finp{width:100%;background:rgba(255,255,255,.08);border:1.5px solid rgba(255,255,255,.15);border-radius:10px;padding:13px 14px;color:#fff;font-family:'Poppins',sans-serif;font-size:1rem;outline:none;transition:border-color .15s;}
+.finp:focus{border-color:rgba(212,160,23,.6);background:rgba(255,255,255,.1);}
+.finp::placeholder{color:rgba(255,255,255,.35);}
+
+/* CONSENT */
+.consent-box{background:rgba(212,160,23,.06);border:1px solid rgba(212,160,23,.2);border-radius:10px;padding:12px 14px;margin:16px 0 4px;}
+.consent-row{display:flex;gap:10px;align-items:flex-start;cursor:pointer;}
+.consent-row input[type=checkbox]{margin-top:3px;width:18px;height:18px;accent-color:#f0c040;cursor:pointer;flex-shrink:0;}
+.consent-text{font-size:.82rem;line-height:1.55;color:rgba(255,255,255,.85);}
+.consent-text strong{color:#ffe066;font-weight:600;}
+.consent-fine{font-size:.7rem;color:rgba(255,255,255,.55);line-height:1.55;margin-top:8px;padding-left:28px;}
+.consent-fine a{color:#f0c040;text-decoration:underline;}
+
+/* BUTTON */
+.submit-btn{width:100%;background:#d4a017;border:2px solid #f0c040;color:#0f2347;border-radius:12px;padding:15px;font-family:'Poppins',sans-serif;font-size:1rem;font-weight:800;cursor:pointer;margin-top:16px;letter-spacing:.02em;transition:all .15s;}
+.submit-btn:active{transform:scale(.98);}
+.submit-btn:disabled{opacity:.5;cursor:not-allowed;}
+
+/* SUCCESS SCREEN */
+.success{display:none;text-align:center;padding:30px 22px;max-width:480px;margin:20px auto 0;background:rgba(45,110,78,.15);border:1.5px solid rgba(45,110,78,.4);border-radius:16px;}
+.success .tick{font-size:3rem;margin-bottom:10px;}
+.success h2{font-size:1.3rem;font-weight:800;color:#8ee0b4;margin-bottom:8px;font-family:'Playfair Display',serif;}
+.success p{font-size:.9rem;color:rgba(255,255,255,.8);line-height:1.6;margin-bottom:8px;}
+.success .next{margin-top:20px;font-size:.75rem;color:rgba(255,255,255,.5);}
+
+.footer-credit{text-align:center;padding:24px 14px 0;font-size:.68rem;color:rgba(212,160,23,.4);}
+
+.error{background:rgba(192,57,43,.15);border:1px solid rgba(192,57,43,.4);color:#e87878;border-radius:8px;padding:10px 14px;font-size:.82rem;margin-top:12px;display:none;}
+</style>
+</head>
+<body>
+
+<div class="hdr">
+  <img src="club-logo.png" alt="Stanmore GC">
+  <div style="text-align:left;">
+    <div class="name">Stanmore Golf Club</div>
+    <div class="sub">Est. 1893 · Middlesex</div>
+  </div>
+</div>
+
+<!-- FORM VIEW -->
+<div id="formView">
+  <div class="hero">
+    <div class="prize-icon">🏆</div>
+    <h1>Win a Free Fourball at Stanmore</h1>
+    <p class="sub">Enter our <span class="highlight">monthly prize draw</span> plus receive exclusive offers, event news, and members-only discounts — straight to your inbox.</p>
+  </div>
+
+  <div class="card">
+    <div class="card-head">
+      <div class="card-head-title">Sign Up · Takes 30 seconds</div>
+      <div class="card-head-sub">Two fields — no phone number, no address, no fuss</div>
+    </div>
+
+    <div class="field">
+      <label class="flbl">Your Name</label>
+      <input type="text" class="finp" id="signupName" placeholder="e.g. Alex Persaud" autocomplete="name" autocapitalize="words">
+    </div>
+
+    <div class="field">
+      <label class="flbl">Email Address</label>
+      <input type="email" class="finp" id="signupEmail" placeholder="you@example.com" autocomplete="email" inputmode="email">
+    </div>
+
+    <div class="consent-box">
+      <label class="consent-row" for="signupConsent">
+        <input type="checkbox" id="signupConsent">
+        <div class="consent-text">
+          <strong>Yes, please add me to the Stanmore Golf Club mailing list.</strong>
+          I'd like to receive occasional emails with exclusive offers, event news, and monthly free fourball prize draws.
+        </div>
+      </label>
+      <div class="consent-fine">
+        You can unsubscribe at any time using the link at the bottom of every email. We'll never share your details with third parties. See our <a href="stanmore-privacy.html" target="_blank">Privacy Policy</a> for more.
+      </div>
+    </div>
+
+    <div class="error" id="signupError"></div>
+
+    <button class="submit-btn" id="submitBtn" onclick="submitSignup()">Enter the Prize Draw →</button>
+  </div>
+</div>
+
+<!-- SUCCESS VIEW -->
+<div class="success" id="successView">
+  <div class="tick">✅</div>
+  <h2>You're in the draw!</h2>
+  <p>Thanks for signing up, <strong id="successName" style="color:#ffe066;"></strong>.</p>
+  <p>You've been added to our mailing list and entered into this month's free fourball prize draw. Winner drawn on the last Sunday of every month.</p>
+  <div class="next">Best of luck ⛳</div>
+</div>
+
+<div class="footer-credit">Designed &amp; built by <strong style="color:rgba(212,160,23,.6);">Alex Persaud · PGA Professional</strong></div>
+
+<script>
+var PROXY_URL = 'https://stanmore-proxy.vercel.app/api/proxy';
+
+async function submitSignup() {
+  var name = document.getElementById('signupName').value.trim();
+  var email = document.getElementById('signupEmail').value.trim().toLowerCase();
+  var consent = document.getElementById('signupConsent').checked;
+  var errEl = document.getElementById('signupError');
+  var btn = document.getElementById('submitBtn');
+
+  errEl.style.display = 'none';
+
+  // Validation
+  if (!name) { showError('Please enter your name.'); return; }
+  if (!email) { showError('Please enter your email address.'); return; }
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { showError('Please enter a valid email address.'); return; }
+  if (!consent) { showError('Please tick the box to confirm you\'d like to join the mailing list.'); return; }
+
+  // Capitalise name
+  name = name.replace(/\b\w/g, function(c){ return c.toUpperCase(); });
+
+  btn.disabled = true;
+  btn.textContent = 'Submitting...';
+
+  try {
+    // Read current signups from Supabase
+    var res = await fetch(PROXY_URL, { method: 'GET' });
+    var data = await res.json();
+    var record = data.record || data || {};
+    var signups = Array.isArray(record.signups) ? record.signups : [];
+
+    // Check duplicate
+    if (signups.find(function(s){ return s.email && s.email.toLowerCase() === email; })) {
+      // Silent success - don't reveal they're already on the list
+      // But still show success screen
+    } else {
+      signups.push({
+        name: name,
+        email: email,
+        consentedAt: new Date().toISOString(),
+        source: 'signup-page'
+      });
+      record.signups = signups;
+
+      await fetch(PROXY_URL, {
+        method: 'PUT',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify(record)
+      });
+    }
+
+    // Show success
+    document.getElementById('successName').textContent = name.split(' ')[0];
+    document.getElementById('formView').style.display = 'none';
+    document.getElementById('successView').style.display = 'block';
+    window.scrollTo(0, 0);
+  } catch(e) {
+    showError('Something went wrong. Please try again.');
+    btn.disabled = false;
+    btn.textContent = 'Enter the Prize Draw →';
+  }
+}
+
+function showError(msg) {
+  var el = document.getElementById('signupError');
+  el.textContent = msg;
+  el.style.display = 'block';
+}
+
+// Enter key submits
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'Enter' && (e.target.id === 'signupName' || e.target.id === 'signupEmail')) {
+    if (e.target.id === 'signupName') document.getElementById('signupEmail').focus();
+    else submitSignup();
+  }
+});
+</script>
+</body>
+</html>

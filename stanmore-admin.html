@@ -386,6 +386,25 @@ select.finp option{background:#1a3a6b;color:#fff;}
   </div>
 
   <!-- CHANGE PASSWORD -->
+  <!-- EMAIL SIGNUPS -->
+  <div class="sec">
+    <div class="sec-title">&#128231; Email Signups</div>
+    <div class="sec-desc">Newsletter subscribers collected via signup page. Export as CSV for Mailchimp import.</div>
+    <div id="signupsStats" style="background:rgba(212,160,23,.08);border:1px solid rgba(212,160,23,.25);border-radius:10px;padding:12px 14px;margin-bottom:12px;font-size:.88rem;color:#ffe066;">
+      Loading signups...
+    </div>
+    <div style="overflow-x:auto;-webkit-overflow-scrolling:touch;margin-bottom:10px;">
+      <table class="scores-table" style="min-width:100%;">
+        <thead><tr>
+          <th>NAME</th><th>EMAIL</th><th>DATE</th>
+        </tr></thead>
+        <tbody id="signupsBody"></tbody>
+      </table>
+    </div>
+    <button class="save-btn" onclick="exportSignupsCSV()" style="margin-bottom:8px;">&#128190; Export CSV for Mailchimp</button>
+    <button class="cancel-btn" onclick="clearAllSignups()" style="color:#e87878;border-color:rgba(192,57,43,.3);">&#128465; Clear All Signups</button>
+  </div>
+
   <div class="sec">
     <div class="sec-title">&#128274; Change Password</div>
     <div class="info-box info-amber">&#9888;&#65039; Default password is <strong>stanmore1893</strong> — change before competition day.</div>
@@ -1069,6 +1088,88 @@ function onQuickCompChange() {
 }
 
 // ── SCORES ──
+async function loadSignups(){
+  try{
+    var record = await SGC._read();
+    var signups = Array.isArray(record.signups) ? record.signups : [];
+    renderSignups(signups);
+  }catch(e){
+    document.getElementById('signupsStats').textContent = 'Could not load signups';
+    document.getElementById('signupsBody').innerHTML = '';
+  }
+}
+
+function renderSignups(signups){
+  var stats = document.getElementById('signupsStats');
+  var body = document.getElementById('signupsBody');
+
+  if (!signups.length) {
+    stats.textContent = 'No signups yet';
+    body.innerHTML = '<tr><td colspan="3" style="text-align:center;padding:16px;color:var(--grey);font-size:.8rem;">No email signups collected yet.</td></tr>';
+    return;
+  }
+
+  stats.innerHTML = '<strong>' + signups.length + '</strong> total subscriber' + (signups.length === 1 ? '' : 's');
+
+  // Sort newest first
+  var sorted = signups.slice().sort(function(a,b){ return (b.consentedAt||'').localeCompare(a.consentedAt||''); });
+
+  body.innerHTML = '';
+  sorted.forEach(function(s) {
+    var date = s.consentedAt ? new Date(s.consentedAt).toLocaleDateString('en-GB', { day:'numeric', month:'short', year:'numeric' }) : '—';
+    var tr = document.createElement('tr');
+    tr.innerHTML = '<td class="nm" style="font-weight:600;">' + s.name + '</td>'
+      + '<td style="font-size:.8rem;color:rgba(255,255,255,.7);word-break:break-all;">' + s.email + '</td>'
+      + '<td style="font-size:.72rem;color:var(--grey);white-space:nowrap;">' + date + '</td>';
+    body.appendChild(tr);
+  });
+}
+
+async function exportSignupsCSV(){
+  try {
+    var record = await SGC._read();
+    var signups = Array.isArray(record.signups) ? record.signups : [];
+    if (!signups.length) { alert('No signups to export'); return; }
+
+    // Mailchimp-friendly CSV format
+    var csv = 'Email Address,First Name,Last Name,Sign Up Date\n';
+    signups.forEach(function(s) {
+      var parts = (s.name||'').split(' ');
+      var first = parts[0] || '';
+      var last = parts.slice(1).join(' ') || '';
+      var date = s.consentedAt ? s.consentedAt.split('T')[0] : '';
+      // CSV escape
+      var esc = function(v){ v=String(v||''); return v.includes(',')||v.includes('"') ? '"'+v.replace(/"/g,'""')+'"' : v; };
+      csv += esc(s.email) + ',' + esc(first) + ',' + esc(last) + ',' + esc(date) + '\n';
+    });
+
+    // Trigger download
+    var blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+    var url = URL.createObjectURL(blob);
+    var link = document.createElement('a');
+    link.href = url;
+    link.download = 'stanmore-signups-' + new Date().toISOString().split('T')[0] + '.csv';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+  } catch(e) {
+    alert('Export failed: ' + e.message);
+  }
+}
+
+async function clearAllSignups(){
+  if (!confirm('Delete ALL email signups? This cannot be undone. Make sure to export CSV first!')) return;
+  if (!confirm('Are you absolutely sure? All ' + (document.getElementById('signupsStats').textContent.match(/\d+/)||['0'])[0] + ' subscribers will be permanently deleted.')) return;
+  try {
+    var record = await SGC._read();
+    record.signups = [];
+    await SGC._write(record);
+    loadSignups();
+    alert('All signups cleared');
+  } catch(e) { alert('Failed to clear: ' + e.message); }
+}
+
 async function loadScores(){
   try{
     var record=await SGC._read();
@@ -1632,6 +1733,7 @@ async function saveEditedScores() {
 function onAdminLoad(){
   loadLocalSettings();
   loadScores();
+  loadSignups();
   loadCompetitions();
   loadProfanityList();
   loadAdminPrizes();

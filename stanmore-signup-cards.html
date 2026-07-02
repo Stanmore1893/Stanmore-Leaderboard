@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Signup QR Card · Stanmore Golf Club</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&family=Playfair+Display:wght@700;800;900&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Poppins',sans-serif;background:#f0ede4;padding:20px;color:#0f2347;}
+
+.controls{max-width:520px;margin:0 auto 20px;background:#fff;border-radius:12px;padding:16px;box-shadow:0 2px 12px rgba(0,0,0,.08);text-align:center;}
+.controls h1{font-size:1.1rem;font-weight:700;margin-bottom:8px;}
+.controls p{font-size:.82rem;color:#666;margin-bottom:12px;}
+.controls button{background:#0f2347;color:#f0c040;border:none;border-radius:8px;padding:10px 20px;font-family:'Poppins',sans-serif;font-weight:700;font-size:.88rem;cursor:pointer;}
+
+/* PRINTABLE CARDS - 2 per A4 landscape / 4 to a page portrait */
+.print-sheet{max-width:600px;margin:0 auto;display:grid;grid-template-columns:1fr 1fr;gap:15px;}
+
+.card{background:linear-gradient(160deg,#0f2347 0%,#1a3a6b 100%);color:#fff;border-radius:14px;padding:20px 18px;text-align:center;border:2px solid #d4a017;position:relative;overflow:hidden;aspect-ratio:1/1.35;display:flex;flex-direction:column;justify-content:space-between;}
+
+.card::before{content:'';position:absolute;top:-40px;right:-40px;width:120px;height:120px;background:radial-gradient(circle,rgba(212,160,23,.15),transparent 70%);pointer-events:none;}
+
+.card-crest{width:44px;height:44px;object-fit:contain;margin:0 auto 6px;display:block;}
+.card-club{font-size:.55rem;letter-spacing:.15em;text-transform:uppercase;color:rgba(212,160,23,.8);font-weight:600;margin-bottom:2px;}
+.card-est{font-size:.5rem;color:rgba(255,255,255,.4);margin-bottom:14px;}
+
+.card-hook{background:linear-gradient(135deg,#d4a017,#f0c040);color:#0f2347;font-size:.55rem;font-weight:800;letter-spacing:.12em;text-transform:uppercase;padding:4px 10px;border-radius:20px;display:inline-block;margin-bottom:10px;}
+
+.card-title{font-family:'Playfair Display',serif;font-size:1.15rem;font-weight:800;line-height:1.15;margin-bottom:8px;padding:0 8px;}
+.card-title span{color:#f0c040;font-style:italic;}
+.card-sub{font-size:.62rem;color:rgba(255,255,255,.7);line-height:1.4;padding:0 6px;margin-bottom:14px;}
+
+.qr-wrap{background:#fff;border-radius:10px;padding:10px;margin:0 auto;width:135px;height:135px;display:flex;align-items:center;justify-content:center;}
+.qr-wrap canvas,.qr-wrap img{width:115px!important;height:115px!important;}
+
+.card-scan{font-size:.58rem;font-weight:700;color:#f0c040;letter-spacing:.12em;text-transform:uppercase;margin-top:10px;}
+.card-url{font-size:.55rem;color:rgba(255,255,255,.45);margin-top:2px;font-family:monospace;}
+
+@media print {
+  body{background:#fff;padding:15px;}
+  .controls{display:none;}
+  .print-sheet{max-width:none;grid-template-columns:1fr 1fr;gap:12px;}
+  .card{break-inside:avoid;-webkit-print-color-adjust:exact;print-color-adjust:exact;}
+}
+</style>
+</head>
+<body>
+
+<div class="controls">
+  <h1>🖨️ Table Signup Cards</h1>
+  <p>Print this page then cut cards to place on tables. Each card has a QR code linking to the signup page.</p>
+  <button onclick="window.print()">Print Cards</button>
+</div>
+
+<div class="print-sheet">
+  <div class="card">
+    <div>
+      <img src="club-logo.png" alt="" class="card-crest">
+      <div class="card-club">Stanmore Golf Club</div>
+      <div class="card-est">Est. 1893</div>
+      <div class="card-hook">🏆 Monthly Draw</div>
+      <div class="card-title">Win a <span>Free Fourball</span></div>
+      <div class="card-sub">Scan to enter our monthly draw &amp; get exclusive member offers</div>
+    </div>
+    <div>
+      <div class="qr-wrap"><div id="qr1"></div></div>
+      <div class="card-scan">Scan with camera app</div>
+      <div class="card-url">stanmore-signup</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div>
+      <img src="club-logo.png" alt="" class="card-crest">
+      <div class="card-club">Stanmore Golf Club</div>
+      <div class="card-est">Est. 1893</div>
+      <div class="card-hook">🏆 Monthly Draw</div>
+      <div class="card-title">Win a <span>Free Fourball</span></div>
+      <div class="card-sub">Scan to enter our monthly draw &amp; get exclusive member offers</div>
+    </div>
+    <div>
+      <div class="qr-wrap"><div id="qr2"></div></div>
+      <div class="card-scan">Scan with camera app</div>
+      <div class="card-url">stanmore-signup</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div>
+      <img src="club-logo.png" alt="" class="card-crest">
+      <div class="card-club">Stanmore Golf Club</div>
+      <div class="card-est">Est. 1893</div>
+      <div class="card-hook">🏆 Monthly Draw</div>
+      <div class="card-title">Win a <span>Free Fourball</span></div>
+      <div class="card-sub">Scan to enter our monthly draw &amp; get exclusive member offers</div>
+    </div>
+    <div>
+      <div class="qr-wrap"><div id="qr3"></div></div>
+      <div class="card-scan">Scan with camera app</div>
+      <div class="card-url">stanmore-signup</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div>
+      <img src="club-logo.png" alt="" class="card-crest">
+      <div class="card-club">Stanmore Golf Club</div>
+      <div class="card-est">Est. 1893</div>
+      <div class="card-hook">🏆 Monthly Draw</div>
+      <div class="card-title">Win a <span>Free Fourball</span></div>
+      <div class="card-sub">Scan to enter our monthly draw &amp; get exclusive member offers</div>
+    </div>
+    <div>
+      <div class="qr-wrap"><div id="qr4"></div></div>
+      <div class="card-scan">Scan with camera app</div>
+      <div class="card-url">stanmore-signup</div>
+    </div>
+  </div>
+</div>
+
+<script>
+var URL_TARGET = 'https://stanmore1893.github.io/Stanmore-Leaderboard/stanmore-signup.html';
+
+window.addEventListener('load', function() {
+  ['qr1','qr2','qr3','qr4'].forEach(function(id) {
+    new QRCode(document.getElementById(id), {
+      text: URL_TARGET,
+      width: 115,
+      height: 115,
+      colorDark: '#0f2347',
+      colorLight: '#ffffff',
+      correctLevel: QRCode.CorrectLevel.M
+    });
+  });
+});
+</script>
+</body>
+</html>
