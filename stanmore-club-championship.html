@@ -61,9 +61,9 @@ body{font-family:'Poppins',sans-serif;background:linear-gradient(175deg,#060e1e,
 .match:active{transform:scale(.99);}
 .match.live{border-color:rgba(212,160,23,.5);background:rgba(212,160,23,.06);}
 .match.final{border-color:rgba(76,175,80,.3);background:rgba(76,175,80,.04);}
-.m-head{display:flex;justify-content:space-between;align-items:center;padding:7px 12px;background:rgba(0,0,0,.28);font-size:.6rem;color:rgba(255,255,255,.5);}
-.m-head .m-name{font-weight:700;letter-spacing:.06em;text-transform:uppercase;}
-.m-head .m-time{font-family:'DM Mono',monospace;}
+.m-head{display:flex;justify-content:space-between;align-items:center;padding:9px 12px;background:rgba(0,0,0,.32);font-size:.6rem;color:rgba(255,255,255,.5);gap:8px;flex-wrap:wrap;}
+.m-head .m-name{font-weight:700;letter-spacing:.08em;text-transform:uppercase;font-size:.68rem;color:rgba(240,192,64,.9);}
+.m-head .m-time{font-family:'DM Mono',monospace;font-size:.78rem;font-weight:700;color:#fff;letter-spacing:.02em;}
 .m-head .m-status{font-weight:700;letter-spacing:.1em;text-transform:uppercase;}
 .m-head .m-status.live{color:#f0c040;}
 .m-head .m-status.final{color:#8ee0b4;}
@@ -323,7 +323,14 @@ function openNav() { document.getElementById('sgcNavDrawer').style.transform='tr
 function closeNav() { document.getElementById('sgcNavDrawer').style.transform='translateX(100%)'; document.getElementById('sgcNavOverlay').style.display='none'; }
 
 // ── ADMIN ──
+var ADMIN_PASSWORD = 'stanmore1893';
+
 function toggleAdmin() {
+  if (!_isAdmin) {
+    var pw = prompt('Enter admin password:');
+    if (pw === null) return;
+    if (pw !== ADMIN_PASSWORD) { alert('Incorrect password'); return; }
+  }
   _isAdmin = !_isAdmin;
   document.getElementById('adminPanel').classList.toggle('show', _isAdmin);
   document.getElementById('adminToggle').classList.toggle('on', _isAdmin);
