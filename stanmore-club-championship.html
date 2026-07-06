@@ -181,19 +181,6 @@ body{font-family:'Poppins',sans-serif;background:linear-gradient(175deg,#060e1e,
 .mp-row .pscore{font-family:'DM Mono',monospace;font-size:.9rem;font-weight:700;color:#f0c040;}
 .mp-status{text-align:center;font-family:'DM Mono',monospace;font-size:1.1rem;font-weight:700;color:#ffe066;padding:8px 0;letter-spacing:.05em;}
 
-.hole-grid{display:grid;grid-template-columns:repeat(9,1fr);gap:4px;margin-bottom:16px;}
-.hole-cell{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);border-radius:6px;padding:6px 2px;text-align:center;font-size:.62rem;}
-.hole-cell .hno{color:rgba(255,255,255,.35);font-weight:700;font-size:.55rem;margin-bottom:2px;}
-.hole-cell .hres{font-family:'DM Mono',monospace;font-weight:800;font-size:.85rem;color:#fff;}
-.hole-cell.won-a{background:rgba(76,175,80,.15);border-color:rgba(76,175,80,.35);}
-.hole-cell.won-a .hres{color:#8ee0b4;}
-.hole-cell.won-b{background:rgba(240,192,64,.12);border-color:rgba(240,192,64,.3);}
-.hole-cell.won-b .hres{color:#ffe066;}
-.hole-cell.halved{background:rgba(255,255,255,.04);}
-.hole-cell.halved .hres{color:rgba(255,255,255,.5);}
-.legend{display:flex;justify-content:center;gap:14px;font-size:.6rem;color:rgba(255,255,255,.5);margin-bottom:12px;}
-.legend .lg-item{display:flex;align-items:center;gap:5px;}
-.legend .lg-dot{width:10px;height:10px;border-radius:3px;}
 
 /* ── ADMIN CONTROLS ── */
 .admin-toggle{margin:16px 14px 0;text-align:center;}
@@ -384,13 +371,7 @@ body{font-family:'Poppins',sans-serif;background:linear-gradient(175deg,#060e1e,
     <div class="mp-players" id="modalPlayers"></div>
     <div class="mp-status" id="modalStatus">All Square</div>
 
-    <div style="font-size:.65rem;font-weight:700;letter-spacing:.14em;color:rgba(255,255,255,.5);text-transform:uppercase;margin:14px 0 8px;">Hole-by-Hole</div>
-    <div class="legend">
-      <div class="lg-item"><div class="lg-dot" style="background:rgba(76,175,80,.5);"></div>Top wins</div>
-      <div class="lg-item"><div class="lg-dot" style="background:rgba(240,192,64,.5);"></div>Bottom wins</div>
-      <div class="lg-item"><div class="lg-dot" style="background:rgba(255,255,255,.15);"></div>Halved</div>
-    </div>
-    <div id="modalHoles"></div>
+
   </div>
 </div>
 
@@ -749,9 +730,6 @@ function openModal(m) {
     statusEl.textContent = 'Yet to start';
     statusEl.style.color = 'rgba(255,255,255,.5)';
   }
-
-  // Hole-by-hole placeholder
-  document.getElementById('modalHoles').innerHTML = '<div style="text-align:center;color:rgba(255,255,255,.3);font-size:.8rem;padding:16px;font-style:italic;">Hole-by-hole details will appear as scores are entered</div>';
 
   document.getElementById('matchModal').classList.add('show');
 }
