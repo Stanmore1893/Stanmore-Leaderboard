@@ -88,18 +88,18 @@ body{font-family:'Poppins',sans-serif;background:#f0ede4;padding:24px 16px;color
 .a6 .card-tag{font-size:.6rem;margin-top:3px;}
 
 /* ── A5 CARDS (148 x 210mm = half A4 landscape) — laminate friendly ── */
-.a5{width:140mm;height:200mm;padding:14mm 14mm 16mm;justify-content:space-between;}
-.a5 .crest-wrap{width:110px;height:110px;margin-bottom:16px;border-width:2.5px;}
-.a5 .crest-wrap img{width:88px;height:88px;}
-.a5 .card-club{font-size:1.4rem;font-weight:700;color:#f0c040;letter-spacing:.04em;font-style:normal;font-family:'Playfair Display',serif;margin-bottom:6px;}
-.a5 .card-est{font-size:.75rem;color:rgba(212,160,23,.7);letter-spacing:.24em;text-transform:uppercase;font-weight:600;margin-bottom:26px;}
-.a5 .hook-badge{font-size:.7rem;padding:6px 16px;margin-bottom:14px;}
-.a5 .card-title{font-size:1.85rem;margin-bottom:12px;}
-.a5 .card-sub{font-size:.92rem;line-height:1.5;margin-bottom:20px;padding:0 10px;}
-.a5 .qr-frame{padding:12px;}
-.a5 .qr-frame > div canvas,.a5 .qr-frame > div img{width:200px!important;height:200px!important;}
-.a5 .scan-lbl{font-size:.75rem;margin-top:14px;letter-spacing:.14em;}
-.a5 .card-tag{font-size:.7rem;margin-top:4px;}
+.a5{width:132mm;height:195mm;padding:10mm 12mm 12mm;justify-content:space-between;overflow:hidden;}
+.a5 .crest-wrap{width:88px;height:88px;margin-bottom:10px;border-width:2px;}
+.a5 .crest-wrap img{width:70px;height:70px;}
+.a5 .card-club{font-size:1.15rem;font-weight:700;color:#f0c040;letter-spacing:.04em;font-style:normal;font-family:'Playfair Display',serif;margin-bottom:4px;}
+.a5 .card-est{font-size:.62rem;color:rgba(212,160,23,.7);letter-spacing:.24em;text-transform:uppercase;font-weight:600;margin-bottom:16px;}
+.a5 .hook-badge{font-size:.6rem;padding:4px 12px;margin-bottom:10px;}
+.a5 .card-title{font-size:1.5rem;margin-bottom:8px;line-height:1.2;}
+.a5 .card-sub{font-size:.78rem;line-height:1.5;margin-bottom:14px;padding:0 6px;}
+.a5 .qr-frame{padding:9px;}
+.a5 .qr-frame > div canvas,.a5 .qr-frame > div img{width:160px!important;height:160px!important;}
+.a5 .scan-lbl{font-size:.62rem;margin-top:10px;letter-spacing:.14em;}
+.a5 .card-tag{font-size:.58rem;margin-top:3px;}
 
 /* SIZE PREVIEW HIDDEN */
 .hidden{display:none;}
@@ -114,8 +114,10 @@ body{font-family:'Poppins',sans-serif;background:#f0ede4;padding:24px 16px;color
   /* Only show active size when printing */
   .section:not(.print-me){display:none;}
   /* A5 landscape - force side by side */
-  body.print-landscape .cards-row{flex-direction:row;flex-wrap:nowrap;justify-content:center;align-items:center;height:100vh;gap:6mm;}
-  body.print-landscape .card.a5{margin:0;flex-shrink:0;}
+  body.print-landscape{width:297mm;height:210mm;overflow:hidden;}
+  body.print-landscape .section{width:297mm;height:210mm;display:flex;align-items:center;justify-content:center;}
+  body.print-landscape .cards-row{flex-direction:row;flex-wrap:nowrap;justify-content:center;align-items:center;gap:5mm;margin:0;padding:0;}
+  body.print-landscape .card.a5{margin:0;flex-shrink:0;page-break-inside:avoid;page-break-after:avoid;}
 }
 </style>
 </head>
