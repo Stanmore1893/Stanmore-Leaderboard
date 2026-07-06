@@ -66,6 +66,14 @@ body{font-family:'Poppins',sans-serif;background:linear-gradient(175deg,#060e1e,
 .footer-credit{text-align:center;padding:24px 14px 0;font-size:.68rem;color:rgba(212,160,23,.4);}
 
 .error{background:rgba(192,57,43,.15);border:1px solid rgba(192,57,43,.4);color:#e87878;border-radius:8px;padding:10px 14px;font-size:.82rem;margin-top:12px;display:none;}
+
+/* Updated hero styling */
+.hero-crest{width:70px;height:70px;object-fit:contain;margin:0 auto 10px;display:block;filter:drop-shadow(0 3px 8px rgba(0,0,0,.4));}
+.hero-club-name{font-family:'Playfair Display',serif;font-size:1.1rem;font-weight:700;color:#f0c040;letter-spacing:.02em;text-shadow:0 2px 6px rgba(0,0,0,.35);margin-bottom:4px;}
+.hero-est{display:flex;align-items:center;justify-content:center;gap:8px;font-size:.6rem;color:rgba(212,160,23,.75);letter-spacing:.3em;text-transform:uppercase;font-weight:600;margin-bottom:22px;}
+.hero-est::before,.hero-est::after{content:'';height:1px;width:22px;background:rgba(212,160,23,.45);}
+.hero h1 em{color:#f0c040;font-style:italic;font-weight:900;}
+.hero .prize-icon{display:none;}
 </style>
 </head>
 <body>
@@ -81,15 +89,17 @@ body{font-family:'Poppins',sans-serif;background:linear-gradient(175deg,#060e1e,
 <!-- FORM VIEW -->
 <div id="formView">
   <div class="hero">
-    <div class="prize-icon">🏆</div>
-    <h1>Win a Free Fourball at Stanmore</h1>
-    <p class="sub">Enter our <span class="highlight">monthly prize draw</span> plus receive exclusive offers, event news, and members-only discounts — straight to your inbox.</p>
+    <img src="club-logo.png" alt="Stanmore Golf Club" class="hero-crest">
+    <div class="hero-club-name">Stanmore Golf Club</div>
+    <div class="hero-est">Est. 1893</div>
+    <h1>Stay in Touch with <em>Stanmore</em></h1>
+    <p class="sub">Join our mailing list for exclusive member offers, event news and to be in with a chance to win a free fourball.</p>
   </div>
 
   <div class="card">
     <div class="card-head">
       <div class="card-head-title">Sign Up · Takes 30 seconds</div>
-      <div class="card-head-sub">Two fields — no phone number, no address, no fuss</div>
+      <div class="card-head-sub">Just your name and email — that's it</div>
     </div>
 
     <div class="field">
