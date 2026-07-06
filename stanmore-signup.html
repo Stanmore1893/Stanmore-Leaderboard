@@ -74,6 +74,19 @@ body{font-family:'Poppins',sans-serif;background:linear-gradient(175deg,#060e1e,
 .hero-est::before,.hero-est::after{content:'';height:1px;width:22px;background:rgba(212,160,23,.45);}
 .hero h1 em{color:#f0c040;font-style:italic;font-weight:900;}
 .hero .prize-icon{display:none;}
+
+/* Redesigned success screen */
+.success{padding:30px 24px 40px;text-align:center;}
+.success-crest{width:66px;height:66px;object-fit:contain;margin:0 auto 14px;display:block;filter:drop-shadow(0 3px 8px rgba(0,0,0,.4));}
+.success-tick{width:74px;height:74px;border-radius:50%;background:linear-gradient(135deg,#4caf50,#66bb6a);color:#fff;font-size:2.4rem;font-weight:800;display:flex;align-items:center;justify-content:center;margin:0 auto 20px;box-shadow:0 6px 24px rgba(76,175,80,.35);border:3px solid rgba(255,255,255,.15);}
+.success h2{font-family:'Playfair Display',serif;font-size:1.6rem;font-weight:700;color:#fff;line-height:1.2;margin-bottom:6px;letter-spacing:.01em;}
+.success-lead{font-size:1rem;color:#f0c040;font-weight:600;margin-bottom:16px;letter-spacing:.02em;}
+.success-body{font-size:.9rem;color:rgba(255,255,255,.75);line-height:1.6;margin:0 auto 22px;max-width:400px;padding:0 8px;}
+.success-badge{display:flex;align-items:center;gap:14px;background:linear-gradient(135deg,rgba(212,160,23,.15),rgba(212,160,23,.08));border:1.5px solid rgba(212,160,23,.35);border-radius:14px;padding:14px 18px;max-width:400px;margin:0 auto 24px;text-align:left;}
+.success-badge-icon{font-size:1.8rem;flex-shrink:0;}
+.success-badge-title{font-size:.9rem;font-weight:700;color:#ffe066;margin-bottom:3px;}
+.success-badge-sub{font-size:.75rem;color:rgba(255,255,255,.7);line-height:1.4;}
+.success-footer{font-size:.72rem;color:rgba(212,160,23,.55);font-style:italic;letter-spacing:.05em;padding-top:6px;}
 </style>
 </head>
 <body>
@@ -133,11 +146,19 @@ body{font-family:'Poppins',sans-serif;background:linear-gradient(175deg,#060e1e,
 
 <!-- SUCCESS VIEW -->
 <div class="success" id="successView">
-  <div class="tick">✅</div>
-  <h2>You're in the draw!</h2>
-  <p>Thanks for signing up, <strong id="successName" style="color:#ffe066;"></strong>.</p>
-  <p>You've been added to our mailing list and entered into this month's free fourball prize draw. Winner drawn on the last Sunday of every month.</p>
-  <div class="next">Best of luck ⛳</div>
+  <img src="club-logo.png" alt="Stanmore Golf Club" class="success-crest">
+  <div class="success-tick">✓</div>
+  <h2>Thank you, <span id="successName" style="color:#f0c040;"></span></h2>
+  <div class="success-lead">You're all signed up.</div>
+  <p class="success-body">You'll now be kept up to date with the latest news, exclusive member offers and events from Stanmore Golf Club — straight to your inbox.</p>
+  <div class="success-badge">
+    <span class="success-badge-icon">🏆</span>
+    <div>
+      <div class="success-badge-title">You're in the Draw</div>
+      <div class="success-badge-sub">Entered to be in with a chance to win a round for 4</div>
+    </div>
+  </div>
+  <div class="success-footer">See you on the course ⛳</div>
 </div>
 
 <div class="footer-credit">Designed &amp; built by <strong style="color:rgba(212,160,23,.6);">Alex Persaud · PGA Professional</strong></div>
