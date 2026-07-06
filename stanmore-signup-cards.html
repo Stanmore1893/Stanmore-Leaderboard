@@ -87,12 +87,28 @@ body{font-family:'Poppins',sans-serif;background:#f0ede4;padding:24px 16px;color
 .a6 .scan-lbl{font-size:.65rem;margin-top:12px;}
 .a6 .card-tag{font-size:.6rem;margin-top:3px;}
 
+/* ── A5 CARDS (148 x 210mm = half A4 landscape) — laminate friendly ── */
+.a5{width:148mm;height:210mm;padding:18mm 20mm 22mm;justify-content:space-between;}
+.a5 .crest-wrap{width:110px;height:110px;margin-bottom:16px;border-width:2.5px;}
+.a5 .crest-wrap img{width:88px;height:88px;}
+.a5 .card-club{font-size:1.4rem;font-weight:700;color:#f0c040;letter-spacing:.04em;font-style:normal;font-family:'Playfair Display',serif;margin-bottom:6px;}
+.a5 .card-est{font-size:.75rem;color:rgba(212,160,23,.7);letter-spacing:.24em;text-transform:uppercase;font-weight:600;margin-bottom:26px;}
+.a5 .hook-badge{font-size:.7rem;padding:6px 16px;margin-bottom:14px;}
+.a5 .card-title{font-size:1.85rem;margin-bottom:12px;}
+.a5 .card-sub{font-size:.92rem;line-height:1.5;margin-bottom:20px;padding:0 10px;}
+.a5 .qr-frame{padding:12px;}
+.a5 .qr-frame > div canvas,.a5 .qr-frame > div img{width:200px!important;height:200px!important;}
+.a5 .scan-lbl{font-size:.75rem;margin-top:14px;letter-spacing:.14em;}
+.a5 .card-tag{font-size:.7rem;margin-top:4px;}
+
 /* SIZE PREVIEW HIDDEN */
 .hidden{display:none;}
 
 /* PRINT */
 @media print {
   body{background:#fff;padding:8mm;}
+  body.print-landscape{padding:5mm;}
+  @page { size: auto; margin: 8mm; }
   .controls,.section-lbl{display:none;}
   .section{margin:0 auto;page-break-inside:avoid;}
   .cards-row{gap:8mm;justify-content:flex-start;}
@@ -111,6 +127,7 @@ body{font-family:'Poppins',sans-serif;background:#f0ede4;padding:24px 16px;color
     <div class="stab active" data-size="biz" onclick="pickSize(this)">Business Card</div>
     <div class="stab" data-size="tent" onclick="pickSize(this)">Tent Card</div>
     <div class="stab" data-size="a6" onclick="pickSize(this)">A6 Postcard</div>
+    <div class="stab" data-size="a5" onclick="pickSize(this)">A5 (2 per A4)</div>
   </div>
   <button onclick="window.print()">Print Selected Size</button>
 </div>
@@ -156,6 +173,15 @@ body{font-family:'Poppins',sans-serif;background:#f0ede4;padding:24px 16px;color
   </div>
 </div>
 
+<!-- ── A5 CARDS (148 x 210mm) — 2 per A4 landscape · laminate friendly ── -->
+<div class="section" id="section-a5">
+  <div class="section-lbl">A5 Card · 148 × 210 mm · 2 per A4 landscape · laminate friendly</div>
+  <div class="cards-row">
+    <div class="card a5"><div><div class="crest-wrap"><img src="club-logo.png" alt=""></div><div class="card-club">Stanmore Golf Club</div><div class="card-est">Est. 1893</div><div class="hook-badge">🏆 Monthly Prize Draw</div><div class="card-title">Stay in Touch with <span>Stanmore</span></div><div class="card-sub">Join our mailing list for exclusive member offers, event news &amp; a chance to win a free fourball every month.</div></div><div><div class="qr-frame"><div id="qr-a5-1"></div></div><div class="scan-lbl">Scan with camera</div><div class="card-tag">stanmore-signup</div></div></div>
+    <div class="card a5"><div><div class="crest-wrap"><img src="club-logo.png" alt=""></div><div class="card-club">Stanmore Golf Club</div><div class="card-est">Est. 1893</div><div class="hook-badge">🏆 Monthly Prize Draw</div><div class="card-title">Stay in Touch with <span>Stanmore</span></div><div class="card-sub">Join our mailing list for exclusive member offers, event news &amp; a chance to win a free fourball every month.</div></div><div><div class="qr-frame"><div id="qr-a5-2"></div></div><div class="scan-lbl">Scan with camera</div><div class="card-tag">stanmore-signup</div></div></div>
+  </div>
+</div>
+
 <script>
 var URL_TARGET = 'https://stanmore1893.github.io/Stanmore-Leaderboard/stanmore-signup.html';
 
@@ -165,11 +191,20 @@ function pickSize(el) {
   var size = el.dataset.size;
   document.querySelectorAll('.section').forEach(function(s){ s.classList.remove('print-me'); });
   document.getElementById('section-'+size).classList.add('print-me');
+  // A5 prints landscape, others portrait
+  document.body.classList.toggle('print-landscape', size === 'a5');
+  // Set @page orientation via dynamic stylesheet
+  var existingStyle = document.getElementById('dynPageStyle');
+  if (existingStyle) existingStyle.remove();
+  var s = document.createElement('style');
+  s.id = 'dynPageStyle';
+  s.textContent = size === 'a5' ? '@page { size: A4 landscape; margin: 8mm; }' : '@page { size: A4 portrait; margin: 8mm; }';
+  document.head.appendChild(s);
 }
 
 window.addEventListener('load', function() {
   // Generate QR codes for all sizes at once
-  var sizes = { biz: { count: 10, px: 80 }, tent: { count: 6, px: 90 }, a6: { count: 4, px: 160 } };
+  var sizes = { biz: { count: 10, px: 80 }, tent: { count: 6, px: 90 }, a6: { count: 4, px: 160 }, a5: { count: 2, px: 200 } };
   Object.keys(sizes).forEach(function(key) {
     for (var i = 1; i <= sizes[key].count; i++) {
       var el = document.getElementById('qr-'+key+'-'+i);
