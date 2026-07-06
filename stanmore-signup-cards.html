@@ -88,7 +88,7 @@ body{font-family:'Poppins',sans-serif;background:#f0ede4;padding:24px 16px;color
 .a6 .card-tag{font-size:.6rem;margin-top:3px;}
 
 /* ── A5 CARDS (148 x 210mm = half A4 landscape) — laminate friendly ── */
-.a5{width:148mm;height:210mm;padding:18mm 20mm 22mm;justify-content:space-between;}
+.a5{width:140mm;height:200mm;padding:14mm 14mm 16mm;justify-content:space-between;}
 .a5 .crest-wrap{width:110px;height:110px;margin-bottom:16px;border-width:2.5px;}
 .a5 .crest-wrap img{width:88px;height:88px;}
 .a5 .card-club{font-size:1.4rem;font-weight:700;color:#f0c040;letter-spacing:.04em;font-style:normal;font-family:'Playfair Display',serif;margin-bottom:6px;}
@@ -106,15 +106,16 @@ body{font-family:'Poppins',sans-serif;background:#f0ede4;padding:24px 16px;color
 
 /* PRINT */
 @media print {
-  body{background:#fff;padding:8mm;}
-  body.print-landscape{padding:5mm;}
-  @page { size: auto; margin: 8mm; }
+  body{background:#fff;padding:0;margin:0;}
   .controls,.section-lbl{display:none;}
-  .section{margin:0 auto;page-break-inside:avoid;}
-  .cards-row{gap:8mm;justify-content:flex-start;}
-  .card{break-inside:avoid;-webkit-print-color-adjust:exact;print-color-adjust:exact;}
+  .section{margin:0;padding:0;page-break-inside:avoid;}
+  .cards-row{gap:4mm;justify-content:center;align-items:center;flex-wrap:nowrap;padding:0;margin:0;}
+  .card{break-inside:avoid;-webkit-print-color-adjust:exact;print-color-adjust:exact;box-shadow:none;}
   /* Only show active size when printing */
   .section:not(.print-me){display:none;}
+  /* A5 landscape - force side by side */
+  body.print-landscape .cards-row{flex-direction:row;flex-wrap:nowrap;justify-content:center;align-items:center;height:100vh;gap:6mm;}
+  body.print-landscape .card.a5{margin:0;flex-shrink:0;}
 }
 </style>
 </head>
