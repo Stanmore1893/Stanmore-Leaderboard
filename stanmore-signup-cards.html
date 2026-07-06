@@ -3,137 +3,185 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Signup QR Card · Stanmore Golf Club</title>
+<title>Signup Cards · Stanmore Golf Club</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&family=Playfair+Display:wght@700;800;900&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&family=Playfair+Display:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 <style>
 *{box-sizing:border-box;margin:0;padding:0;}
-body{font-family:'Poppins',sans-serif;background:#f0ede4;padding:20px;color:#0f2347;}
+body{font-family:'Poppins',sans-serif;background:#f0ede4;padding:24px 16px;color:#0f2347;}
 
-.controls{max-width:520px;margin:0 auto 20px;background:#fff;border-radius:12px;padding:16px;box-shadow:0 2px 12px rgba(0,0,0,.08);text-align:center;}
-.controls h1{font-size:1.1rem;font-weight:700;margin-bottom:8px;}
-.controls p{font-size:.82rem;color:#666;margin-bottom:12px;}
-.controls button{background:#0f2347;color:#f0c040;border:none;border-radius:8px;padding:10px 20px;font-family:'Poppins',sans-serif;font-weight:700;font-size:.88rem;cursor:pointer;}
+/* CONTROLS */
+.controls{max-width:640px;margin:0 auto 24px;background:#fff;border-radius:14px;padding:20px;box-shadow:0 2px 16px rgba(0,0,0,.08);text-align:center;}
+.controls h1{font-size:1.2rem;font-weight:700;margin-bottom:6px;}
+.controls p{font-size:.85rem;color:#666;margin-bottom:14px;line-height:1.5;}
+.controls .size-tabs{display:flex;gap:6px;margin-bottom:14px;background:#f5f2ec;border-radius:10px;padding:5px;}
+.controls .stab{flex:1;padding:9px 6px;border-radius:7px;font-size:.78rem;font-weight:700;text-align:center;cursor:pointer;color:#666;transition:all .2s;}
+.controls .stab.active{background:#0f2347;color:#f0c040;}
+.controls button{background:#0f2347;color:#f0c040;border:none;border-radius:8px;padding:11px 22px;font-family:'Poppins',sans-serif;font-weight:700;font-size:.88rem;cursor:pointer;}
 
-/* PRINTABLE CARDS - 2 per A4 landscape / 4 to a page portrait */
-.print-sheet{max-width:600px;margin:0 auto;display:grid;grid-template-columns:1fr 1fr;gap:15px;}
+/* SECTIONS */
+.section{max-width:800px;margin:0 auto 40px;}
+.section-lbl{font-size:.68rem;font-weight:700;color:#888;letter-spacing:.14em;text-transform:uppercase;margin-bottom:12px;text-align:center;}
 
-.card{background:linear-gradient(160deg,#0f2347 0%,#1a3a6b 100%);color:#fff;border-radius:14px;padding:20px 18px;text-align:center;border:2px solid #d4a017;position:relative;overflow:hidden;aspect-ratio:1/1.35;display:flex;flex-direction:column;justify-content:space-between;}
+.cards-row{display:flex;flex-wrap:wrap;justify-content:center;gap:16px;}
 
-.card::before{content:'';position:absolute;top:-40px;right:-40px;width:120px;height:120px;background:radial-gradient(circle,rgba(212,160,23,.15),transparent 70%);pointer-events:none;}
+/* ── BASE CARD ── */
+.card{background:linear-gradient(180deg,rgba(15,35,71,.55),rgba(15,35,71,.85)),url('clubhouse-hero.jpg') center/cover no-repeat;color:#fff;border-radius:12px;padding:16px 14px;text-align:center;border:1.5px solid rgba(212,160,23,.5);position:relative;overflow:hidden;display:flex;flex-direction:column;justify-content:space-between;box-shadow:0 4px 20px rgba(0,0,0,.15);}
+.card::after{content:'';position:absolute;inset:0;border-radius:12px;box-shadow:inset 0 1px 0 rgba(255,255,255,.12);pointer-events:none;}
 
-.card-crest{width:44px;height:44px;object-fit:contain;margin:0 auto 6px;display:block;}
-.card-club{font-size:.55rem;letter-spacing:.15em;text-transform:uppercase;color:rgba(212,160,23,.8);font-weight:600;margin-bottom:2px;}
-.card-est{font-size:.5rem;color:rgba(255,255,255,.4);margin-bottom:14px;}
+.crest-wrap{background:rgba(255,255,255,.12);border:1.5px solid rgba(212,160,23,.4);width:44px;height:44px;border-radius:50%;margin:0 auto 8px;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(4px);}
+.crest-wrap img{width:32px;height:32px;object-fit:contain;}
 
-.card-hook{background:linear-gradient(135deg,#d4a017,#f0c040);color:#0f2347;font-size:.55rem;font-weight:800;letter-spacing:.12em;text-transform:uppercase;padding:4px 10px;border-radius:20px;display:inline-block;margin-bottom:10px;}
+.card-club{font-family:'Playfair Display',serif;font-size:.68rem;font-style:italic;color:rgba(212,160,23,.9);letter-spacing:.06em;margin-bottom:12px;}
 
-.card-title{font-family:'Playfair Display',serif;font-size:1.15rem;font-weight:800;line-height:1.15;margin-bottom:8px;padding:0 8px;}
-.card-title span{color:#f0c040;font-style:italic;}
-.card-sub{font-size:.62rem;color:rgba(255,255,255,.7);line-height:1.4;padding:0 6px;margin-bottom:14px;}
+.hook-badge{display:inline-block;background:linear-gradient(135deg,#d4a017,#f0c040);color:#0f2347;font-size:.5rem;font-weight:800;letter-spacing:.14em;text-transform:uppercase;padding:3px 9px;border-radius:20px;margin-bottom:8px;}
 
-.qr-wrap{background:#fff;border-radius:10px;padding:10px;margin:0 auto;width:135px;height:135px;display:flex;align-items:center;justify-content:center;}
-.qr-wrap canvas,.qr-wrap img{width:115px!important;height:115px!important;}
+.card-title{font-family:'Playfair Display',serif;font-size:1rem;font-weight:700;line-height:1.15;margin-bottom:5px;}
+.card-title span{color:#f0c040;font-style:italic;font-weight:800;}
+.card-sub{font-size:.62rem;color:rgba(255,255,255,.75);line-height:1.4;padding:0 4px;margin-bottom:10px;}
 
-.card-scan{font-size:.58rem;font-weight:700;color:#f0c040;letter-spacing:.12em;text-transform:uppercase;margin-top:10px;}
-.card-url{font-size:.55rem;color:rgba(255,255,255,.45);margin-top:2px;font-family:monospace;}
+.qr-frame{background:#fff;border-radius:8px;padding:7px;margin:0 auto;display:inline-block;box-shadow:0 3px 12px rgba(0,0,0,.25);}
+.qr-frame > div{display:flex;align-items:center;justify-content:center;}
 
+.scan-lbl{font-size:.52rem;font-weight:700;color:#f0c040;letter-spacing:.16em;text-transform:uppercase;margin-top:8px;}
+.card-tag{font-size:.5rem;color:rgba(255,255,255,.5);font-family:monospace;margin-top:2px;}
+
+/* ── BUSINESS CARD (85 x 55 mm) ── */
+.biz{width:85mm;height:55mm;flex-direction:row!important;padding:11px 12px;text-align:left;gap:12px;align-items:center;}
+.biz .content-left{flex:1;display:flex;flex-direction:column;justify-content:center;}
+.biz .crest-wrap{width:36px;height:36px;margin:0 0 6px 0;}
+.biz .crest-wrap img{width:26px;height:26px;}
+.biz .card-club{font-size:.6rem;margin-bottom:8px;}
+.biz .hook-badge{align-self:flex-start;font-size:.46rem;padding:2px 7px;margin-bottom:5px;}
+.biz .card-title{font-size:.85rem;margin-bottom:4px;}
+.biz .card-sub{font-size:.56rem;padding:0;margin-bottom:0;line-height:1.35;}
+.biz .qr-side{display:flex;flex-direction:column;align-items:center;}
+.biz .qr-frame{padding:5px;}
+.biz .qr-frame > div canvas,.biz .qr-frame > div img{width:80px!important;height:80px!important;}
+.biz .scan-lbl{font-size:.46rem;margin-top:5px;letter-spacing:.12em;}
+
+/* ── TENT CARD (90 x 120 mm folded — printed as 90 x 60 mm section) ── */
+.tent{width:90mm;height:60mm;padding:9px 14px;flex-direction:row!important;text-align:left;gap:10px;align-items:center;}
+.tent .content-left{flex:1;}
+.tent .crest-wrap{width:34px;height:34px;margin:0 0 6px 0;}
+.tent .crest-wrap img{width:24px;height:24px;}
+.tent .card-club{font-size:.58rem;margin-bottom:6px;}
+.tent .hook-badge{display:inline-block;font-size:.44rem;padding:2px 7px;margin-bottom:4px;}
+.tent .card-title{font-size:.9rem;margin-bottom:3px;}
+.tent .card-sub{font-size:.55rem;padding:0;margin-bottom:0;line-height:1.35;}
+.tent .qr-frame{padding:5px;}
+.tent .qr-frame > div canvas,.tent .qr-frame > div img{width:90px!important;height:90px!important;}
+.tent .scan-lbl{font-size:.44rem;margin-top:5px;letter-spacing:.12em;}
+
+/* ── A6 POSTCARD (105 x 148 mm) ── */
+.a6{width:105mm;height:148mm;padding:18px 20px;}
+.a6 .crest-wrap{width:56px;height:56px;margin-bottom:12px;}
+.a6 .crest-wrap img{width:42px;height:42px;}
+.a6 .card-club{font-size:.85rem;margin-bottom:20px;}
+.a6 .hook-badge{font-size:.58rem;padding:5px 12px;margin-bottom:12px;}
+.a6 .card-title{font-size:1.5rem;margin-bottom:8px;}
+.a6 .card-sub{font-size:.78rem;line-height:1.5;margin-bottom:16px;padding:0 8px;}
+.a6 .qr-frame{padding:10px;}
+.a6 .qr-frame > div canvas,.a6 .qr-frame > div img{width:160px!important;height:160px!important;}
+.a6 .scan-lbl{font-size:.65rem;margin-top:12px;}
+.a6 .card-tag{font-size:.6rem;margin-top:3px;}
+
+/* SIZE PREVIEW HIDDEN */
+.hidden{display:none;}
+
+/* PRINT */
 @media print {
-  body{background:#fff;padding:15px;}
-  .controls{display:none;}
-  .print-sheet{max-width:none;grid-template-columns:1fr 1fr;gap:12px;}
+  body{background:#fff;padding:8mm;}
+  .controls,.section-lbl{display:none;}
+  .section{margin:0 auto;page-break-inside:avoid;}
+  .cards-row{gap:8mm;justify-content:flex-start;}
   .card{break-inside:avoid;-webkit-print-color-adjust:exact;print-color-adjust:exact;}
+  /* Only show active size when printing */
+  .section:not(.print-me){display:none;}
 }
 </style>
 </head>
 <body>
 
 <div class="controls">
-  <h1>🖨️ Table Signup Cards</h1>
-  <p>Print this page then cut cards to place on tables. Each card has a QR code linking to the signup page.</p>
-  <button onclick="window.print()">Print Cards</button>
+  <h1>🖨️ Stanmore Signup Cards</h1>
+  <p>Choose a size below, then print. Only the selected size will be printed.</p>
+  <div class="size-tabs">
+    <div class="stab active" data-size="biz" onclick="pickSize(this)">Business Card</div>
+    <div class="stab" data-size="tent" onclick="pickSize(this)">Tent Card</div>
+    <div class="stab" data-size="a6" onclick="pickSize(this)">A6 Postcard</div>
+  </div>
+  <button onclick="window.print()">Print Selected Size</button>
 </div>
 
-<div class="print-sheet">
-  <div class="card">
-    <div>
-      <img src="club-logo.png" alt="" class="card-crest">
-      <div class="card-club">Stanmore Golf Club</div>
-      <div class="card-est">Est. 1893</div>
-      <div class="card-hook">🏆 Monthly Draw</div>
-      <div class="card-title">Win a <span>Free Fourball</span></div>
-      <div class="card-sub">Scan to enter our monthly draw &amp; get exclusive member offers</div>
-    </div>
-    <div>
-      <div class="qr-wrap"><div id="qr1"></div></div>
-      <div class="card-scan">Scan with camera app</div>
-      <div class="card-url">stanmore-signup</div>
-    </div>
+<!-- ── BUSINESS CARDS (85 x 55 mm) — 10 per A4 ── -->
+<div class="section print-me" id="section-biz">
+  <div class="section-lbl">Business Card · 85 × 55 mm · 10 per A4</div>
+  <div class="cards-row">
+    <div class="card biz"><div class="content-left"><div class="crest-wrap"><img src="club-logo.png" alt=""></div><div class="card-club">Stanmore Golf Club</div><div class="hook-badge">🏆 Monthly Draw</div><div class="card-title">Stay in Touch with <span>Stanmore</span></div><div class="card-sub">Exclusive offers &amp; a chance to win a free fourball each month</div></div><div class="qr-side"><div class="qr-frame"><div id="qr-biz-1"></div></div><div class="scan-lbl">Scan to join</div></div></div>
+    <div class="card biz"><div class="content-left"><div class="crest-wrap"><img src="club-logo.png" alt=""></div><div class="card-club">Stanmore Golf Club</div><div class="hook-badge">🏆 Monthly Draw</div><div class="card-title">Stay in Touch with <span>Stanmore</span></div><div class="card-sub">Exclusive offers &amp; a chance to win a free fourball each month</div></div><div class="qr-side"><div class="qr-frame"><div id="qr-biz-2"></div></div><div class="scan-lbl">Scan to join</div></div></div>
+    <div class="card biz"><div class="content-left"><div class="crest-wrap"><img src="club-logo.png" alt=""></div><div class="card-club">Stanmore Golf Club</div><div class="hook-badge">🏆 Monthly Draw</div><div class="card-title">Stay in Touch with <span>Stanmore</span></div><div class="card-sub">Exclusive offers &amp; a chance to win a free fourball each month</div></div><div class="qr-side"><div class="qr-frame"><div id="qr-biz-3"></div></div><div class="scan-lbl">Scan to join</div></div></div>
+    <div class="card biz"><div class="content-left"><div class="crest-wrap"><img src="club-logo.png" alt=""></div><div class="card-club">Stanmore Golf Club</div><div class="hook-badge">🏆 Monthly Draw</div><div class="card-title">Stay in Touch with <span>Stanmore</span></div><div class="card-sub">Exclusive offers &amp; a chance to win a free fourball each month</div></div><div class="qr-side"><div class="qr-frame"><div id="qr-biz-4"></div></div><div class="scan-lbl">Scan to join</div></div></div>
+    <div class="card biz"><div class="content-left"><div class="crest-wrap"><img src="club-logo.png" alt=""></div><div class="card-club">Stanmore Golf Club</div><div class="hook-badge">🏆 Monthly Draw</div><div class="card-title">Stay in Touch with <span>Stanmore</span></div><div class="card-sub">Exclusive offers &amp; a chance to win a free fourball each month</div></div><div class="qr-side"><div class="qr-frame"><div id="qr-biz-5"></div></div><div class="scan-lbl">Scan to join</div></div></div>
+    <div class="card biz"><div class="content-left"><div class="crest-wrap"><img src="club-logo.png" alt=""></div><div class="card-club">Stanmore Golf Club</div><div class="hook-badge">🏆 Monthly Draw</div><div class="card-title">Stay in Touch with <span>Stanmore</span></div><div class="card-sub">Exclusive offers &amp; a chance to win a free fourball each month</div></div><div class="qr-side"><div class="qr-frame"><div id="qr-biz-6"></div></div><div class="scan-lbl">Scan to join</div></div></div>
+    <div class="card biz"><div class="content-left"><div class="crest-wrap"><img src="club-logo.png" alt=""></div><div class="card-club">Stanmore Golf Club</div><div class="hook-badge">🏆 Monthly Draw</div><div class="card-title">Stay in Touch with <span>Stanmore</span></div><div class="card-sub">Exclusive offers &amp; a chance to win a free fourball each month</div></div><div class="qr-side"><div class="qr-frame"><div id="qr-biz-7"></div></div><div class="scan-lbl">Scan to join</div></div></div>
+    <div class="card biz"><div class="content-left"><div class="crest-wrap"><img src="club-logo.png" alt=""></div><div class="card-club">Stanmore Golf Club</div><div class="hook-badge">🏆 Monthly Draw</div><div class="card-title">Stay in Touch with <span>Stanmore</span></div><div class="card-sub">Exclusive offers &amp; a chance to win a free fourball each month</div></div><div class="qr-side"><div class="qr-frame"><div id="qr-biz-8"></div></div><div class="scan-lbl">Scan to join</div></div></div>
+    <div class="card biz"><div class="content-left"><div class="crest-wrap"><img src="club-logo.png" alt=""></div><div class="card-club">Stanmore Golf Club</div><div class="hook-badge">🏆 Monthly Draw</div><div class="card-title">Stay in Touch with <span>Stanmore</span></div><div class="card-sub">Exclusive offers &amp; a chance to win a free fourball each month</div></div><div class="qr-side"><div class="qr-frame"><div id="qr-biz-9"></div></div><div class="scan-lbl">Scan to join</div></div></div>
+    <div class="card biz"><div class="content-left"><div class="crest-wrap"><img src="club-logo.png" alt=""></div><div class="card-club">Stanmore Golf Club</div><div class="hook-badge">🏆 Monthly Draw</div><div class="card-title">Stay in Touch with <span>Stanmore</span></div><div class="card-sub">Exclusive offers &amp; a chance to win a free fourball each month</div></div><div class="qr-side"><div class="qr-frame"><div id="qr-biz-10"></div></div><div class="scan-lbl">Scan to join</div></div></div>
   </div>
+</div>
 
-  <div class="card">
-    <div>
-      <img src="club-logo.png" alt="" class="card-crest">
-      <div class="card-club">Stanmore Golf Club</div>
-      <div class="card-est">Est. 1893</div>
-      <div class="card-hook">🏆 Monthly Draw</div>
-      <div class="card-title">Win a <span>Free Fourball</span></div>
-      <div class="card-sub">Scan to enter our monthly draw &amp; get exclusive member offers</div>
-    </div>
-    <div>
-      <div class="qr-wrap"><div id="qr2"></div></div>
-      <div class="card-scan">Scan with camera app</div>
-      <div class="card-url">stanmore-signup</div>
-    </div>
+<!-- ── TENT CARDS (90 x 60 mm) — 6 per A4 ── -->
+<div class="section" id="section-tent">
+  <div class="section-lbl">Tent Card · 90 × 60 mm · 6 per A4 (fold in half)</div>
+  <div class="cards-row">
+    <div class="card tent"><div class="content-left"><div class="crest-wrap"><img src="club-logo.png" alt=""></div><div class="card-club">Stanmore Golf Club</div><div class="hook-badge">🏆 Monthly Draw</div><div class="card-title">Stay in Touch with <span>Stanmore</span></div><div class="card-sub">Exclusive offers &amp; a chance to win a free fourball each month</div></div><div class="qr-side"><div class="qr-frame"><div id="qr-tent-1"></div></div><div class="scan-lbl">Scan to join</div></div></div>
+    <div class="card tent"><div class="content-left"><div class="crest-wrap"><img src="club-logo.png" alt=""></div><div class="card-club">Stanmore Golf Club</div><div class="hook-badge">🏆 Monthly Draw</div><div class="card-title">Stay in Touch with <span>Stanmore</span></div><div class="card-sub">Exclusive offers &amp; a chance to win a free fourball each month</div></div><div class="qr-side"><div class="qr-frame"><div id="qr-tent-2"></div></div><div class="scan-lbl">Scan to join</div></div></div>
+    <div class="card tent"><div class="content-left"><div class="crest-wrap"><img src="club-logo.png" alt=""></div><div class="card-club">Stanmore Golf Club</div><div class="hook-badge">🏆 Monthly Draw</div><div class="card-title">Stay in Touch with <span>Stanmore</span></div><div class="card-sub">Exclusive offers &amp; a chance to win a free fourball each month</div></div><div class="qr-side"><div class="qr-frame"><div id="qr-tent-3"></div></div><div class="scan-lbl">Scan to join</div></div></div>
+    <div class="card tent"><div class="content-left"><div class="crest-wrap"><img src="club-logo.png" alt=""></div><div class="card-club">Stanmore Golf Club</div><div class="hook-badge">🏆 Monthly Draw</div><div class="card-title">Stay in Touch with <span>Stanmore</span></div><div class="card-sub">Exclusive offers &amp; a chance to win a free fourball each month</div></div><div class="qr-side"><div class="qr-frame"><div id="qr-tent-4"></div></div><div class="scan-lbl">Scan to join</div></div></div>
+    <div class="card tent"><div class="content-left"><div class="crest-wrap"><img src="club-logo.png" alt=""></div><div class="card-club">Stanmore Golf Club</div><div class="hook-badge">🏆 Monthly Draw</div><div class="card-title">Stay in Touch with <span>Stanmore</span></div><div class="card-sub">Exclusive offers &amp; a chance to win a free fourball each month</div></div><div class="qr-side"><div class="qr-frame"><div id="qr-tent-5"></div></div><div class="scan-lbl">Scan to join</div></div></div>
+    <div class="card tent"><div class="content-left"><div class="crest-wrap"><img src="club-logo.png" alt=""></div><div class="card-club">Stanmore Golf Club</div><div class="hook-badge">🏆 Monthly Draw</div><div class="card-title">Stay in Touch with <span>Stanmore</span></div><div class="card-sub">Exclusive offers &amp; a chance to win a free fourball each month</div></div><div class="qr-side"><div class="qr-frame"><div id="qr-tent-6"></div></div><div class="scan-lbl">Scan to join</div></div></div>
   </div>
+</div>
 
-  <div class="card">
-    <div>
-      <img src="club-logo.png" alt="" class="card-crest">
-      <div class="card-club">Stanmore Golf Club</div>
-      <div class="card-est">Est. 1893</div>
-      <div class="card-hook">🏆 Monthly Draw</div>
-      <div class="card-title">Win a <span>Free Fourball</span></div>
-      <div class="card-sub">Scan to enter our monthly draw &amp; get exclusive member offers</div>
-    </div>
-    <div>
-      <div class="qr-wrap"><div id="qr3"></div></div>
-      <div class="card-scan">Scan with camera app</div>
-      <div class="card-url">stanmore-signup</div>
-    </div>
-  </div>
-
-  <div class="card">
-    <div>
-      <img src="club-logo.png" alt="" class="card-crest">
-      <div class="card-club">Stanmore Golf Club</div>
-      <div class="card-est">Est. 1893</div>
-      <div class="card-hook">🏆 Monthly Draw</div>
-      <div class="card-title">Win a <span>Free Fourball</span></div>
-      <div class="card-sub">Scan to enter our monthly draw &amp; get exclusive member offers</div>
-    </div>
-    <div>
-      <div class="qr-wrap"><div id="qr4"></div></div>
-      <div class="card-scan">Scan with camera app</div>
-      <div class="card-url">stanmore-signup</div>
-    </div>
+<!-- ── A6 POSTCARDS (105 x 148 mm) — 4 per A4 ── -->
+<div class="section" id="section-a6">
+  <div class="section-lbl">A6 Postcard · 105 × 148 mm · 4 per A4</div>
+  <div class="cards-row">
+    <div class="card a6"><div><div class="crest-wrap"><img src="club-logo.png" alt=""></div><div class="card-club">Stanmore Golf Club</div><div class="hook-badge">🏆 Monthly Prize Draw</div><div class="card-title">Stay in Touch with <span>Stanmore</span></div><div class="card-sub">Join our mailing list for exclusive member offers, event news &amp; a chance to win a free fourball every month.</div></div><div><div class="qr-frame"><div id="qr-a6-1"></div></div><div class="scan-lbl">Scan with camera</div><div class="card-tag">stanmore-signup</div></div></div>
+    <div class="card a6"><div><div class="crest-wrap"><img src="club-logo.png" alt=""></div><div class="card-club">Stanmore Golf Club</div><div class="hook-badge">🏆 Monthly Prize Draw</div><div class="card-title">Stay in Touch with <span>Stanmore</span></div><div class="card-sub">Join our mailing list for exclusive member offers, event news &amp; a chance to win a free fourball every month.</div></div><div><div class="qr-frame"><div id="qr-a6-2"></div></div><div class="scan-lbl">Scan with camera</div><div class="card-tag">stanmore-signup</div></div></div>
+    <div class="card a6"><div><div class="crest-wrap"><img src="club-logo.png" alt=""></div><div class="card-club">Stanmore Golf Club</div><div class="hook-badge">🏆 Monthly Prize Draw</div><div class="card-title">Stay in Touch with <span>Stanmore</span></div><div class="card-sub">Join our mailing list for exclusive member offers, event news &amp; a chance to win a free fourball every month.</div></div><div><div class="qr-frame"><div id="qr-a6-3"></div></div><div class="scan-lbl">Scan with camera</div><div class="card-tag">stanmore-signup</div></div></div>
+    <div class="card a6"><div><div class="crest-wrap"><img src="club-logo.png" alt=""></div><div class="card-club">Stanmore Golf Club</div><div class="hook-badge">🏆 Monthly Prize Draw</div><div class="card-title">Stay in Touch with <span>Stanmore</span></div><div class="card-sub">Join our mailing list for exclusive member offers, event news &amp; a chance to win a free fourball every month.</div></div><div><div class="qr-frame"><div id="qr-a6-4"></div></div><div class="scan-lbl">Scan with camera</div><div class="card-tag">stanmore-signup</div></div></div>
   </div>
 </div>
 
 <script>
 var URL_TARGET = 'https://stanmore1893.github.io/Stanmore-Leaderboard/stanmore-signup.html';
 
+function pickSize(el) {
+  document.querySelectorAll('.stab').forEach(function(t){ t.classList.remove('active'); });
+  el.classList.add('active');
+  var size = el.dataset.size;
+  document.querySelectorAll('.section').forEach(function(s){ s.classList.remove('print-me'); });
+  document.getElementById('section-'+size).classList.add('print-me');
+}
+
 window.addEventListener('load', function() {
-  ['qr1','qr2','qr3','qr4'].forEach(function(id) {
-    new QRCode(document.getElementById(id), {
-      text: URL_TARGET,
-      width: 115,
-      height: 115,
-      colorDark: '#0f2347',
-      colorLight: '#ffffff',
-      correctLevel: QRCode.CorrectLevel.M
-    });
+  // Generate QR codes for all sizes at once
+  var sizes = { biz: { count: 10, px: 80 }, tent: { count: 6, px: 90 }, a6: { count: 4, px: 160 } };
+  Object.keys(sizes).forEach(function(key) {
+    for (var i = 1; i <= sizes[key].count; i++) {
+      var el = document.getElementById('qr-'+key+'-'+i);
+      if (el) new QRCode(el, {
+        text: URL_TARGET,
+        width: sizes[key].px,
+        height: sizes[key].px,
+        colorDark: '#0f2347',
+        colorLight: '#ffffff',
+        correctLevel: QRCode.CorrectLevel.M
+      });
+    }
   });
 });
 </script>
