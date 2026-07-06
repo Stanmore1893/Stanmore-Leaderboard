@@ -141,6 +141,7 @@ body{font-family:'Poppins',sans-serif;background:linear-gradient(175deg,#060e1e,
 .share-bar .share-url{background:rgba(0,0,0,.3);border:1px solid rgba(255,255,255,.1);border-radius:6px;padding:8px 10px;font-family:'DM Mono',monospace;font-size:.7rem;color:rgba(240,192,64,.8);margin-bottom:10px;word-break:break-all;}
 .share-bar button{background:#d4a017;color:#0f2347;border:none;border-radius:8px;padding:9px 16px;font-family:'Poppins',sans-serif;font-size:.78rem;font-weight:700;cursor:pointer;}
 
+#matchSelect option, #finalWinner option, #leaderSelect option, #statusSelect option { background:#0f2347; color:#fff; }
 .footer-credit{text-align:center;padding:26px 14px 6px;font-size:.65rem;color:rgba(212,160,23,.4);}
 </style>
 </head>
@@ -187,19 +188,19 @@ body{font-family:'Poppins',sans-serif;background:linear-gradient(175deg,#060e1e,
 
 <!-- QUARTER FINALS -->
 <div class="round">
-  <div class="round-head"><div class="round-title">Quarter Finals</div><div class="round-when">Saturday · AM</div></div>
+  <div class="round-head"><div class="round-title">Quarter Finals</div><div class="round-when">Sat, 11 July · AM</div></div>
   <div id="qfMatches"></div>
 </div>
 
 <!-- SEMI FINALS -->
 <div class="round">
-  <div class="round-head"><div class="round-title">Semi Finals</div><div class="round-when">Saturday · PM</div></div>
+  <div class="round-head"><div class="round-title">Semi Finals</div><div class="round-when">Sat, 11 July · PM</div></div>
   <div id="sfMatches"></div>
 </div>
 
 <!-- FINAL -->
 <div class="round">
-  <div class="round-head"><div class="round-title">The Final · 36 Holes</div><div class="round-when">Sunday</div></div>
+  <div class="round-head"><div class="round-title">The Final · 36 Holes</div><div class="round-when">Sun, 12 July</div></div>
   <div id="finalMatch"></div>
 </div>
 
@@ -416,12 +417,25 @@ document.addEventListener('change', function(e) {
     if (!m) return;
     box.style.display = 'grid';
     finalBox.style.display = 'block';
+
+    // Update leader dropdown with actual names
+    var leaderSel = document.getElementById('leaderSelect');
+    leaderSel.innerHTML = '<option value="">All Square</option>'
+      + '<option value="a">' + (m.aName || 'Top Player') + '</option>'
+      + '<option value="b">' + (m.bName || 'Bottom Player') + '</option>';
+
+    // Update final winner dropdown with actual names
+    var winSel = document.getElementById('finalWinner');
+    winSel.innerHTML = '<option value="">— Select winner —</option>'
+      + '<option value="a">' + (m.aName || 'Top Player') + '</option>'
+      + '<option value="b">' + (m.bName || 'Bottom Player') + '</option>';
+
     document.getElementById('statusSelect').value = m.status || 'upcoming';
-    document.getElementById('leaderSelect').value = m.leader || '';
+    leaderSel.value = m.leader || '';
     document.getElementById('holesUp').value = m.holesUp || 0;
     document.getElementById('thruHole').value = m.thru || 0;
     document.getElementById('finalScore').value = m.finalScore || '';
-    document.getElementById('finalWinner').value = m.winner || '';
+    winSel.value = m.winner || '';
   }
 });
 
@@ -522,7 +536,7 @@ function renderMatches(elId, matches) {
 
     card.innerHTML = '<div class="m-head">'
       + '<span class="m-name">' + m.name + '</span>'
-      + '<span class="m-time">' + m.day + ' · ' + m.time + '</span>'
+      + '<span class="m-time">' + (m.day==='Sat'?'Sat 11 Jul':'Sun 12 Jul') + ' · ' + m.time + '</span>'
       + statusLabel
       + '</div>'
       + '<div class="' + aClass + '">'
@@ -566,7 +580,7 @@ function renderLiveTicker() {
     el.innerHTML = done + ' of ' + _matches.length + ' matches completed';
   } else if (_matches.length) {
     el.className = 'live-ticker';
-    el.innerHTML = 'Championship starts Saturday at 7:37 AM';
+    el.innerHTML = 'Championship starts Saturday 11 July at 7:37 AM';
   } else {
     el.className = 'live-ticker';
     el.innerHTML = 'Championship bracket not yet set up';
@@ -576,7 +590,7 @@ function renderLiveTicker() {
 // ── MODAL ──
 function openModal(m) {
   document.getElementById('modalTitle').textContent = m.name + ' · ' + (m.round === 'qf' ? 'Quarter Final' : m.round === 'sf' ? 'Semi Final' : 'Final');
-  document.getElementById('modalWhen').textContent = m.day === 'Sat' ? 'Saturday · ' + m.time : 'Sunday · ' + m.time;
+  document.getElementById('modalWhen').textContent = (m.day === 'Sat' ? 'Saturday 11 July · ' : 'Sunday 12 July · ') + m.time;
 
   var mp = document.getElementById('modalPlayers');
   mp.innerHTML = '<div class="mp-row"><span class="seed">' + (m.aSeed || '—') + '</span><span class="pname">' + (m.aName || 'Awaiting winner') + '</span></div>'
