@@ -304,7 +304,7 @@ body{font-family:'Poppins',sans-serif;background:linear-gradient(175deg,#060e1e,
 .qa-btn.qa-winner{padding:11px 6px;font-size:.78rem;background:rgba(45,110,78,.2);border-color:rgba(45,110,78,.5);color:#8ee0b4;}
 .qa-btn.qa-winner:hover{background:rgba(45,110,78,.3);}
 /* Hole selector cells */
-.hole-cell{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);border-radius:6px;padding:6px 2px;text-align:center;cursor:pointer;font-family:'DM Mono',monospace;font-size:.7rem;font-weight:700;color:rgba(255,255,255,.6);transition:all .1s;position:relative;}
+.hole-cell{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);border-radius:6px;padding:6px 2px;text-align:center;cursor:pointer;font-family:'DM Mono',monospace;color:rgba(255,255,255,.6);transition:all .1s;position:relative;min-height:44px;display:flex;flex-direction:column;justify-content:center;align-items:center;}
 .hole-cell:hover{background:rgba(255,255,255,.1);color:#fff;}
 .hole-cell.selected{background:rgba(240,192,64,.25);border-color:rgba(240,192,64,.6);color:#ffe066;}
 .hole-cell.won-a{background:rgba(76,175,80,.18);border-color:rgba(76,175,80,.4);color:#8ee0b4;}
@@ -425,27 +425,12 @@ body{font-family:'Poppins',sans-serif;background:linear-gradient(175deg,#060e1e,
     </label>
   </div>
 
-  <div class="status-inputs" id="statusInputs" style="display:none;">
-    <div><label class="lbl">Match Status</label>
-      <select id="statusSelect">
-        <option value="upcoming">Upcoming</option>
-        <option value="live">Live · In Progress</option>
-        <option value="final">Final</option>
-      </select>
-    </div>
-    <div><label class="lbl">Who's Ahead?</label>
-      <select id="leaderSelect">
-        <option value="">All Square</option>
-        <option value="a">Top Player</option>
-        <option value="b">Bottom Player</option>
-      </select>
-    </div>
-    <div><label class="lbl">Holes Up</label>
-      <input type="number" id="holesUp" min="0" max="18" value="0">
-    </div>
-    <div><label class="lbl">Thru Hole</label>
-      <input type="number" id="thruHole" min="0" max="36" value="0">
-    </div>
+  <!-- Hidden state inputs (used by quick actions internally) -->
+  <div style="display:none;">
+    <select id="statusSelect"><option value="upcoming"></option><option value="live"></option><option value="final"></option></select>
+    <select id="leaderSelect"><option value=""></option><option value="a"></option><option value="b"></option></select>
+    <input type="number" id="holesUp" value="0">
+    <input type="number" id="thruHole" value="0">
   </div>
 
   <!-- QUICK ACTIONS PANEL — visible when match selected -->
@@ -519,19 +504,17 @@ body{font-family:'Poppins',sans-serif;background:linear-gradient(175deg,#060e1e,
     <button id="qaUndoBtn" onclick="qaUndo()" style="width:100%;background:rgba(255,120,100,.15);border:1px solid rgba(255,120,100,.35);color:#ff9080;border-radius:8px;padding:8px;font-family:Poppins,sans-serif;font-size:.72rem;font-weight:600;cursor:pointer;margin-top:6px;display:none;">↶ Undo last change</button>
   </div>
 
-  <div id="finalWinnerBox" style="display:none;margin-top:12px;">
-    <label class="lbl" style="font-size:.65rem;color:rgba(255,255,255,.55);letter-spacing:.08em;text-transform:uppercase;font-weight:600;display:block;margin-bottom:4px;">Final Score (e.g. 3&amp;2, 1UP, 2 UP)</label>
-    <input type="text" id="finalScore" placeholder="e.g. 3&2" style="width:100%;background:rgba(255,255,255,.08);border:1.5px solid rgba(255,255,255,.15);border-radius:6px;padding:9px 10px;color:#fff;font-family:'Poppins',sans-serif;font-size:.85rem;">
-    <label class="lbl" style="font-size:.65rem;color:rgba(255,255,255,.55);letter-spacing:.08em;text-transform:uppercase;font-weight:600;display:block;margin-top:8px;margin-bottom:4px;">Winner</label>
-    <select id="finalWinner" style="width:100%;background:rgba(255,255,255,.08);border:1.5px solid rgba(255,255,255,.15);border-radius:6px;padding:9px 10px;color:#fff;font-family:'Poppins',sans-serif;font-size:.85rem;">
-      <option value="">— Select winner —</option>
-      <option value="a">Top Player</option>
-      <option value="b">Bottom Player</option>
+  <div id="finalWinnerBox" style="display:none;">
+    <!-- Hidden inputs used by quick actions internally -->
+    <input type="text" id="finalScore" style="display:none;">
+    <select id="finalWinner" style="display:none;">
+      <option value=""></option>
+      <option value="a"></option>
+      <option value="b"></option>
     </select>
   </div>
 
-  <button class="btn btn-gold" onclick="saveMatchUpdate()" style="margin-top:14px;">Save Match Update</button>
-  <button class="btn btn-red" onclick="resetChampionship()" style="margin-top:8px;">🗑 Reset Championship</button>
+  <button class="btn btn-red" onclick="resetChampionship()" style="margin-top:18px;">🗑 Reset Championship</button>
 </div>
 
 <!-- MATCH DETAIL MODAL -->
@@ -553,11 +536,7 @@ body{font-family:'Poppins',sans-serif;background:linear-gradient(175deg,#060e1e,
     <!-- Hole-by-hole timeline -->
     <div id="modalHolesBox" style="display:none;margin-top:12px;">
       <div style="font-size:.62rem;font-weight:700;letter-spacing:.14em;color:rgba(240,192,64,.7);text-transform:uppercase;margin-bottom:6px;">Hole-by-Hole</div>
-      <div style="display:flex;gap:14px;font-size:.6rem;color:rgba(255,255,255,.5);margin-bottom:8px;">
-        <span><span style="display:inline-block;width:8px;height:8px;border-radius:2px;background:rgba(76,175,80,.5);vertical-align:middle;margin-right:4px;"></span>Top won</span>
-        <span><span style="display:inline-block;width:8px;height:8px;border-radius:2px;background:rgba(240,192,64,.5);vertical-align:middle;margin-right:4px;"></span>Bottom won</span>
-        <span><span style="display:inline-block;width:8px;height:8px;border-radius:2px;background:rgba(255,255,255,.15);vertical-align:middle;margin-right:4px;"></span>Halved</span>
-      </div>
+<div id="modalLegend" style="display:flex;gap:14px;font-size:.62rem;color:rgba(255,255,255,.55);margin-bottom:8px;font-weight:500;"></div>
       <div id="modalHoleGrid" style="display:grid;grid-template-columns:repeat(9,1fr);gap:4px;"></div>
     </div>
 
@@ -702,8 +681,7 @@ document.addEventListener('change', function(e) {
     if (!mid) { box.style.display = 'none'; finalBox.style.display = 'none'; return; }
     var m = _matches.find(function(x){ return x.id === mid; });
     if (!m) return;
-    box.style.display = 'grid';
-    finalBox.style.display = 'block';
+    // Old manual inputs are hidden — quick actions is the only entry now
     _selectedHole = null;
 
     // Update leader dropdown with actual names
@@ -732,6 +710,14 @@ document.addEventListener('change', function(e) {
 });
 
 // ═══════════ QUICK ACTIONS ═══════════
+
+function getInitials(name, fallback) {
+  if (!name) return fallback || '?';
+  var parts = name.trim().split(/\s+/);
+  if (parts.length === 1) return parts[0].charAt(0).toUpperCase();
+  return (parts[0].charAt(0) + parts[parts.length - 1].charAt(0)).toUpperCase();
+}
+
 var _qaHistory = []; // undo stack
 
 function pushHistory() {
@@ -781,7 +767,11 @@ function renderHoleGrid(m) {
     var result = m.holes[h-1];
     var cell = document.createElement('div');
     cell.className = 'hole-cell' + (result === 'a' ? ' won-a' : result === 'b' ? ' won-b' : result === 'h' ? ' halved' : '') + (_selectedHole === h ? ' selected' : '');
-    cell.textContent = h;
+    var aInit = getInitials(m.aName, 'A');
+    var bInit = getInitials(m.bName, 'B');
+    var mark = result === 'a' ? aInit : result === 'b' ? bInit : result === 'h' ? '½' : '';
+    cell.innerHTML = '<div style="font-size:.55rem;font-weight:600;opacity:.55;line-height:1;">' + h + '</div>'
+      + '<div style="font-size:.78rem;font-weight:800;line-height:1.1;margin-top:2px;min-height:14px;letter-spacing:.02em;">' + mark + '</div>';
     cell.dataset.hole = h;
     cell.onclick = function() {
       _selectedHole = parseInt(this.dataset.hole);
@@ -1188,6 +1178,15 @@ function renderModalHoles(m) {
     return;
   }
   wrap.style.display = 'block';
+  // Populate legend with actual initials + names
+  var aInitL = getInitials(m.aName, 'A');
+  var bInitL = getInitials(m.bName, 'B');
+  var aNameL = m.aName || 'Top';
+  var bNameL = m.bName || 'Bottom';
+  document.getElementById('modalLegend').innerHTML =
+    '<span><strong style="color:#8ee0b4;font-family:DM Mono,monospace;font-size:.85rem;">' + aInitL + '</strong> = ' + aNameL + ' won</span>'
+    + '<span><strong style="color:#ffe066;font-family:DM Mono,monospace;font-size:.85rem;">' + bInitL + '</strong> = ' + bNameL + ' won</span>'
+    + '<span><strong style="color:rgba(255,255,255,.6);font-size:.85rem;">½</strong> = halved</span>';
   var grid = document.getElementById('modalHoleGrid');
   grid.innerHTML = '';
   for (var h = 1; h <= 18; h++) {
@@ -1198,7 +1197,10 @@ function renderModalHoles(m) {
     else if (result === 'b') { cell.style.background = 'rgba(240,192,64,.15)'; cell.style.borderColor = 'rgba(240,192,64,.4)'; cell.style.color = '#ffe066'; }
     else if (result === 'h') { cell.style.background = 'rgba(255,255,255,.03)'; cell.style.color = 'rgba(255,255,255,.4)'; }
     else { cell.style.background = 'rgba(255,255,255,.02)'; cell.style.color = 'rgba(255,255,255,.2)'; }
-    cell.innerHTML = '<div style="font-size:.55rem;color:rgba(255,255,255,.35);font-weight:600;margin-bottom:2px;">' + h + '</div><div>' + (result === 'a' ? '●' : result === 'b' ? '●' : result === 'h' ? '½' : '—') + '</div>';
+    var aInit2 = getInitials(m.aName, 'A');
+    var bInit2 = getInitials(m.bName, 'B');
+    var mark = result === 'a' ? aInit2 : result === 'b' ? bInit2 : result === 'h' ? '½' : '—';
+    cell.innerHTML = '<div style="font-size:.55rem;color:rgba(255,255,255,.35);font-weight:600;margin-bottom:2px;">' + h + '</div><div style="font-size:.9rem;font-weight:800;">' + mark + '</div>';
     grid.appendChild(cell);
   }
 }
