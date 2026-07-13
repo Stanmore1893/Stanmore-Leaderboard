@@ -1031,15 +1031,14 @@ function renderPastChampions() {
     return '<div style="display:flex;align-items:center;gap:12px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.06);border-radius:10px;padding:10px 14px;">'
       + '<div style="font-family:DM Mono,monospace;font-size:.95rem;font-weight:800;color:#f0c040;flex-shrink:0;min-width:44px;">' + c.year + '</div>'
       + '<div style="font-family:Playfair Display,serif;font-size:.95rem;font-weight:700;color:#fff;flex:1;">' + c.name + '</div>'
-      + (c.score ? '<div style="font-family:DM Mono,monospace;font-size:.72rem;color:rgba(255,255,255,.5);">' + c.score + '</div>' : '')
+      + (c.score ? '<div style="font-family:DM Mono,monospace;font-size:.72rem;color:rgba(255,255,255,.5);">' + c.score + '</div>' : '<div style="font-size:1.1rem;">🏆</div>')
       + '</div>';
   }).join('');
 }
 
 var _pastChampions = [
-  // Add each year's winner here as tournaments complete, e.g.
-  // { year: 2025, name: 'John Smith', score: '3&2' },
-  // { year: 2024, name: 'Chris Wright', score: '1 UP' }
+  { year: 2026, name: 'Mikael Khursheed' }
+  // Add more historical winners here as { year: 20XX, name: 'Winner Name' }
 ];
 
 function renderSpotlight() {

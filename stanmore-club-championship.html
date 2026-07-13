@@ -294,6 +294,107 @@ body{font-family:'Poppins',sans-serif;background:linear-gradient(175deg,#060e1e,
 .skel{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.06);border-radius:10px;margin-bottom:8px;overflow:hidden;height:110px;position:relative;}
 .skel::before{content:'';position:absolute;inset:0;background:linear-gradient(90deg,transparent,rgba(255,255,255,.05),transparent);animation:skelShimmer 1.5s infinite;}
 @keyframes skelShimmer{0%{transform:translateX(-100%);}100%{transform:translateX(100%);}}
+
+/* ══ CHAMPION SHOWCASE ══ */
+#championShowcase{
+  text-align:center;
+  animation:csEntry 1s ease-out;
+  box-shadow:0 8px 40px rgba(0,0,0,.35),0 0 60px rgba(212,160,23,.2);
+}
+@keyframes csEntry{
+  from{opacity:0;transform:translateY(-14px) scale(.96);}
+  to{opacity:1;transform:translateY(0) scale(1);}
+}
+
+#championShowcase .cs-border{
+  position:absolute;inset:0;border-radius:16px;padding:2px;
+  background:linear-gradient(135deg,#a67810,#f0c040 25%,#ffe066 50%,#f0c040 75%,#a67810);
+  background-size:200% 200%;
+  animation:csBorderShimmer 6s ease-in-out infinite;
+  -webkit-mask:linear-gradient(#fff 0 0) content-box,linear-gradient(#fff 0 0);
+  -webkit-mask-composite:xor;mask-composite:exclude;
+  pointer-events:none;
+}
+@keyframes csBorderShimmer{
+  0%,100%{background-position:0% 50%;}
+  50%{background-position:100% 50%;}
+}
+
+#championShowcase .cs-trophy{
+  font-size:3.6rem;
+  line-height:1;
+  filter:drop-shadow(0 6px 18px rgba(0,0,0,.55)) drop-shadow(0 0 24px rgba(240,192,64,.6));
+  animation:csTrophyFloat 3s ease-in-out infinite;
+  margin-bottom:10px;
+  display:inline-block;
+}
+@keyframes csTrophyFloat{
+  0%,100%{transform:translateY(0) rotate(-3deg);}
+  50%{transform:translateY(-6px) rotate(3deg);}
+}
+
+#championShowcase .cs-year-ribbon{
+  display:inline-block;
+  background:linear-gradient(90deg,#a67810 0%,#d4a017 25%,#ffe066 50%,#d4a017 75%,#a67810 100%);
+  background-size:200% 100%;
+  color:#0f2347;
+  font-family:'Playfair Display',serif;
+  font-size:.72rem;
+  font-weight:800;
+  letter-spacing:.32em;
+  text-transform:uppercase;
+  padding:6px 16px;
+  border-radius:20px;
+  margin-bottom:12px;
+  animation:csBorderShimmer 4s ease-in-out infinite;
+  text-shadow:0 1px 0 rgba(255,255,255,.25);
+  box-shadow:0 3px 10px rgba(212,160,23,.35);
+}
+
+#championShowcase .cs-name{
+  font-family:'Playfair Display',serif;
+  font-size:2.2rem;
+  font-weight:900;
+  line-height:1.1;
+  letter-spacing:.005em;
+  background:linear-gradient(180deg,#ffe066 0%,#f0c040 40%,#d4a017 100%);
+  -webkit-background-clip:text;
+  background-clip:text;
+  color:transparent;
+  -webkit-text-fill-color:transparent;
+  text-shadow:0 4px 20px rgba(212,160,23,.4);
+  margin-bottom:6px;
+  padding:0 8px;
+}
+
+#championShowcase .cs-sub{
+  font-size:.7rem;
+  color:rgba(212,160,23,.7);
+  letter-spacing:.18em;
+  text-transform:uppercase;
+  font-weight:600;
+}
+
+/* Sparkle dots */
+#championShowcase .cs-sparkles{
+  position:absolute;inset:0;pointer-events:none;overflow:hidden;
+}
+#championShowcase .cs-sparkles::before,
+#championShowcase .cs-sparkles::after{
+  content:'✦';
+  position:absolute;
+  color:rgba(240,192,64,.55);
+  font-size:1rem;
+  animation:csSparkle 3s ease-in-out infinite;
+}
+#championShowcase .cs-sparkles::before{top:22%;left:14%;animation-delay:0s;}
+#championShowcase .cs-sparkles::after{bottom:24%;right:16%;animation-delay:1.5s;font-size:.72rem;}
+@keyframes csSparkle{
+  0%,100%{opacity:0;transform:scale(.5) rotate(0);}
+  50%{opacity:1;transform:scale(1.1) rotate(180deg);}
+}
+
+/* Additional floating sparkles from :before/:after on year ribbon container? Add two more via inline in HTML */
 </style>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 </head>
@@ -334,6 +435,29 @@ body{font-family:'Poppins',sans-serif;background:linear-gradient(175deg,#060e1e,
   <div class="hero-title">2026 Club Championships</div>
   <div class="hero-year">Stanmore Golf Club</div>
   <div id="lastUpdated" style="font-size:.62rem;color:rgba(212,160,23,.5);margin-top:8px;letter-spacing:.06em;display:none;">Last updated: <span id="updatedTime">—</span></div>
+</div>
+
+<!-- ══ CHAMPION SHOWCASE (top of page) ══ -->
+<div id="championShowcase" style="display:none;position:relative;margin:20px 14px 22px;padding:30px 20px 26px;border-radius:16px;overflow:hidden;background:radial-gradient(ellipse at 50% -20%,rgba(240,192,64,.3),transparent 55%),linear-gradient(180deg,rgba(212,160,23,.15) 0%,rgba(15,35,71,.6) 100%);border:2px solid transparent;background-clip:padding-box;">
+  <!-- Gold gradient border via pseudo -->
+  <div class="cs-border"></div>
+
+  <!-- Floating trophy above -->
+  <div class="cs-trophy">🏆</div>
+
+  <!-- Champion ribbon -->
+  <div class="cs-year-ribbon">
+    <span id="csYear">2026</span> · Club Champion
+  </div>
+
+  <!-- Winner name -->
+  <div class="cs-name" id="csName">—</div>
+
+  <!-- Sub label -->
+  <div class="cs-sub">Stanmore Golf Club · Matchplay Champion</div>
+
+  <!-- Sparkle particles container -->
+  <div class="cs-sparkles"></div>
 </div>
 
 <!-- LIVE TICKER -->
@@ -680,6 +804,22 @@ function renderAll() {
   renderLiveTicker();
   renderSpotlight();
   renderLastUpdated();
+  renderChampionShowcase();
+}
+
+function renderChampionShowcase() {
+  var box = document.getElementById('championShowcase');
+  if (!box) return;
+  var final = _matches.find(function(m){ return m.round === 'final'; });
+  if (!final || final.status !== 'final' || !final.winner) {
+    box.style.display = 'none';
+    return;
+  }
+  var winnerName = final.winner === 'a' ? final.aName : final.bName;
+  if (!winnerName) { box.style.display = 'none'; return; }
+  document.getElementById('csName').textContent = winnerName;
+  document.getElementById('csYear').textContent = new Date().getFullYear();
+  box.style.display = 'block';
 }
 
 function renderSpotlight() {
