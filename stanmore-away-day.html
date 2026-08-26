@@ -96,6 +96,48 @@ body{font-family:'Poppins',sans-serif;background:linear-gradient(175deg,#060e1e,
 
 .info-box{background:rgba(240,192,64,.06);border:1px solid rgba(240,192,64,.2);border-radius:10px;padding:12px 14px;color:rgba(255,255,255,.75);font-size:.82rem;line-height:1.5;margin-bottom:16px;}
 .info-box strong{color:#ffe066;}
+
+/* ── ADMIN ── */
+.atab{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:8px;padding:9px 14px;font-family:'Poppins',sans-serif;font-size:.75rem;font-weight:600;color:rgba(255,255,255,.6);cursor:pointer;white-space:nowrap;transition:all .15s;flex-shrink:0;}
+.atab.active{background:rgba(212,160,23,.2);border-color:rgba(240,192,64,.5);color:#ffe066;}
+.a-btn{width:100%;padding:11px;border-radius:8px;font-family:'Poppins',sans-serif;font-size:.85rem;font-weight:700;cursor:pointer;border:none;}
+.a-gold{background:#d4a017;color:#0f2347;border:2px solid #f0c040;}
+.a-out{background:transparent;color:#fff;border:1.5px solid rgba(255,255,255,.3);}
+.a-red{background:rgba(192,57,43,.25);color:#e87878;border:1.5px solid rgba(192,57,43,.4);}
+.a-green{background:rgba(45,110,78,.35);color:#8ee0b4;border:1.5px solid rgba(45,110,78,.6);}
+.alabel{display:block;font-size:.65rem;color:rgba(255,255,255,.55);letter-spacing:.1em;text-transform:uppercase;font-weight:600;margin-bottom:4px;}
+.ainp{width:100%;background:rgba(255,255,255,.08);border:1.5px solid rgba(255,255,255,.15);border-radius:6px;padding:9px 10px;color:#fff;font-family:'Poppins',sans-serif;font-size:.85rem;outline:none;}
+.ainp option{background:#0f2347;color:#fff;}
+
+/* Players table */
+.ptable{width:100%;border-collapse:collapse;font-size:.8rem;}
+.ptable th{padding:6px 4px;font-size:.6rem;font-weight:700;letter-spacing:.1em;color:rgba(240,192,64,.75);text-transform:uppercase;text-align:left;border-bottom:1px solid rgba(255,255,255,.1);}
+.ptable td{padding:5px 4px;border-bottom:1px solid rgba(255,255,255,.05);}
+.ptable input, .ptable select{width:100%;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:5px;padding:6px 7px;color:#fff;font-family:'Poppins',sans-serif;font-size:.78rem;outline:none;}
+.ptable input:focus, .ptable select:focus{border-color:rgba(240,192,64,.5);background:rgba(255,255,255,.1);}
+.ptable .del-btn{background:rgba(192,57,43,.2);border:1px solid rgba(192,57,43,.4);color:#ff8080;border-radius:5px;padding:5px 8px;font-size:.7rem;cursor:pointer;}
+.ptable .ph-val{font-family:'DM Mono',monospace;color:#f0c040;font-weight:700;text-align:center;padding:5px;}
+
+/* Team editor */
+.team-editor-card{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);border-radius:10px;padding:12px;margin-bottom:10px;}
+.team-editor-card .team-title{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;}
+.team-editor-card .team-title-name{font-size:.9rem;font-weight:700;color:#ffe066;}
+.team-editor-card .team-slots{display:grid;grid-template-columns:1fr 1fr;gap:5px;}
+.team-slot{background:rgba(0,0,0,.25);border:1px solid rgba(255,255,255,.08);border-radius:6px;padding:8px 10px;font-size:.78rem;display:flex;justify-content:space-between;align-items:center;min-height:36px;}
+.team-slot.empty{color:rgba(255,255,255,.3);font-style:italic;}
+.team-slot .remove-x{background:none;border:none;color:rgba(255,120,100,.7);cursor:pointer;font-size:1rem;padding:0 4px;}
+.avail-list{display:flex;flex-wrap:wrap;gap:5px;margin-top:8px;}
+.avail-chip{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.15);border-radius:20px;padding:5px 10px;font-size:.72rem;color:#fff;cursor:pointer;transition:all .15s;}
+.avail-chip:hover{background:rgba(212,160,23,.2);border-color:rgba(240,192,64,.5);color:#ffe066;}
+
+/* Score entry grid */
+.hgrid{display:grid;grid-template-columns:38px 1fr 44px 44px 46px;gap:6px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:10px;padding:10px;}
+.hgrid .hh{font-size:.55rem;font-weight:700;letter-spacing:.1em;color:rgba(240,192,64,.7);text-transform:uppercase;text-align:center;padding:3px 0;}
+.hgrid .hcell{padding:4px 2px;font-size:.78rem;display:flex;align-items:center;justify-content:center;color:rgba(255,255,255,.75);font-family:'DM Mono',monospace;}
+.hgrid .hcell.hole-num{color:#f0c040;font-weight:800;font-size:.85rem;}
+.hgrid input.score-inp{width:100%;background:rgba(0,0,0,.35);border:1.5px solid rgba(255,255,255,.15);border-radius:6px;padding:8px 4px;color:#fff;font-family:'DM Mono',monospace;font-size:1rem;font-weight:800;text-align:center;outline:none;}
+.hgrid input.score-inp:focus{border-color:#f0c040;background:rgba(212,160,23,.12);}
+.hgrid .pts-cell{font-family:'DM Mono',monospace;font-weight:800;text-align:center;padding:4px;color:#8ee0b4;font-size:.9rem;}
 </style>
 </head>
 <body>
@@ -199,10 +241,113 @@ body{font-family:'Poppins',sans-serif;background:linear-gradient(175deg,#060e1e,
   </div>
 </div>
 
-<!-- ── ADMIN (placeholder for Part 2) ── -->
+<!-- ── ADMIN ── -->
 <div class="view" id="view-admin">
-  <div class="info-box">
-    <strong>🚧 Admin panel coming next</strong> — this section will hold player setup, team assignment, handicap entry, and score entry. Password protected.
+  <!-- Password gate -->
+  <div id="pwGate" style="max-width:420px;margin:40px auto;background:rgba(0,0,0,.3);border:1.5px solid rgba(255,120,100,.3);border-radius:14px;padding:24px;text-align:center;">
+    <div style="font-size:2rem;margin-bottom:12px;">🔐</div>
+    <div style="font-size:1rem;font-weight:700;color:#ff9080;margin-bottom:8px;">Admin Access</div>
+    <div style="font-size:.8rem;color:rgba(255,255,255,.55);margin-bottom:16px;">Enter password to unlock the admin panel.</div>
+    <input type="password" id="pwInput" placeholder="Password" style="width:100%;background:rgba(255,255,255,.08);border:1.5px solid rgba(255,255,255,.15);border-radius:8px;padding:11px 14px;color:#fff;font-family:'Poppins',sans-serif;font-size:.95rem;outline:none;margin-bottom:10px;" onkeydown="if(event.key==='Enter')unlockAdmin()">
+    <button onclick="unlockAdmin()" style="width:100%;background:#d4a017;color:#0f2347;border:none;border-radius:8px;padding:12px;font-family:'Poppins',sans-serif;font-size:.9rem;font-weight:700;cursor:pointer;">Unlock Admin</button>
+    <div id="pwError" style="color:#ff8080;font-size:.75rem;margin-top:10px;display:none;">Incorrect password</div>
+  </div>
+
+  <!-- Admin panel (hidden until unlock) -->
+  <div id="adminPanel" style="display:none;">
+
+    <!-- Admin section tabs -->
+    <div style="display:flex;gap:4px;margin-bottom:16px;overflow-x:auto;-webkit-overflow-scrolling:touch;padding-bottom:2px;" class="admin-tabs">
+      <button class="atab active" data-section="players" onclick="pickAdminTab(this)">👥 Players</button>
+      <button class="atab" data-section="teams1" onclick="pickAdminTab(this)">🏳️ Teams · Day 1</button>
+      <button class="atab" data-section="teams2" onclick="pickAdminTab(this)">🏳️ Teams · Day 2</button>
+      <button class="atab" data-section="scores" onclick="pickAdminTab(this)">📊 Score Entry</button>
+    </div>
+
+    <!-- PLAYERS -->
+    <div class="asec" id="asec-players">
+      <div class="info-box">
+        <strong>Master player list</strong> — used across both days. Add players below (individually or paste in bulk), then set their handicap index and tee. Playing handicap is auto-calculated using the World Handicap formula (HI × Slope ÷ 113 × 95%) for each set of tees.
+      </div>
+
+      <!-- Bulk paste -->
+      <div style="background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:10px;padding:14px;margin-bottom:14px;">
+        <div style="font-size:.7rem;font-weight:700;letter-spacing:.12em;color:#f0c040;text-transform:uppercase;margin-bottom:8px;">Add Players in Bulk</div>
+        <div style="font-size:.72rem;color:rgba(255,255,255,.55);margin-bottom:8px;line-height:1.4;">Paste one player per line. Name only, or Name, HI, Gender, Tee (comma-separated).<br>e.g. <em style="color:rgba(240,192,64,.7);">Alex Persaud, 8.2, M, White</em></div>
+        <textarea id="bulkPaste" rows="5" placeholder="John Smith&#10;Chris Wright, 12.4, M, Yellow&#10;Sarah Green, 22.6, W, Red" style="width:100%;background:rgba(0,0,0,.25);border:1px solid rgba(255,255,255,.12);border-radius:8px;padding:10px;color:#fff;font-family:'DM Mono',monospace;font-size:.82rem;resize:vertical;outline:none;"></textarea>
+        <button onclick="bulkAddPlayers()" class="a-btn a-gold" style="margin-top:8px;">+ Add All Players</button>
+      </div>
+
+      <!-- Player list -->
+      <div style="background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:10px;padding:14px;">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
+          <div style="font-size:.7rem;font-weight:700;letter-spacing:.12em;color:#f0c040;text-transform:uppercase;">Players (<span id="playerCount">0</span>)</div>
+          <button onclick="addBlankPlayer()" class="a-btn a-out" style="padding:5px 12px;font-size:.72rem;">+ Add One</button>
+        </div>
+        <div id="playersTable"></div>
+      </div>
+
+      <button onclick="savePlayers()" class="a-btn a-gold" style="margin-top:12px;">💾 Save All Players</button>
+      <button onclick="clearAllPlayers()" class="a-btn a-red" style="margin-top:8px;">🗑 Clear All Players</button>
+    </div>
+
+    <!-- TEAMS DAY 1 -->
+    <div class="asec" id="asec-teams1" style="display:none;">
+      <div class="info-box">
+        <strong>Day 1 Teams</strong> · Sunday 7 September. Create teams then tap players in the available list below to assign them. Same players can be shuffled into different teams on Day 2.
+      </div>
+      <div id="teamsEditor1"></div>
+    </div>
+
+    <!-- TEAMS DAY 2 -->
+    <div class="asec" id="asec-teams2" style="display:none;">
+      <div class="info-box">
+        <strong>Day 2 Teams</strong> · Monday 8 September. Different teams to Day 1.
+      </div>
+      <div id="teamsEditor2"></div>
+    </div>
+
+    <!-- SCORE ENTRY -->
+    <div class="asec" id="asec-scores" style="display:none;">
+      <div class="info-box">
+        <strong>Score Entry</strong> — pick a day, then a player. Enter gross scores hole by hole; the cursor jumps to the next hole automatically. Stableford points are calculated live using the player's playing handicap for that tee.
+      </div>
+
+      <div style="display:grid;grid-template-columns:1fr 2fr;gap:10px;margin-bottom:12px;">
+        <div>
+          <label class="alabel">Day</label>
+          <select id="scoreDay" onchange="loadScoreEntry()" class="ainp">
+            <option value="1">Day 1 · Sun 7 Sept</option>
+            <option value="2">Day 2 · Mon 8 Sept</option>
+          </select>
+        </div>
+        <div>
+          <label class="alabel">Player</label>
+          <select id="scorePlayer" onchange="loadScoreEntry()" class="ainp">
+            <option value="">— Select player —</option>
+          </select>
+        </div>
+      </div>
+
+      <div id="scoreEntryBox" style="display:none;">
+        <div style="background:rgba(212,160,23,.08);border:1px solid rgba(212,160,23,.3);border-radius:10px;padding:10px 14px;margin-bottom:12px;font-size:.82rem;display:flex;justify-content:space-between;align-items:center;">
+          <div>
+            <div style="font-weight:700;color:#ffe066;" id="sePlayerName">—</div>
+            <div style="font-size:.72rem;color:rgba(255,255,255,.55);margin-top:2px;" id="sePlayerMeta">—</div>
+          </div>
+          <div style="text-align:right;">
+            <div style="font-size:.62rem;color:rgba(255,255,255,.55);letter-spacing:.1em;text-transform:uppercase;">Stableford</div>
+            <div id="seRunningTotal" style="font-family:'DM Mono',monospace;font-size:1.5rem;font-weight:800;color:#f0c040;line-height:1;">0</div>
+          </div>
+        </div>
+
+        <div id="holeInputGrid"></div>
+
+        <button onclick="saveScores()" class="a-btn a-gold" style="margin-top:14px;">💾 Save Scores</button>
+        <button onclick="clearScoresForPlayer()" class="a-btn a-red" style="margin-top:8px;">🗑 Clear This Player's Scores</button>
+      </div>
+    </div>
+
   </div>
 </div>
 
@@ -465,6 +610,364 @@ function renderTeams(day) {
     html += '</div></div>';
   });
   el.innerHTML = html;
+}
+
+// ═══════════════════════════════════════════════════════
+// ── ADMIN ──
+// ═══════════════════════════════════════════════════════
+var ADMIN_PW = 'Stanmore1893!';
+var _isAdmin = false;
+
+function unlockAdmin() {
+  var pw = document.getElementById('pwInput').value;
+  if (pw !== ADMIN_PW) {
+    document.getElementById('pwError').style.display = 'block';
+    return;
+  }
+  _isAdmin = true;
+  document.getElementById('pwGate').style.display = 'none';
+  document.getElementById('adminPanel').style.display = 'block';
+  document.getElementById('pwError').style.display = 'none';
+  document.getElementById('pwInput').value = '';
+  renderPlayersTable();
+  renderTeamsEditor(1);
+  renderTeamsEditor(2);
+  populatePlayerSelect();
+}
+
+function pickAdminTab(el) {
+  document.querySelectorAll('.atab').forEach(function(t){ t.classList.remove('active'); });
+  el.classList.add('active');
+  document.querySelectorAll('.asec').forEach(function(s){ s.style.display = 'none'; });
+  document.getElementById('asec-' + el.dataset.section).style.display = 'block';
+  if (el.dataset.section === 'teams1') renderTeamsEditor(1);
+  if (el.dataset.section === 'teams2') renderTeamsEditor(2);
+  if (el.dataset.section === 'scores') populatePlayerSelect();
+}
+
+// ── PLAYING HANDICAP CALCULATION ──
+// WHS: PH = HI × Slope / 113 × 95%
+function calcPH(hi, teeKey) {
+  if (hi == null || hi === '' || isNaN(hi)) return null;
+  var tee = HANBURY.tees[teeKey];
+  if (!tee) return null;
+  var ph = Math.round(hi * tee.slope / 113 * 0.95);
+  return ph;
+}
+
+// ── PLAYERS ──
+function makePlayerId() {
+  return 'p_' + Date.now().toString(36) + Math.random().toString(36).substr(2, 4);
+}
+
+function addBlankPlayer() {
+  _players.push({ id: makePlayerId(), name: '', hi: null, gender: 'm', teeKey: 'white', phDay1: null, phDay2: null });
+  renderPlayersTable();
+}
+
+function bulkAddPlayers() {
+  var text = document.getElementById('bulkPaste').value.trim();
+  if (!text) return;
+  var lines = text.split(/\n/).map(function(l){ return l.trim(); }).filter(function(l){ return l; });
+  lines.forEach(function(line) {
+    var parts = line.split(',').map(function(p){ return p.trim(); });
+    var name = parts[0];
+    var hi = parts[1] ? parseFloat(parts[1]) : null;
+    var genderRaw = (parts[2] || 'M').toUpperCase();
+    var gender = genderRaw.startsWith('W') || genderRaw.startsWith('F') || genderRaw.startsWith('L') ? 'w' : 'm';
+    var teeRaw = (parts[3] || (gender === 'w' ? 'Red' : 'White')).toLowerCase();
+    var teeKey = teeRaw.indexOf('red') > -1 ? 'red' : teeRaw.indexOf('yellow') > -1 ? 'yellow' : teeRaw.indexOf('blue') > -1 ? 'blue' : 'white';
+    // Capitalise name properly
+    name = name.replace(/\b\w/g, function(c){ return c.toUpperCase(); });
+    _players.push({
+      id: makePlayerId(),
+      name: name,
+      hi: (hi != null && !isNaN(hi)) ? hi : null,
+      gender: gender,
+      teeKey: teeKey,
+      phDay1: null,
+      phDay2: null
+    });
+  });
+  // Recalc PH for all
+  _players.forEach(function(p) { p.phDay1 = calcPH(p.hi, p.teeKey); p.phDay2 = p.phDay1; });
+  document.getElementById('bulkPaste').value = '';
+  renderPlayersTable();
+  alert('✅ Added ' + lines.length + ' player' + (lines.length===1?'':'s') + '. Remember to save.');
+}
+
+function renderPlayersTable() {
+  var el = document.getElementById('playersTable');
+  document.getElementById('playerCount').textContent = _players.length;
+  if (!_players.length) {
+    el.innerHTML = '<div style="text-align:center;padding:20px;color:rgba(255,255,255,.35);font-size:.8rem;font-style:italic;">No players added yet.</div>';
+    return;
+  }
+  var html = '<div style="overflow-x:auto;-webkit-overflow-scrolling:touch;"><table class="ptable"><thead><tr>'
+    + '<th style="min-width:130px;">NAME</th><th style="width:70px;">HI</th><th style="width:60px;">GENDER</th><th style="width:80px;">TEE</th><th style="width:44px;text-align:center;">PH</th><th style="width:36px;"></th>'
+    + '</tr></thead><tbody>';
+  _players.forEach(function(p, i) {
+    var ph = calcPH(p.hi, p.teeKey);
+    html += '<tr>'
+      + '<td><input type="text" value="' + (p.name || '') + '" placeholder="Player name" oninput="_players[' + i + '].name=this.value.replace(/\\b\\w/g,function(c){return c.toUpperCase();})"></td>'
+      + '<td><input type="number" step="0.1" value="' + (p.hi != null ? p.hi : '') + '" placeholder="—" oninput="updatePlayerHI(' + i + ', this.value)"></td>'
+      + '<td><select onchange="_players[' + i + '].gender=this.value;updatePlayerHI(' + i + ',_players[' + i + '].hi);renderPlayersTable();"><option value="m"' + (p.gender==='m'?' selected':'') + '>M</option><option value="w"' + (p.gender==='w'?' selected':'') + '>W</option></select></td>'
+      + '<td><select onchange="_players[' + i + '].teeKey=this.value;updatePlayerHI(' + i + ',_players[' + i + '].hi);renderPlayersTable();">'
+        + '<option value="white"' + (p.teeKey==='white'?' selected':'') + '>White</option>'
+        + '<option value="yellow"' + (p.teeKey==='yellow'?' selected':'') + '>Yellow</option>'
+        + '<option value="red"' + (p.teeKey==='red'?' selected':'') + '>Red</option>'
+        + '<option value="blue"' + (p.teeKey==='blue'?' selected':'') + '>Blue</option>'
+      + '</select></td>'
+      + '<td class="ph-val">' + (ph != null ? ph : '—') + '</td>'
+      + '<td><button class="del-btn" onclick="removePlayer(' + i + ')">✕</button></td>'
+      + '</tr>';
+  });
+  html += '</tbody></table></div>';
+  el.innerHTML = html;
+}
+
+function updatePlayerHI(idx, val) {
+  var v = val === '' || val == null ? null : parseFloat(val);
+  _players[idx].hi = isNaN(v) ? null : v;
+  var ph = calcPH(_players[idx].hi, _players[idx].teeKey);
+  _players[idx].phDay1 = ph;
+  _players[idx].phDay2 = ph;
+}
+
+function removePlayer(idx) {
+  if (!confirm('Remove ' + (_players[idx].name || 'this player') + '?')) return;
+  var id = _players[idx].id;
+  _players.splice(idx, 1);
+  // Also remove from teams
+  [_teamsDay1, _teamsDay2].forEach(function(teams) {
+    teams.forEach(function(t) {
+      t.playerIds = t.playerIds.filter(function(pid){ return pid !== id; });
+    });
+  });
+  // And scores
+  delete _scoresDay1[id];
+  delete _scoresDay2[id];
+  renderPlayersTable();
+}
+
+async function savePlayers() {
+  var ok = await saveData();
+  alert(ok ? '✅ Players saved!' : '⚠️ Failed to save. Try again.');
+  renderAll();
+}
+
+async function clearAllPlayers() {
+  if (!confirm('Delete ALL players? This will also clear teams and scores.')) return;
+  if (!confirm('Are you absolutely sure? This cannot be undone.')) return;
+  _players = [];
+  _teamsDay1 = [];
+  _teamsDay2 = [];
+  _scoresDay1 = {};
+  _scoresDay2 = {};
+  await saveData();
+  renderPlayersTable();
+  renderAll();
+}
+
+// ── TEAMS ──
+function renderTeamsEditor(day) {
+  var teams = day === 1 ? _teamsDay1 : _teamsDay2;
+  var el = document.getElementById('teamsEditor' + day);
+  var assigned = new Set();
+  teams.forEach(function(t) { t.playerIds.forEach(function(id){ assigned.add(id); }); });
+
+  var html = '';
+  teams.forEach(function(t, ti) {
+    html += '<div class="team-editor-card">'
+      + '<div class="team-title">'
+        + '<span class="team-title-name">' + t.name + '</span>'
+        + '<button class="a-btn a-red" style="width:auto;padding:4px 10px;font-size:.7rem;" onclick="removeTeam(' + day + ',' + ti + ')">Remove Team</button>'
+      + '</div>'
+      + '<div class="team-slots">';
+    for (var s = 0; s < 4; s++) {
+      var pid = t.playerIds[s];
+      var player = pid ? _players.find(function(p){ return p.id === pid; }) : null;
+      if (player) {
+        html += '<div class="team-slot"><span>' + player.name + '</span>'
+          + '<button class="remove-x" onclick="removeFromTeam(' + day + ',' + ti + ',' + s + ')">✕</button></div>';
+      } else {
+        html += '<div class="team-slot empty">Slot ' + (s+1) + ' — tap a name below</div>';
+      }
+    }
+    html += '</div></div>';
+  });
+
+  // Add-team button
+  html += '<button class="a-btn a-out" style="margin-bottom:14px;" onclick="addTeam(' + day + ')">+ Add Team ' + (teams.length + 1) + '</button>';
+
+  // Available players list
+  var available = _players.filter(function(p){ return !assigned.has(p.id); });
+  html += '<div style="background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:10px;padding:12px;">'
+    + '<div style="font-size:.68rem;font-weight:700;letter-spacing:.12em;color:#f0c040;text-transform:uppercase;margin-bottom:6px;">Unassigned Players (' + available.length + ')</div>';
+  if (!available.length) {
+    html += '<div style="color:rgba(255,255,255,.35);font-style:italic;font-size:.78rem;">All players assigned.</div>';
+  } else {
+    html += '<div style="font-size:.68rem;color:rgba(255,255,255,.5);margin-bottom:8px;">Tap a player then tap an empty slot above.</div>';
+    html += '<div class="avail-list">';
+    available.forEach(function(p) {
+      html += '<div class="avail-chip" onclick="assignToNextSlot(' + day + ',\'' + p.id + '\')">' + p.name + '</div>';
+    });
+    html += '</div>';
+  }
+  html += '</div>';
+
+  html += '<button onclick="saveTeams()" class="a-btn a-gold" style="margin-top:14px;">💾 Save Teams</button>';
+
+  el.innerHTML = html;
+}
+
+function addTeam(day) {
+  var teams = day === 1 ? _teamsDay1 : _teamsDay2;
+  teams.push({ name: 'Team ' + (teams.length + 1), playerIds: [] });
+  renderTeamsEditor(day);
+}
+
+function removeTeam(day, ti) {
+  var teams = day === 1 ? _teamsDay1 : _teamsDay2;
+  if (!confirm('Remove ' + teams[ti].name + '? Players will become unassigned.')) return;
+  teams.splice(ti, 1);
+  // Renumber teams
+  teams.forEach(function(t, i) { if (t.name.match(/^Team \d+$/)) t.name = 'Team ' + (i+1); });
+  renderTeamsEditor(day);
+}
+
+function assignToNextSlot(day, playerId) {
+  var teams = day === 1 ? _teamsDay1 : _teamsDay2;
+  // Find first team with an empty slot
+  for (var i = 0; i < teams.length; i++) {
+    if (teams[i].playerIds.length < 4) {
+      teams[i].playerIds.push(playerId);
+      renderTeamsEditor(day);
+      return;
+    }
+  }
+  alert('No empty slots. Add another team first.');
+}
+
+function removeFromTeam(day, ti, si) {
+  var teams = day === 1 ? _teamsDay1 : _teamsDay2;
+  teams[ti].playerIds.splice(si, 1);
+  renderTeamsEditor(day);
+}
+
+async function saveTeams() {
+  var ok = await saveData();
+  alert(ok ? '✅ Teams saved!' : '⚠️ Failed to save.');
+  renderAll();
+}
+
+// ── SCORE ENTRY ──
+function populatePlayerSelect() {
+  var sel = document.getElementById('scorePlayer');
+  if (!sel) return;
+  sel.innerHTML = '<option value="">— Select player —</option>';
+  _players.slice().sort(function(a,b){ return (a.name||'').localeCompare(b.name||''); }).forEach(function(p) {
+    var opt = document.createElement('option');
+    opt.value = p.id;
+    opt.textContent = p.name;
+    sel.appendChild(opt);
+  });
+}
+
+function loadScoreEntry() {
+  var pid = document.getElementById('scorePlayer').value;
+  var day = parseInt(document.getElementById('scoreDay').value);
+  var box = document.getElementById('scoreEntryBox');
+  if (!pid) { box.style.display = 'none'; return; }
+  var p = _players.find(function(x){ return x.id === pid; });
+  if (!p) return;
+  var scores = day === 1 ? _scoresDay1 : _scoresDay2;
+  var current = scores[pid] || new Array(18).fill(0);
+
+  box.style.display = 'block';
+  document.getElementById('sePlayerName').textContent = p.name;
+  var teeName = HANBURY.tees[p.teeKey] ? HANBURY.tees[p.teeKey].name : p.teeKey;
+  var ph = day === 1 ? p.phDay1 : p.phDay2;
+  document.getElementById('sePlayerMeta').textContent = 'HI ' + (p.hi != null ? p.hi : '—') + ' · ' + teeName + ' tees · Playing HCP ' + (ph != null ? ph : '—');
+
+  renderHoleGrid(p, day, current);
+  updateRunningTotal(p, day);
+}
+
+function renderHoleGrid(player, day, currentScores) {
+  var el = document.getElementById('holeInputGrid');
+  var siArr = player.gender === 'w' ? HANBURY.siLadies : HANBURY.siMen;
+  var ph = day === 1 ? player.phDay1 : player.phDay2;
+
+  var html = '<div class="hgrid">'
+    + '<div class="hh">HOLE</div><div class="hh" style="text-align:left;padding-left:6px;">PAR</div><div class="hh">SI</div><div class="hh">SCORE</div><div class="hh">PTS</div>';
+
+  for (var h = 0; h < 18; h++) {
+    var strokes = calcHoleStrokes(ph || 0, siArr, h);
+    var strokeMark = strokes === 1 ? '●' : strokes === 2 ? '●●' : '';
+    html += '<div class="hcell hole-num">' + (h+1) + '</div>'
+      + '<div class="hcell" style="justify-content:flex-start;padding-left:6px;">Par ' + HANBURY.par[h] + ' <span style="color:#f0c040;margin-left:4px;font-size:.7rem;">' + strokeMark + '</span></div>'
+      + '<div class="hcell" style="color:rgba(255,255,255,.4);font-size:.72rem;">' + siArr[h] + '</div>'
+      + '<div class="hcell"><input type="number" min="1" max="12" class="score-inp" data-hole="' + h + '" value="' + (currentScores[h] || '') + '" inputmode="numeric" oninput="handleScoreInput(this)" onfocus="this.select()"></div>'
+      + '<div class="hcell pts-cell" id="pts-' + h + '">' + (currentScores[h] ? stablefordPoints(currentScores[h], HANBURY.par[h], strokes) : '—') + '</div>';
+  }
+  html += '</div>';
+  el.innerHTML = html;
+}
+
+function handleScoreInput(input) {
+  var val = parseInt(input.value);
+  var hole = parseInt(input.dataset.hole);
+  var pid = document.getElementById('scorePlayer').value;
+  var day = parseInt(document.getElementById('scoreDay').value);
+  var player = _players.find(function(x){ return x.id === pid; });
+  if (!player) return;
+
+  var scores = day === 1 ? _scoresDay1 : _scoresDay2;
+  if (!scores[pid]) scores[pid] = new Array(18).fill(0);
+  scores[pid][hole] = (val && val > 0 && val < 15) ? val : 0;
+
+  // Update this hole's points immediately
+  var siArr = player.gender === 'w' ? HANBURY.siLadies : HANBURY.siMen;
+  var ph = day === 1 ? player.phDay1 : player.phDay2;
+  var strokes = calcHoleStrokes(ph || 0, siArr, hole);
+  var pts = scores[pid][hole] ? stablefordPoints(scores[pid][hole], HANBURY.par[hole], strokes) : 0;
+  document.getElementById('pts-' + hole).textContent = scores[pid][hole] ? pts : '—';
+
+  updateRunningTotal(player, day);
+
+  // Auto-focus next hole
+  if (val && input.value.length >= 1 && hole < 17) {
+    var next = document.querySelector('.score-inp[data-hole="' + (hole + 1) + '"]');
+    if (next) setTimeout(function(){ next.focus(); next.select(); }, 50);
+  }
+}
+
+function updateRunningTotal(player, day) {
+  var scores = day === 1 ? _scoresDay1 : _scoresDay2;
+  var s = scores[player.id];
+  if (!s) { document.getElementById('seRunningTotal').textContent = '0'; return; }
+  var r = calcRoundPoints(player, s, day);
+  document.getElementById('seRunningTotal').textContent = r.total;
+}
+
+async function saveScores() {
+  var ok = await saveData();
+  alert(ok ? '✅ Scores saved!' : '⚠️ Failed to save.');
+  renderAll();
+}
+
+async function clearScoresForPlayer() {
+  var pid = document.getElementById('scorePlayer').value;
+  if (!pid) return;
+  var day = parseInt(document.getElementById('scoreDay').value);
+  var name = (_players.find(function(x){ return x.id === pid; }) || {}).name;
+  if (!confirm('Clear all Day ' + day + ' scores for ' + name + '?')) return;
+  var scores = day === 1 ? _scoresDay1 : _scoresDay2;
+  delete scores[pid];
+  await saveData();
+  loadScoreEntry();
+  renderAll();
 }
 
 // ── INIT ──
