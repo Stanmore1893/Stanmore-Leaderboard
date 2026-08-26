@@ -180,8 +180,8 @@ body{font-family:'Poppins',sans-serif;background:linear-gradient(175deg,#060e1e,
 <!-- TABS -->
 <div class="tabs">
   <div class="tab active" data-view="overview" onclick="pickTab(this)">Overview</div>
-  <div class="tab" data-view="day1" onclick="pickTab(this)">Day 1 · Sun</div>
-  <div class="tab" data-view="day2" onclick="pickTab(this)">Day 2 · Mon</div>
+  <div class="tab" data-view="day1" onclick="pickTab(this)">Day 1 · Mon</div>
+  <div class="tab" data-view="day2" onclick="pickTab(this)">Day 2 · Tue</div>
   <div class="tab" data-view="combined" onclick="pickTab(this)">Combined</div>
   <div class="tab" data-view="teams" onclick="pickTab(this)">Teams</div>
   <div class="tab admin-tab" data-view="admin" onclick="pickTab(this)">🔐 Admin</div>
@@ -197,8 +197,8 @@ body{font-family:'Poppins',sans-serif;background:linear-gradient(175deg,#060e1e,
     <div style="font-size:.7rem;font-weight:700;letter-spacing:.14em;color:#f0c040;text-transform:uppercase;margin-bottom:10px;">Event Details</div>
     <div style="display:grid;grid-template-columns:auto 1fr;gap:8px 14px;font-size:.85rem;">
       <div style="color:rgba(255,255,255,.55);">📍 Venue</div><div>Hanbury Manor Marriott Hotel &amp; Country Club</div>
-      <div style="color:rgba(255,255,255,.55);">📅 Day 1</div><div>Sunday, 7 September 2026</div>
-      <div style="color:rgba(255,255,255,.55);">📅 Day 2</div><div>Monday, 8 September 2026</div>
+      <div style="color:rgba(255,255,255,.55);">📅 Day 1</div><div>Monday, 7 September 2026</div>
+      <div style="color:rgba(255,255,255,.55);">📅 Day 2</div><div>Tuesday, 8 September 2026</div>
       <div style="color:rgba(255,255,255,.55);">⛳ Format</div><div>Individual &amp; Team Stableford</div>
       <div style="color:rgba(255,255,255,.55);">👥 Team</div><div>Best 2 of 4 Stableford scores per hole</div>
       <div style="color:rgba(255,255,255,.55);">🎯 Handicap</div><div>95% of Course Handicap</div>
@@ -208,7 +208,7 @@ body{font-family:'Poppins',sans-serif;background:linear-gradient(175deg,#060e1e,
 
 <!-- ── DAY 1 ── -->
 <div class="view" id="view-day1">
-  <div style="font-size:.72rem;font-weight:700;letter-spacing:.14em;color:#f0c040;text-transform:uppercase;margin:0 4px 10px;">Day 1 Individual · Sunday 7 September</div>
+  <div style="font-size:.72rem;font-weight:700;letter-spacing:.14em;color:#f0c040;text-transform:uppercase;margin:0 4px 10px;">Day 1 Individual · Monday 7 September</div>
   <div id="lb-day1" class="lb-table">
     <div class="lb-empty"><div class="icon">⛳</div>Scores will appear here as players finish.</div>
   </div>
@@ -216,7 +216,7 @@ body{font-family:'Poppins',sans-serif;background:linear-gradient(175deg,#060e1e,
 
 <!-- ── DAY 2 ── -->
 <div class="view" id="view-day2">
-  <div style="font-size:.72rem;font-weight:700;letter-spacing:.14em;color:#f0c040;text-transform:uppercase;margin:0 4px 10px;">Day 2 Individual · Monday 8 September</div>
+  <div style="font-size:.72rem;font-weight:700;letter-spacing:.14em;color:#f0c040;text-transform:uppercase;margin:0 4px 10px;">Day 2 Individual · Tuesday 8 September</div>
   <div id="lb-day2" class="lb-table">
     <div class="lb-empty"><div class="icon">⛳</div>Scores will appear here as players finish.</div>
   </div>
@@ -286,7 +286,7 @@ body{font-family:'Poppins',sans-serif;background:linear-gradient(175deg,#060e1e,
     <!-- TEAMS DAY 1 -->
     <div class="asec" id="asec-teams1" style="display:none;">
       <div class="info-box">
-        <strong>Day 1 Teams</strong> · Sunday 7 September. Create teams then tap players in the available list below to assign them. Same players can be shuffled into different teams on Day 2.
+        <strong>Day 1 Teams</strong> · Monday 7 September. Create teams then tap players in the available list below to assign them. Same players can be shuffled into different teams on Day 2.
       </div>
       <div id="teamsEditor1"></div>
     </div>
@@ -294,7 +294,7 @@ body{font-family:'Poppins',sans-serif;background:linear-gradient(175deg,#060e1e,
     <!-- TEAMS DAY 2 -->
     <div class="asec" id="asec-teams2" style="display:none;">
       <div class="info-box">
-        <strong>Day 2 Teams</strong> · Monday 8 September. Different teams to Day 1.
+        <strong>Day 2 Teams</strong> · Tuesday 8 September. Different teams to Day 1.
       </div>
       <div id="teamsEditor2"></div>
     </div>
@@ -309,8 +309,8 @@ body{font-family:'Poppins',sans-serif;background:linear-gradient(175deg,#060e1e,
         <div>
           <label class="alabel">Day</label>
           <select id="scoreDay" onchange="loadScoreEntry()" class="ainp">
-            <option value="1">Day 1 · Sun 7 Sept</option>
-            <option value="2">Day 2 · Mon 8 Sept</option>
+            <option value="1">Day 1 · Mon 7 Sept</option>
+            <option value="2">Day 2 · Tue 8 Sept</option>
           </select>
         </div>
         <div>
@@ -582,22 +582,38 @@ function renderTeams(day) {
     // Per-member totals for display
     var memberSummaries = members.map(function(m) {
       var s = scores[m.id];
-      if (!s || !s.some(function(x){ return x>0; })) return { name: m.name, total: null };
-      return { name: m.name, total: calcRoundPoints(m, s, day).total };
+      var ph = day === 1 ? m.phDay1 : m.phDay2;
+      var phLabel = m.isPro ? 'PRO' : (ph != null ? ph : '—');
+      if (!s || !s.some(function(x){ return x>0; })) return { name: m.name, ph: phLabel, total: null };
+      return { name: m.name, ph: phLabel, total: calcRoundPoints(m, s, day).total };
     });
-    return { name: t.name, members: memberSummaries, total: total, hasScores: memberSummaries.some(function(m){ return m.total !== null; }) };
+    // Compute team total handicap for balance reference
+    var teamHcp = members.reduce(function(sum, m) {
+      var ph = day === 1 ? m.phDay1 : m.phDay2;
+      return sum + (m.isPro ? 0 : (ph || 0));
+    }, 0);
+    return { name: t.name, members: memberSummaries, total: total, teamHcp: teamHcp, memberCount: members.length, hasScores: memberSummaries.some(function(m){ return m.total !== null; }) };
   }).sort(function(a,b){ return b.total - a.total; });
 
   var html = '';
   teamResults.forEach(function(t, i) {
     html += '<div class="team-card">'
       + '<div class="team-head">'
+      + '<div>'
       + '<div class="team-name">' + (i === 0 && t.total > 0 ? '🏆 ' : '') + t.name + '</div>'
+      + '<div style="font-size:.62rem;color:rgba(255,255,255,.45);letter-spacing:.06em;margin-top:2px;">Combined HCP ' + t.teamHcp + '</div>'
+      + '</div>'
       + '<div class="team-total">' + (t.hasScores ? t.total : '—') + '</div>'
       + '</div>'
       + '<div class="team-members">';
     t.members.forEach(function(m) {
-      html += '<div class="team-mem"><span class="name">' + m.name + '</span><span class="score">' + (m.total !== null ? m.total : '—') + '</span></div>';
+      html += '<div class="team-mem">'
+        + '<span class="name">' + m.name + '</span>'
+        + '<span style="display:flex;align-items:center;gap:12px;">'
+          + '<span style="font-family:DM Mono,monospace;font-size:.72rem;color:rgba(240,192,64,.75);font-weight:700;min-width:38px;text-align:right;">' + (m.ph === 'PRO' ? 'PRO' : 'HCP ' + m.ph) + '</span>'
+          + '<span class="score">' + (m.total !== null ? m.total : '—') + '</span>'
+        + '</span>'
+      + '</div>';
     });
     html += '</div></div>';
   });
