@@ -270,14 +270,6 @@ body{font-family:'Poppins',sans-serif;background:linear-gradient(175deg,#060e1e,
         <strong>Master player list</strong> — used across both days. Add players below (individually or paste in bulk), then set their handicap index and tee. Playing handicap is auto-calculated using the World Handicap formula (HI × Slope ÷ 113 × 95%) for each set of tees.
       </div>
 
-      <!-- Bulk paste -->
-      <div style="background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:10px;padding:14px;margin-bottom:14px;">
-        <div style="font-size:.7rem;font-weight:700;letter-spacing:.12em;color:#f0c040;text-transform:uppercase;margin-bottom:8px;">Add Players in Bulk</div>
-        <div style="font-size:.72rem;color:rgba(255,255,255,.55);margin-bottom:8px;line-height:1.4;">Paste one player per line. Name only, or Name, HI, Gender, Tee (comma-separated).<br>e.g. <em style="color:rgba(240,192,64,.7);">Alex Persaud, 8.2, M, White</em></div>
-        <textarea id="bulkPaste" rows="5" placeholder="John Smith&#10;Chris Wright, 12.4, M, Yellow&#10;Sarah Green, 22.6, W, Red" style="width:100%;background:rgba(0,0,0,.25);border:1px solid rgba(255,255,255,.12);border-radius:8px;padding:10px;color:#fff;font-family:'DM Mono',monospace;font-size:.82rem;resize:vertical;outline:none;"></textarea>
-        <button onclick="bulkAddPlayers()" class="a-btn a-gold" style="margin-top:8px;">+ Add All Players</button>
-      </div>
-
       <!-- Player list -->
       <div style="background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:10px;padding:14px;">
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
@@ -502,7 +494,7 @@ function renderLeaderboard(day) {
       var s = scores[p.id];
       if (!s || !s.some(function(x){ return x > 0; })) return null;
       var r = calcRoundPoints(p, s, day);
-      return { name: p.name, hi: p.hi, ph: day === 1 ? p.phDay1 : p.phDay2, total: r.total, holePts: r.holePts };
+      return { name: p.name, hi: p.hi, ph: day === 1 ? p.phDay1 : p.phDay2, total: r.total, holePts: r.holePts, isPro: p.isPro };
     })
     .filter(function(r){ return r; })
     .sort(function(a,b){ return b.total - a.total; });
@@ -517,7 +509,7 @@ function renderLeaderboard(day) {
     html += '<div class="lb-row' + (i === 0 ? ' leader' : '') + '">'
       + '<div class="pos">' + (i+1) + '</div>'
       + '<div class="name">' + r.name + '</div>'
-      + '<div class="hcp">' + (r.ph != null ? r.ph : '—') + '</div>'
+      + '<div class="hcp">' + (r.isPro ? 'PRO' : (r.ph != null ? r.ph : '—')) + '</div>'
       + '<div class="pts">' + r.total + '</div>'
       + '</div>';
   });
@@ -647,7 +639,8 @@ function pickAdminTab(el) {
 
 // ── PLAYING HANDICAP CALCULATION ──
 // WHS: PH = HI × Slope / 113 × 95%
-function calcPH(hi, teeKey) {
+function calcPH(hi, teeKey, isPro) {
+  if (isPro) return 0;
   if (hi == null || hi === '' || isNaN(hi)) return null;
   var tee = HANBURY.tees[teeKey];
   if (!tee) return null;
@@ -661,7 +654,7 @@ function makePlayerId() {
 }
 
 function addBlankPlayer() {
-  _players.push({ id: makePlayerId(), name: '', hi: null, gender: 'm', teeKey: 'white', phDay1: null, phDay2: null });
+  _players.push({ id: makePlayerId(), name: '', hi: null, gender: 'm', teeKey: 'white', isPro: false, phDay1: null, phDay2: null });
   renderPlayersTable();
 }
 
@@ -672,7 +665,9 @@ function bulkAddPlayers() {
   lines.forEach(function(line) {
     var parts = line.split(',').map(function(p){ return p.trim(); });
     var name = parts[0];
-    var hi = parts[1] ? parseFloat(parts[1]) : null;
+    var hiRaw = parts[1] ? parts[1].trim() : '';
+    var isPro = hiRaw.toUpperCase() === 'PRO' || hiRaw === '+' || hiRaw === 'SCR';
+    var hi = isPro ? null : (hiRaw ? parseFloat(hiRaw) : null);
     var genderRaw = (parts[2] || 'M').toUpperCase();
     var gender = genderRaw.startsWith('W') || genderRaw.startsWith('F') || genderRaw.startsWith('L') ? 'w' : 'm';
     var teeRaw = (parts[3] || (gender === 'w' ? 'Red' : 'White')).toLowerCase();
@@ -685,12 +680,13 @@ function bulkAddPlayers() {
       hi: (hi != null && !isNaN(hi)) ? hi : null,
       gender: gender,
       teeKey: teeKey,
+      isPro: isPro,
       phDay1: null,
       phDay2: null
     });
   });
   // Recalc PH for all
-  _players.forEach(function(p) { p.phDay1 = calcPH(p.hi, p.teeKey); p.phDay2 = p.phDay1; });
+  _players.forEach(function(p) { p.phDay1 = calcPH(p.hi, p.teeKey, p.isPro); p.phDay2 = p.phDay1; });
   document.getElementById('bulkPaste').value = '';
   renderPlayersTable();
   alert('✅ Added ' + lines.length + ' player' + (lines.length===1?'':'s') + '. Remember to save.');
@@ -704,14 +700,15 @@ function renderPlayersTable() {
     return;
   }
   var html = '<div style="overflow-x:auto;-webkit-overflow-scrolling:touch;"><table class="ptable"><thead><tr>'
-    + '<th style="min-width:130px;">NAME</th><th style="width:70px;">HI</th><th style="width:60px;">GENDER</th><th style="width:80px;">TEE</th><th style="width:44px;text-align:center;">PH</th><th style="width:36px;"></th>'
+    + '<th style="min-width:130px;">NAME</th><th style="width:52px;text-align:center;">PRO</th><th style="width:70px;">HI</th><th style="width:60px;">GENDER</th><th style="width:80px;">TEE</th><th style="width:44px;text-align:center;">PH</th><th style="width:36px;"></th>'
     + '</tr></thead><tbody>';
   _players.forEach(function(p, i) {
     var ph = calcPH(p.hi, p.teeKey);
     html += '<tr>'
       + '<td><input type="text" value="' + (p.name || '') + '" placeholder="Player name" oninput="_players[' + i + '].name=this.value.replace(/\\b\\w/g,function(c){return c.toUpperCase();})"></td>'
-      + '<td><input type="number" step="0.1" value="' + (p.hi != null ? p.hi : '') + '" placeholder="—" oninput="updatePlayerHI(' + i + ', this.value)"></td>'
-      + '<td><select onchange="_players[' + i + '].gender=this.value;updatePlayerHI(' + i + ',_players[' + i + '].hi);renderPlayersTable();"><option value="m"' + (p.gender==='m'?' selected':'') + '>M</option><option value="w"' + (p.gender==='w'?' selected':'') + '>W</option></select></td>'
+      + '<td style="text-align:center;"><input type="checkbox" ' + (p.isPro ? 'checked' : '') + ' onchange="updatePlayerPro(' + i + ', this.checked)" style="width:18px;height:18px;accent-color:#f0c040;cursor:pointer;"></td>'
+      + '<td><input type="number" step="0.1" ' + (p.isPro ? 'disabled' : '') + ' value="' + (p.hi != null ? p.hi : '') + '" placeholder="' + (p.isPro ? 'PRO' : '—') + '" oninput="updatePlayerHI(' + i + ', this.value)"></td>'
+      + '<td><select onchange="updatePlayerGender(' + i + ', this.value)"><option value="m"' + (p.gender==='m'?' selected':'') + '>M</option><option value="w"' + (p.gender==='w'?' selected':'') + '>W</option></select></td>'
       + '<td><select onchange="_players[' + i + '].teeKey=this.value;updatePlayerHI(' + i + ',_players[' + i + '].hi);renderPlayersTable();">'
         + '<option value="white"' + (p.teeKey==='white'?' selected':'') + '>White</option>'
         + '<option value="yellow"' + (p.teeKey==='yellow'?' selected':'') + '>Yellow</option>'
@@ -729,9 +726,27 @@ function renderPlayersTable() {
 function updatePlayerHI(idx, val) {
   var v = val === '' || val == null ? null : parseFloat(val);
   _players[idx].hi = isNaN(v) ? null : v;
-  var ph = calcPH(_players[idx].hi, _players[idx].teeKey);
+  var ph = calcPH(_players[idx].hi, _players[idx].teeKey, _players[idx].isPro);
   _players[idx].phDay1 = ph;
   _players[idx].phDay2 = ph;
+}
+
+function updatePlayerGender(idx, gender) {
+  _players[idx].gender = gender;
+  // Auto-assign tee: Ladies → Red, Men → White (default)
+  _players[idx].teeKey = gender === 'w' ? 'red' : 'white';
+  var ph = calcPH(_players[idx].hi, _players[idx].teeKey, _players[idx].isPro);
+  _players[idx].phDay1 = ph;
+  _players[idx].phDay2 = ph;
+  renderPlayersTable();
+}
+
+function updatePlayerPro(idx, isPro) {
+  _players[idx].isPro = isPro;
+  var ph = calcPH(_players[idx].hi, _players[idx].teeKey, isPro);
+  _players[idx].phDay1 = ph;
+  _players[idx].phDay2 = ph;
+  renderPlayersTable();
 }
 
 function removePlayer(idx) {
@@ -888,7 +903,7 @@ function loadScoreEntry() {
   document.getElementById('sePlayerName').textContent = p.name;
   var teeName = HANBURY.tees[p.teeKey] ? HANBURY.tees[p.teeKey].name : p.teeKey;
   var ph = day === 1 ? p.phDay1 : p.phDay2;
-  document.getElementById('sePlayerMeta').textContent = 'HI ' + (p.hi != null ? p.hi : '—') + ' · ' + teeName + ' tees · Playing HCP ' + (ph != null ? ph : '—');
+  document.getElementById('sePlayerMeta').textContent = (p.isPro ? 'PRO' : 'HI ' + (p.hi != null ? p.hi : '—')) + ' · ' + teeName + ' tees · Playing HCP ' + (ph != null ? ph : '—');
 
   renderHoleGrid(p, day, current);
   updateRunningTotal(p, day);
