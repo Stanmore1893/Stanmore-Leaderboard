@@ -184,6 +184,7 @@ body{font-family:'Poppins',sans-serif;background:linear-gradient(175deg,#060e1e,
   <div class="tab" data-view="day2" onclick="pickTab(this)">Day 2 · Tue</div>
   <div class="tab" data-view="combined" onclick="pickTab(this)">Combined</div>
   <div class="tab" data-view="teams" onclick="pickTab(this)">Teams</div>
+  <div class="tab" data-view="awards" onclick="pickTab(this)">🎯 Awards</div>
   <div class="tab admin-tab" data-view="admin" onclick="pickTab(this)">🔐 Admin</div>
 </div>
 
@@ -203,6 +204,11 @@ body{font-family:'Poppins',sans-serif;background:linear-gradient(175deg,#060e1e,
       <div style="color:rgba(255,255,255,.55);">👥 Team</div><div>Best 2 of 4 Stableford scores per hole</div>
       <div style="color:rgba(255,255,255,.55);">🎯 Handicap</div><div>95% of Course Handicap</div>
     </div>
+  </div>
+
+  <div id="countdownBox" style="display:none;margin-top:16px;background:linear-gradient(135deg,rgba(212,160,23,.15),rgba(212,160,23,.05));border:1.5px solid rgba(240,192,64,.4);border-radius:12px;padding:16px;text-align:center;">
+    <div style="font-size:.62rem;color:rgba(240,192,64,.75);letter-spacing:.2em;text-transform:uppercase;font-weight:700;margin-bottom:6px;">Tee-off in</div>
+    <div id="countdownText" style="font-family:'Playfair Display',serif;font-size:1.6rem;font-weight:800;color:#ffe066;line-height:1.1;">—</div>
   </div>
 </div>
 
@@ -241,6 +247,24 @@ body{font-family:'Poppins',sans-serif;background:linear-gradient(175deg,#060e1e,
   </div>
 </div>
 
+<!-- ── AWARDS (Nearest Pin / Longest Drive) ── -->
+<div class="view" id="view-awards">
+  <div style="display:flex;gap:6px;margin-bottom:12px;">
+    <button class="tab active" style="border-radius:8px;" data-award-day="1" onclick="pickAwardDay(this)">Day 1 Awards</button>
+    <button class="tab" style="border-radius:8px;" data-award-day="2" onclick="pickAwardDay(this)">Day 2 Awards</button>
+  </div>
+
+  <div style="background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:12px;padding:14px;margin-bottom:10px;">
+    <div style="font-size:.7rem;font-weight:700;letter-spacing:.14em;color:#f0c040;text-transform:uppercase;margin-bottom:12px;">🎯 Nearest the Pin</div>
+    <div id="ntpList"></div>
+  </div>
+
+  <div style="background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:12px;padding:14px;">
+    <div style="font-size:.7rem;font-weight:700;letter-spacing:.14em;color:#f0c040;text-transform:uppercase;margin-bottom:12px;">🚀 Longest Drive</div>
+    <div id="ldList"></div>
+  </div>
+</div>
+
 <!-- ── ADMIN ── -->
 <div class="view" id="view-admin">
   <!-- Password gate -->
@@ -262,6 +286,7 @@ body{font-family:'Poppins',sans-serif;background:linear-gradient(175deg,#060e1e,
       <button class="atab" data-section="teams1" onclick="pickAdminTab(this)">🏳️ Teams · Day 1</button>
       <button class="atab" data-section="teams2" onclick="pickAdminTab(this)">🏳️ Teams · Day 2</button>
       <button class="atab" data-section="scores" onclick="pickAdminTab(this)">📊 Score Entry</button>
+      <button class="atab" data-section="awards" onclick="pickAdminTab(this)">🎯 Awards</button>
     </div>
 
     <!-- PLAYERS -->
@@ -281,6 +306,17 @@ body{font-family:'Poppins',sans-serif;background:linear-gradient(175deg,#060e1e,
 
       <button onclick="savePlayers()" class="a-btn a-gold" style="margin-top:12px;">💾 Save All Players</button>
       <button onclick="clearAllPlayers()" class="a-btn a-red" style="margin-top:8px;">🗑 Clear All Players</button>
+
+      <div style="margin-top:22px;padding-top:18px;border-top:1px dashed rgba(255,255,255,.1);">
+        <div style="font-size:.7rem;font-weight:700;letter-spacing:.12em;color:#f0c040;text-transform:uppercase;margin-bottom:8px;">💾 Backup &amp; Export</div>
+        <div style="font-size:.72rem;color:rgba(255,255,255,.55);margin-bottom:10px;line-height:1.5;">Download a complete backup of players, teams, and scores. Keep this safe on the day in case anything goes wrong.</div>
+        <button onclick="exportBackupJSON()" class="a-btn a-out" style="margin-bottom:8px;">📥 Download Full Backup (JSON)</button>
+        <button onclick="exportScoresCSV()" class="a-btn a-out" style="margin-bottom:8px;">📊 Export Leaderboards (CSV)</button>
+        <label class="a-btn a-out" style="cursor:pointer;display:block;text-align:center;margin-bottom:0;">
+          📤 Restore from Backup
+          <input type="file" accept=".json" onchange="restoreBackup(event)" style="display:none;">
+        </label>
+      </div>
     </div>
 
     <!-- TEAMS DAY 1 -->
@@ -340,6 +376,37 @@ body{font-family:'Poppins',sans-serif;background:linear-gradient(175deg,#060e1e,
       </div>
     </div>
 
+    <!-- AWARDS ADMIN -->
+    <div class="asec" id="asec-awards" style="display:none;">
+      <div class="info-box">
+        <strong>Awards</strong> — record nearest the pin and longest drive winners for each day. These show on the public Awards tab.
+      </div>
+
+      <div style="display:grid;grid-template-columns:1fr 2fr;gap:10px;margin-bottom:12px;">
+        <div>
+          <label class="alabel">Day</label>
+          <select id="awardDay" onchange="renderAwardsAdmin()" class="ainp">
+            <option value="1">Day 1 · Mon 7 Sept</option>
+            <option value="2">Day 2 · Tue 8 Sept</option>
+          </select>
+        </div>
+      </div>
+
+      <div style="background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:10px;padding:14px;margin-bottom:10px;">
+        <div style="font-size:.7rem;font-weight:700;letter-spacing:.12em;color:#f0c040;text-transform:uppercase;margin-bottom:10px;">🎯 Nearest the Pin</div>
+        <div id="ntpAdminList"></div>
+        <button onclick="addAward('ntp')" class="a-btn a-out" style="margin-top:10px;">+ Add Nearest the Pin</button>
+      </div>
+
+      <div style="background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:10px;padding:14px;">
+        <div style="font-size:.7rem;font-weight:700;letter-spacing:.12em;color:#f0c040;text-transform:uppercase;margin-bottom:10px;">🚀 Longest Drive</div>
+        <div id="ldAdminList"></div>
+        <button onclick="addAward('ld')" class="a-btn a-out" style="margin-top:10px;">+ Add Longest Drive</button>
+      </div>
+
+      <button onclick="saveAwards()" class="a-btn a-gold" style="margin-top:14px;">💾 Save Awards</button>
+    </div>
+
   </div>
 </div>
 
@@ -350,16 +417,19 @@ body{font-family:'Poppins',sans-serif;background:linear-gradient(175deg,#060e1e,
 <script>
 // ── COURSE DATA — Hanbury Manor ──
 var HANBURY = {
-  par: [4,5,4,3,4,5,3,4,5, 4,3,5,4,4,4,3,5,4], // Par 72
-  // Stroke Index Men (from Yellow/White Stroke Rec'd)
-  siMen:   [4,15,9,5,17,3,11,1,7, 3,13,7,9,1,15,5,11,17],
-  // Stroke Index Ladies (from Red Stroke Index column)
-  siLadies:[4,15,9,5,17,3,11,1,7, 3,13,7,9,1,15,5,11,17],
+  // Par per hole (Par 72)
+  par: [4,5,4,3,4,3,4,4,5, 4,3,5,4,4,4,3,5,4],
+  // Stroke Index Men (verified from WHS scorecard)
+  siMen:   [15,9,3,17,11,5,13,1,7, 4,14,2,16,8,6,18,12,10],
+  // Stroke Index Ladies — please confirm; using same as men until updated
+  siLadies:[13,3,7,17,9,15,11,1,5, 4,18,2,8,12,10,16,6,14],
   tees: {
-    blue:   { name:'Blue',   yards:[347,560,443,187,464,189,465,550,499, 412,211,540,414,431,406,185,496,391], total:7053, cr:74.4, slope:135, gender:'m' },
-    white:  { name:'White',  yards:[314,499,425,141,430,318,425,493,455, 351,195,495,459,354,317,333,344,252], total:6752, cr:73.0, slope:132, gender:'m' },
-    yellow: { name:'Yellow', yards:[298,485,410,133,410,300,410,478,440, 340,180,480,440,340,300,320,330,240], total:6534, cr:72.0, slope:130, gender:'m' },
-    red:    { name:'Red',    yards:[254,445,362,115,317,129,304,440,357, 307,130,468,323,286,272,121,402,148], total:5480, cr:74.0, slope:130, gender:'w' }
+    // White tees — verified from WHS
+    white:  { name:'White',  yards:[347,527,425,163,422,162,338,426,523, 381,178,534,407,394,393,171,480,365], total:6636, cr:72.3, slope:139, gender:'m' },
+    // Other tees — placeholder values until confirmed
+    blue:   { name:'Blue',   yards:[], total:7053, cr:74.4, slope:135, gender:'m' },
+    yellow: { name:'Yellow', yards:[], total:6534, cr:72.0, slope:130, gender:'m' },
+    red:    { name:'Red',    yards:[265,451,358,116,318,126,271,370,442, 312,131,473,328,347,312,117,404,274], total:5425, cr:72.3, slope:134, gender:'w' }
   }
 };
 
@@ -369,6 +439,8 @@ var _teamsDay1 = []; // [{name, playerIds:[...]}]
 var _teamsDay2 = [];
 var _scoresDay1 = {}; // {playerId: [gross,gross,...] length 18}
 var _scoresDay2 = {};
+var _awardsDay1 = { ntp: [], ld: [] };
+var _awardsDay2 = { ntp: [], ld: [] };
 
 // ── STORAGE (using existing Vercel proxy) ──
 var PROXY_URL = 'https://stanmore-proxy.vercel.app/api/proxy';
@@ -401,6 +473,8 @@ async function loadData() {
     _teamsDay2 = ad.teamsDay2 || [];
     _scoresDay1 = ad.scoresDay1 || {};
     _scoresDay2 = ad.scoresDay2 || {};
+    _awardsDay1 = ad.awardsDay1 || { ntp: [], ld: [] };
+    _awardsDay2 = ad.awardsDay2 || { ntp: [], ld: [] };
   }
   renderAll();
 }
@@ -413,6 +487,8 @@ async function saveData() {
     teamsDay2: _teamsDay2,
     scoresDay1: _scoresDay1,
     scoresDay2: _scoresDay2,
+    awardsDay1: _awardsDay1,
+    awardsDay2: _awardsDay2,
     updatedAt: new Date().toISOString()
   };
   return await saveRecord(record);
@@ -478,12 +554,38 @@ function calcRoundPoints(player, holeScores, day) {
 }
 
 // ── RENDER LEADERBOARDS ──
+function renderAwards(day) {
+  var awards = day === 1 ? _awardsDay1 : _awardsDay2;
+  var ntpEl = document.getElementById('ntpList');
+  var ldEl = document.getElementById('ldList');
+  if (!ntpEl || !ldEl) return;
+  var renderList = function(items, emptyText) {
+    if (!items || !items.length) return '<div style="color:rgba(255,255,255,.35);font-size:.78rem;font-style:italic;padding:6px 0;">' + emptyText + '</div>';
+    return items.map(function(item) {
+      return '<div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid rgba(255,255,255,.04);font-size:.85rem;">'
+        + '<span style="color:#fff;font-weight:600;">' + (item.hole ? 'Hole ' + item.hole + ' — ' : '') + item.name + '</span>'
+        + (item.detail ? '<span style="color:rgba(240,192,64,.75);font-family:DM Mono,monospace;font-size:.78rem;">' + item.detail + '</span>' : '')
+      + '</div>';
+    }).join('');
+  };
+  ntpEl.innerHTML = renderList(awards.ntp, 'Nearest the pin winners will appear here.');
+  ldEl.innerHTML = renderList(awards.ld, 'Longest drive winners will appear here.');
+}
+
+function pickAwardDay(el) {
+  el.parentElement.querySelectorAll('.tab').forEach(function(t){ t.classList.remove('active'); });
+  el.classList.add('active');
+  renderAwards(parseInt(el.dataset.awardDay));
+}
+
 function renderAll() {
   renderLeaderboard(1);
   renderLeaderboard(2);
   renderCombined();
   var activeTeamBtn = document.querySelector('[data-team-day].active');
   renderTeams(activeTeamBtn ? parseInt(activeTeamBtn.dataset.teamDay) : 1);
+  var activeAwardBtn = document.querySelector('[data-award-day].active');
+  renderAwards(activeAwardBtn ? parseInt(activeAwardBtn.dataset.awardDay) : 1);
 }
 
 function renderLeaderboard(day) {
@@ -648,6 +750,7 @@ function pickAdminTab(el) {
   if (el.dataset.section === 'teams1') renderTeamsEditor(1);
   if (el.dataset.section === 'teams2') renderTeamsEditor(2);
   if (el.dataset.section === 'scores') populatePlayerSelect();
+  if (el.dataset.section === 'awards') renderAwardsAdmin();
 }
 
 // ── PLAYING HANDICAP CALCULATION ──
@@ -998,8 +1101,167 @@ async function clearScoresForPlayer() {
   renderAll();
 }
 
+function updateCountdown() {
+  var target = new Date('2026-09-07T07:00:00');
+  var now = new Date();
+  var diff = target - now;
+  var box = document.getElementById('countdownBox');
+  var txt = document.getElementById('countdownText');
+  if (!box || !txt) return;
+  if (diff <= 0) {
+    var end = new Date('2026-09-09T00:00:00');
+    if (now < end) {
+      box.style.display = 'block';
+      txt.innerHTML = '<span style="color:#4ade80;">🔴 LIVE NOW</span>';
+    } else {
+      box.style.display = 'none';
+    }
+    return;
+  }
+  var days = Math.floor(diff / 86400000);
+  var hours = Math.floor((diff % 86400000) / 3600000);
+  box.style.display = 'block';
+  if (days > 1) txt.innerHTML = days + ' <span style="font-size:.9rem;color:rgba(255,255,255,.6);font-family:Poppins,sans-serif;font-weight:600;">days</span>';
+  else if (days === 1) txt.innerHTML = '1 <span style="font-size:.9rem;color:rgba(255,255,255,.6);font-family:Poppins,sans-serif;font-weight:600;">day &amp; </span>' + hours + ' <span style="font-size:.9rem;color:rgba(255,255,255,.6);font-family:Poppins,sans-serif;font-weight:600;">hours</span>';
+  else txt.innerHTML = hours + ' <span style="font-size:.9rem;color:rgba(255,255,255,.6);font-family:Poppins,sans-serif;font-weight:600;">hours</span>';
+}
+
+function renderAwardsAdmin() {
+  var day = parseInt(document.getElementById('awardDay').value);
+  var awards = day === 1 ? _awardsDay1 : _awardsDay2;
+  ['ntp','ld'].forEach(function(type) {
+    var el = document.getElementById(type + 'AdminList');
+    var items = awards[type] || [];
+    if (!items.length) { el.innerHTML = '<div style="color:rgba(255,255,255,.35);font-size:.78rem;font-style:italic;">None added yet.</div>'; return; }
+    el.innerHTML = items.map(function(item, i) {
+      return '<div style="display:grid;grid-template-columns:70px 1fr 90px 34px;gap:6px;margin-bottom:6px;align-items:center;">'
+        + '<input type="text" placeholder="Hole" value="' + (item.hole || '') + '" oninput="updateAward(\'' + type + '\',' + i + ',\'hole\',this.value)" class="ainp" style="padding:6px;font-size:.78rem;">'
+        + '<input type="text" placeholder="Player name" value="' + (item.name || '') + '" oninput="updateAward(\'' + type + '\',' + i + ',\'name\',this.value)" class="ainp" style="padding:6px;font-size:.78rem;">'
+        + '<input type="text" placeholder="Detail" value="' + (item.detail || '') + '" oninput="updateAward(\'' + type + '\',' + i + ',\'detail\',this.value)" class="ainp" style="padding:6px;font-size:.78rem;">'
+        + '<button onclick="removeAward(\'' + type + '\',' + i + ')" class="del-btn">✕</button>'
+      + '</div>';
+    }).join('');
+  });
+}
+
+function addAward(type) {
+  var day = parseInt(document.getElementById('awardDay').value);
+  var awards = day === 1 ? _awardsDay1 : _awardsDay2;
+  if (!awards[type]) awards[type] = [];
+  awards[type].push({ hole: '', name: '', detail: '' });
+  renderAwardsAdmin();
+}
+
+function updateAward(type, i, field, val) {
+  var day = parseInt(document.getElementById('awardDay').value);
+  var awards = day === 1 ? _awardsDay1 : _awardsDay2;
+  if (awards[type][i]) awards[type][i][field] = val;
+}
+
+function removeAward(type, i) {
+  var day = parseInt(document.getElementById('awardDay').value);
+  var awards = day === 1 ? _awardsDay1 : _awardsDay2;
+  awards[type].splice(i, 1);
+  renderAwardsAdmin();
+}
+
+async function saveAwards() {
+  var ok = await saveData();
+  alert(ok ? '✅ Awards saved!' : '⚠️ Failed to save.');
+  renderAll();
+}
+
+// ═══════════════════════════════════════════════════════
+// ── BACKUP / EXPORT / RESTORE ──
+// ═══════════════════════════════════════════════════════
+function exportBackupJSON() {
+  var payload = {
+    exportedAt: new Date().toISOString(),
+    event: 'Jits Lachhani Captain Away Day 2026',
+    players: _players,
+    teamsDay1: _teamsDay1,
+    teamsDay2: _teamsDay2,
+    scoresDay1: _scoresDay1,
+    scoresDay2: _scoresDay2
+  };
+  var blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
+  var url = URL.createObjectURL(blob);
+  var link = document.createElement('a');
+  link.href = url;
+  link.download = 'away-day-backup-' + new Date().toISOString().split('T')[0] + '.json';
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+  URL.revokeObjectURL(url);
+}
+
+function exportScoresCSV() {
+  if (!_players.length) { alert('No players to export'); return; }
+  var esc = function(v){ v = String(v == null ? '' : v); return v.indexOf(',')>-1 || v.indexOf('"')>-1 ? '"' + v.replace(/"/g,'""') + '"' : v; };
+  var csv = 'Name,HI,Playing HCP,Tee,Day 1 Stableford,Day 2 Stableford,Combined\n';
+  _players.forEach(function(p) {
+    var s1 = _scoresDay1[p.id];
+    var s2 = _scoresDay2[p.id];
+    var d1 = s1 && s1.some(function(x){ return x>0; }) ? calcRoundPoints(p, s1, 1).total : '';
+    var d2 = s2 && s2.some(function(x){ return x>0; }) ? calcRoundPoints(p, s2, 2).total : '';
+    var comb = (d1 !== '' || d2 !== '') ? ((d1 || 0) + (d2 || 0)) : '';
+    var teeName = HANBURY.tees[p.teeKey] ? HANBURY.tees[p.teeKey].name : p.teeKey;
+    csv += [esc(p.name), esc(p.isPro ? 'PRO' : (p.hi != null ? p.hi : '')), esc(p.isPro ? '0' : (p.phDay1 != null ? p.phDay1 : '')), esc(teeName), esc(d1), esc(d2), esc(comb)].join(',') + '\n';
+  });
+  var blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+  var url = URL.createObjectURL(blob);
+  var link = document.createElement('a');
+  link.href = url;
+  link.download = 'away-day-leaderboard-' + new Date().toISOString().split('T')[0] + '.csv';
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+  URL.revokeObjectURL(url);
+}
+
+function restoreBackup(evt) {
+  var file = evt.target.files[0];
+  if (!file) return;
+  if (!confirm('Restoring will REPLACE all current players, teams, and scores. Continue?')) { evt.target.value = ''; return; }
+  var reader = new FileReader();
+  reader.onload = async function(e) {
+    try {
+      var data = JSON.parse(e.target.result);
+      if (!data.players || !Array.isArray(data.players)) throw new Error('Invalid backup file');
+      _players = data.players || [];
+      _teamsDay1 = data.teamsDay1 || [];
+      _teamsDay2 = data.teamsDay2 || [];
+      _scoresDay1 = data.scoresDay1 || {};
+      _scoresDay2 = data.scoresDay2 || {};
+      await saveData();
+      renderPlayersTable();
+      renderTeamsEditor(1);
+      renderTeamsEditor(2);
+      populatePlayerSelect();
+      renderAll();
+      alert('✅ Backup restored: ' + _players.length + ' players.');
+    } catch(err) {
+      alert('❌ Could not restore backup: ' + err.message);
+    }
+    evt.target.value = '';
+  };
+  reader.readAsText(file);
+}
+
 // ── INIT ──
-window.addEventListener('load', loadData);
+window.addEventListener('load', function() { loadData(); updateCountdown(); });
+
+// Auto-refresh public leaderboards every 30 seconds (silent - don't reload admin data if editing)
+setInterval(function() {
+  // Only refresh if NOT in admin editing an input
+  var active = document.activeElement;
+  if (active && (active.tagName === 'INPUT' || active.tagName === 'TEXTAREA' || active.tagName === 'SELECT')) return;
+  loadData();
+}, 30000);
+
+// Countdown updater
+setInterval(updateCountdown, 60000); // every minute
+
 </script>
 </body>
 </html>
