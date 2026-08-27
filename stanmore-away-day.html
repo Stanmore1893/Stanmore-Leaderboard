@@ -184,7 +184,6 @@ body{font-family:'Poppins',sans-serif;background:linear-gradient(175deg,#060e1e,
   <div class="tab" data-view="day2" onclick="pickTab(this)">Day 2 · Tue</div>
   <div class="tab" data-view="combined" onclick="pickTab(this)">Combined</div>
   <div class="tab" data-view="teams" onclick="pickTab(this)">Teams</div>
-  <div class="tab" data-view="awards" onclick="pickTab(this)">🎯 Awards</div>
   <div class="tab admin-tab" data-view="admin" onclick="pickTab(this)">🔐 Admin</div>
 </div>
 
@@ -247,23 +246,7 @@ body{font-family:'Poppins',sans-serif;background:linear-gradient(175deg,#060e1e,
   </div>
 </div>
 
-<!-- ── AWARDS (Nearest Pin / Longest Drive) ── -->
-<div class="view" id="view-awards">
-  <div style="display:flex;gap:6px;margin-bottom:12px;">
-    <button class="tab active" style="border-radius:8px;" data-award-day="1" onclick="pickAwardDay(this)">Day 1 Awards</button>
-    <button class="tab" style="border-radius:8px;" data-award-day="2" onclick="pickAwardDay(this)">Day 2 Awards</button>
-  </div>
 
-  <div style="background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:12px;padding:14px;margin-bottom:10px;">
-    <div style="font-size:.7rem;font-weight:700;letter-spacing:.14em;color:#f0c040;text-transform:uppercase;margin-bottom:12px;">🎯 Nearest the Pin</div>
-    <div id="ntpList"></div>
-  </div>
-
-  <div style="background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:12px;padding:14px;">
-    <div style="font-size:.7rem;font-weight:700;letter-spacing:.14em;color:#f0c040;text-transform:uppercase;margin-bottom:12px;">🚀 Longest Drive</div>
-    <div id="ldList"></div>
-  </div>
-</div>
 
 <!-- ── ADMIN ── -->
 <div class="view" id="view-admin">
@@ -286,7 +269,6 @@ body{font-family:'Poppins',sans-serif;background:linear-gradient(175deg,#060e1e,
       <button class="atab" data-section="teams1" onclick="pickAdminTab(this)">🏳️ Teams · Day 1</button>
       <button class="atab" data-section="teams2" onclick="pickAdminTab(this)">🏳️ Teams · Day 2</button>
       <button class="atab" data-section="scores" onclick="pickAdminTab(this)">📊 Score Entry</button>
-      <button class="atab" data-section="awards" onclick="pickAdminTab(this)">🎯 Awards</button>
     </div>
 
     <!-- PLAYERS -->
@@ -439,8 +421,6 @@ var _teamsDay1 = []; // [{name, playerIds:[...]}]
 var _teamsDay2 = [];
 var _scoresDay1 = {}; // {playerId: [gross,gross,...] length 18}
 var _scoresDay2 = {};
-var _awardsDay1 = { ntp: [], ld: [] };
-var _awardsDay2 = { ntp: [], ld: [] };
 
 // ── STORAGE (using existing Vercel proxy) ──
 var PROXY_URL = 'https://stanmore-proxy.vercel.app/api/proxy';
@@ -473,8 +453,6 @@ async function loadData() {
     _teamsDay2 = ad.teamsDay2 || [];
     _scoresDay1 = ad.scoresDay1 || {};
     _scoresDay2 = ad.scoresDay2 || {};
-    _awardsDay1 = ad.awardsDay1 || { ntp: [], ld: [] };
-    _awardsDay2 = ad.awardsDay2 || { ntp: [], ld: [] };
   }
   renderAll();
 }
@@ -487,8 +465,6 @@ async function saveData() {
     teamsDay2: _teamsDay2,
     scoresDay1: _scoresDay1,
     scoresDay2: _scoresDay2,
-    awardsDay1: _awardsDay1,
-    awardsDay2: _awardsDay2,
     updatedAt: new Date().toISOString()
   };
   return await saveRecord(record);
@@ -554,38 +530,12 @@ function calcRoundPoints(player, holeScores, day) {
 }
 
 // ── RENDER LEADERBOARDS ──
-function renderAwards(day) {
-  var awards = day === 1 ? _awardsDay1 : _awardsDay2;
-  var ntpEl = document.getElementById('ntpList');
-  var ldEl = document.getElementById('ldList');
-  if (!ntpEl || !ldEl) return;
-  var renderList = function(items, emptyText) {
-    if (!items || !items.length) return '<div style="color:rgba(255,255,255,.35);font-size:.78rem;font-style:italic;padding:6px 0;">' + emptyText + '</div>';
-    return items.map(function(item) {
-      return '<div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid rgba(255,255,255,.04);font-size:.85rem;">'
-        + '<span style="color:#fff;font-weight:600;">' + (item.hole ? 'Hole ' + item.hole + ' — ' : '') + item.name + '</span>'
-        + (item.detail ? '<span style="color:rgba(240,192,64,.75);font-family:DM Mono,monospace;font-size:.78rem;">' + item.detail + '</span>' : '')
-      + '</div>';
-    }).join('');
-  };
-  ntpEl.innerHTML = renderList(awards.ntp, 'Nearest the pin winners will appear here.');
-  ldEl.innerHTML = renderList(awards.ld, 'Longest drive winners will appear here.');
-}
-
-function pickAwardDay(el) {
-  el.parentElement.querySelectorAll('.tab').forEach(function(t){ t.classList.remove('active'); });
-  el.classList.add('active');
-  renderAwards(parseInt(el.dataset.awardDay));
-}
-
 function renderAll() {
   renderLeaderboard(1);
   renderLeaderboard(2);
   renderCombined();
   var activeTeamBtn = document.querySelector('[data-team-day].active');
   renderTeams(activeTeamBtn ? parseInt(activeTeamBtn.dataset.teamDay) : 1);
-  var activeAwardBtn = document.querySelector('[data-award-day].active');
-  renderAwards(activeAwardBtn ? parseInt(activeAwardBtn.dataset.awardDay) : 1);
 }
 
 function renderLeaderboard(day) {
@@ -750,7 +700,6 @@ function pickAdminTab(el) {
   if (el.dataset.section === 'teams1') renderTeamsEditor(1);
   if (el.dataset.section === 'teams2') renderTeamsEditor(2);
   if (el.dataset.section === 'scores') populatePlayerSelect();
-  if (el.dataset.section === 'awards') renderAwardsAdmin();
 }
 
 // ── PLAYING HANDICAP CALCULATION ──
@@ -760,7 +709,10 @@ function calcPH(hi, teeKey, isPro) {
   if (hi == null || hi === '' || isNaN(hi)) return null;
   var tee = HANBURY.tees[teeKey];
   if (!tee) return null;
-  var ph = Math.round(hi * tee.slope / 113 * 0.95);
+  // WHS Course Handicap = HI × (Slope/113) + (CR - Par)
+  var courseHandicap = hi * (tee.slope / 113) + (tee.cr - HANBURY.par.reduce(function(a,b){ return a+b; }, 0));
+  // Playing Handicap = Course Handicap × 95% (applied unrounded, then round final)
+  var ph = Math.round(courseHandicap * 0.95);
   return ph;
 }
 
@@ -1124,51 +1076,6 @@ function updateCountdown() {
   if (days > 1) txt.innerHTML = days + ' <span style="font-size:.9rem;color:rgba(255,255,255,.6);font-family:Poppins,sans-serif;font-weight:600;">days</span>';
   else if (days === 1) txt.innerHTML = '1 <span style="font-size:.9rem;color:rgba(255,255,255,.6);font-family:Poppins,sans-serif;font-weight:600;">day &amp; </span>' + hours + ' <span style="font-size:.9rem;color:rgba(255,255,255,.6);font-family:Poppins,sans-serif;font-weight:600;">hours</span>';
   else txt.innerHTML = hours + ' <span style="font-size:.9rem;color:rgba(255,255,255,.6);font-family:Poppins,sans-serif;font-weight:600;">hours</span>';
-}
-
-function renderAwardsAdmin() {
-  var day = parseInt(document.getElementById('awardDay').value);
-  var awards = day === 1 ? _awardsDay1 : _awardsDay2;
-  ['ntp','ld'].forEach(function(type) {
-    var el = document.getElementById(type + 'AdminList');
-    var items = awards[type] || [];
-    if (!items.length) { el.innerHTML = '<div style="color:rgba(255,255,255,.35);font-size:.78rem;font-style:italic;">None added yet.</div>'; return; }
-    el.innerHTML = items.map(function(item, i) {
-      return '<div style="display:grid;grid-template-columns:70px 1fr 90px 34px;gap:6px;margin-bottom:6px;align-items:center;">'
-        + '<input type="text" placeholder="Hole" value="' + (item.hole || '') + '" oninput="updateAward(\'' + type + '\',' + i + ',\'hole\',this.value)" class="ainp" style="padding:6px;font-size:.78rem;">'
-        + '<input type="text" placeholder="Player name" value="' + (item.name || '') + '" oninput="updateAward(\'' + type + '\',' + i + ',\'name\',this.value)" class="ainp" style="padding:6px;font-size:.78rem;">'
-        + '<input type="text" placeholder="Detail" value="' + (item.detail || '') + '" oninput="updateAward(\'' + type + '\',' + i + ',\'detail\',this.value)" class="ainp" style="padding:6px;font-size:.78rem;">'
-        + '<button onclick="removeAward(\'' + type + '\',' + i + ')" class="del-btn">✕</button>'
-      + '</div>';
-    }).join('');
-  });
-}
-
-function addAward(type) {
-  var day = parseInt(document.getElementById('awardDay').value);
-  var awards = day === 1 ? _awardsDay1 : _awardsDay2;
-  if (!awards[type]) awards[type] = [];
-  awards[type].push({ hole: '', name: '', detail: '' });
-  renderAwardsAdmin();
-}
-
-function updateAward(type, i, field, val) {
-  var day = parseInt(document.getElementById('awardDay').value);
-  var awards = day === 1 ? _awardsDay1 : _awardsDay2;
-  if (awards[type][i]) awards[type][i][field] = val;
-}
-
-function removeAward(type, i) {
-  var day = parseInt(document.getElementById('awardDay').value);
-  var awards = day === 1 ? _awardsDay1 : _awardsDay2;
-  awards[type].splice(i, 1);
-  renderAwardsAdmin();
-}
-
-async function saveAwards() {
-  var ok = await saveData();
-  alert(ok ? '✅ Awards saved!' : '⚠️ Failed to save.');
-  renderAll();
 }
 
 // ═══════════════════════════════════════════════════════
