@@ -219,6 +219,231 @@ body{font-family:'Poppins',sans-serif;background:linear-gradient(175deg,#0a1428,
 
 /* Individual leader pts styling */
 .lb-row .pts.num-serif{font-family:'Playfair Display',serif;font-weight:900;}
+
+/* ══ REDESIGNED OVERVIEW ══ */
+
+/* Countdown hero card */
+.ov-countdown{
+  position:relative;
+  background:
+    radial-gradient(circle at 20% 0%,rgba(240,192,64,.22),transparent 55%),
+    linear-gradient(135deg,rgba(212,160,23,.15),rgba(15,35,71,.4));
+  border:1.5px solid rgba(240,192,64,.35);
+  border-radius:18px;
+  padding:26px 20px 22px;
+  margin-bottom:20px;
+  overflow:hidden;
+  box-shadow:0 12px 40px rgba(15,35,71,.5);
+}
+.ov-countdown::before{
+  content:'';
+  position:absolute;inset:0;border-radius:18px;padding:1.5px;
+  background:linear-gradient(135deg,rgba(240,192,64,.6),transparent 50%,rgba(240,192,64,.4));
+  -webkit-mask:linear-gradient(#fff 0 0) content-box,linear-gradient(#fff 0 0);
+  -webkit-mask-composite:xor;mask-composite:exclude;
+  pointer-events:none;
+}
+.ov-countdown-inner{position:relative;z-index:2;}
+.ov-countdown-lbl{
+  font-size:.65rem;color:rgba(240,192,64,.85);
+  letter-spacing:.32em;text-transform:uppercase;font-weight:700;
+  margin-bottom:8px;
+}
+.ov-countdown-num{
+  font-family:'Playfair Display',serif;
+  font-size:3.2rem;font-weight:900;
+  background:linear-gradient(180deg,#ffe066,#f0c040 50%,#d4a017);
+  -webkit-background-clip:text;background-clip:text;
+  color:transparent;-webkit-text-fill-color:transparent;
+  line-height:1;letter-spacing:-.02em;
+  text-shadow:0 4px 20px rgba(212,160,23,.4);
+}
+.ov-countdown-num span{
+  font-family:'Poppins',sans-serif;
+  font-size:1rem;font-weight:600;
+  color:rgba(255,255,255,.65) !important;
+  -webkit-text-fill-color:rgba(255,255,255,.65);
+  background:none !important;
+  margin-left:6px;
+  letter-spacing:.02em;
+}
+.ov-countdown-sub{
+  margin-top:10px;
+  font-family:'Playfair Display',serif;
+  font-style:italic;
+  font-size:.88rem;
+  color:rgba(255,255,255,.7);
+  letter-spacing:.01em;
+}
+.ov-countdown-flag{
+  position:absolute;
+  right:16px;top:18px;
+  font-size:2.4rem;
+  opacity:.18;
+  transform:rotate(-8deg);
+}
+
+/* Signature stats row */
+.ov-stats-row{
+  display:grid;
+  grid-template-columns:1fr 1px 1fr 1px 1fr 1px 1fr;
+  gap:0;
+  background:rgba(255,255,255,.03);
+  border:1px solid rgba(240,192,64,.15);
+  border-radius:14px;
+  padding:16px 4px;
+  margin-bottom:20px;
+  box-shadow:0 6px 24px rgba(15,35,71,.35);
+}
+.ov-stat{text-align:center;padding:2px 4px;}
+.ov-stat-num{
+  font-family:'Playfair Display',serif;
+  font-size:2rem;font-weight:900;
+  color:#f0c040;
+  line-height:1;
+  letter-spacing:-.02em;
+  margin-bottom:4px;
+  font-feature-settings:'tnum' 1;
+}
+.ov-stat-lbl{
+  font-size:.58rem;
+  color:rgba(255,255,255,.55);
+  letter-spacing:.24em;text-transform:uppercase;
+  font-weight:600;
+}
+.ov-stat-div{
+  background:linear-gradient(180deg,transparent,rgba(240,192,64,.3),transparent);
+}
+
+/* Format showcase card */
+.ov-format-card{
+  background:rgba(255,255,255,.03);
+  border:1px solid rgba(255,255,255,.08);
+  border-radius:16px;
+  padding:22px 18px 18px;
+  margin-bottom:20px;
+  box-shadow:0 8px 30px rgba(15,35,71,.4);
+}
+.ov-format-header{text-align:center;margin-bottom:18px;}
+.ov-format-eyebrow{
+  font-size:.6rem;color:rgba(240,192,64,.7);
+  letter-spacing:.32em;text-transform:uppercase;
+  font-weight:700;margin-bottom:6px;
+}
+.ov-format-title{
+  font-family:'Playfair Display',serif;
+  font-size:1.35rem;font-weight:800;
+  color:#fff;line-height:1.15;
+  letter-spacing:-.005em;
+}
+.ov-format-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:10px;
+  margin-bottom:16px;
+}
+.ov-format-box{
+  background:rgba(240,192,64,.05);
+  border:1px solid rgba(240,192,64,.2);
+  border-radius:12px;
+  padding:14px 12px;
+  text-align:center;
+  transition:all .2s;
+}
+.ov-format-box:hover{
+  background:rgba(240,192,64,.08);
+  border-color:rgba(240,192,64,.35);
+  transform:translateY(-2px);
+}
+.ov-format-icon{font-size:1.6rem;margin-bottom:6px;line-height:1;}
+.ov-format-name{
+  font-family:'Playfair Display',serif;
+  font-size:1.05rem;font-weight:800;
+  color:#ffe066;
+  margin-bottom:6px;
+  letter-spacing:.01em;
+}
+.ov-format-desc{
+  font-size:.75rem;
+  color:rgba(255,255,255,.68);
+  line-height:1.5;
+}
+.ov-format-hcp{
+  padding-top:14px;
+  border-top:1px solid rgba(240,192,64,.15);
+  font-size:.72rem;
+  text-align:center;
+  letter-spacing:.02em;
+  line-height:1.6;
+}
+.ov-format-hcp span{display:block;}
+
+/* Venue card */
+.ov-venue-card{
+  background:linear-gradient(135deg,rgba(212,160,23,.06),rgba(15,35,71,.15));
+  border:1px solid rgba(240,192,64,.2);
+  border-radius:16px;
+  padding:22px 18px 18px;
+  margin-bottom:16px;
+  text-align:center;
+  box-shadow:0 8px 30px rgba(15,35,71,.4);
+}
+.ov-venue-eyebrow{
+  font-size:.6rem;color:rgba(240,192,64,.7);
+  letter-spacing:.32em;text-transform:uppercase;
+  font-weight:700;margin-bottom:8px;
+}
+.ov-venue-title{
+  font-family:'Playfair Display',serif;
+  font-size:1.75rem;font-weight:900;
+  color:#f0c040;
+  line-height:1.05;
+  letter-spacing:-.01em;
+  margin-bottom:4px;
+}
+.ov-venue-sub{
+  font-family:'Playfair Display',serif;
+  font-style:italic;
+  font-size:.85rem;
+  color:rgba(255,255,255,.65);
+  margin-bottom:18px;
+  letter-spacing:.01em;
+}
+.ov-venue-specs{
+  display:grid;
+  grid-template-columns:1fr 1px 1fr 1px 1fr;
+  gap:0;
+  padding:12px 0 4px;
+  border-top:1px solid rgba(240,192,64,.15);
+}
+.ov-spec{text-align:center;padding:2px 4px;}
+.ov-spec-lbl{
+  font-size:.55rem;
+  color:rgba(255,255,255,.5);
+  letter-spacing:.24em;text-transform:uppercase;
+  font-weight:600;margin-bottom:5px;
+}
+.ov-spec-val{
+  font-family:'Playfair Display',serif;
+  font-size:1.4rem;font-weight:800;
+  color:#ffe066;
+  line-height:1;
+  letter-spacing:-.01em;
+}
+.ov-spec-div{
+  background:linear-gradient(180deg,transparent,rgba(240,192,64,.25),transparent);
+}
+
+/* Footnote */
+.ov-footnote{
+  text-align:center;
+  font-family:'Playfair Display',serif;
+  font-style:italic;
+  font-size:.78rem;
+  color:rgba(240,192,64,.5);
+  padding:18px 16px 4px;
+  line-height:1.5;
+}
 </style>
 <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
 </head>
@@ -279,25 +504,82 @@ body{font-family:'Poppins',sans-serif;background:linear-gradient(175deg,#0a1428,
 
 <!-- ── OVERVIEW ── -->
 <div class="view active" id="view-overview">
-  <div class="info-box">
-    <strong>Format · </strong> 2-day event at Hanbury Manor. Each day features a <strong>4-person team</strong> (best 2 Stableford scores per hole) plus an <strong>individual Stableford</strong> competition. Different teams each day. Individual leaderboards for Day 1, Day 2, and Combined 36-hole total.
+
+  <!-- COUNTDOWN HERO CARD -->
+  <div id="countdownBox" class="ov-countdown" style="display:none;">
+    <div class="ov-countdown-inner">
+      <div class="ov-countdown-lbl">Tee-off in</div>
+      <div id="countdownText" class="ov-countdown-num">—</div>
+      <div class="ov-countdown-sub">Monday 7 · Tuesday 8 September 2026</div>
+    </div>
+    <div class="ov-countdown-flag">⛳</div>
   </div>
 
-  <div style="background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:12px;padding:14px;">
-    <div style="font-size:.7rem;font-weight:700;letter-spacing:.14em;color:#f0c040;text-transform:uppercase;margin-bottom:10px;">Event Details</div>
-    <div style="display:grid;grid-template-columns:auto 1fr;gap:8px 14px;font-size:.85rem;">
-      <div style="color:rgba(255,255,255,.55);">📍 Venue</div><div>Hanbury Manor Marriott Hotel &amp; Country Club</div>
-      <div style="color:rgba(255,255,255,.55);">📅 Day 1</div><div>Monday, 7 September 2026</div>
-      <div style="color:rgba(255,255,255,.55);">📅 Day 2</div><div>Tuesday, 8 September 2026</div>
-      <div style="color:rgba(255,255,255,.55);">⛳ Format</div><div>Individual &amp; Team Stableford</div>
-      <div style="color:rgba(255,255,255,.55);">👥 Team</div><div>Best 2 of 4 Stableford scores per hole</div>
-      <div style="color:rgba(255,255,255,.55);">🎯 Handicap</div><div>95% of Course Handicap</div>
+  <!-- SIGNATURE STAT ROW -->
+  <div class="ov-stats-row">
+    <div class="ov-stat">
+      <div class="ov-stat-num">2</div>
+      <div class="ov-stat-lbl">Days</div>
+    </div>
+    <div class="ov-stat-div"></div>
+    <div class="ov-stat">
+      <div class="ov-stat-num">36</div>
+      <div class="ov-stat-lbl">Holes</div>
+    </div>
+    <div class="ov-stat-div"></div>
+    <div class="ov-stat">
+      <div class="ov-stat-num">72</div>
+      <div class="ov-stat-lbl">Par</div>
+    </div>
+    <div class="ov-stat-div"></div>
+    <div class="ov-stat">
+      <div class="ov-stat-num" id="ovStatPlayers">—</div>
+      <div class="ov-stat-lbl">Players</div>
     </div>
   </div>
 
-  <div id="countdownBox" style="display:none;margin-top:16px;background:linear-gradient(135deg,rgba(212,160,23,.15),rgba(212,160,23,.05));border:1.5px solid rgba(240,192,64,.4);border-radius:12px;padding:16px;text-align:center;">
-    <div style="font-size:.62rem;color:rgba(240,192,64,.75);letter-spacing:.2em;text-transform:uppercase;font-weight:700;margin-bottom:6px;">Tee-off in</div>
-    <div id="countdownText" style="font-family:'Playfair Display',serif;font-size:1.6rem;font-weight:800;color:#ffe066;line-height:1.1;">—</div>
+  <!-- FORMAT SHOWCASE -->
+  <div class="ov-format-card">
+    <div class="ov-format-header">
+      <div class="ov-format-eyebrow">Tournament Format</div>
+      <div class="ov-format-title">Two days. Two competitions.</div>
+    </div>
+
+    <div class="ov-format-grid">
+      <div class="ov-format-box">
+        <div class="ov-format-icon">👤</div>
+        <div class="ov-format-name">Individual</div>
+        <div class="ov-format-desc">Stableford scoring across all 36 holes. Separate winners for Day 1, Day 2 and overall combined total.</div>
+      </div>
+      <div class="ov-format-box">
+        <div class="ov-format-icon">👥</div>
+        <div class="ov-format-name">Team</div>
+        <div class="ov-format-desc">Four players per team. Best two Stableford scores count on each hole. Different teams each day.</div>
+      </div>
+    </div>
+
+    <div class="ov-format-hcp">
+      <span style="color:rgba(240,192,64,.75);font-weight:600;">Handicap allowance</span>
+      <span style="color:rgba(255,255,255,.75);">95% of full Course Handicap · Men off White · Ladies off Red</span>
+    </div>
+  </div>
+
+  <!-- VENUE CARD -->
+  <div class="ov-venue-card">
+    <div class="ov-venue-eyebrow">The Venue</div>
+    <div class="ov-venue-title">Hanbury Manor</div>
+    <div class="ov-venue-sub">Marriott Hotel &amp; Country Club · Ware, Hertfordshire</div>
+    <div class="ov-venue-specs">
+      <div class="ov-spec"><div class="ov-spec-lbl">Course Rating</div><div class="ov-spec-val">72.3</div></div>
+      <div class="ov-spec-div"></div>
+      <div class="ov-spec"><div class="ov-spec-lbl">Slope</div><div class="ov-spec-val">139</div></div>
+      <div class="ov-spec-div"></div>
+      <div class="ov-spec"><div class="ov-spec-lbl">Yardage</div><div class="ov-spec-val">6,636</div></div>
+    </div>
+  </div>
+
+  <div class="ov-footnote">
+    Live scores, individual &amp; team leaderboards update automatically throughout both days.
   </div>
 </div>
 
@@ -563,6 +845,8 @@ async function loadData() {
   }
   renderAll();
   checkConfetti();
+  var ovPl = document.getElementById('ovStatPlayers');
+  if (ovPl) ovPl.textContent = _players.length || '—';
   var tsEl = document.getElementById('lastUpdatedTime');
   if (tsEl) tsEl.textContent = new Date().toLocaleTimeString('en-GB', { hour:'2-digit', minute:'2-digit' });
   setTimeout(function(){ if (icon) icon.style.transform = ''; }, 500);
