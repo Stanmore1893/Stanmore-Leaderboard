@@ -151,12 +151,13 @@ body{font-family:'Poppins',sans-serif;background:linear-gradient(175deg,#060e1e,
 .modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:600;backdrop-filter:blur(6px);align-items:flex-end;justify-content:center;}
 .modal.show{display:flex;}
 .modal-content{background:linear-gradient(180deg,#0f2347,#1a3a6b);border-top:2px solid rgba(212,160,23,.5);border-radius:20px 20px 0 0;padding:20px 16px calc(env(safe-area-inset-bottom,0px) + 20px);width:100%;max-width:520px;max-height:88vh;overflow-y:auto;}
-.hole-breakdown{display:grid;grid-template-columns:38px 44px 44px 60px 44px;gap:6px;font-size:.75rem;padding:8px 4px;border-bottom:1px solid rgba(255,255,255,.04);align-items:center;}
+.hole-breakdown{display:grid;grid-template-columns:38px 38px 38px 42px 56px 44px;gap:5px;font-size:.75rem;padding:8px 4px;border-bottom:1px solid rgba(255,255,255,.04);align-items:center;}
 .hole-breakdown.hdr{background:rgba(0,0,0,.25);border-radius:6px;font-size:.6rem;font-weight:700;letter-spacing:.1em;color:rgba(240,192,64,.75);text-transform:uppercase;padding:6px 4px;border-bottom:none;margin-bottom:4px;}
 .hole-breakdown div{text-align:center;}
 .hole-breakdown .hole{color:#f0c040;font-family:'DM Mono',monospace;font-weight:800;}
 .hole-breakdown .par{color:rgba(255,255,255,.55);}
-.hole-breakdown .strokes{color:rgba(240,192,64,.6);font-family:'DM Mono',monospace;font-size:.72rem;}
+.hole-breakdown .si-num{color:rgba(255,255,255,.5);font-family:'DM Mono',monospace;font-size:.72rem;}
+.hole-breakdown .strokes{color:rgba(240,192,64,.75);font-family:'DM Mono',monospace;font-size:.72rem;}
 .hole-breakdown .gross{color:#fff;font-family:'DM Mono',monospace;font-weight:700;}
 .hole-breakdown .pts{color:#8ee0b4;font-family:'DM Mono',monospace;font-weight:800;}
 .hole-breakdown .pts.zero{color:rgba(255,120,80,.7);}
@@ -1228,7 +1229,7 @@ function openPlayerBreakdown(playerId, dayStr) {
 
     var siArr = p.gender === 'w' ? HANBURY.siLadies : HANBURY.siMen;
     var ph = d === 1 ? p.phDay1 : p.phDay2;
-    body += '<div class="hole-breakdown hdr"><div>HOLE</div><div>PAR</div><div>SI</div><div>GROSS</div><div>PTS</div></div>';
+    body += '<div class="hole-breakdown hdr"><div>HOLE</div><div>PAR</div><div>SI</div><div>STK</div><div>GROSS</div><div>PTS</div></div>';
     for (var h = 0; h < 18; h++) {
       var gross = s[h];
       var strokes = calcHoleStrokes(ph || 0, siArr, h);
@@ -1237,7 +1238,8 @@ function openPlayerBreakdown(playerId, dayStr) {
       body += '<div class="hole-breakdown">'
         + '<div class="hole">' + (h+1) + '</div>'
         + '<div class="par">' + HANBURY.par[h] + '</div>'
-        + '<div class="strokes">' + (strokes ? (strokes === 1 ? '●' : '●●') : '—') + '</div>'
+        + '<div class="si-num">' + siArr[h] + '</div>'
+        + '<div class="strokes"><div style="font-size:.78rem;color:rgba(255,255,255,.55);line-height:1;">' + siArr[h] + '</div>' + (strokes ? '<div style="color:#f0c040;font-size:.6rem;line-height:1;margin-top:2px;">' + (strokes === 1 ? '●' : '●●') + '</div>' : '') + '</div>'
         + '<div class="gross">' + (gross || '—') + '</div>'
         + '<div class="pts ' + ptsClass + '">' + (gross ? pts : '—') + '</div>'
         + '</div>';
