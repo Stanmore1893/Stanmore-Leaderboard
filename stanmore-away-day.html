@@ -33,7 +33,15 @@ body{font-family:'Poppins',sans-serif;background:linear-gradient(175deg,#060e1e,
 .hdr .sub{font-size:.6rem;color:rgba(212,160,23,.7);letter-spacing:.1em;text-transform:uppercase;}
 
 /* ── DUAL CREST HERO ── */
-.hero{text-align:center;padding:22px 16px 20px;position:relative;}
+.hero{
+  text-align:center;
+  padding:36px 16px 30px;
+  position:relative;
+  background:
+    linear-gradient(180deg,rgba(15,35,71,.65) 0%,rgba(15,35,71,.85) 60%,rgba(15,35,71,.95) 100%),
+    url('hanbury-manor-hero.jpg') center 30%/cover no-repeat;
+  border-bottom:1px solid rgba(212,160,23,.25);
+}
 .hero-crests{display:flex;align-items:center;justify-content:center;gap:30px;margin-bottom:16px;}
 .hero-crests .crest{width:100px;height:100px;object-fit:contain;filter:drop-shadow(0 3px 10px rgba(0,0,0,.4));}
 .hero-crests .hm-crest{background:#fff;padding:4px;border-radius:6px;}
@@ -138,7 +146,35 @@ body{font-family:'Poppins',sans-serif;background:linear-gradient(175deg,#060e1e,
 .hgrid input.score-inp{width:100%;background:rgba(0,0,0,.35);border:1.5px solid rgba(255,255,255,.15);border-radius:6px;padding:8px 4px;color:#fff;font-family:'DM Mono',monospace;font-size:1rem;font-weight:800;text-align:center;outline:none;}
 .hgrid input.score-inp:focus{border-color:#f0c040;background:rgba(212,160,23,.12);}
 .hgrid .pts-cell{font-family:'DM Mono',monospace;font-weight:800;text-align:center;padding:4px;color:#8ee0b4;font-size:.9rem;}
+
+/* Modal */
+.modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:600;backdrop-filter:blur(6px);align-items:flex-end;justify-content:center;}
+.modal.show{display:flex;}
+.modal-content{background:linear-gradient(180deg,#0f2347,#1a3a6b);border-top:2px solid rgba(212,160,23,.5);border-radius:20px 20px 0 0;padding:20px 16px calc(env(safe-area-inset-bottom,0px) + 20px);width:100%;max-width:520px;max-height:88vh;overflow-y:auto;}
+.hole-breakdown{display:grid;grid-template-columns:38px 44px 44px 60px 44px;gap:6px;font-size:.75rem;padding:8px 4px;border-bottom:1px solid rgba(255,255,255,.04);align-items:center;}
+.hole-breakdown.hdr{background:rgba(0,0,0,.25);border-radius:6px;font-size:.6rem;font-weight:700;letter-spacing:.1em;color:rgba(240,192,64,.75);text-transform:uppercase;padding:6px 4px;border-bottom:none;margin-bottom:4px;}
+.hole-breakdown div{text-align:center;}
+.hole-breakdown .hole{color:#f0c040;font-family:'DM Mono',monospace;font-weight:800;}
+.hole-breakdown .par{color:rgba(255,255,255,.55);}
+.hole-breakdown .strokes{color:rgba(240,192,64,.6);font-family:'DM Mono',monospace;font-size:.72rem;}
+.hole-breakdown .gross{color:#fff;font-family:'DM Mono',monospace;font-weight:700;}
+.hole-breakdown .pts{color:#8ee0b4;font-family:'DM Mono',monospace;font-weight:800;}
+.hole-breakdown .pts.zero{color:rgba(255,120,80,.7);}
+.hole-breakdown .pts.par{color:rgba(255,255,255,.75);}
+.hole-breakdown .pts.birdie{color:#ffe066;}
+.hole-breakdown .pts.eagle{color:#f0c040;}
+.hole-summary{background:rgba(212,160,23,.08);border:1px solid rgba(212,160,23,.25);border-radius:10px;padding:10px 14px;margin-bottom:14px;display:flex;justify-content:space-between;align-items:center;}
+.hole-summary .stat-lbl{font-size:.6rem;color:rgba(255,255,255,.5);letter-spacing:.1em;text-transform:uppercase;font-weight:700;}
+.hole-summary .stat-val{font-family:'DM Mono',monospace;font-size:1.2rem;font-weight:800;color:#ffe066;line-height:1;}
+
+/* Team hole-by-hole in team modal */
+.team-hole-row{display:grid;grid-template-columns:34px 1fr 40px;gap:8px;padding:6px 8px;border-bottom:1px solid rgba(255,255,255,.04);align-items:center;font-size:.78rem;}
+.team-hole-row .hno{color:#f0c040;font-family:'DM Mono',monospace;font-weight:800;text-align:center;}
+.team-hole-row .counting{display:flex;gap:8px;flex-wrap:wrap;font-size:.72rem;}
+.team-hole-row .counting .contrib{background:rgba(76,175,80,.15);border:1px solid rgba(76,175,80,.35);border-radius:5px;padding:2px 7px;color:#8ee0b4;font-weight:700;font-family:'DM Mono',monospace;}
+.team-hole-row .hole-total{color:#ffe066;font-family:'DM Mono',monospace;font-weight:800;text-align:right;}
 </style>
+<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
 </head>
 <body>
 
@@ -185,6 +221,13 @@ body{font-family:'Poppins',sans-serif;background:linear-gradient(175deg,#060e1e,
   <div class="tab" data-view="combined" onclick="pickTab(this)">Combined</div>
   <div class="tab" data-view="teams" onclick="pickTab(this)">Teams</div>
   <div class="tab admin-tab" data-view="admin" onclick="pickTab(this)">🔐 Admin</div>
+</div>
+
+<div id="lastUpdatedBar" style="padding:6px 16px 0;text-align:right;font-size:.62rem;color:rgba(255,255,255,.4);letter-spacing:.06em;">
+  <span onclick="loadData()" style="cursor:pointer;" title="Refresh now">
+    <span style="display:inline-block;transition:transform .5s;" id="refreshIcon">↻</span>
+    Last updated <span id="lastUpdatedTime">—</span>
+  </span>
 </div>
 
 <!-- ── OVERVIEW ── -->
@@ -331,11 +374,11 @@ body{font-family:'Poppins',sans-serif;background:linear-gradient(175deg,#060e1e,
             <option value="2">Day 2 · Tue 8 Sept</option>
           </select>
         </div>
-        <div>
+        <div style="position:relative;">
           <label class="alabel">Player</label>
-          <select id="scorePlayer" onchange="loadScoreEntry()" class="ainp">
-            <option value="">— Select player —</option>
-          </select>
+          <input type="text" id="scorePlayerSearch" placeholder="Type to search..." autocomplete="off" oninput="onPlayerSearchInput()" onfocus="showPlayerResults()" onblur="setTimeout(hidePlayerResults, 200)" class="ainp">
+          <input type="hidden" id="scorePlayer">
+          <div id="playerResults" style="display:none;position:absolute;top:100%;left:0;right:0;background:#0f2347;border:1.5px solid rgba(240,192,64,.5);border-radius:8px;margin-top:4px;max-height:280px;overflow-y:auto;z-index:20;box-shadow:0 8px 24px rgba(0,0,0,.5);"></div>
         </div>
       </div>
 
@@ -392,6 +435,20 @@ body{font-family:'Poppins',sans-serif;background:linear-gradient(175deg,#060e1e,
   </div>
 </div>
 
+<!-- BREAKDOWN MODAL -->
+<div class="modal" id="breakdownModal">
+  <div class="modal-content">
+    <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:14px;">
+      <div>
+        <div id="modalTitle" style="font-family:'Playfair Display',serif;font-size:1.15rem;font-weight:700;color:#f0c040;line-height:1.15;">—</div>
+        <div id="modalSubtitle" style="font-size:.72rem;color:rgba(255,255,255,.55);margin-top:3px;">—</div>
+      </div>
+      <button onclick="closeModal()" style="background:rgba(255,255,255,.1);border:none;color:#fff;font-size:1.1rem;width:32px;height:32px;border-radius:50%;cursor:pointer;flex-shrink:0;">✕</button>
+    </div>
+    <div id="modalBody"></div>
+  </div>
+</div>
+
 <div class="footer-credit">
   Designed &amp; built by <strong style="color:rgba(212,160,23,.7);">Alex Persaud · PGA Professional</strong>
 </div>
@@ -421,6 +478,7 @@ var _teamsDay1 = []; // [{name, playerIds:[...]}]
 var _teamsDay2 = [];
 var _scoresDay1 = {}; // {playerId: [gross,gross,...] length 18}
 var _scoresDay2 = {};
+var _prevPositions = { 1: {}, 2: {}, combined: {} }; // {playerId: pos}
 
 // ── STORAGE (using existing Vercel proxy) ──
 var PROXY_URL = 'https://stanmore-proxy.vercel.app/api/proxy';
@@ -445,6 +503,8 @@ async function saveRecord(record) {
 
 // ── LOAD ──
 async function loadData() {
+  var icon = document.getElementById('refreshIcon');
+  if (icon) icon.style.transform = 'rotate(360deg)';
   var record = await fetchRecord();
   var ad = record.awayDay;
   if (ad) {
@@ -455,6 +515,10 @@ async function loadData() {
     _scoresDay2 = ad.scoresDay2 || {};
   }
   renderAll();
+  checkConfetti();
+  var tsEl = document.getElementById('lastUpdatedTime');
+  if (tsEl) tsEl.textContent = new Date().toLocaleTimeString('en-GB', { hour:'2-digit', minute:'2-digit' });
+  setTimeout(function(){ if (icon) icon.style.transform = ''; }, 500);
 }
 
 async function saveData() {
@@ -538,6 +602,12 @@ function renderAll() {
   renderTeams(activeTeamBtn ? parseInt(activeTeamBtn.dataset.teamDay) : 1);
 }
 
+function posChangeArrow(delta) {
+  if (delta == null || delta === 0) return '';
+  if (delta > 0) return '<span style="color:#4ade80;font-size:.72rem;margin-right:4px;">▲</span>';
+  return '<span style="color:#ff8080;font-size:.72rem;margin-right:4px;">▼</span>';
+}
+
 function renderLeaderboard(day) {
   var el = document.getElementById('lb-day' + day);
   var scores = day === 1 ? _scoresDay1 : _scoresDay2;
@@ -546,7 +616,8 @@ function renderLeaderboard(day) {
       var s = scores[p.id];
       if (!s || !s.some(function(x){ return x > 0; })) return null;
       var r = calcRoundPoints(p, s, day);
-      return { name: p.name, hi: p.hi, ph: day === 1 ? p.phDay1 : p.phDay2, total: r.total, holePts: r.holePts, isPro: p.isPro };
+      var holesPlayed = s.filter(function(x){ return x > 0; }).length;
+      return { id: p.id, name: p.name, hi: p.hi, ph: day === 1 ? p.phDay1 : p.phDay2, total: r.total, holePts: r.holePts, isPro: p.isPro, holesPlayed: holesPlayed };
     })
     .filter(function(r){ return r; })
     .sort(function(a,b){ return b.total - a.total; });
@@ -556,11 +627,23 @@ function renderLeaderboard(day) {
     return;
   }
 
+  // Compute position changes vs last render
+  var currentPositions = {};
+  results.forEach(function(r, idx) { currentPositions[r.id] = idx + 1; });
+  var changes = {}; // {id: +N moved up, -N moved down, 0 same, null new}
+  results.forEach(function(r) {
+    var prev = _prevPositions[day][r.id];
+    var curr = currentPositions[r.id];
+    if (prev == null) changes[r.id] = null;
+    else changes[r.id] = prev - curr; // positive = moved up
+  });
+  _prevPositions[day] = currentPositions;
+
   var html = '<div class="lb-header"><div>POS</div><div>PLAYER</div><div style="text-align:right;">HCP</div><div style="text-align:right;">PTS</div></div>';
   results.forEach(function(r, i) {
-    html += '<div class="lb-row' + (i === 0 ? ' leader' : '') + '">'
-      + '<div class="pos">' + (i+1) + '</div>'
-      + '<div class="name">' + r.name + '</div>'
+    html += '<div class="lb-row' + (i === 0 ? ' leader' : '') + '" data-pid="' + r.id + '" data-day="' + day + '" style="cursor:pointer;">'
+      + '<div class="pos">' + (i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : (i+1)) + '</div>'
+      + '<div class="name">' + posChangeArrow(changes[r.id]) + r.name + (r.holesPlayed < 18 ? ' <span style="font-size:.62rem;color:rgba(255,255,255,.4);font-weight:500;margin-left:4px;">' + r.holesPlayed + '/18</span>' : '') + '</div>'
       + '<div class="hcp">' + (r.isPro ? 'PRO' : (r.ph != null ? r.ph : '—')) + '</div>'
       + '<div class="pts">' + r.total + '</div>'
       + '</div>';
@@ -578,6 +661,7 @@ function renderCombined() {
       var r2 = s2 && s2.some(function(x){ return x>0; }) ? calcRoundPoints(p, s2, 2) : null;
       if (!r1 && !r2) return null;
       return {
+        id: p.id,
         name: p.name,
         d1: r1 ? r1.total : null,
         d2: r2 ? r2.total : null,
@@ -595,8 +679,8 @@ function renderCombined() {
 
   var html = '<div class="lb-header" style="grid-template-columns:36px 1fr 44px 44px 60px;"><div>POS</div><div>PLAYER</div><div style="text-align:right;">D1</div><div style="text-align:right;">D2</div><div style="text-align:right;">TOTAL</div></div>';
   results.forEach(function(r, i) {
-    html += '<div class="lb-row' + (i === 0 ? ' leader' : '') + '" style="grid-template-columns:36px 1fr 44px 44px 60px;">'
-      + '<div class="pos">' + (i+1) + '</div>'
+    html += '<div class="lb-row' + (i === 0 ? ' leader' : '') + '" data-pid="' + r.id + '" data-day="combined" style="cursor:pointer;grid-template-columns:36px 1fr 44px 44px 60px;">'
+      + '<div class="pos">' + (i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : (i+1)) + '</div>'
       + '<div class="name">' + r.name + (r.complete ? '' : ' <span style="font-size:.65rem;color:rgba(255,255,255,.35);">(partial)</span>') + '</div>'
       + '<div class="hcp">' + (r.d1 != null ? r.d1 : '—') + '</div>'
       + '<div class="hcp">' + (r.d2 != null ? r.d2 : '—') + '</div>'
@@ -615,7 +699,8 @@ function renderTeams(day) {
     return;
   }
 
-  var teamResults = teams.map(function(t) {
+  var teamResults = teams.map(function(t, origIdx) {
+    t._origIdx = origIdx;
     var members = t.playerIds.map(function(id){ return _players.find(function(p){ return p.id === id; }); }).filter(function(p){ return p; });
     // For each hole, take best 2 stableford points across members
     var perHoleBest2 = [];
@@ -644,14 +729,14 @@ function renderTeams(day) {
       var ph = day === 1 ? m.phDay1 : m.phDay2;
       return sum + (m.isPro ? 0 : (ph || 0));
     }, 0);
-    return { name: t.name, members: memberSummaries, total: total, teamHcp: teamHcp, memberCount: members.length, hasScores: memberSummaries.some(function(m){ return m.total !== null; }) };
+    return { origIdx: origIdx, name: t.name, members: memberSummaries, total: total, teamHcp: teamHcp, memberCount: members.length, hasScores: memberSummaries.some(function(m){ return m.total !== null; }) };
   }).sort(function(a,b){ return b.total - a.total; });
 
   var html = '';
   teamResults.forEach(function(t, i) {
-    html += '<div class="team-card">'
+    html += '<div class="team-card" data-team-idx="' + t.origIdx + '" data-day="' + day + '" style="cursor:pointer;">'
       + '<div class="team-head">'
-      + '<div class="team-name">' + (i === 0 && t.total > 0 ? '🏆 ' : '') + t.name + '</div>'
+      + '<div class="team-name">' + (t.total > 0 && t.hasScores ? (i === 0 ? '🥇 ' : i === 1 ? '🥈 ' : i === 2 ? '🥉 ' : '<span style="color:rgba(255,255,255,.35);font-family:DM Mono,monospace;font-size:.8rem;margin-right:6px;">' + (i+1) + '</span>') : '') + t.name + '</div>'
       + '<div class="team-total">' + (t.hasScores ? t.total : '—') + '</div>'
       + '</div>'
       + '<div class="team-members">';
@@ -946,15 +1031,53 @@ async function saveTeams() {
 
 // ── SCORE ENTRY ──
 function populatePlayerSelect() {
-  var sel = document.getElementById('scorePlayer');
-  if (!sel) return;
-  sel.innerHTML = '<option value="">— Select player —</option>';
-  _players.slice().sort(function(a,b){ return (a.name||'').localeCompare(b.name||''); }).forEach(function(p) {
-    var opt = document.createElement('option');
-    opt.value = p.id;
-    opt.textContent = p.name;
-    sel.appendChild(opt);
-  });
+  // Just render results (no select to populate now)
+  renderPlayerSearchResults('');
+}
+
+function onPlayerSearchInput() {
+  var q = document.getElementById('scorePlayerSearch').value.trim();
+  renderPlayerSearchResults(q);
+  document.getElementById('playerResults').style.display = 'block';
+}
+
+function showPlayerResults() {
+  renderPlayerSearchResults(document.getElementById('scorePlayerSearch').value.trim());
+  document.getElementById('playerResults').style.display = 'block';
+}
+
+function hidePlayerResults() {
+  document.getElementById('playerResults').style.display = 'none';
+}
+
+function renderPlayerSearchResults(query) {
+  var box = document.getElementById('playerResults');
+  if (!box) return;
+  var q = (query || '').toLowerCase();
+  var filtered = _players.filter(function(p) {
+    if (!p.name) return false;
+    if (!q) return true;
+    return p.name.toLowerCase().indexOf(q) > -1;
+  }).sort(function(a,b){ return a.name.localeCompare(b.name); });
+
+  if (!filtered.length) {
+    box.innerHTML = '<div style="padding:12px;color:rgba(255,255,255,.4);font-size:.82rem;font-style:italic;text-align:center;">No players match</div>';
+    return;
+  }
+
+  var scores = parseInt(document.getElementById('scoreDay').value) === 1 ? _scoresDay1 : _scoresDay2;
+  box.innerHTML = filtered.map(function(p) {
+    var hasScores = scores[p.id] && scores[p.id].some(function(x){ return x>0; });
+    var status = hasScores ? '<span style="color:#8ee0b4;font-size:.68rem;font-weight:700;margin-left:8px;">✓ SCORE</span>' : '';
+    return '<div onclick="selectPlayerFromSearch(\'' + p.id + '\',\'' + p.name.replace(/'/g, "\\'") + '\')" style="padding:10px 14px;cursor:pointer;border-bottom:1px solid rgba(255,255,255,.06);font-size:.88rem;transition:background .1s;" onmouseover="this.style.background=\'rgba(212,160,23,.15)\'" onmouseout="this.style.background=\'transparent\'">' + p.name + status + '</div>';
+  }).join('');
+}
+
+function selectPlayerFromSearch(id, name) {
+  document.getElementById('scorePlayerSearch').value = name;
+  document.getElementById('scorePlayer').value = id;
+  document.getElementById('playerResults').style.display = 'none';
+  loadScoreEntry();
 }
 
 function loadScoreEntry() {
@@ -977,6 +1100,16 @@ function loadScoreEntry() {
   updateRunningTotal(p, day);
 }
 
+function getPtsCellStyle(pts, hasScore) {
+  if (!hasScore || pts == null) return '';
+  if (pts === 0) return 'color:#ff8080;background:rgba(192,57,43,.15);';
+  if (pts === 1) return 'color:rgba(255,255,255,.75);background:rgba(255,255,255,.06);';
+  if (pts === 2) return 'color:#7ec8ff;background:rgba(100,180,255,.14);';
+  if (pts === 3) return 'color:#ffe066;background:rgba(240,192,64,.18);';
+  if (pts >= 4) return 'color:#0f2347;background:linear-gradient(135deg,#d4a017,#f0c040);font-weight:900;';
+  return '';
+}
+
 function renderHoleGrid(player, day, currentScores) {
   var el = document.getElementById('holeInputGrid');
   var siArr = player.gender === 'w' ? HANBURY.siLadies : HANBURY.siMen;
@@ -992,7 +1125,7 @@ function renderHoleGrid(player, day, currentScores) {
       + '<div class="hcell" style="justify-content:flex-start;padding-left:6px;">Par ' + HANBURY.par[h] + ' <span style="color:#f0c040;margin-left:4px;font-size:.7rem;">' + strokeMark + '</span></div>'
       + '<div class="hcell" style="color:rgba(255,255,255,.4);font-size:.72rem;">' + siArr[h] + '</div>'
       + '<div class="hcell"><input type="number" min="1" max="12" class="score-inp" data-hole="' + h + '" value="' + (currentScores[h] || '') + '" inputmode="numeric" oninput="handleScoreInput(this)" onfocus="this.select()"></div>'
-      + '<div class="hcell pts-cell" id="pts-' + h + '">' + (currentScores[h] ? stablefordPoints(currentScores[h], HANBURY.par[h], strokes) : '—') + '</div>';
+      + '<div class="hcell pts-cell" id="pts-' + h + '" style="' + getPtsCellStyle(currentScores[h] ? stablefordPoints(currentScores[h], HANBURY.par[h], strokes) : null, !!currentScores[h]) + '">' + (currentScores[h] ? stablefordPoints(currentScores[h], HANBURY.par[h], strokes) : '—') + '</div>';
   }
   html += '</div>';
   el.innerHTML = html;
@@ -1015,7 +1148,18 @@ function handleScoreInput(input) {
   var ph = day === 1 ? player.phDay1 : player.phDay2;
   var strokes = calcHoleStrokes(ph || 0, siArr, hole);
   var pts = scores[pid][hole] ? stablefordPoints(scores[pid][hole], HANBURY.par[hole], strokes) : 0;
-  document.getElementById('pts-' + hole).textContent = scores[pid][hole] ? pts : '—';
+  var ptsCell = document.getElementById('pts-' + hole);
+  ptsCell.textContent = scores[pid][hole] ? pts : '—';
+  // Colour-code the points cell
+  ptsCell.style.color = '';
+  ptsCell.style.background = '';
+  if (scores[pid][hole]) {
+    if (pts === 0) { ptsCell.style.color = '#ff8080'; ptsCell.style.background = 'rgba(192,57,43,.15)'; }
+    else if (pts === 1) { ptsCell.style.color = 'rgba(255,255,255,.75)'; ptsCell.style.background = 'rgba(255,255,255,.06)'; }
+    else if (pts === 2) { ptsCell.style.color = '#7ec8ff'; ptsCell.style.background = 'rgba(100,180,255,.14)'; }
+    else if (pts === 3) { ptsCell.style.color = '#ffe066'; ptsCell.style.background = 'rgba(240,192,64,.18)'; }
+    else if (pts >= 4) { ptsCell.style.color = '#0f2347'; ptsCell.style.background = 'linear-gradient(135deg,#d4a017,#f0c040)'; ptsCell.style.fontWeight = '900'; }
+  }
 
   updateRunningTotal(player, day);
 
@@ -1052,6 +1196,128 @@ async function clearScoresForPlayer() {
   loadScoreEntry();
   renderAll();
 }
+
+function openPlayerBreakdown(playerId, dayStr) {
+  var p = _players.find(function(x){ return x.id === playerId; });
+  if (!p) return;
+  var days = dayStr === 'combined' ? [1, 2] : [parseInt(dayStr)];
+
+  document.getElementById('modalTitle').textContent = p.name;
+  var teeName = HANBURY.tees[p.teeKey] ? HANBURY.tees[p.teeKey].name : p.teeKey;
+  document.getElementById('modalSubtitle').textContent = (p.isPro ? 'PRO' : 'HI ' + (p.hi != null ? p.hi : '—')) + ' · ' + teeName + ' tees · PH ' + (p.isPro ? '0' : (p.phDay1 != null ? p.phDay1 : '—'));
+
+  var body = '';
+  days.forEach(function(d) {
+    var scores = d === 1 ? _scoresDay1 : _scoresDay2;
+    var s = scores[playerId];
+    if (!s || !s.some(function(x){ return x > 0; })) {
+      if (dayStr === 'combined') body += '<div style="margin-bottom:14px;"><div style="font-size:.7rem;font-weight:700;letter-spacing:.14em;color:#f0c040;text-transform:uppercase;margin-bottom:6px;">Day ' + d + ' — Mon ' + (d===1?'7':'8') + ' Sept</div><div style="color:rgba(255,255,255,.4);font-size:.8rem;font-style:italic;">No scores entered.</div></div>';
+      return;
+    }
+    var r = calcRoundPoints(p, s, d);
+    var holesPlayed = s.filter(function(x){ return x > 0; }).length;
+
+    body += '<div style="margin-bottom:16px;">';
+    if (dayStr === 'combined') {
+      body += '<div style="font-size:.7rem;font-weight:700;letter-spacing:.14em;color:#f0c040;text-transform:uppercase;margin-bottom:8px;">Day ' + d + '</div>';
+    }
+    body += '<div class="hole-summary">'
+      + '<div><div class="stat-lbl">Thru</div><div class="stat-val">' + holesPlayed + '/18</div></div>'
+      + '<div><div class="stat-lbl">Stableford</div><div class="stat-val" style="color:#f0c040;">' + r.total + '</div></div>'
+      + '</div>';
+
+    var siArr = p.gender === 'w' ? HANBURY.siLadies : HANBURY.siMen;
+    var ph = d === 1 ? p.phDay1 : p.phDay2;
+    body += '<div class="hole-breakdown hdr"><div>HOLE</div><div>PAR</div><div>SI</div><div>GROSS</div><div>PTS</div></div>';
+    for (var h = 0; h < 18; h++) {
+      var gross = s[h];
+      var strokes = calcHoleStrokes(ph || 0, siArr, h);
+      var pts = r.holePts[h];
+      var ptsClass = pts === 0 ? 'zero' : pts === 2 ? 'par' : pts === 3 ? 'birdie' : pts >= 4 ? 'eagle' : '';
+      body += '<div class="hole-breakdown">'
+        + '<div class="hole">' + (h+1) + '</div>'
+        + '<div class="par">' + HANBURY.par[h] + '</div>'
+        + '<div class="strokes">' + (strokes ? (strokes === 1 ? '●' : '●●') : '—') + '</div>'
+        + '<div class="gross">' + (gross || '—') + '</div>'
+        + '<div class="pts ' + ptsClass + '">' + (gross ? pts : '—') + '</div>'
+        + '</div>';
+    }
+    body += '</div>';
+  });
+
+  document.getElementById('modalBody').innerHTML = body;
+  document.getElementById('breakdownModal').classList.add('show');
+}
+
+function openTeamBreakdown(day, teamIdx) {
+  var teams = day === 1 ? _teamsDay1 : _teamsDay2;
+  var scores = day === 1 ? _scoresDay1 : _scoresDay2;
+  var t = teams[teamIdx];
+  if (!t) return;
+  var members = t.playerIds.map(function(id){ return _players.find(function(p){ return p.id === id; }); }).filter(function(p){ return p; });
+
+  document.getElementById('modalTitle').textContent = t.name;
+  document.getElementById('modalSubtitle').textContent = 'Day ' + day + ' · ' + (day===1?'Mon 7 Sept':'Tue 8 Sept') + ' · Best 2 Stableford per hole';
+
+  var body = '';
+
+  // Member row
+  body += '<div style="background:rgba(0,0,0,.25);border-radius:10px;padding:10px 12px;margin-bottom:12px;">';
+  members.forEach(function(m) {
+    var ph = day === 1 ? m.phDay1 : m.phDay2;
+    var s = scores[m.id];
+    var total = (s && s.some(function(x){ return x>0; })) ? calcRoundPoints(m, s, day).total : null;
+    body += '<div style="display:flex;justify-content:space-between;padding:4px 0;font-size:.8rem;"><span>' + m.name + '</span><span style="color:rgba(240,192,64,.75);font-family:DM Mono,monospace;font-weight:700;">' + (m.isPro ? 'PRO' : ('HCP ' + (ph != null ? ph : '—'))) + ' · ' + (total !== null ? total : '—') + ' pts</span></div>';
+  });
+  body += '</div>';
+
+  // Per-hole breakdown
+  body += '<div style="font-size:.65rem;font-weight:700;letter-spacing:.14em;color:rgba(240,192,64,.75);text-transform:uppercase;margin-bottom:6px;">Hole-by-Hole — Counting Scores</div>';
+  var teamTotal = 0;
+  for (var h = 0; h < 18; h++) {
+    var contributions = members.map(function(m) {
+      var s = scores[m.id];
+      if (!s || !s[h]) return { name: m.name.split(' ')[0], pts: 0, hasScore: false };
+      var r = calcRoundPoints(m, s, day);
+      return { name: m.name.split(' ')[0], pts: r.holePts[h], hasScore: true };
+    });
+    var withScores = contributions.filter(function(c){ return c.hasScore; });
+    if (!withScores.length) {
+      body += '<div class="team-hole-row"><div class="hno">' + (h+1) + '</div><div style="color:rgba(255,255,255,.3);font-style:italic;font-size:.72rem;">Not yet played</div><div class="hole-total">—</div></div>';
+      continue;
+    }
+    var sorted = withScores.slice().sort(function(a,b){ return b.pts - a.pts; });
+    var best2 = sorted.slice(0, 2);
+    var holeTotal = (best2[0] ? best2[0].pts : 0) + (best2[1] ? best2[1].pts : 0);
+    teamTotal += holeTotal;
+
+    body += '<div class="team-hole-row">'
+      + '<div class="hno">' + (h+1) + '</div>'
+      + '<div class="counting">'
+      + best2.map(function(c){ return '<span class="contrib">' + c.name + ' ' + c.pts + '</span>'; }).join('')
+      + '</div>'
+      + '<div class="hole-total">' + holeTotal + '</div>'
+      + '</div>';
+  }
+  body += '<div style="margin-top:14px;padding:12px 14px;background:linear-gradient(90deg,rgba(212,160,23,.2),rgba(212,160,23,.08));border:1px solid rgba(240,192,64,.4);border-radius:10px;display:flex;justify-content:space-between;align-items:center;">'
+    + '<div style="font-size:.7rem;font-weight:700;letter-spacing:.14em;color:#f0c040;text-transform:uppercase;">Team Total</div>'
+    + '<div style="font-family:DM Mono,monospace;font-size:1.5rem;font-weight:800;color:#ffe066;">' + teamTotal + '</div>'
+    + '</div>';
+
+  document.getElementById('modalBody').innerHTML = body;
+  document.getElementById('breakdownModal').classList.add('show');
+}
+
+function closeModal() {
+  document.getElementById('breakdownModal').classList.remove('show');
+}
+
+document.addEventListener('click', function(e) {
+  if (e.target.id === 'breakdownModal') closeModal();
+});
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'Escape') closeModal();
+});
 
 function updateCountdown() {
   var target = new Date('2026-09-07T07:00:00');
@@ -1156,7 +1422,52 @@ function restoreBackup(evt) {
 }
 
 // ── INIT ──
-window.addEventListener('load', function() { loadData(); updateCountdown(); });
+window.addEventListener('load', function() {
+  loadData();
+  updateCountdown();
+
+  // Delegate clicks on leaderboard rows and team cards
+  document.addEventListener('click', function(e) {
+    var row = e.target.closest('.lb-row[data-pid]');
+    if (row) {
+      openPlayerBreakdown(row.dataset.pid, row.dataset.day);
+      return;
+    }
+    var team = e.target.closest('.team-card[data-team-idx]');
+    if (team) {
+      openTeamBreakdown(parseInt(team.dataset.day), parseInt(team.dataset.teamIdx));
+    }
+  });
+});
+
+// Confetti detection - fire once when all players have both days complete
+var _confettiFired = false;
+function checkConfetti() {
+  if (_confettiFired) return;
+  if (!_players.length) return;
+  var allComplete = _players.every(function(p) {
+    var s1 = _scoresDay1[p.id];
+    var s2 = _scoresDay2[p.id];
+    return s1 && s1.filter(function(x){ return x > 0; }).length === 18 &&
+           s2 && s2.filter(function(x){ return x > 0; }).length === 18;
+  });
+  if (allComplete) {
+    _confettiFired = true;
+    triggerConfetti();
+  }
+}
+
+function triggerConfetti() {
+  if (typeof confetti !== 'function') return;
+  var colors = ['#f0c040','#d4a017','#ffe066','#ffffff'];
+  var end = Date.now() + 5000;
+  (function frame() {
+    confetti({ particleCount: 4, angle: 60, spread: 65, origin: { x: 0, y: 0.7 }, colors: colors });
+    confetti({ particleCount: 4, angle: 120, spread: 65, origin: { x: 1, y: 0.7 }, colors: colors });
+    if (Date.now() < end) requestAnimationFrame(frame);
+  })();
+  confetti({ particleCount: 140, spread: 130, origin: { y: 0.5 }, colors: colors, scalar: 1.3 });
+}
 
 // Auto-refresh public leaderboards every 30 seconds (silent - don't reload admin data if editing)
 setInterval(function() {
