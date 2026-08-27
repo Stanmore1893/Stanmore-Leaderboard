@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="theme-color" content="#0f2347">
+<meta name="theme-color" content="#122344">
 <link rel="apple-touch-icon" href="club-logo.png">
 <title>Captain's Away Day 2026 · Stanmore GC</title>
 
@@ -16,14 +16,14 @@
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&family=Playfair+Display:wght@700;800;900&family=DM+Mono:wght@500;600;700&display=swap" rel="stylesheet">
 
 <style>
-:root{--navy:#1a3a6b;--navy-dk:#0f2347;--gold:#d4a017;--gold-lt:#f0c040;--grey:#8896a8;--maroon:#5a1c2e;}
+:root{--navy:#1e3d70;--navy-dk:#122344;--gold:#d4a017;--gold-lt:#f0c040;--grey:#8896a8;--maroon:#5a1c2e;}
 *{box-sizing:border-box;margin:0;padding:0;}
-body{font-family:'Poppins',sans-serif;background:linear-gradient(175deg,#060e1e,#0f2347 40%,#1a3a6b);min-height:100vh;color:#fff;padding-top:env(safe-area-inset-top,0px);padding-bottom:60px;}
+body{font-family:'Poppins',sans-serif;background:linear-gradient(175deg,#0a1428,#122344 40%,#1e3d70);min-height:100vh;color:#fff;padding-top:env(safe-area-inset-top,0px);padding-bottom:60px;}
 
 /* ── BURGER ── */
 .sgc-burger{position:fixed;top:calc(env(safe-area-inset-top, 0px) + 12px);right:12px;z-index:499;width:42px;height:42px;background:#1a3a6b;border:1.5px solid rgba(212,160,23,.5);border-radius:9px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:1.3rem;color:#fff;box-shadow:0 2px 12px rgba(0,0,0,.5);}
 .nav-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.65);z-index:500;backdrop-filter:blur(4px);}
-.nav-drawer{position:fixed;top:0;right:0;bottom:0;width:300px;transform:translateX(100%);transition:transform .3s cubic-bezier(.4,0,.2,1);background:linear-gradient(180deg,#09132a,#0f2347 60%,#1a3a6b);z-index:501;display:flex;flex-direction:column;overflow-y:auto;}
+.nav-drawer{position:fixed;top:0;right:0;bottom:0;width:300px;transform:translateX(100%);transition:transform .3s cubic-bezier(.4,0,.2,1);background:linear-gradient(180deg,#09132a,#122344 60%,#1a3a6b);z-index:501;display:flex;flex-direction:column;overflow-y:auto;}
 
 /* ── HEADER ── */
 .hdr{padding:14px 70px 14px 16px;border-bottom:1px solid rgba(212,160,23,.25);display:flex;align-items:center;gap:10px;}
@@ -77,10 +77,12 @@ body{font-family:'Poppins',sans-serif;background:linear-gradient(175deg,#060e1e,
 /* ── LEADERBOARD ── */
 .lb-empty{text-align:center;padding:50px 20px;color:rgba(255,255,255,.35);font-style:italic;font-size:.85rem;}
 .lb-empty .icon{font-size:2rem;margin-bottom:10px;opacity:.4;}
-.lb-table{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:12px;overflow:hidden;}
+.lb-table{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:12px;overflow:hidden;box-shadow:0 6px 24px rgba(15,35,71,.4);}
 .lb-header{display:grid;grid-template-columns:36px 1fr 60px 60px;gap:8px;padding:9px 12px;background:rgba(0,0,0,.28);font-size:.6rem;font-weight:700;letter-spacing:.14em;color:rgba(240,192,64,.75);text-transform:uppercase;}
 .lb-row{display:grid;grid-template-columns:36px 1fr 60px 60px;gap:8px;padding:11px 12px;border-bottom:1px solid rgba(255,255,255,.04);align-items:center;font-size:.85rem;}
 .lb-row:last-child{border-bottom:none;}
+.lb-row:nth-child(even){background:rgba(255,255,255,.02);}
+.lb-row:nth-child(odd){background:rgba(255,255,255,.005);}
 .lb-row .pos{color:#f0c040;font-family:'DM Mono',monospace;font-weight:700;font-size:.9rem;}
 .lb-row .name{color:#fff;font-weight:600;}
 .lb-row .hcp{color:rgba(255,255,255,.5);font-family:'DM Mono',monospace;font-size:.78rem;text-align:right;}
@@ -88,7 +90,7 @@ body{font-family:'Poppins',sans-serif;background:linear-gradient(175deg,#060e1e,
 .lb-row.leader{background:rgba(212,160,23,.06);}
 
 /* Team leaderboard */
-.team-card{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:12px;margin-bottom:10px;overflow:hidden;}
+.team-card{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:12px;margin-bottom:10px;overflow:hidden;box-shadow:0 4px 18px rgba(15,35,71,.35);}
 .team-head{display:flex;justify-content:space-between;align-items:center;padding:11px 14px;background:rgba(0,0,0,.28);}
 .team-head .team-name{font-size:.9rem;font-weight:700;color:#ffe066;letter-spacing:.02em;}
 .team-head .team-total{font-family:'DM Mono',monospace;font-size:1.1rem;font-weight:800;color:#f0c040;}
@@ -109,13 +111,13 @@ body{font-family:'Poppins',sans-serif;background:linear-gradient(175deg,#060e1e,
 .atab{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:8px;padding:9px 14px;font-family:'Poppins',sans-serif;font-size:.75rem;font-weight:600;color:rgba(255,255,255,.6);cursor:pointer;white-space:nowrap;transition:all .15s;flex-shrink:0;}
 .atab.active{background:rgba(212,160,23,.2);border-color:rgba(240,192,64,.5);color:#ffe066;}
 .a-btn{width:100%;padding:11px;border-radius:8px;font-family:'Poppins',sans-serif;font-size:.85rem;font-weight:700;cursor:pointer;border:none;}
-.a-gold{background:#d4a017;color:#0f2347;border:2px solid #f0c040;}
+.a-gold{background:#d4a017;color:#122344;border:2px solid #f0c040;}
 .a-out{background:transparent;color:#fff;border:1.5px solid rgba(255,255,255,.3);}
 .a-red{background:rgba(192,57,43,.25);color:#e87878;border:1.5px solid rgba(192,57,43,.4);}
 .a-green{background:rgba(45,110,78,.35);color:#8ee0b4;border:1.5px solid rgba(45,110,78,.6);}
 .alabel{display:block;font-size:.65rem;color:rgba(255,255,255,.55);letter-spacing:.1em;text-transform:uppercase;font-weight:600;margin-bottom:4px;}
 .ainp{width:100%;background:rgba(255,255,255,.08);border:1.5px solid rgba(255,255,255,.15);border-radius:6px;padding:9px 10px;color:#fff;font-family:'Poppins',sans-serif;font-size:.85rem;outline:none;}
-.ainp option{background:#0f2347;color:#fff;}
+.ainp option{background:#122344;color:#fff;}
 
 /* Players table */
 .ptable{width:100%;border-collapse:collapse;font-size:.8rem;}
@@ -150,7 +152,7 @@ body{font-family:'Poppins',sans-serif;background:linear-gradient(175deg,#060e1e,
 /* Modal */
 .modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:600;backdrop-filter:blur(6px);align-items:flex-end;justify-content:center;}
 .modal.show{display:flex;}
-.modal-content{background:linear-gradient(180deg,#0f2347,#1a3a6b);border-top:2px solid rgba(212,160,23,.5);border-radius:20px 20px 0 0;padding:20px 16px calc(env(safe-area-inset-bottom,0px) + 20px);width:100%;max-width:520px;max-height:88vh;overflow-y:auto;}
+.modal-content{background:linear-gradient(180deg,#122344,#1e3d70);box-shadow:0 -12px 40px rgba(15,35,71,.6);border-top:2px solid rgba(212,160,23,.5);border-radius:20px 20px 0 0;padding:20px 16px calc(env(safe-area-inset-bottom,0px) + 20px);width:100%;max-width:520px;max-height:88vh;overflow-y:auto;}
 .hole-breakdown{display:grid;grid-template-columns:38px 38px 38px 42px 56px 44px;gap:5px;font-size:.75rem;padding:8px 4px;border-bottom:1px solid rgba(255,255,255,.04);align-items:center;}
 .hole-breakdown.hdr{background:rgba(0,0,0,.25);border-radius:6px;font-size:.6rem;font-weight:700;letter-spacing:.1em;color:rgba(240,192,64,.75);text-transform:uppercase;padding:6px 4px;border-bottom:none;margin-bottom:4px;}
 .hole-breakdown div{text-align:center;}
@@ -174,6 +176,49 @@ body{font-family:'Poppins',sans-serif;background:linear-gradient(175deg,#060e1e,
 .team-hole-row .counting{display:flex;gap:8px;flex-wrap:wrap;font-size:.72rem;}
 .team-hole-row .counting .contrib{background:rgba(76,175,80,.15);border:1px solid rgba(76,175,80,.35);border-radius:5px;padding:2px 7px;color:#8ee0b4;font-weight:700;font-family:'DM Mono',monospace;}
 .team-hole-row .hole-total{color:#ffe066;font-family:'DM Mono',monospace;font-weight:800;text-align:right;}
+
+/* Serif display numerals */
+.num-serif{font-family:'Playfair Display',serif;font-weight:800;font-feature-settings:'tnum' 1;letter-spacing:-.01em;}
+.num-serif-lg{font-family:'Playfair Display',serif;font-weight:900;font-size:1.7rem;line-height:1;letter-spacing:-.015em;font-feature-settings:'tnum' 1;}
+
+/* Micro labels */
+.micro-lbl{font-size:.62rem;font-weight:600;letter-spacing:.28em;text-transform:uppercase;color:rgba(240,192,64,.75);}
+
+/* Warm shadow on cards */
+.warm-shadow{box-shadow:0 8px 30px rgba(15,35,71,.5),0 2px 8px rgba(15,35,71,.35);}
+
+/* Hairline gradient dividers */
+.hair-div{height:1px;background:linear-gradient(90deg,transparent,rgba(212,160,23,.35),transparent);border:none;margin:14px 0;}
+
+/* Leader row highlight */
+.lb-row.leader{
+  background:linear-gradient(90deg,rgba(212,160,23,.16),rgba(212,160,23,.03)) !important;
+  border-left:3px solid #d4a017;
+  padding-left:9px !important;
+}
+.lb-row.leader .name{color:#ffe066 !important;font-weight:700;}
+.lb-row.leader .pts{font-size:1.1rem !important;}
+
+/* Progressive row tinting */
+.lb-row[data-rank="2"]{background:rgba(212,160,23,.07);}
+.lb-row[data-rank="3"]{background:rgba(212,160,23,.04);}
+
+/* Tab crossfade animation */
+.view{transition:opacity .22s ease;}
+.view:not(.active){opacity:0;pointer-events:none;}
+.view.active{opacity:1;}
+
+/* Team card hover underline */
+.team-card{position:relative;transition:transform .15s;}
+.team-card::after{content:'';position:absolute;bottom:0;left:0;height:2px;width:0;background:linear-gradient(90deg,#d4a017,#f0c040);transition:width .3s ease;}
+.team-card:hover::after{width:100%;}
+.team-card:hover{transform:translateY(-1px);}
+
+/* Ordinal superscript */
+.ord{font-size:.65em;vertical-align:top;position:relative;top:.15em;font-weight:600;margin-left:1px;}
+
+/* Individual leader pts styling */
+.lb-row .pts.num-serif{font-family:'Playfair Display',serif;font-weight:900;}
 </style>
 <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
 </head>
@@ -212,6 +257,7 @@ body{font-family:'Poppins',sans-serif;background:linear-gradient(175deg,#060e1e,
   <div class="hero-title">Jits Lachhani's Captain's Away Day 2026</div>
   <div class="hero-meta">7 · 8 September 2026</div>
   <div class="hero-venue">Hanbury Manor Marriott Hotel &amp; Country Club</div>
+  <div style="margin-top:10px;font-family:'Playfair Display',serif;font-style:italic;font-size:.78rem;color:rgba(240,192,64,.65);font-weight:400;letter-spacing:.02em;">Hosted at Hanbury Manor · Ware, Hertfordshire</div>
 </div>
 
 <!-- TABS -->
@@ -300,7 +346,7 @@ body{font-family:'Poppins',sans-serif;background:linear-gradient(175deg,#060e1e,
     <div style="font-size:1rem;font-weight:700;color:#ff9080;margin-bottom:8px;">Admin Access</div>
     <div style="font-size:.8rem;color:rgba(255,255,255,.55);margin-bottom:16px;">Enter password to unlock the admin panel.</div>
     <input type="password" id="pwInput" placeholder="Password" style="width:100%;background:rgba(255,255,255,.08);border:1.5px solid rgba(255,255,255,.15);border-radius:8px;padding:11px 14px;color:#fff;font-family:'Poppins',sans-serif;font-size:.95rem;outline:none;margin-bottom:10px;" onkeydown="if(event.key==='Enter')unlockAdmin()">
-    <button onclick="unlockAdmin()" style="width:100%;background:#d4a017;color:#0f2347;border:none;border-radius:8px;padding:12px;font-family:'Poppins',sans-serif;font-size:.9rem;font-weight:700;cursor:pointer;">Unlock Admin</button>
+    <button onclick="unlockAdmin()" style="width:100%;background:#d4a017;color:#122344;border:none;border-radius:8px;padding:12px;font-family:'Poppins',sans-serif;font-size:.9rem;font-weight:700;cursor:pointer;">Unlock Admin</button>
     <div id="pwError" style="color:#ff8080;font-size:.75rem;margin-top:10px;display:none;">Incorrect password</div>
   </div>
 
@@ -333,7 +379,7 @@ body{font-family:'Poppins',sans-serif;background:linear-gradient(175deg,#060e1e,
       <button onclick="savePlayers()" class="a-btn a-gold" style="margin-top:12px;">💾 Save All Players</button>
       <button onclick="clearAllPlayers()" class="a-btn a-red" style="margin-top:8px;">🗑 Clear All Players</button>
 
-      <div style="margin-top:22px;padding-top:18px;border-top:1px dashed rgba(255,255,255,.1);">
+      <div style="margin-top:22px;padding-top:18px;border-top:none;background:linear-gradient(90deg,transparent,rgba(212,160,23,.3),transparent);height:1px;margin-top:22px;">
         <div style="font-size:.7rem;font-weight:700;letter-spacing:.12em;color:#f0c040;text-transform:uppercase;margin-bottom:8px;">💾 Backup &amp; Export</div>
         <div style="font-size:.72rem;color:rgba(255,255,255,.55);margin-bottom:10px;line-height:1.5;">Download a complete backup of players, teams, and scores. Keep this safe on the day in case anything goes wrong.</div>
         <button onclick="exportBackupJSON()" class="a-btn a-out" style="margin-bottom:8px;">📥 Download Full Backup (JSON)</button>
@@ -379,7 +425,7 @@ body{font-family:'Poppins',sans-serif;background:linear-gradient(175deg,#060e1e,
           <label class="alabel">Player</label>
           <input type="text" id="scorePlayerSearch" placeholder="Type to search..." autocomplete="off" oninput="onPlayerSearchInput()" onfocus="showPlayerResults()" onblur="setTimeout(hidePlayerResults, 200)" class="ainp">
           <input type="hidden" id="scorePlayer">
-          <div id="playerResults" style="display:none;position:absolute;top:100%;left:0;right:0;background:#0f2347;border:1.5px solid rgba(240,192,64,.5);border-radius:8px;margin-top:4px;max-height:280px;overflow-y:auto;z-index:20;box-shadow:0 8px 24px rgba(0,0,0,.5);"></div>
+          <div id="playerResults" style="display:none;position:absolute;top:100%;left:0;right:0;background:#122344;border:1.5px solid rgba(240,192,64,.5);border-radius:8px;margin-top:4px;max-height:280px;overflow-y:auto;z-index:20;box-shadow:0 8px 24px rgba(0,0,0,.5);"></div>
         </div>
       </div>
 
@@ -391,7 +437,7 @@ body{font-family:'Poppins',sans-serif;background:linear-gradient(175deg,#060e1e,
           </div>
           <div style="text-align:right;">
             <div style="font-size:.62rem;color:rgba(255,255,255,.55);letter-spacing:.1em;text-transform:uppercase;">Stableford</div>
-            <div id="seRunningTotal" style="font-family:'DM Mono',monospace;font-size:1.5rem;font-weight:800;color:#f0c040;line-height:1;">0</div>
+            <div id="seRunningTotal" class="num-serif" style="font-size:2rem;color:#f0c040;line-height:1;">0</div>
           </div>
         </div>
 
@@ -603,6 +649,12 @@ function renderAll() {
   renderTeams(activeTeamBtn ? parseInt(activeTeamBtn.dataset.teamDay) : 1);
 }
 
+function ordSuffix(n) {
+  if (n >= 11 && n <= 13) return 'th';
+  var last = n % 10;
+  return last === 1 ? 'st' : last === 2 ? 'nd' : last === 3 ? 'rd' : 'th';
+}
+
 function posChangeArrow(delta) {
   if (delta == null || delta === 0) return '';
   if (delta > 0) return '<span style="color:#4ade80;font-size:.72rem;margin-right:4px;">▲</span>';
@@ -642,11 +694,11 @@ function renderLeaderboard(day) {
 
   var html = '<div class="lb-header"><div>POS</div><div>PLAYER</div><div style="text-align:right;">HCP</div><div style="text-align:right;">PTS</div></div>';
   results.forEach(function(r, i) {
-    html += '<div class="lb-row' + (i === 0 ? ' leader' : '') + '" data-pid="' + r.id + '" data-day="' + day + '" style="cursor:pointer;">'
-      + '<div class="pos">' + (i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : (i+1)) + '</div>'
+    html += '<div class="lb-row' + (i === 0 ? ' leader' : '') + '" data-rank="' + (i+1) + '" data-pid="' + r.id + '" data-day="' + day + '" style="cursor:pointer;">'
+      + '<div class="pos">' + (i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : ((i+1) + '<span class="ord">' + ordSuffix(i+1) + '</span>')) + '</div>'
       + '<div class="name">' + posChangeArrow(changes[r.id]) + r.name + (r.holesPlayed < 18 ? ' <span style="font-size:.62rem;color:rgba(255,255,255,.4);font-weight:500;margin-left:4px;">' + r.holesPlayed + '/18</span>' : '') + '</div>'
       + '<div class="hcp">' + (r.isPro ? 'PRO' : (r.ph != null ? r.ph : '—')) + '</div>'
-      + '<div class="pts">' + r.total + '</div>'
+      + '<div class="pts num-serif">' + r.total + '</div>'
       + '</div>';
   });
   el.innerHTML = html;
@@ -680,12 +732,12 @@ function renderCombined() {
 
   var html = '<div class="lb-header" style="grid-template-columns:36px 1fr 44px 44px 60px;"><div>POS</div><div>PLAYER</div><div style="text-align:right;">D1</div><div style="text-align:right;">D2</div><div style="text-align:right;">TOTAL</div></div>';
   results.forEach(function(r, i) {
-    html += '<div class="lb-row' + (i === 0 ? ' leader' : '') + '" data-pid="' + r.id + '" data-day="combined" style="cursor:pointer;grid-template-columns:36px 1fr 44px 44px 60px;">'
-      + '<div class="pos">' + (i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : (i+1)) + '</div>'
+    html += '<div class="lb-row' + (i === 0 ? ' leader' : '') + '" data-rank="' + (i+1) + '" data-pid="' + r.id + '" data-day="combined" style="cursor:pointer;grid-template-columns:36px 1fr 44px 44px 60px;">'
+      + '<div class="pos">' + (i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : ((i+1) + '<span class="ord">' + ordSuffix(i+1) + '</span>')) + '</div>'
       + '<div class="name">' + r.name + (r.complete ? '' : ' <span style="font-size:.65rem;color:rgba(255,255,255,.35);">(partial)</span>') + '</div>'
       + '<div class="hcp">' + (r.d1 != null ? r.d1 : '—') + '</div>'
       + '<div class="hcp">' + (r.d2 != null ? r.d2 : '—') + '</div>'
-      + '<div class="pts">' + r.total + '</div>'
+      + '<div class="pts num-serif">' + r.total + '</div>'
       + '</div>';
   });
   el.innerHTML = html;
@@ -737,8 +789,8 @@ function renderTeams(day) {
   teamResults.forEach(function(t, i) {
     html += '<div class="team-card" data-team-idx="' + t.origIdx + '" data-day="' + day + '" style="cursor:pointer;">'
       + '<div class="team-head">'
-      + '<div class="team-name">' + (t.total > 0 && t.hasScores ? (i === 0 ? '🥇 ' : i === 1 ? '🥈 ' : i === 2 ? '🥉 ' : '<span style="color:rgba(255,255,255,.35);font-family:DM Mono,monospace;font-size:.8rem;margin-right:6px;">' + (i+1) + '</span>') : '') + t.name + '</div>'
-      + '<div class="team-total">' + (t.hasScores ? t.total : '—') + '</div>'
+      + '<div class="team-name">' + (t.total > 0 && t.hasScores ? (i === 0 ? '🥇 ' : i === 1 ? '🥈 ' : i === 2 ? '🥉 ' : '<span style="color:rgba(255,255,255,.35);font-family:Playfair Display,serif;font-size:.9rem;font-weight:700;margin-right:6px;">' + (i+1) + '<span class="ord">' + ordSuffix(i+1) + '</span></span>') : '') + t.name + '</div>'
+      + '<div class="team-total num-serif">' + (t.hasScores ? t.total : '—') + '</div>'
       + '</div>'
       + '<div class="team-members">';
     t.members.forEach(function(m) {
@@ -1107,7 +1159,7 @@ function getPtsCellStyle(pts, hasScore) {
   if (pts === 1) return 'color:rgba(255,255,255,.75);background:rgba(255,255,255,.06);';
   if (pts === 2) return 'color:#7ec8ff;background:rgba(100,180,255,.14);';
   if (pts === 3) return 'color:#ffe066;background:rgba(240,192,64,.18);';
-  if (pts >= 4) return 'color:#0f2347;background:linear-gradient(135deg,#d4a017,#f0c040);font-weight:900;';
+  if (pts >= 4) return 'color:#122344;background:linear-gradient(135deg,#d4a017,#f0c040);font-weight:900;';
   return '';
 }
 
@@ -1159,7 +1211,7 @@ function handleScoreInput(input) {
     else if (pts === 1) { ptsCell.style.color = 'rgba(255,255,255,.75)'; ptsCell.style.background = 'rgba(255,255,255,.06)'; }
     else if (pts === 2) { ptsCell.style.color = '#7ec8ff'; ptsCell.style.background = 'rgba(100,180,255,.14)'; }
     else if (pts === 3) { ptsCell.style.color = '#ffe066'; ptsCell.style.background = 'rgba(240,192,64,.18)'; }
-    else if (pts >= 4) { ptsCell.style.color = '#0f2347'; ptsCell.style.background = 'linear-gradient(135deg,#d4a017,#f0c040)'; ptsCell.style.fontWeight = '900'; }
+    else if (pts >= 4) { ptsCell.style.color = '#122344'; ptsCell.style.background = 'linear-gradient(135deg,#d4a017,#f0c040)'; ptsCell.style.fontWeight = '900'; }
   }
 
   updateRunningTotal(player, day);
@@ -1223,8 +1275,8 @@ function openPlayerBreakdown(playerId, dayStr) {
       body += '<div style="font-size:.7rem;font-weight:700;letter-spacing:.14em;color:#f0c040;text-transform:uppercase;margin-bottom:8px;">Day ' + d + '</div>';
     }
     body += '<div class="hole-summary">'
-      + '<div><div class="stat-lbl">Thru</div><div class="stat-val">' + holesPlayed + '/18</div></div>'
-      + '<div><div class="stat-lbl">Stableford</div><div class="stat-val" style="color:#f0c040;">' + r.total + '</div></div>'
+      + '<div><div class="stat-lbl">Thru</div><div class="stat-val num-serif" style="font-size:1.6rem;">' + holesPlayed + '<span style="font-size:1rem;color:rgba(255,255,255,.5);">/18</span></div></div>'
+      + '<div><div class="stat-lbl">Stableford</div><div class="stat-val num-serif" style="font-size:1.9rem;color:#f0c040;">' + r.total + '</div></div>'
       + '</div>';
 
     var siArr = p.gender === 'w' ? HANBURY.siLadies : HANBURY.siMen;
@@ -1303,7 +1355,7 @@ function openTeamBreakdown(day, teamIdx) {
   }
   body += '<div style="margin-top:14px;padding:12px 14px;background:linear-gradient(90deg,rgba(212,160,23,.2),rgba(212,160,23,.08));border:1px solid rgba(240,192,64,.4);border-radius:10px;display:flex;justify-content:space-between;align-items:center;">'
     + '<div style="font-size:.7rem;font-weight:700;letter-spacing:.14em;color:#f0c040;text-transform:uppercase;">Team Total</div>'
-    + '<div style="font-family:DM Mono,monospace;font-size:1.5rem;font-weight:800;color:#ffe066;">' + teamTotal + '</div>'
+    + '<div class="num-serif" style="font-size:2rem;color:#ffe066;">' + teamTotal + '</div>'
     + '</div>';
 
   document.getElementById('modalBody').innerHTML = body;
