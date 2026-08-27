@@ -599,10 +599,7 @@ function renderTeams(day) {
   teamResults.forEach(function(t, i) {
     html += '<div class="team-card">'
       + '<div class="team-head">'
-      + '<div>'
       + '<div class="team-name">' + (i === 0 && t.total > 0 ? '🏆 ' : '') + t.name + '</div>'
-      + '<div style="font-size:.62rem;color:rgba(255,255,255,.45);letter-spacing:.06em;margin-top:2px;">Combined HCP ' + t.teamHcp + '</div>'
-      + '</div>'
       + '<div class="team-total">' + (t.hasScores ? t.total : '—') + '</div>'
       + '</div>'
       + '<div class="team-members">';
