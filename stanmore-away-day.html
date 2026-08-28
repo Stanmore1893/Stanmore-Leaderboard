@@ -846,7 +846,7 @@ async function loadData() {
   renderAll();
   checkConfetti();
   var ovPl = document.getElementById('ovStatPlayers');
-  if (ovPl) ovPl.textContent = _players.length || '—';
+  updateOverviewStats();
   var tsEl = document.getElementById('lastUpdatedTime');
   if (tsEl) tsEl.textContent = new Date().toLocaleTimeString('en-GB', { hour:'2-digit', minute:'2-digit' });
   setTimeout(function(){ if (icon) icon.style.transform = ''; }, 500);
@@ -1259,6 +1259,7 @@ async function savePlayers() {
   var ok = await saveData();
   alert(ok ? '✅ Players saved!' : '⚠️ Failed to save. Try again.');
   renderAll();
+  updateOverviewStats();
 }
 
 async function clearAllPlayers() {
@@ -1780,6 +1781,11 @@ window.addEventListener('load', function() {
 
 // Confetti detection - fire once when all players have both days complete
 var _confettiFired = false;
+function updateOverviewStats() {
+  var ovPl = document.getElementById('ovStatPlayers');
+  if (ovPl) ovPl.textContent = _players.length > 0 ? _players.length : '—';
+}
+
 function checkConfetti() {
   if (_confettiFired) return;
   if (!_players.length) return;
