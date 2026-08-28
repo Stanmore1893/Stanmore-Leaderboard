@@ -806,6 +806,21 @@ body{font-family:'Poppins',sans-serif;background:linear-gradient(175deg,#0a1428,
   </div>
 </div>
 
+<!-- SLOT PICKER POPOVER -->
+<div id="slotPickerOverlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:610;backdrop-filter:blur(4px);align-items:center;justify-content:center;padding:20px;" onclick="if(event.target===this)closeSlotPicker()">
+  <div style="background:linear-gradient(180deg,#122344,#1e3d70);border:1.5px solid rgba(240,192,64,.4);border-radius:14px;padding:16px;width:100%;max-width:420px;max-height:80vh;display:flex;flex-direction:column;box-shadow:0 12px 40px rgba(15,35,71,.6);">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+      <div>
+        <div id="spTitle" style="font-family:'Playfair Display',serif;font-size:1rem;font-weight:700;color:#f0c040;line-height:1.15;">Pick a player</div>
+        <div id="spSubtitle" style="font-size:.68rem;color:rgba(255,255,255,.55);margin-top:2px;">—</div>
+      </div>
+      <button onclick="closeSlotPicker()" style="background:rgba(255,255,255,.1);border:none;color:#fff;font-size:1rem;width:30px;height:30px;border-radius:50%;cursor:pointer;flex-shrink:0;">✕</button>
+    </div>
+    <input type="text" id="spSearch" placeholder="Type to search..." oninput="renderSpResults()" class="ainp" style="margin-bottom:10px;">
+    <div id="spResults" style="flex:1;overflow-y:auto;border:1px solid rgba(255,255,255,.08);border-radius:8px;background:rgba(0,0,0,.2);"></div>
+  </div>
+</div>
+
 <!-- BREAKDOWN MODAL -->
 <div class="modal" id="breakdownModal">
   <div class="modal-content">
@@ -1523,13 +1538,13 @@ function renderTeamsEditor(day) {
       + '</div>'
       + '<div class="team-slots">';
     for (var s = 0; s < 4; s++) {
-      var pid = t.playerIds[s];
+      var pid = (s < t.playerIds.length) ? t.playerIds[s] : null;
       var player = pid ? _players.find(function(p){ return p.id === pid; }) : null;
       if (player) {
         html += '<div class="team-slot"><span>' + player.name + '</span>'
           + '<button class="remove-x" onclick="removeFromTeam(' + day + ',' + ti + ',' + s + ')">✕</button></div>';
       } else {
-        html += '<div class="team-slot empty">Slot ' + (s+1) + ' — tap a name below</div>';
+        html += '<div class="team-slot empty" onclick="openSlotPicker(' + day + ',' + ti + ',' + s + ',event)" style="cursor:pointer;">➕ Slot ' + (s+1) + ' — tap to add player</div>';
       }
     }
     html += '</div></div>';
@@ -1607,6 +1622,78 @@ async function removeFromTeam(day, ti, si) {
   var teams = day === 1 ? _teamsDay1 : _teamsDay2;
   teams[ti].playerIds.splice(si, 1);
   renderTeamsEditor(day);
+  await saveData();
+  showAutosaveIndicator();
+  renderAll();
+}
+
+// ─── Slot picker (specific team + slot) ───
+var _spContext = null; // {day, ti, si}
+
+function openSlotPicker(day, ti, si, evt) {
+  if (evt) evt.stopPropagation();
+  _spContext = { day: day, ti: ti, si: si };
+  var teams = day === 1 ? _teamsDay1 : _teamsDay2;
+  var t = teams[ti];
+  document.getElementById('spTitle').textContent = 'Add to ' + t.name;
+  document.getElementById('spSubtitle').textContent = 'Slot ' + (si + 1) + ' · Day ' + day + ' · ' + (day === 1 ? 'Mon 7 Sept' : 'Tue 8 Sept');
+  document.getElementById('spSearch').value = '';
+  renderSpResults();
+  document.getElementById('slotPickerOverlay').style.display = 'flex';
+  setTimeout(function(){ document.getElementById('spSearch').focus(); }, 60);
+}
+
+function closeSlotPicker() {
+  document.getElementById('slotPickerOverlay').style.display = 'none';
+  _spContext = null;
+}
+
+function renderSpResults() {
+  if (!_spContext) return;
+  var q = document.getElementById('spSearch').value.trim().toLowerCase();
+  var teams = _spContext.day === 1 ? _teamsDay1 : _teamsDay2;
+
+  // Get all assigned player ids for this day
+  var assigned = new Set();
+  teams.forEach(function(t) { t.playerIds.forEach(function(id){ assigned.add(id); }); });
+
+  var available = _players
+    .filter(function(p){ return !assigned.has(p.id) && p.name; })
+    .filter(function(p) { return !q || p.name.toLowerCase().indexOf(q) > -1; })
+    .sort(function(a,b){ return a.name.localeCompare(b.name); });
+
+  var box = document.getElementById('spResults');
+  if (!available.length) {
+    box.innerHTML = '<div style="padding:16px;color:rgba(255,255,255,.4);font-size:.82rem;font-style:italic;text-align:center;">' + (q ? 'No unassigned players match' : 'All players are already assigned') + '</div>';
+    return;
+  }
+  box.innerHTML = available.map(function(p) {
+    var genderTag = p.gender === 'w' ? '<span style="font-size:.65rem;color:rgba(255,180,220,.7);margin-left:8px;font-weight:600;">W</span>' : '';
+    var hcp = p.isPro ? 'PRO' : (p.phDay1 != null ? 'HCP ' + p.phDay1 : '—');
+    return '<div onclick="assignToSpecificSlot(\'' + p.id + '\')" style="padding:10px 14px;cursor:pointer;border-bottom:1px solid rgba(255,255,255,.05);font-size:.85rem;display:flex;justify-content:space-between;align-items:center;transition:background .1s;" onmouseover="this.style.background=\'rgba(212,160,23,.15)\'" onmouseout="this.style.background=\'transparent\'">'
+      + '<span><span style="color:#fff;">' + p.name + '</span>' + genderTag + '</span>'
+      + '<span style="font-family:DM Mono,monospace;font-size:.72rem;color:rgba(240,192,64,.7);font-weight:700;">' + hcp + '</span>'
+    + '</div>';
+  }).join('');
+}
+
+async function assignToSpecificSlot(playerId) {
+  if (!_spContext) return;
+  var ctx = _spContext;
+  var teams = ctx.day === 1 ? _teamsDay1 : _teamsDay2;
+  var t = teams[ctx.ti];
+  // Ensure the array can hold this position (append if slot beyond current length)
+  if (ctx.si >= t.playerIds.length) {
+    while (t.playerIds.length < ctx.si) t.playerIds.push(null);
+    t.playerIds.push(playerId);
+  } else {
+    // Insert at that position (players after shift down)
+    t.playerIds.splice(ctx.si, 0, playerId);
+  }
+  // Enforce max of 4 slots (drop nulls beyond)
+  if (t.playerIds.length > 4) t.playerIds = t.playerIds.slice(0, 4);
+  closeSlotPicker();
+  renderTeamsEditor(ctx.day);
   await saveData();
   showAutosaveIndicator();
   renderAll();
@@ -1953,7 +2040,7 @@ document.addEventListener('click', function(e) {
   if (e.target.id === 'breakdownModal') closeModal();
 });
 document.addEventListener('keydown', function(e) {
-  if (e.key === 'Escape') closeModal();
+  if (e.key === 'Escape') { closeModal(); closeSlotPicker(); }
 });
 
 function updateCountdown() {
