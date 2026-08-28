@@ -670,6 +670,7 @@ body{font-family:'Poppins',sans-serif;background:linear-gradient(175deg,#0a1428,
       <div style="background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:10px;padding:14px;box-shadow:0 4px 18px rgba(15,35,71,.35);">
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
           <div style="font-size:.7rem;font-weight:700;letter-spacing:.12em;color:#f0c040;text-transform:uppercase;">Players (<span id="playerCount">0</span>)</div>
+          <div id="autosaveIndicator" style="opacity:0;transition:opacity .3s;font-size:.65rem;color:#8ee0b4;font-weight:600;letter-spacing:.06em;">✓ Saved</div>
         </div>
         <div id="playersTable"></div>
       </div>
@@ -1334,7 +1335,7 @@ function renderPlayersTable() {
   _players.forEach(function(p, i) {
     var ph = calcPH(p.hi, p.teeKey);
     html += '<tr>'
-      + '<td><input type="text" value="' + (p.name || '') + '" placeholder="Player name" oninput="_players[' + i + '].name=this.value.replace(/\\b\\w/g,function(c){return c.toUpperCase();})"></td>'
+      + '<td><input type="text" value="' + (p.name || '') + '" placeholder="Player name" oninput="_players[' + i + '].name=this.value.replace(/\\b\\w/g,function(c){return c.toUpperCase();})" onblur="autosaveAndRefresh()"></td>'
       + '<td style="text-align:center;"><input type="checkbox" ' + (p.isPro ? 'checked' : '') + ' onchange="updatePlayerPro(' + i + ', this.checked)" style="width:18px;height:18px;accent-color:#f0c040;cursor:pointer;"></td>'
       + '<td><input type="number" step="0.1" ' + (p.isPro ? 'disabled' : '') + ' value="' + (p.hi != null ? p.hi : '') + '" placeholder="' + (p.isPro ? 'PRO' : '—') + '" oninput="updatePlayerHI(' + i + ', this.value)"></td>'
       + '<td><select onchange="updatePlayerGender(' + i + ', this.value)"><option value="m"' + (p.gender==='m'?' selected':'') + '>M</option><option value="w"' + (p.gender==='w'?' selected':'') + '>W</option></select></td>'
@@ -1352,12 +1353,33 @@ function renderPlayersTable() {
   el.innerHTML = html;
 }
 
+var _hiSaveTimer = null;
 function updatePlayerHI(idx, val) {
   var v = val === '' || val == null ? null : parseFloat(val);
   _players[idx].hi = isNaN(v) ? null : v;
   var ph = calcPH(_players[idx].hi, _players[idx].teeKey, _players[idx].isPro);
   _players[idx].phDay1 = ph;
   _players[idx].phDay2 = ph;
+  // Update the PH display in this row immediately without full re-render
+  var phCell = document.querySelectorAll('.ptable .ph-val')[idx];
+  if (phCell) phCell.textContent = ph != null ? ph : '—';
+  // Debounced autosave
+  clearTimeout(_hiSaveTimer);
+  _hiSaveTimer = setTimeout(autosaveAndRefresh, 700);
+}
+
+function showAutosaveIndicator() {
+  var el = document.getElementById('autosaveIndicator');
+  if (!el) return;
+  el.style.opacity = '1';
+  setTimeout(function(){ el.style.opacity = '0'; }, 1400);
+}
+
+async function autosaveAndRefresh() {
+  await saveData();
+  showAutosaveIndicator();
+  renderAll();
+  updateOverviewStats();
 }
 
 function updatePlayerGender(idx, gender) {
@@ -1368,6 +1390,7 @@ function updatePlayerGender(idx, gender) {
   _players[idx].phDay1 = ph;
   _players[idx].phDay2 = ph;
   renderPlayersTable();
+  autosaveAndRefresh();
 }
 
 function updatePlayerPro(idx, isPro) {
@@ -1376,6 +1399,7 @@ function updatePlayerPro(idx, isPro) {
   _players[idx].phDay1 = ph;
   _players[idx].phDay2 = ph;
   renderPlayersTable();
+  autosaveAndRefresh();
 }
 
 function removePlayer(idx) {
@@ -1392,6 +1416,7 @@ function removePlayer(idx) {
   delete _scoresDay1[id];
   delete _scoresDay2[id];
   renderPlayersTable();
+  autosaveAndRefresh();
 }
 
 async function savePlayers() {
