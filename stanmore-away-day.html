@@ -852,6 +852,7 @@ var _scoresDay2 = {};
 var _prevPositions = { 1: {}, 2: {}, combined: {} }; // {playerId: pos}
 var _playerFilter = 'all'; // admin players filter
 var _lbFilters = { 1: 'all', 2: 'all', combined: 'all' }; // leaderboard filters per day
+var _unassignedSearch = { 1: '', 2: '' };
 
 // ── STORAGE (using existing Vercel proxy) ──
 var PROXY_URL = 'https://stanmore-proxy.vercel.app/api/proxy';
@@ -1504,6 +1505,10 @@ async function clearAllPlayers() {
 
 // ── TEAMS ──
 function renderTeamsEditor(day) {
+  // Preserve search state
+  var searchEl = document.getElementById('unassignedSearch_' + day);
+  if (searchEl) _unassignedSearch[day] = searchEl.value || '';
+
   var teams = day === 1 ? _teamsDay1 : _teamsDay2;
   var el = document.getElementById('teamsEditor' + day);
   var assigned = new Set();
@@ -1534,58 +1539,95 @@ function renderTeamsEditor(day) {
   html += '<button class="a-btn a-out" style="margin-bottom:14px;" onclick="addTeam(' + day + ')">+ Add Team ' + (teams.length + 1) + '</button>';
 
   // Available players list
-  var available = _players.filter(function(p){ return !assigned.has(p.id); });
+  var available = _players.filter(function(p){ return !assigned.has(p.id); }).sort(function(a,b){ return (a.name||'').localeCompare(b.name||''); });
   html += '<div style="background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:10px;padding:12px;">'
-    + '<div style="font-size:.68rem;font-weight:700;letter-spacing:.12em;color:#f0c040;text-transform:uppercase;margin-bottom:6px;">Unassigned Players (' + available.length + ')</div>';
+    + '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">'
+    + '<div style="font-size:.68rem;font-weight:700;letter-spacing:.12em;color:#f0c040;text-transform:uppercase;">Unassigned Players (' + available.length + ')</div>'
+    + '</div>';
   if (!available.length) {
     html += '<div style="color:rgba(255,255,255,.35);font-style:italic;font-size:.78rem;">All players assigned.</div>';
   } else {
-    html += '<div style="font-size:.68rem;color:rgba(255,255,255,.5);margin-bottom:8px;">Tap a player then tap an empty slot above.</div>';
-    html += '<div class="avail-list">';
+    html += '<input type="text" id="unassignedSearch_' + day + '" placeholder="Type to search unassigned players..." oninput="filterUnassigned(' + day + ')" onfocus="filterUnassigned(' + day + ')" class="ainp" autocomplete="off" style="margin-bottom:10px;">';
+    html += '<div style="font-size:.68rem;color:rgba(255,255,255,.5);margin-bottom:8px;">Tap a player to auto-assign to the next empty slot.</div>';
+    html += '<div class="avail-list" id="availList_' + day + '">';
     available.forEach(function(p) {
-      html += '<div class="avail-chip" onclick="assignToNextSlot(' + day + ',\'' + p.id + '\')">' + p.name + '</div>';
+      html += '<div class="avail-chip" data-pname="' + p.name.toLowerCase() + '" onclick="assignToNextSlot(' + day + ',\'' + p.id + '\')">' + p.name + '</div>';
     });
     html += '</div>';
+    html += '<div id="availEmpty_' + day + '" style="display:none;text-align:center;color:rgba(255,255,255,.35);font-size:.78rem;font-style:italic;padding:6px;">No unassigned players match</div>';
   }
   html += '</div>';
 
   html += '<button onclick="saveTeams()" class="a-btn a-gold" style="margin-top:14px;">💾 Save Teams</button>';
 
   el.innerHTML = html;
+  // Restore search state
+  var newSearchEl = document.getElementById('unassignedSearch_' + day);
+  if (newSearchEl && _unassignedSearch[day]) {
+    newSearchEl.value = _unassignedSearch[day];
+    filterUnassigned(day);
+  }
 }
 
-function addTeam(day) {
+async function addTeam(day) {
   var teams = day === 1 ? _teamsDay1 : _teamsDay2;
   teams.push({ name: 'Team ' + (teams.length + 1), playerIds: [] });
   renderTeamsEditor(day);
+  await saveData();
+  showAutosaveIndicator();
 }
 
-function removeTeam(day, ti) {
+async function removeTeam(day, ti) {
   var teams = day === 1 ? _teamsDay1 : _teamsDay2;
   if (!confirm('Remove ' + teams[ti].name + '? Players will become unassigned.')) return;
   teams.splice(ti, 1);
-  // Renumber teams
   teams.forEach(function(t, i) { if (t.name.match(/^Team \d+$/)) t.name = 'Team ' + (i+1); });
   renderTeamsEditor(day);
+  await saveData();
+  showAutosaveIndicator();
+  renderAll();
 }
 
-function assignToNextSlot(day, playerId) {
+async function assignToNextSlot(day, playerId) {
   var teams = day === 1 ? _teamsDay1 : _teamsDay2;
-  // Find first team with an empty slot
   for (var i = 0; i < teams.length; i++) {
     if (teams[i].playerIds.length < 4) {
       teams[i].playerIds.push(playerId);
       renderTeamsEditor(day);
+      await saveData();
+      showAutosaveIndicator();
+      renderAll();
       return;
     }
   }
   alert('No empty slots. Add another team first.');
 }
 
-function removeFromTeam(day, ti, si) {
+async function removeFromTeam(day, ti, si) {
   var teams = day === 1 ? _teamsDay1 : _teamsDay2;
   teams[ti].playerIds.splice(si, 1);
   renderTeamsEditor(day);
+  await saveData();
+  showAutosaveIndicator();
+  renderAll();
+}
+
+function filterUnassigned(day) {
+  var input = document.getElementById('unassignedSearch_' + day);
+  if (!input) return;
+  var q = input.value.trim().toLowerCase();
+  var list = document.getElementById('availList_' + day);
+  if (!list) return;
+  var chips = list.querySelectorAll('.avail-chip');
+  var shownCount = 0;
+  chips.forEach(function(c) {
+    var name = c.dataset.pname || '';
+    var show = !q || name.indexOf(q) > -1;
+    c.style.display = show ? '' : 'none';
+    if (show) shownCount++;
+  });
+  var emptyMsg = document.getElementById('availEmpty_' + day);
+  if (emptyMsg) emptyMsg.style.display = (shownCount === 0 && q) ? 'block' : 'none';
 }
 
 async function saveTeams() {
