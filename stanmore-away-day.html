@@ -1181,6 +1181,39 @@ async function quickAddPlayer() {
     document.getElementById('qaName').focus();
     return;
   }
+
+  // ─ DUPLICATE CHECK ─
+  var normalised = name.toLowerCase().replace(/\s+/g, ' ').trim();
+  var exactMatch = _players.find(function(p) {
+    return p.name && p.name.toLowerCase().replace(/\s+/g, ' ').trim() === normalised;
+  });
+  if (exactMatch) {
+    showQaFeedback('⚠️ ' + name + ' is already in the list', 'warn');
+    document.getElementById('qaName').focus();
+    document.getElementById('qaName').select();
+    return;
+  }
+  // Similar-name warning (same surname + same first initial, or same first name)
+  var similar = _players.filter(function(p) {
+    if (!p.name) return false;
+    var pn = p.name.toLowerCase().trim().split(/\s+/);
+    var nn = normalised.split(/\s+/);
+    if (!pn.length || !nn.length) return false;
+    // Same last name?
+    var sameSurname = pn.length > 1 && nn.length > 1 && pn[pn.length-1] === nn[nn.length-1];
+    // Same first name?
+    var sameFirst = pn[0] === nn[0];
+    return sameSurname || sameFirst;
+  });
+  if (similar.length) {
+    var similarNames = similar.map(function(p){ return p.name; }).join(', ');
+    if (!confirm('Similar player already added: ' + similarNames + '\n\nAdd ' + name + ' anyway?')) {
+      document.getElementById('qaName').focus();
+      document.getElementById('qaName').select();
+      return;
+    }
+  }
+
   var isPro = document.getElementById('qaPro').checked;
   var hiVal = document.getElementById('qaHI').value;
   var hi = isPro ? null : (hiVal ? parseFloat(hiVal) : null);
