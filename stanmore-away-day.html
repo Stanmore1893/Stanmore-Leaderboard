@@ -1404,11 +1404,36 @@ function renderPlayerSearchResults(query) {
   }
 
   var scores = parseInt(document.getElementById('scoreDay').value) === 1 ? _scoresDay1 : _scoresDay2;
-  box.innerHTML = filtered.map(function(p) {
+  var pending = [];
+  var entered = [];
+  filtered.forEach(function(p) {
     var hasScores = scores[p.id] && scores[p.id].some(function(x){ return x>0; });
-    var status = hasScores ? '<span style="color:#8ee0b4;font-size:.68rem;font-weight:700;margin-left:8px;">✓ SCORE</span>' : '';
-    return '<div onclick="selectPlayerFromSearch(\'' + p.id + '\',\'' + p.name.replace(/'/g, "\\'") + '\')" style="padding:10px 14px;cursor:pointer;border-bottom:1px solid rgba(255,255,255,.06);font-size:.88rem;transition:background .1s;" onmouseover="this.style.background=\'rgba(212,160,23,.15)\'" onmouseout="this.style.background=\'transparent\'">' + p.name + status + '</div>';
-  }).join('');
+    if (hasScores) entered.push(p); else pending.push(p);
+  });
+
+  var renderRow = function(p, isEntered) {
+    var scoreArr = scores[p.id] || [];
+    var holesPlayed = scoreArr.filter(function(x){ return x>0; }).length;
+    var status = isEntered
+      ? '<span style="color:#8ee0b4;font-size:.65rem;font-weight:700;margin-left:8px;letter-spacing:.06em;">' + (holesPlayed === 18 ? '✓ COMPLETE' : holesPlayed + '/18') + '</span>'
+      : '';
+    return '<div onclick="selectPlayerFromSearch(\'' + p.id + '\',\'' + p.name.replace(/'/g, "\\'") + '\')" style="padding:10px 14px;cursor:pointer;border-bottom:1px solid rgba(255,255,255,.06);font-size:.88rem;transition:background .1s;display:flex;justify-content:space-between;align-items:center;" onmouseover="this.style.background=\'rgba(212,160,23,.15)\'" onmouseout="this.style.background=\'transparent\'"><span>' + p.name + '</span>' + status + '</div>';
+  };
+
+  var groupHeader = function(label, count, colour) {
+    return '<div style="padding:8px 14px 4px;background:rgba(0,0,0,.28);font-size:.6rem;font-weight:700;letter-spacing:.14em;color:' + colour + ';text-transform:uppercase;position:sticky;top:0;">' + label + ' <span style="color:rgba(255,255,255,.4);font-weight:600;margin-left:4px;">(' + count + ')</span></div>';
+  };
+
+  var html = '';
+  if (pending.length) {
+    html += groupHeader('Yet to enter', pending.length, 'rgba(240,192,64,.8)');
+    html += pending.map(function(p){ return renderRow(p, false); }).join('');
+  }
+  if (entered.length) {
+    html += groupHeader('Already entered', entered.length, 'rgba(142,224,180,.8)');
+    html += entered.map(function(p){ return renderRow(p, true); }).join('');
+  }
+  box.innerHTML = html;
 }
 
 function selectPlayerFromSearch(id, name) {
@@ -1480,6 +1505,10 @@ function handleScoreInput(input) {
   var scores = day === 1 ? _scoresDay1 : _scoresDay2;
   if (!scores[pid]) scores[pid] = new Array(18).fill(0);
   scores[pid][hole] = (val && val > 0 && val < 15) ? val : 0;
+  // If 0 entered, clear the input to show empty (blob = no score)
+  if (val === 0 || input.value === '0') {
+    input.value = '';
+  }
 
   // Update this hole's points immediately
   var siArr = player.gender === 'w' ? HANBURY.siLadies : HANBURY.siMen;
