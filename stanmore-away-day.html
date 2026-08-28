@@ -1184,6 +1184,23 @@ function bulkAddPlayers() {
 
 function renderPlayersTable() {
   var el = document.getElementById('playersTable');
+  // Sort by surname, then first name (blanks last)
+  _players.sort(function(a, b) {
+    var an = (a.name || '').trim();
+    var bn = (b.name || '').trim();
+    if (!an && !bn) return 0;
+    if (!an) return 1;
+    if (!bn) return -1;
+    var aParts = an.split(/\s+/);
+    var bParts = bn.split(/\s+/);
+    var aSurname = aParts.length > 1 ? aParts[aParts.length - 1] : aParts[0];
+    var bSurname = bParts.length > 1 ? bParts[bParts.length - 1] : bParts[0];
+    var surCmp = aSurname.localeCompare(bSurname);
+    if (surCmp !== 0) return surCmp;
+    var aFirst = aParts[0] || '';
+    var bFirst = bParts[0] || '';
+    return aFirst.localeCompare(bFirst);
+  });
   document.getElementById('playerCount').textContent = _players.length;
   if (!_players.length) {
     el.innerHTML = '<div style="text-align:center;padding:20px;color:rgba(255,255,255,.35);font-size:.8rem;font-style:italic;">No players added yet.</div>';
