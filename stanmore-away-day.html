@@ -18,7 +18,7 @@
 <style>
 :root{--navy:#1e3d70;--navy-dk:#122344;--gold:#d4a017;--gold-lt:#f0c040;--grey:#8896a8;--maroon:#5a1c2e;}
 *{box-sizing:border-box;margin:0;padding:0;}
-body{font-family:'Poppins',sans-serif;background:linear-gradient(175deg,#0a1428,#122344 40%,#1e3d70);min-height:100vh;color:#fff;padding-top:env(safe-area-inset-top,0px);padding-bottom:60px;}
+body{font-family:'Poppins',sans-serif;background:linear-gradient(175deg,#0a1428,#122344 40%,#1e3d70);min-height:100vh;color:#fff;padding-top:env(safe-area-inset-top,0px);padding-bottom:80px;}
 
 /* ── BURGER ── */
 .sgc-burger{position:fixed;top:calc(env(safe-area-inset-top, 0px) + 12px);right:12px;z-index:499;width:42px;height:42px;background:#1a3a6b;border:1.5px solid rgba(212,160,23,.5);border-radius:9px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:1.3rem;color:#fff;box-shadow:0 2px 12px rgba(0,0,0,.5);}
@@ -102,7 +102,7 @@ body{font-family:'Poppins',sans-serif;background:linear-gradient(175deg,#0a1428,
 .team-mem.counting::before{content:'●';color:#4ade80;margin-right:6px;font-size:.6rem;vertical-align:middle;}
 
 /* ── FOOTER ── */
-.footer-credit{text-align:center;padding:26px 14px 6px;font-size:.65rem;color:rgba(212,160,23,.4);}
+.footer-credit{text-align:center;padding:40px 14px 20px;font-size:.65rem;color:rgba(212,160,23,.4);letter-spacing:.02em;}
 
 .info-box{background:rgba(240,192,64,.06);border:1px solid rgba(240,192,64,.2);border-radius:10px;padding:12px 14px;color:rgba(255,255,255,.75);font-size:.82rem;line-height:1.5;margin-bottom:16px;}
 .info-box strong{color:#ffe066;}
@@ -649,17 +649,32 @@ body{font-family:'Poppins',sans-serif;background:linear-gradient(175deg,#0a1428,
         <strong>Master player list</strong> — used across both days. Add players below (individually or paste in bulk), then set their handicap index and tee. Playing handicap is auto-calculated using the World Handicap formula (HI × Slope ÷ 113 × 95%) for each set of tees.
       </div>
 
+      <!-- Quick-add form -->
+      <div style="background:linear-gradient(135deg,rgba(212,160,23,.1),rgba(212,160,23,.02));border:1.5px solid rgba(240,192,64,.35);border-radius:12px;padding:14px;margin-bottom:14px;box-shadow:0 4px 18px rgba(15,35,71,.35);">
+        <div style="font-size:.65rem;font-weight:700;letter-spacing:.14em;color:#f0c040;text-transform:uppercase;margin-bottom:10px;">➕ Add New Player</div>
+        <div style="display:grid;grid-template-columns:1fr 70px 60px;gap:8px;margin-bottom:8px;">
+          <input type="text" id="qaName" placeholder="Full name" class="ainp" onkeydown="if(event.key===\'Enter\')quickAddPlayer()" oninput="onQuickAddNameInput()">
+          <input type="number" id="qaHI" step="0.1" placeholder="HI" class="ainp" onkeydown="if(event.key===\'Enter\')quickAddPlayer()">
+          <select id="qaGender" class="ainp"><option value="m">Men</option><option value="w">Women</option></select>
+        </div>
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:10px;font-size:.78rem;">
+          <label style="display:flex;align-items:center;gap:6px;cursor:pointer;color:rgba(255,255,255,.7);">
+            <input type="checkbox" id="qaPro" style="width:16px;height:16px;accent-color:#f0c040;cursor:pointer;" onchange="onQuickAddProToggle()"> Pro (scratch, no HI)
+          </label>
+        </div>
+        <button onclick="quickAddPlayer()" class="a-btn a-gold" style="padding:10px;">+ Add Player</button>
+        <div id="qaFeedback" style="min-height:16px;margin-top:8px;text-align:center;font-size:.72rem;color:#8ee0b4;font-weight:600;opacity:0;transition:opacity .3s;"></div>
+      </div>
+
       <!-- Player list -->
-      <div style="background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:10px;padding:14px;">
+      <div style="background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:10px;padding:14px;box-shadow:0 4px 18px rgba(15,35,71,.35);">
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
           <div style="font-size:.7rem;font-weight:700;letter-spacing:.12em;color:#f0c040;text-transform:uppercase;">Players (<span id="playerCount">0</span>)</div>
-          <button onclick="addBlankPlayer()" class="a-btn a-out" style="padding:5px 12px;font-size:.72rem;">+ Add One</button>
         </div>
         <div id="playersTable"></div>
       </div>
 
-      <button onclick="savePlayers()" class="a-btn a-gold" style="margin-top:12px;">💾 Save All Players</button>
-      <button onclick="clearAllPlayers()" class="a-btn a-red" style="margin-top:8px;">🗑 Clear All Players</button>
+      <button onclick="clearAllPlayers()" class="a-btn a-red" style="margin-top:12px;">🗑 Clear All Players</button>
 
       <div style="margin-top:22px;padding-top:18px;border-top:none;background:linear-gradient(90deg,transparent,rgba(212,160,23,.3),transparent);height:1px;margin-top:22px;">
         <div style="font-size:.7rem;font-weight:700;letter-spacing:.12em;color:#f0c040;text-transform:uppercase;margin-bottom:8px;">💾 Backup &amp; Export</div>
@@ -1141,6 +1156,80 @@ function calcPH(hi, teeKey, isPro) {
 // ── PLAYERS ──
 function makePlayerId() {
   return 'p_' + Date.now().toString(36) + Math.random().toString(36).substr(2, 4);
+}
+
+function onQuickAddProToggle() {
+  var hi = document.getElementById('qaHI');
+  var isPro = document.getElementById('qaPro').checked;
+  hi.disabled = isPro;
+  hi.value = isPro ? '' : hi.value;
+  hi.placeholder = isPro ? 'PRO' : 'HI';
+}
+
+function onQuickAddNameInput() {
+  // Auto-capitalise as user types
+  var el = document.getElementById('qaName');
+  var pos = el.selectionStart;
+  el.value = el.value.replace(/\b\w/g, function(c){ return c.toUpperCase(); });
+  el.setSelectionRange(pos, pos);
+}
+
+async function quickAddPlayer() {
+  var name = document.getElementById('qaName').value.trim();
+  if (!name) {
+    showQaFeedback('⚠️ Please enter a name', 'warn');
+    document.getElementById('qaName').focus();
+    return;
+  }
+  var isPro = document.getElementById('qaPro').checked;
+  var hiVal = document.getElementById('qaHI').value;
+  var hi = isPro ? null : (hiVal ? parseFloat(hiVal) : null);
+  var gender = document.getElementById('qaGender').value;
+  var teeKey = gender === 'w' ? 'red' : 'white';
+
+  var newPlayer = {
+    id: makePlayerId(),
+    name: name,
+    hi: (hi != null && !isNaN(hi)) ? hi : null,
+    gender: gender,
+    teeKey: teeKey,
+    isPro: isPro,
+    phDay1: null,
+    phDay2: null
+  };
+  var ph = calcPH(newPlayer.hi, newPlayer.teeKey, newPlayer.isPro);
+  newPlayer.phDay1 = ph;
+  newPlayer.phDay2 = ph;
+  _players.push(newPlayer);
+
+  // Auto-save
+  var ok = await saveData();
+  if (ok) {
+    showQaFeedback('✓ Added ' + name, 'ok');
+  } else {
+    showQaFeedback('⚠️ Saved locally but sync failed', 'warn');
+  }
+
+  // Reset form
+  document.getElementById('qaName').value = '';
+  document.getElementById('qaHI').value = '';
+  document.getElementById('qaPro').checked = false;
+  document.getElementById('qaHI').disabled = false;
+  document.getElementById('qaHI').placeholder = 'HI';
+  // Keep gender same for speed - most sequential adds are same gender
+  document.getElementById('qaName').focus();
+
+  renderPlayersTable();
+  updateOverviewStats();
+  renderAll();
+}
+
+function showQaFeedback(msg, kind) {
+  var fb = document.getElementById('qaFeedback');
+  fb.textContent = msg;
+  fb.style.color = kind === 'ok' ? '#8ee0b4' : kind === 'warn' ? '#ffb090' : '#fff';
+  fb.style.opacity = '1';
+  setTimeout(function() { fb.style.opacity = '0'; }, 2400);
 }
 
 function addBlankPlayer() {
