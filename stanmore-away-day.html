@@ -1099,6 +1099,20 @@ function renderCombined() {
   el.innerHTML = html;
 }
 
+function parseTeeTime(str) {
+  if (!str) return null;
+  // Parse formats: "7:30", "7:30 AM", "13:12", "1:30 PM", "07:30"
+  var s = str.trim().toUpperCase().replace(/\./g,':');
+  var m = s.match(/^(\d{1,2}):(\d{2})\s*(AM|PM)?$/);
+  if (!m) return null;
+  var h = parseInt(m[1], 10);
+  var min = parseInt(m[2], 10);
+  var ap = m[3];
+  if (ap === 'PM' && h < 12) h += 12;
+  else if (ap === 'AM' && h === 12) h = 0;
+  return h * 60 + min;
+}
+
 function renderTeams(day) {
   var el = document.getElementById('lb-teams');
   var teams = day === 1 ? _teamsDay1 : _teamsDay2;
@@ -1138,14 +1152,31 @@ function renderTeams(day) {
       var ph = day === 1 ? m.phDay1 : m.phDay2;
       return sum + (m.isPro ? 0 : (ph || 0));
     }, 0);
-    return { origIdx: origIdx, name: t.name, members: memberSummaries, total: total, teamHcp: teamHcp, memberCount: members.length, hasScores: memberSummaries.some(function(m){ return m.total !== null; }) };
+    return { origIdx: origIdx, name: t.name, teeTime: t.teeTime, members: memberSummaries, total: total, teamHcp: teamHcp, memberCount: members.length, hasScores: memberSummaries.some(function(m){ return m.total !== null; }) };
   }).sort(function(a,b){ return b.total - a.total; });
+
+  // If NO scores yet, sort by tee time (earliest first) instead of by total
+  var anyScores = teamResults.some(function(t){ return t.hasScores; });
+  if (!anyScores) {
+    teamResults.sort(function(a, b) {
+      var at = parseTeeTime(a.teeTime);
+      var bt = parseTeeTime(b.teeTime);
+      if (at === null && bt === null) return 0;
+      if (at === null) return 1;
+      if (bt === null) return -1;
+      return at - bt;
+    });
+  }
 
   var html = '';
   teamResults.forEach(function(t, i) {
+    var teeTimeDisplay = t.teeTime ? '<div style="font-size:.62rem;color:rgba(240,192,64,.7);letter-spacing:.08em;margin-top:3px;font-family:DM Mono,monospace;font-weight:700;">⏱ ' + t.teeTime + '</div>' : '';
     html += '<div class="team-card" data-team-idx="' + t.origIdx + '" data-day="' + day + '" style="cursor:pointer;">'
       + '<div class="team-head">'
+      + '<div>'
       + '<div class="team-name">' + (t.total > 0 && t.hasScores ? (i === 0 ? '🥇 ' : i === 1 ? '🥈 ' : i === 2 ? '🥉 ' : '<span style="color:rgba(255,255,255,.35);font-family:Playfair Display,serif;font-size:.9rem;font-weight:700;margin-right:6px;">' + (i+1) + '<span class="ord">' + ordSuffix(i+1) + '</span></span>') : '') + t.name + '</div>'
+      + teeTimeDisplay
+      + '</div>'
       + '<div class="team-total num-serif">' + (t.hasScores ? t.total : '—') + '</div>'
       + '</div>'
       + '<div class="team-members">';
@@ -1536,6 +1567,10 @@ function renderTeamsEditor(day) {
         + '<span class="team-title-name">' + t.name + '</span>'
         + '<button class="a-btn a-red" style="width:auto;padding:4px 10px;font-size:.7rem;" onclick="removeTeam(' + day + ',' + ti + ')">Remove Team</button>'
       + '</div>'
+      + '<div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;padding:8px 10px;background:rgba(240,192,64,.06);border:1px solid rgba(240,192,64,.2);border-radius:8px;">'
+        + '<span style="font-size:.62rem;font-weight:700;letter-spacing:.14em;color:rgba(240,192,64,.8);text-transform:uppercase;flex-shrink:0;">⏱ Tee Time</span>'
+        + '<input type="text" value="' + (t.teeTime || '') + '" placeholder="e.g. 7:30 AM" oninput="updateTeamTeeTime(' + day + ',' + ti + ',this.value)" style="flex:1;background:rgba(0,0,0,.25);border:1px solid rgba(255,255,255,.15);border-radius:6px;padding:7px 10px;color:#fff;font-family:DM Mono,monospace;font-size:.85rem;font-weight:700;outline:none;">'
+      + '</div>'
       + '<div class="team-slots">';
     for (var s = 0; s < 4; s++) {
       var pid = (s < t.playerIds.length) ? t.playerIds[s] : null;
@@ -1697,6 +1732,19 @@ async function assignToSpecificSlot(playerId) {
   await saveData();
   showAutosaveIndicator();
   renderAll();
+}
+
+var _teeSaveTimer = null;
+function updateTeamTeeTime(day, ti, value) {
+  var teams = day === 1 ? _teamsDay1 : _teamsDay2;
+  if (!teams[ti]) return;
+  teams[ti].teeTime = value.trim() || undefined;
+  clearTimeout(_teeSaveTimer);
+  _teeSaveTimer = setTimeout(async function() {
+    await saveData();
+    showAutosaveIndicator();
+    renderAll();
+  }, 700);
 }
 
 function filterUnassigned(day) {
@@ -1981,7 +2029,7 @@ function openTeamBreakdown(day, teamIdx) {
   var members = t.playerIds.map(function(id){ return _players.find(function(p){ return p.id === id; }); }).filter(function(p){ return p; });
 
   document.getElementById('modalTitle').textContent = t.name;
-  document.getElementById('modalSubtitle').textContent = 'Day ' + day + ' · ' + (day===1?'Mon 7 Sept':'Tue 8 Sept') + ' · Best 2 Stableford per hole';
+  document.getElementById('modalSubtitle').textContent = 'Day ' + day + ' · ' + (day===1?'Mon 7 Sept':'Tue 8 Sept') + (t.teeTime ? ' · ⏱ ' + t.teeTime : '') + ' · Best 2 Stableford per hole';
 
   var body = '';
 
