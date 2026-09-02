@@ -135,7 +135,7 @@ body{font-family:'Poppins',sans-serif;background:linear-gradient(175deg,#0a1428,
 
 /* Team editor */
 .team-editor-card{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);border-radius:10px;padding:12px;margin-bottom:10px;}
-.team-editor-card .team-title{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;}
+.team-editor-card .team-title{display:flex;align-items:center;margin-bottom:8px;gap:8px;}
 .team-editor-card .team-title-name{font-size:.9rem;font-weight:700;color:#ffe066;}
 .team-editor-card .team-slots{display:grid;grid-template-columns:1fr 1fr;gap:5px;}
 .team-slot{background:rgba(0,0,0,.25);border:1px solid rgba(255,255,255,.08);border-radius:6px;padding:8px 10px;font-size:.78rem;display:flex;justify-content:space-between;align-items:center;min-height:36px;}
@@ -440,6 +440,41 @@ body{font-family:'Poppins',sans-serif;background:linear-gradient(175deg,#0a1428,
 }
 
 /* Footnote */
+.ov-quote{
+  background:linear-gradient(135deg,rgba(212,160,23,.08),rgba(15,35,71,.15));
+  border:1px solid rgba(240,192,64,.25);
+  border-radius:16px;
+  padding:22px 20px;
+  margin-top:20px;
+  text-align:center;
+  position:relative;
+  box-shadow:0 6px 24px rgba(15,35,71,.4);
+}
+.ov-quote-mark{
+  font-family:'Playfair Display',serif;
+  font-size:4rem;
+  line-height:0.4;
+  color:rgba(240,192,64,.4);
+  margin-bottom:2px;
+  font-weight:900;
+}
+.ov-quote-text{
+  font-family:'Playfair Display',serif;
+  font-style:italic;
+  font-size:1.02rem;
+  color:rgba(255,255,255,.9);
+  line-height:1.5;
+  letter-spacing:.005em;
+  margin-bottom:12px;
+}
+.ov-quote-attr{
+  font-family:'Poppins',sans-serif;
+  font-size:.72rem;
+  color:#f0c040;
+  letter-spacing:.14em;
+  text-transform:uppercase;
+  font-weight:700;
+}
 .ov-footnote{
   text-align:center;
   font-family:'Playfair Display',serif;
@@ -449,6 +484,36 @@ body{font-family:'Poppins',sans-serif;background:linear-gradient(175deg,#0a1428,
   padding:18px 16px 4px;
   line-height:1.5;
 }
+
+/* Prize rows */
+.prize-row{display:flex;align-items:center;gap:12px;padding:10px 12px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.06);border-radius:10px;}
+.prize-row.big{background:rgba(240,192,64,.08);border-color:rgba(240,192,64,.3);}
+.prize-ico{font-size:1.5rem;flex-shrink:0;width:32px;text-align:center;}
+.prize-name{font-family:'Playfair Display',serif;font-size:.98rem;font-weight:800;color:#fff;letter-spacing:.01em;line-height:1.1;}
+.prize-row.big .prize-name{color:#ffe066;font-size:1.05rem;}
+.prize-sub{font-size:.72rem;color:rgba(255,255,255,.55);margin-top:2px;line-height:1.3;}
+
+/* Schedule */
+.sched-card{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);border-radius:14px;padding:16px 14px;margin-bottom:14px;box-shadow:0 6px 24px rgba(15,35,71,.4);}
+.sched-day-header{border-bottom:1px solid rgba(240,192,64,.2);padding-bottom:12px;margin-bottom:12px;text-align:center;}
+.sched-day-num{font-family:'Playfair Display',serif;font-size:1.5rem;font-weight:900;color:#f0c040;line-height:1;}
+.sched-day-date{font-size:.78rem;color:rgba(255,255,255,.55);margin-top:4px;letter-spacing:.02em;}
+.sched-list{display:flex;flex-direction:column;gap:8px;}
+.sched-row{display:grid;grid-template-columns:64px 1fr;gap:12px;padding:9px 8px;border-radius:8px;background:rgba(255,255,255,.02);}
+.sched-row.highlight{background:linear-gradient(90deg,rgba(240,192,64,.1),rgba(240,192,64,.02));border-left:3px solid #d4a017;padding-left:5px;}
+.sched-time{font-family:'DM Mono',monospace;font-size:.85rem;font-weight:800;color:#ffe066;line-height:1.3;text-align:right;padding-top:2px;}
+.sched-body .sched-title{font-family:'Playfair Display',serif;font-size:.95rem;font-weight:700;color:#fff;line-height:1.2;margin-bottom:2px;}
+.sched-body .sched-sub{font-size:.72rem;color:rgba(255,255,255,.55);line-height:1.35;}
+.sched-tee-note{background:linear-gradient(135deg,rgba(240,192,64,.15),rgba(240,192,64,.03));border:1.5px solid rgba(240,192,64,.4);border-radius:12px;padding:14px;text-align:center;font-size:.9rem;color:#ffe066;font-weight:600;letter-spacing:.02em;margin-top:6px;}
+
+/* Info page */
+.info-section{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);border-radius:12px;padding:16px 14px;margin-bottom:12px;box-shadow:0 4px 18px rgba(15,35,71,.35);}
+.info-section.highlight{background:linear-gradient(135deg,rgba(240,192,64,.1),rgba(240,192,64,.02));border-color:rgba(240,192,64,.4);}
+.info-h{font-family:'Playfair Display',serif;font-size:1.05rem;font-weight:800;color:#f0c040;margin-bottom:10px;line-height:1.15;}
+.info-list{margin:0;padding-left:20px;font-size:.82rem;color:rgba(255,255,255,.78);line-height:1.6;}
+.info-list li{margin-bottom:6px;}
+.info-list li:last-child{margin-bottom:0;}
+.info-list strong{color:#ffe066;font-weight:700;}
 </style>
 <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
 </head>
@@ -497,6 +562,9 @@ body{font-family:'Poppins',sans-serif;background:linear-gradient(175deg,#0a1428,
   <div class="tab" data-view="day2" onclick="pickTab(this)">Day 2 · Tue</div>
   <div class="tab" data-view="combined" onclick="pickTab(this)">Combined</div>
   <div class="tab" data-view="teams" onclick="pickTab(this)">Teams</div>
+  <div class="tab" data-view="prizes" onclick="pickTab(this)">🏆 Prizes</div>
+  <div class="tab" data-view="schedule" onclick="pickTab(this)">📅 Schedule</div>
+  <div class="tab" data-view="info" onclick="pickTab(this)">ℹ️ Info</div>
   <div class="tab admin-tab" data-view="admin" onclick="pickTab(this)">🔐 Admin</div>
 </div>
 
@@ -516,6 +584,7 @@ body{font-family:'Poppins',sans-serif;background:linear-gradient(175deg,#0a1428,
       <div class="ov-countdown-lbl">Tee-off in</div>
       <div id="countdownText" class="ov-countdown-num">—</div>
       <div class="ov-countdown-sub">Monday 7 · Tuesday 8 September 2026</div>
+      <div style="margin-top:12px;font-size:.72rem;color:rgba(240,192,64,.7);letter-spacing:.02em;">⏱ Please be at the tee <strong style="color:#ffe066;">10 minutes</strong> before your time</div>
     </div>
     <div class="ov-countdown-flag">⛳</div>
   </div>
@@ -583,6 +652,13 @@ body{font-family:'Poppins',sans-serif;background:linear-gradient(175deg,#0a1428,
     </div>
   </div>
 
+  <!-- Captain's message -->
+  <div class="ov-quote">
+    <div class="ov-quote-mark">"</div>
+    <div class="ov-quote-text">Have a great two days, enjoy the golf, enjoy the company — and make some good memories.</div>
+    <div class="ov-quote-attr">— Jits, Captain</div>
+  </div>
+
   <div class="ov-footnote">
     Live scores, individual &amp; team leaderboards update automatically throughout both days.
   </div>
@@ -635,6 +711,133 @@ body{font-family:'Poppins',sans-serif;background:linear-gradient(175deg,#0a1428,
   </div>
   <div id="lb-teams">
     <div class="lb-empty"><div class="icon">👥</div>Teams will appear here once set up in Admin.</div>
+  </div>
+</div>
+
+<!-- ── PRIZES ── -->
+<div class="view" id="view-prizes">
+  <div style="text-align:center;margin-bottom:20px;">
+    <div style="font-family:'Playfair Display',serif;font-size:1.4rem;font-weight:800;color:#f0c040;margin-bottom:4px;">Prizes on Offer</div>
+    <div style="font-size:.75rem;color:rgba(255,255,255,.55);font-style:italic;">Across two days at Hanbury Manor</div>
+  </div>
+
+  <div style="background:linear-gradient(135deg,rgba(212,160,23,.1),rgba(15,35,71,.3));border:1px solid rgba(240,192,64,.3);border-radius:14px;padding:18px 16px;margin-bottom:14px;box-shadow:0 6px 24px rgba(15,35,71,.4);">
+    <div style="font-size:.62rem;letter-spacing:.28em;color:rgba(240,192,64,.8);text-transform:uppercase;font-weight:700;margin-bottom:10px;">Each Day</div>
+    <div style="display:grid;gap:10px;">
+      <div class="prize-row"><span class="prize-ico">🥇</span><div><div class="prize-name">Individual 1st</div><div class="prize-sub">Best individual Stableford</div></div></div>
+      <div class="prize-row"><span class="prize-ico">🥈</span><div><div class="prize-name">Individual 2nd</div><div class="prize-sub">Runner-up individual Stableford</div></div></div>
+      <div class="prize-row"><span class="prize-ico">👑</span><div><div class="prize-name">Ladies Winner</div><div class="prize-sub">Best individual Stableford — ladies only</div></div></div>
+      <div class="prize-row"><span class="prize-ico">👥</span><div><div class="prize-name">Winning Fourball</div><div class="prize-sub">Best team score (best 2 of 4 per hole)</div></div></div>
+      <div class="prize-row"><span class="prize-ico">🎯</span><div><div class="prize-name">Nearest the Pin</div><div class="prize-sub">Two par-3 holes marked on the day</div></div></div>
+      <div class="prize-row"><span class="prize-ico">🎯</span><div><div class="prize-name">Nearest the Pin in 2</div><div class="prize-sub">One par-5 marked for second-shot NP</div></div></div>
+    </div>
+  </div>
+
+  <div style="background:linear-gradient(135deg,rgba(212,160,23,.14),rgba(15,35,71,.3));border:1.5px solid rgba(240,192,64,.45);border-radius:14px;padding:18px 16px;box-shadow:0 8px 30px rgba(15,35,71,.5);">
+    <div style="font-size:.62rem;letter-spacing:.28em;color:rgba(240,192,64,.9);text-transform:uppercase;font-weight:700;margin-bottom:10px;">Overall 36 Holes</div>
+    <div style="display:grid;gap:10px;">
+      <div class="prize-row big"><span class="prize-ico">🏆</span><div><div class="prize-name">Overall Champion</div><div class="prize-sub">Best combined 36-hole Stableford</div></div></div>
+      <div class="prize-row"><span class="prize-ico">🥈</span><div><div class="prize-name">Overall 2nd</div><div class="prize-sub">Runner-up combined 36-hole</div></div></div>
+      <div class="prize-row"><span class="prize-ico">🥉</span><div><div class="prize-name">Overall 3rd</div><div class="prize-sub">Third combined 36-hole</div></div></div>
+    </div>
+  </div>
+
+  <div style="text-align:center;padding:20px 16px 8px;font-family:'Playfair Display',serif;font-style:italic;color:rgba(240,192,64,.55);font-size:.78rem;">
+    Prizes presented at the Captain's Dinner (Day 1) and Prize Presentation (Day 2).
+  </div>
+</div>
+
+<!-- ── SCHEDULE ── -->
+<div class="view" id="view-schedule">
+  <div style="text-align:center;margin-bottom:20px;">
+    <div style="font-family:'Playfair Display',serif;font-size:1.4rem;font-weight:800;color:#f0c040;margin-bottom:4px;">Two Days at a Glance</div>
+    <div style="font-size:.75rem;color:rgba(255,255,255,.55);font-style:italic;">Full running order for both days</div>
+  </div>
+
+  <div class="sched-card">
+    <div class="sched-day-header">
+      <div class="sched-day-num">Day 1</div>
+      <div class="sched-day-date">Monday, 7 September 2026</div>
+    </div>
+    <div class="sched-list">
+      <div class="sched-row"><span class="sched-time">08:30</span><div class="sched-body"><div class="sched-title">Registration</div><div class="sched-sub">Refreshment bag, scorecard &amp; voucher</div></div></div>
+      <div class="sched-row"><span class="sched-time">09:20</span><div class="sched-body"><div class="sched-title">Captain's Welcome</div><div class="sched-sub">Vardons Bar &amp; Terrace</div></div></div>
+      <div class="sched-row"><span class="sched-time">09:30</span><div class="sched-body"><div class="sched-title">Golf Briefing</div><div class="sched-sub">Format · Cards · Pace</div></div></div>
+      <div class="sched-row"><span class="sched-time">After</span><div class="sched-body"><div class="sched-title">Group Photo</div><div class="sched-sub">Immediately after briefing</div></div></div>
+      <div class="sched-row highlight"><span class="sched-time">10:20</span><div class="sched-body"><div class="sched-title">Round 1 · First Tee ⛳</div><div class="sched-sub">First tee 10:20 · Final tee 12:04 · 8-min intervals</div></div></div>
+      <div class="sched-row"><span class="sched-time">15:00</span><div class="sched-body"><div class="sched-title">Hotel Check-in</div><div class="sched-sub">Progressive as fourballs finish</div></div></div>
+      <div class="sched-row"><span class="sched-time">18:30</span><div class="sched-body"><div class="sched-title">Captain's Drinks</div><div class="sched-sub">Garden Court Summerhouse</div></div></div>
+      <div class="sched-row highlight"><span class="sched-time">19:30</span><div class="sched-body"><div class="sched-title">Captain's Dinner 🍽</div><div class="sched-sub">Day 1 prizes presented between mains &amp; dessert · Smart casual</div></div></div>
+    </div>
+  </div>
+
+  <div class="sched-card">
+    <div class="sched-day-header">
+      <div class="sched-day-num">Day 2</div>
+      <div class="sched-day-date">Tuesday, 8 September 2026</div>
+    </div>
+    <div class="sched-list">
+      <div class="sched-row"><span class="sched-time">06:30</span><div class="sched-body"><div class="sched-title">Breakfast</div><div class="sched-sub">Available from 06:30</div></div></div>
+      <div class="sched-row"><span class="sched-time">Before</span><div class="sched-body"><div class="sched-title">Check Out</div><div class="sched-sub">Optional luggage storage with hotel</div></div></div>
+      <div class="sched-row highlight"><span class="sched-time">09:40</span><div class="sched-body"><div class="sched-title">Round 2 · First Tee ⛳</div><div class="sched-sub">First tee 09:40 · Final tee 11:24 · 8-min intervals · Groups based on Day 1 finishing order</div></div></div>
+      <div class="sched-row highlight"><span class="sched-time">~16:15</span><div class="sched-body"><div class="sched-title">Prize Presentation 🏆</div><div class="sched-sub">Vardons Bar &amp; Terrace · Overall &amp; Day 2 prizes</div></div></div>
+    </div>
+  </div>
+
+  <div class="sched-tee-note">
+    ⏱ Please be at the tee <strong>10 minutes</strong> before your time.
+  </div>
+</div>
+
+<!-- ── INFO ── -->
+<div class="view" id="view-info">
+  <div style="text-align:center;margin-bottom:20px;">
+    <div style="font-family:'Playfair Display',serif;font-size:1.4rem;font-weight:800;color:#f0c040;margin-bottom:4px;">Event Information</div>
+    <div style="font-size:.75rem;color:rgba(255,255,255,.55);font-style:italic;">Everything you need to know</div>
+  </div>
+
+  <div class="info-section">
+    <div class="info-h">⛳ Golf Format</div>
+    <ul class="info-list">
+      <li><strong>Individual Stableford</strong> on both days at <strong>95% Playing Handicap</strong></li>
+      <li>Men play <strong>White tees</strong> · Ladies play <strong>Red tees</strong></li>
+      <li><strong>Team Stableford</strong>: best 2 Stableford points from the fourball counted on each hole</li>
+      <li>Each day: Individual 1st/2nd, Ladies Winner, Winning Fourball, 2 × NP + 1 × NP2</li>
+      <li>Overall 36-hole: 1st / 2nd / 3rd</li>
+    </ul>
+  </div>
+
+  <div class="info-section">
+    <div class="info-h">📋 Cards &amp; Scoring</div>
+    <ul class="info-list">
+      <li>Players labelled <strong>A–D by ascending Handicap Index</strong> — <strong>Player A is the Fourball Captain</strong></li>
+      <li>Individual scorecards are <strong>swapped and marked in pairs</strong></li>
+      <li>Player A maintains the master A/B/C/D card; <strong>all 5 cards are cross-checked and returned together</strong></li>
+      <li>HI / Course Handicap / Playing Handicap are organiser-checked before each round</li>
+    </ul>
+  </div>
+
+  <div class="info-section">
+    <div class="info-h">🏨 Stay &amp; Logistics</div>
+    <ul class="info-list">
+      <li>All 56 golfers stay <strong>Monday night</strong></li>
+      <li><strong>Progressive Monday check-in</strong> as fourballs finish</li>
+      <li>Tuesday: check out before golf. Secure luggage storage with Hanbury is optional</li>
+      <li>Day 2 starter sheets published on Monday evening</li>
+    </ul>
+  </div>
+
+  <div class="info-section">
+    <div class="info-h">🎩 Dress Code</div>
+    <ul class="info-list">
+      <li>Golf attire during the day</li>
+      <li><strong>Smart casual</strong> for the Captain's Dinner</li>
+    </ul>
+  </div>
+
+  <div class="info-section highlight">
+    <div class="info-h" style="color:#ffe066;">⏱ Be Ready to Tee Off</div>
+    <p style="font-size:.85rem;color:rgba(255,255,255,.85);line-height:1.5;margin:0;">Please be at the tee <strong>10 minutes before your time</strong>. Check the Schedule &amp; Teams tabs for your tee time.</p>
   </div>
 </div>
 
@@ -1099,6 +1302,21 @@ function renderCombined() {
   el.innerHTML = html;
 }
 
+function getTeamPlayerLetters(team) {
+  // Returns {playerId: 'A'|'B'|'C'|'D'} based on ascending HI (lowest = A)
+  // Pros are always A first (HI=0 effectively)
+  var members = team.playerIds.map(function(id){ return _players.find(function(p){ return p.id === id; }); }).filter(function(p){ return p; });
+  var sorted = members.slice().sort(function(a, b) {
+    var aHi = a.isPro ? -100 : (a.hi != null ? a.hi : 999);
+    var bHi = b.isPro ? -100 : (b.hi != null ? b.hi : 999);
+    return aHi - bHi;
+  });
+  var letters = ['A','B','C','D'];
+  var map = {};
+  sorted.forEach(function(p, i) { if (i < 4) map[p.id] = letters[i]; });
+  return map;
+}
+
 function parseTeeTime(str) {
   if (!str) return null;
   // Parse formats: "7:30", "7:30 AM", "13:12", "1:30 PM", "07:30"
@@ -1180,9 +1398,26 @@ function renderTeams(day) {
       + '<div class="team-total num-serif">' + (t.hasScores ? t.total : '—') + '</div>'
       + '</div>'
       + '<div class="team-members">';
-    t.members.forEach(function(m) {
+    // Get letters using origIdx to find original team
+    var origTeam = (day === 1 ? _teamsDay1 : _teamsDay2)[t.origIdx];
+    var teamLetters = getTeamPlayerLetters(origTeam);
+    // Sort display by A→D
+    var sortedForDisplay = t.members.slice().sort(function(a, b) {
+      var pa = _players.find(function(x){ return x.name === a.name; });
+      var pb = _players.find(function(x){ return x.name === b.name; });
+      var la = pa && teamLetters[pa.id] || 'Z';
+      var lb = pb && teamLetters[pb.id] || 'Z';
+      return la.localeCompare(lb);
+    });
+    sortedForDisplay.forEach(function(m) {
+      var pl = _players.find(function(x){ return x.name === m.name; });
+      var letter = pl && teamLetters[pl.id] || '';
+      var isCapt = letter === 'A';
       html += '<div class="team-mem">'
-        + '<span class="name">' + m.name + '</span>'
+        + '<span class="name" style="display:flex;align-items:center;gap:8px;">'
+          + '<span style="display:inline-block;width:20px;height:20px;line-height:20px;text-align:center;background:' + (isCapt ? 'linear-gradient(135deg,#d4a017,#f0c040)' : 'rgba(255,255,255,.06)') + ';color:' + (isCapt ? '#122344' : 'rgba(255,255,255,.65)') + ';font-family:DM Mono,monospace;font-size:.62rem;font-weight:800;border-radius:4px;flex-shrink:0;">' + letter + '</span>'
+          + '<span>' + m.name + '</span>'
+        + '</span>'
         + '<span style="display:flex;align-items:center;gap:12px;">'
           + '<span style="font-family:DM Mono,monospace;font-size:.72rem;color:rgba(240,192,64,.75);font-weight:700;min-width:38px;text-align:right;">' + (m.ph === 'PRO' ? 'PRO' : 'HCP ' + m.ph) + '</span>'
           + '<span class="score">' + (m.total !== null ? m.total : '—') + '</span>'
@@ -1564,8 +1799,8 @@ function renderTeamsEditor(day) {
   teams.forEach(function(t, ti) {
     html += '<div class="team-editor-card">'
       + '<div class="team-title">'
-        + '<span class="team-title-name">' + t.name + '</span>'
-        + '<button class="a-btn a-red" style="width:auto;padding:4px 10px;font-size:.7rem;" onclick="removeTeam(' + day + ',' + ti + ')">Remove Team</button>'
+        + '<input type="text" value="' + (t.name || '').replace(/"/g,'&quot;') + '" placeholder="Team name" oninput="updateTeamName(' + day + ',' + ti + ',this.value)" style="flex:1;background:transparent;border:none;border-bottom:1px solid rgba(240,192,64,.3);color:#ffe066;font-family:\'Playfair Display\',serif;font-size:1rem;font-weight:700;padding:2px 0;outline:none;">'
+        + '<button class="a-btn a-red" style="width:auto;padding:4px 10px;font-size:.7rem;margin-left:8px;" onclick="removeTeam(' + day + ',' + ti + ')">Remove</button>'
       + '</div>'
       + '<div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;padding:8px 10px;background:rgba(240,192,64,.06);border:1px solid rgba(240,192,64,.2);border-radius:8px;">'
         + '<span style="font-size:.62rem;font-weight:700;letter-spacing:.14em;color:rgba(240,192,64,.8);text-transform:uppercase;flex-shrink:0;">⏱ Tee Time</span>'
@@ -1608,7 +1843,8 @@ function renderTeamsEditor(day) {
   }
   html += '</div>';
 
-  html += '<button onclick="saveTeams()" class="a-btn a-gold" style="margin-top:14px;">💾 Save Teams</button>';
+  html += '<button onclick="prefillTeeTimes(' + day + ')" class="a-btn a-out" style="margin-top:14px;">⏱ Pre-fill Tee Times (' + (day === 1 ? '10:20' : '09:40') + ', 8-min gaps)</button>';
+  html += '<button onclick="saveTeams()" class="a-btn a-gold" style="margin-top:8px;">💾 Save Teams</button>';
 
   el.innerHTML = html;
   // Restore search state
@@ -1735,6 +1971,19 @@ async function assignToSpecificSlot(playerId) {
 }
 
 var _teeSaveTimer = null;
+var _teamNameSaveTimer = null;
+function updateTeamName(day, ti, value) {
+  var teams = day === 1 ? _teamsDay1 : _teamsDay2;
+  if (!teams[ti]) return;
+  teams[ti].name = value.trim() || ('Team ' + (ti + 1));
+  clearTimeout(_teamNameSaveTimer);
+  _teamNameSaveTimer = setTimeout(async function() {
+    await saveData();
+    showAutosaveIndicator();
+    renderAll();
+  }, 700);
+}
+
 function updateTeamTeeTime(day, ti, value) {
   var teams = day === 1 ? _teamsDay1 : _teamsDay2;
   if (!teams[ti]) return;
@@ -1763,6 +2012,23 @@ function filterUnassigned(day) {
   });
   var emptyMsg = document.getElementById('availEmpty_' + day);
   if (emptyMsg) emptyMsg.style.display = (shownCount === 0 && q) ? 'block' : 'none';
+}
+
+async function prefillTeeTimes(day) {
+  var startStr = day === 1 ? '10:20' : '09:40';
+  if (!confirm('Pre-fill all Day ' + day + ' tee times starting at ' + startStr + ' with 8-minute intervals?\n\nThis will overwrite any existing tee times.')) return;
+  var teams = day === 1 ? _teamsDay1 : _teamsDay2;
+  var startMin = parseTeeTime(startStr);
+  teams.forEach(function(t, i) {
+    var mins = startMin + (i * 8);
+    var h = Math.floor(mins / 60);
+    var m = mins % 60;
+    t.teeTime = String(h).padStart(2,'0') + ':' + String(m).padStart(2,'0');
+  });
+  await saveData();
+  showAutosaveIndicator();
+  renderTeamsEditor(day);
+  renderAll();
 }
 
 async function saveTeams() {
@@ -2033,13 +2299,29 @@ function openTeamBreakdown(day, teamIdx) {
 
   var body = '';
 
+  // Get A/B/C/D letters
+  var letters = getTeamPlayerLetters(t);
+
   // Member row
   body += '<div style="background:rgba(0,0,0,.25);border-radius:10px;padding:10px 12px;margin-bottom:12px;">';
-  members.forEach(function(m) {
+  // Sort display by A→D order
+  var sortedMembers = members.slice().sort(function(a, b) {
+    var la = letters[a.id] || 'Z'; var lb = letters[b.id] || 'Z';
+    return la.localeCompare(lb);
+  });
+  sortedMembers.forEach(function(m) {
     var ph = day === 1 ? m.phDay1 : m.phDay2;
     var s = scores[m.id];
     var total = (s && s.some(function(x){ return x>0; })) ? calcRoundPoints(m, s, day).total : null;
-    body += '<div style="display:flex;justify-content:space-between;padding:4px 0;font-size:.8rem;"><span>' + m.name + '</span><span style="color:rgba(240,192,64,.75);font-family:DM Mono,monospace;font-weight:700;">' + (m.isPro ? 'PRO' : ('HCP ' + (ph != null ? ph : '—'))) + ' · ' + (total !== null ? total : '—') + ' pts</span></div>';
+    var letter = letters[m.id] || '';
+    var isCapt = letter === 'A';
+    body += '<div style="display:flex;justify-content:space-between;align-items:center;padding:5px 0;font-size:.8rem;">'
+      + '<span style="display:flex;align-items:center;gap:8px;">'
+        + '<span style="display:inline-block;width:22px;height:22px;line-height:22px;text-align:center;background:' + (isCapt ? 'linear-gradient(135deg,#d4a017,#f0c040)' : 'rgba(255,255,255,.08)') + ';color:' + (isCapt ? '#122344' : 'rgba(255,255,255,.7)') + ';font-family:DM Mono,monospace;font-size:.7rem;font-weight:800;border-radius:5px;">' + letter + '</span>'
+        + '<span>' + m.name + (isCapt ? ' <span style="font-size:.6rem;color:#f0c040;letter-spacing:.14em;font-weight:700;margin-left:4px;">CAPT</span>' : '') + '</span>'
+      + '</span>'
+      + '<span style="color:rgba(240,192,64,.75);font-family:DM Mono,monospace;font-weight:700;">' + (m.isPro ? 'PRO' : ('HCP ' + (ph != null ? ph : '—'))) + ' · ' + (total !== null ? total : '—') + ' pts</span>'
+    + '</div>';
   });
   body += '</div>';
 
