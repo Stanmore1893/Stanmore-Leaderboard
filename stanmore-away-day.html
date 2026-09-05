@@ -1373,6 +1373,7 @@ function renderCombined() {
 }
 
 function getTeamPlayerLetters(team) {
+  if (!team || !team.playerIds) return {};
   // Returns {playerId: 'A'|'B'|'C'|'D'} based on ascending HI (lowest = A)
   // Pros are always A first (HI=0 effectively)
   var members = team.playerIds.map(function(id){ return _players.find(function(p){ return p.id === id; }); }).filter(function(p){ return p; });
@@ -1402,6 +1403,7 @@ function parseTeeTime(str) {
 }
 
 function renderTeams(day) {
+  try {
   var el = document.getElementById('lb-teams');
   var teams = day === 1 ? _teamsDay1 : _teamsDay2;
   var scores = day === 1 ? _scoresDay1 : _scoresDay2;
@@ -1470,7 +1472,7 @@ function renderTeams(day) {
       + '<div class="team-members">';
     // Get letters using origIdx to find original team
     var origTeam = (day === 1 ? _teamsDay1 : _teamsDay2)[t.origIdx];
-    var teamLetters = getTeamPlayerLetters(origTeam);
+    var teamLetters = (origTeam && origTeam.playerIds) ? getTeamPlayerLetters(origTeam) : {};
     // Sort display by A→D
     var sortedForDisplay = t.members.slice().sort(function(a, b) {
       var pa = _players.find(function(x){ return x.name === a.name; });
@@ -1497,6 +1499,11 @@ function renderTeams(day) {
     html += '</div></div>';
   });
   el.innerHTML = html;
+  } catch(err) {
+    console.error('renderTeams error:', err);
+    var el2 = document.getElementById('lb-teams');
+    if (el2) el2.innerHTML = '<div class="lb-empty"><div class="icon">⚠️</div>Error rendering teams. Check console for details.</div>';
+  }
 }
 
 // ═══════════════════════════════════════════════════════
