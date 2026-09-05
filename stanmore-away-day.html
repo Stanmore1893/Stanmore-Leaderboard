@@ -2400,30 +2400,31 @@ document.addEventListener('keydown', function(e) {
 });
 
 function updateCountdown() {
-  var target = new Date('2026-09-07T10:20:00'); // First tee Day 1
-  var now = new Date();
-  var diff = target - now;
   var box = document.getElementById('countdownBox');
   var txt = document.getElementById('countdownText');
   if (!box || !txt) return;
-  if (diff <= 0) {
-    var end = new Date('2026-09-08T17:00:00'); // End of Day 2
-    if (now < end) {
-      box.style.display = 'block';
-      txt.innerHTML = '<span style="color:#4ade80;">🔴 LIVE NOW</span>';
-    } else {
-      box.style.display = 'none';
-    }
+
+  // Use calendar-day difference at midnight (ignore time of day)
+  var now = new Date();
+  var targetDay = new Date(2026, 8, 7); // Sept = month 8 (0-indexed)
+  var eventEnd = new Date(2026, 8, 9);  // Day after Day 2
+  var todayMidnight = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  var msPerDay = 86400000;
+  var daysDiff = Math.round((targetDay - todayMidnight) / msPerDay);
+
+  if (now >= eventEnd) {
+    box.style.display = 'none';
     return;
   }
-  // Countdown in days by "sleeps" — how many full/partial days remain
-  var totalHours = diff / 3600000;
-  var days = Math.ceil(totalHours / 24);
-  var hours = Math.ceil(totalHours);
   box.style.display = 'block';
-  if (totalHours > 24) txt.innerHTML = days + ' <span style="font-size:.9rem;color:rgba(255,255,255,.6);font-family:Poppins,sans-serif;font-weight:600;">days</span>';
-  else if (totalHours > 1) txt.innerHTML = hours + ' <span style="font-size:.9rem;color:rgba(255,255,255,.6);font-family:Poppins,sans-serif;font-weight:600;">hours</span>';
-  else txt.innerHTML = '<span style="color:#4ade80;">Very soon!</span>';
+  if (daysDiff <= 0) {
+    // Event happening now (Day 1 or Day 2)
+    txt.innerHTML = '<span style="color:#4ade80;">🔴 LIVE NOW</span>';
+  } else if (daysDiff === 1) {
+    txt.innerHTML = '1 <span style="font-size:.9rem;color:rgba(255,255,255,.6);font-family:Poppins,sans-serif;font-weight:600;">day</span>';
+  } else {
+    txt.innerHTML = daysDiff + ' <span style="font-size:.9rem;color:rgba(255,255,255,.6);font-family:Poppins,sans-serif;font-weight:600;">days</span>';
+  }
 }
 
 // ═══════════════════════════════════════════════════════
