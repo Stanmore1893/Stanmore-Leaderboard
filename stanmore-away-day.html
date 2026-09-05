@@ -904,6 +904,7 @@ body{font-family:'Poppins',sans-serif;background:linear-gradient(175deg,#0a1428,
       <button class="atab" data-section="teams1" onclick="pickAdminTab(this)">🏳️ Teams · Day 1</button>
       <button class="atab" data-section="teams2" onclick="pickAdminTab(this)">🏳️ Teams · Day 2</button>
       <button class="atab" data-section="scores" onclick="pickAdminTab(this)">📊 Score Entry</button>
+      <button class="atab" data-section="day2hcp" onclick="pickAdminTab(this)">🎯 Day 2 HCP</button>
     </div>
 
     <!-- PLAYERS -->
@@ -1013,29 +1014,6 @@ body{font-family:'Poppins',sans-serif;background:linear-gradient(175deg,#0a1428,
         <button onclick="saveScores()" class="a-btn a-gold" style="margin-top:14px;">💾 Save Scores</button>
         <button onclick="clearScoresForPlayer()" class="a-btn a-red" style="margin-top:8px;">🗑 Clear This Player's Scores</button>
       </div>
-
-      <!-- Handicap management -->
-      <div style="margin-top:22px;padding-top:20px;">
-        <div style="height:1px;background:linear-gradient(90deg,transparent,rgba(212,160,23,.3),transparent);margin-bottom:16px;"></div>
-        <div style="background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);border-radius:12px;padding:14px;box-shadow:0 4px 18px rgba(15,35,71,.35);">
-          <div style="font-size:.7rem;font-weight:700;letter-spacing:.12em;color:#f0c040;text-transform:uppercase;margin-bottom:8px;">🔒 Handicap Locking</div>
-
-          <div style="font-size:.72rem;color:rgba(255,255,255,.55);margin-bottom:12px;line-height:1.5;">
-            Lock all Day 1 playing handicaps once entered so Day 1 scores don't recalculate if you change any HI later. Then, for Day 2, you can override the PH for winners.
-          </div>
-
-          <div id="lockStatusLine" style="font-size:.75rem;color:rgba(255,255,255,.7);margin-bottom:10px;">—</div>
-
-          <button onclick="lockAllDay1PH()" class="a-btn a-gold" style="margin-bottom:8px;">🔒 Lock All Day 1 Handicaps</button>
-          <button onclick="unlockAllDay1PH()" class="a-btn a-out" style="margin-bottom:8px;">🔓 Unlock Day 1 (revert to auto)</button>
-
-          <div style="margin-top:14px;padding-top:12px;border-top:1px dashed rgba(255,255,255,.1);">
-            <div style="font-size:.68rem;font-weight:700;letter-spacing:.12em;color:#f0c040;text-transform:uppercase;margin-bottom:8px;">⚡ Day 2 Playing Handicap Overrides</div>
-            <div style="font-size:.72rem;color:rgba(255,255,255,.55);margin-bottom:10px;line-height:1.5;">Set a specific PH for individual players on Day 2 (e.g. cut winners). Leave blank to use their automatic PH.</div>
-            <div id="phOverrideList" style="max-height:400px;overflow-y:auto;padding-right:4px;"></div>
-          </div>
-        </div>
-      </div>
     </div>
 
     <!-- AWARDS ADMIN -->
@@ -1067,6 +1045,38 @@ body{font-family:'Poppins',sans-serif;background:linear-gradient(175deg,#0a1428,
       </div>
 
       <button onclick="saveAwards()" class="a-btn a-gold" style="margin-top:14px;">💾 Save Awards</button>
+    </div>
+
+  </div>
+</div>
+
+    <!-- DAY 2 HANDICAPS -->
+    <div class="asec" id="asec-day2hcp" style="display:none;">
+      <div class="info-box">
+        <strong>Day 2 Playing Handicaps</strong> — everyone starts the same as Day 1. Adjust individual playing handicaps here for Day 2 only (e.g. cut winners). Day 1 leaderboard is unaffected.
+      </div>
+
+      <div style="background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:10px;padding:14px;margin-bottom:12px;box-shadow:0 4px 18px rgba(15,35,71,.35);">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
+          <div style="font-size:.7rem;font-weight:700;letter-spacing:.12em;color:#f0c040;text-transform:uppercase;">Day 2 Handicaps</div>
+          <div id="day2AutosaveIndicator" style="opacity:0;transition:opacity .3s;font-size:.65rem;color:#8ee0b4;font-weight:600;letter-spacing:.06em;">✓ Saved</div>
+        </div>
+        <!-- Filter -->
+        <div style="display:flex;gap:5px;margin-bottom:10px;">
+          <button class="pl-filter-btn active" data-d2-filter="all" onclick="setDay2Filter('all')">All</button>
+          <button class="pl-filter-btn" data-d2-filter="m" onclick="setDay2Filter('m')">Men</button>
+          <button class="pl-filter-btn" data-d2-filter="w" onclick="setDay2Filter('w')">Women</button>
+          <button class="pl-filter-btn" data-d2-filter="changed" onclick="setDay2Filter('changed')">Changed only</button>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 60px 80px;gap:6px;padding:5px 4px 8px;border-bottom:1px solid rgba(240,192,64,.2);font-size:.58rem;letter-spacing:.14em;color:rgba(240,192,64,.75);text-transform:uppercase;font-weight:700;">
+          <div>PLAYER</div>
+          <div style="text-align:center;">DAY 1 PH</div>
+          <div style="text-align:center;">DAY 2 PH</div>
+        </div>
+        <div id="day2HcpList" style="max-height:600px;overflow-y:auto;padding-top:4px;"></div>
+      </div>
+
+      <button onclick="resetAllDay2ToDay1()" class="a-btn a-out">↩ Reset all Day 2 back to Day 1</button>
     </div>
 
   </div>
@@ -1132,6 +1142,7 @@ var _scoresDay1 = {}; // {playerId: [gross,gross,...] length 18}
 var _scoresDay2 = {};
 var _prevPositions = { 1: {}, 2: {}, combined: {} }; // {playerId: pos}
 var _playerFilter = 'all'; // admin players filter
+var _day2Filter = 'all';
 var _lbFilters = { 1: 'all', 2: 'all', combined: 'all' }; // leaderboard filters per day
 var _unassignedSearch = { 1: '', 2: '' };
 
@@ -1297,7 +1308,7 @@ function renderLeaderboard(day) {
       if (!s || !s.some(function(x){ return x > 0; })) return null;
       var r = calcRoundPoints(p, s, day);
       var holesPlayed = s.filter(function(x){ return x > 0; }).length;
-      var effPH = getPlayerDayPH(p, day); return { id: p.id, name: p.name, hi: p.hi, ph: effPH, total: r.total, holePts: r.holePts, isPro: p.isPro, holesPlayed: holesPlayed, gender: p.gender, isLocked: day===1 && p.phDay1Locked != null, isOverride: day===2 && p.phDay2Override != null };
+      var effPH = getPlayerDayPH(p, day); return { id: p.id, name: p.name, hi: p.hi, ph: effPH, total: r.total, holePts: r.holePts, isPro: p.isPro, holesPlayed: holesPlayed, gender: p.gender, isOverride: day===2 && p.phDay2Override != null };
     })
     .filter(function(r){ return r; })
     .sort(function(a,b){ return b.total - a.total; });
@@ -1324,7 +1335,7 @@ function renderLeaderboard(day) {
     html += '<div class="lb-row' + (i === 0 ? ' leader' : '') + '" data-rank="' + (i+1) + '" data-pid="' + r.id + '" data-day="' + day + '" style="cursor:pointer;">'
       + '<div class="pos">' + (i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : ((i+1) + '<span class="ord">' + ordSuffix(i+1) + '</span>')) + '</div>'
       + '<div class="name">' + posChangeArrow(changes[r.id]) + r.name + (r.holesPlayed < 18 ? ' <span style="font-size:.62rem;color:rgba(255,255,255,.4);font-weight:500;margin-left:4px;">' + r.holesPlayed + '/18</span>' : '') + '</div>'
-      + '<div class="hcp">' + (r.isPro ? 'PRO' : (r.ph != null ? r.ph : '—')) + (r.isLocked ? ' <span title="Locked at Day 1" style="color:#8ee0b4;font-size:.7em;">🔒</span>' : '') + (r.isOverride ? ' <span title="Day 2 override" style="color:#ffe066;font-size:.7em;">⚡</span>' : '') + '</div>'
+      + '<div class="hcp">' + (r.isPro ? 'PRO' : (r.ph != null ? r.ph : '—')) + (r.isOverride ? ' <span title="Day 2 PH adjusted" style="color:#ffe066;font-size:.7em;">⚡</span>' : '') + '</div>'
       + '<div class="pts num-serif">' + r.total + '</div>'
       + '</div>';
   });
@@ -1536,7 +1547,8 @@ function pickAdminTab(el) {
   document.getElementById('asec-' + el.dataset.section).style.display = 'block';
   if (el.dataset.section === 'teams1') renderTeamsEditor(1);
   if (el.dataset.section === 'teams2') renderTeamsEditor(2);
-  if (el.dataset.section === 'scores') { populatePlayerSelect(); renderLockStatus(); renderPHOverrideList(); }
+  if (el.dataset.section === 'scores') populatePlayerSelect();
+  if (el.dataset.section === 'day2hcp') renderDay2HcpList();
 }
 
 // ── PLAYING HANDICAP CALCULATION ──
@@ -1555,7 +1567,6 @@ function calcPH(hi, teeKey, isPro) {
 
 // Effective PH for a given day (checks locks/overrides first, else auto-calc)
 function getPlayerDayPH(player, day) {
-  if (day === 1 && player.phDay1Locked != null) return player.phDay1Locked;
   if (day === 2 && player.phDay2Override != null) return player.phDay2Override;
   return calcPH(player.hi, player.teeKey, player.isPro);
 }
@@ -2212,7 +2223,6 @@ function loadScoreEntry() {
   var teeName = HANBURY.tees[p.teeKey] ? HANBURY.tees[p.teeKey].name : p.teeKey;
   var ph = getPlayerDayPH(p, day);
   var lockedTag = '';
-  if (day === 1 && p.phDay1Locked != null) lockedTag = ' <span style="color:#8ee0b4;font-size:.65rem;font-weight:700;letter-spacing:.08em;margin-left:6px;">🔒 LOCKED</span>';
   if (day === 2 && p.phDay2Override != null) lockedTag = ' <span style="color:#ffe066;font-size:.65rem;font-weight:700;letter-spacing:.08em;margin-left:6px;">⚡ OVERRIDE</span>';
   document.getElementById('sePlayerMeta').innerHTML = (p.isPro ? 'PRO' : 'HI ' + (p.hi != null ? p.hi : '—')) + ' · ' + teeName + ' tees · Playing HCP ' + (ph != null ? ph : '—') + lockedTag;
 
@@ -2303,109 +2313,100 @@ function updateRunningTotal(player, day) {
   document.getElementById('seRunningTotal').textContent = r.total;
 }
 
-// ─── HANDICAP LOCKING & OVERRIDES ───
-async function lockAllDay1PH() {
-  var withScores = _players.filter(function(p) {
-    var s = _scoresDay1[p.id];
-    return s && s.some(function(x){ return x>0; });
-  });
-  if (!withScores.length) {
-    alert('No Day 1 scores entered yet.');
-    return;
-  }
-  if (!confirm('Lock the current PH for ' + withScores.length + ' player' + (withScores.length===1?'':'s') + ' who have Day 1 scores?\n\nThis prevents Day 1 recalculating if you change their HI later.')) return;
-  withScores.forEach(function(p) {
-    var currentPH = calcPH(p.hi, p.teeKey, p.isPro);
-    p.phDay1Locked = currentPH != null ? currentPH : 0;
-  });
-  await saveData();
-  showAutosaveIndicator();
-  renderAll();
-  renderLockStatus();
-  alert('✅ Locked Day 1 PH for ' + withScores.length + ' player' + (withScores.length===1?'':'s'));
+// ─── DAY 2 HANDICAPS ───
+function setDay2Filter(f) {
+  _day2Filter = f;
+  document.querySelectorAll('[data-d2-filter]').forEach(function(b){ b.classList.remove('active'); });
+  document.querySelector('[data-d2-filter="' + f + '"]').classList.add('active');
+  renderDay2HcpList();
 }
 
-async function unlockAllDay1PH() {
-  var locked = _players.filter(function(p){ return p.phDay1Locked != null; });
-  if (!locked.length) {
-    alert('No Day 1 handicaps are currently locked.');
-    return;
-  }
-  if (!confirm('Unlock Day 1 PH for ' + locked.length + ' player' + (locked.length===1?'':'s') + '? Day 1 scores will recalculate from their current HI.')) return;
-  locked.forEach(function(p){ delete p.phDay1Locked; });
-  await saveData();
-  showAutosaveIndicator();
-  renderAll();
-  renderLockStatus();
-}
-
-function renderLockStatus() {
-  var el = document.getElementById('lockStatusLine');
+function renderDay2HcpList() {
+  var el = document.getElementById('day2HcpList');
   if (!el) return;
-  var withScores = _players.filter(function(p) {
-    var s = _scoresDay1[p.id];
-    return s && s.some(function(x){ return x>0; });
-  });
-  var locked = _players.filter(function(p){ return p.phDay1Locked != null; });
-  if (!withScores.length) {
-    el.innerHTML = '<span style="color:rgba(255,255,255,.4);">No Day 1 scores entered yet.</span>';
-  } else if (locked.length === withScores.length) {
-    el.innerHTML = '<span style="color:#8ee0b4;">✓ All ' + locked.length + ' Day 1 handicaps are locked.</span>';
-  } else if (locked.length > 0) {
-    el.innerHTML = '<span style="color:#ffe066;">⚠ ' + locked.length + ' of ' + withScores.length + ' Day 1 handicaps locked. Click below to lock the rest.</span>';
-  } else {
-    el.innerHTML = '<span style="color:rgba(255,255,255,.7);">' + withScores.length + ' player' + (withScores.length===1?'':'s') + ' have Day 1 scores. None are locked yet.</span>';
-  }
-}
-
-function renderPHOverrideList() {
-  var el = document.getElementById('phOverrideList');
-  if (!el) return;
-  // Sort players alphabetically by surname
+  // Sort players by surname
   var sorted = _players.slice().sort(function(a,b) {
     var an = (a.name||'').trim().split(/\s+/);
     var bn = (b.name||'').trim().split(/\s+/);
     var as = an[an.length-1] || '';
     var bs = bn[bn.length-1] || '';
-    return as.localeCompare(bs);
+    var sc = as.localeCompare(bs);
+    if (sc !== 0) return sc;
+    return (an[0]||'').localeCompare(bn[0]||'');
   });
-  if (!sorted.length) {
-    el.innerHTML = '<div style="color:rgba(255,255,255,.4);font-size:.78rem;font-style:italic;text-align:center;padding:10px;">Add players first.</div>';
+  // Apply filter
+  var filtered = sorted.filter(function(p) {
+    if (_day2Filter === 'all') return true;
+    if (_day2Filter === 'm') return p.gender === 'm';
+    if (_day2Filter === 'w') return p.gender === 'w';
+    if (_day2Filter === 'changed') return p.phDay2Override != null;
+    return true;
+  });
+  if (!filtered.length) {
+    el.innerHTML = '<div style="color:rgba(255,255,255,.35);font-size:.78rem;font-style:italic;text-align:center;padding:16px;">No players match this filter.</div>';
     return;
   }
-  el.innerHTML = sorted.map(function(p) {
+  el.innerHTML = filtered.map(function(p) {
     var origIdx = _players.indexOf(p);
-    var autoPH = calcPH(p.hi, p.teeKey, p.isPro);
-    var overrideVal = p.phDay2Override != null ? p.phDay2Override : '';
-    return '<div style="display:grid;grid-template-columns:1fr 60px 90px;gap:8px;padding:6px 4px;border-bottom:1px solid rgba(255,255,255,.05);align-items:center;font-size:.8rem;">'
-      + '<div>' + p.name + (p.isPro ? ' <span style="font-size:.6rem;color:rgba(240,192,64,.7);letter-spacing:.06em;">PRO</span>' : '') + '</div>'
-      + '<div style="color:rgba(255,255,255,.5);font-family:DM Mono,monospace;font-size:.75rem;text-align:center;">Auto ' + (p.isPro ? '0' : (autoPH != null ? autoPH : '—')) + '</div>'
-      + '<input type="number" min="0" max="54" placeholder="Auto" value="' + overrideVal + '" oninput="updatePHOverride(' + origIdx + ', this.value)" style="background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.15);border-radius:5px;padding:5px 7px;color:#ffe066;font-family:DM Mono,monospace;font-size:.85rem;font-weight:700;text-align:center;outline:none;">'
+    var day1PH = calcPH(p.hi, p.teeKey, p.isPro);
+    var day2Val = p.phDay2Override != null ? p.phDay2Override : (day1PH != null ? day1PH : '');
+    var isOverridden = p.phDay2Override != null;
+    var day1Display = p.isPro ? 'PRO' : (day1PH != null ? day1PH : '—');
+    return '<div style="display:grid;grid-template-columns:1fr 60px 80px;gap:6px;padding:8px 4px;border-bottom:1px solid rgba(255,255,255,.05);align-items:center;font-size:.85rem;">'
+      + '<div>' + p.name + (p.isPro ? ' <span style="font-size:.6rem;color:rgba(240,192,64,.7);letter-spacing:.06em;margin-left:4px;font-weight:700;">PRO</span>' : '') + (p.gender === 'w' ? ' <span style="font-size:.55rem;color:rgba(255,180,220,.7);margin-left:4px;font-weight:700;">W</span>' : '') + '</div>'
+      + '<div style="color:rgba(255,255,255,.55);font-family:DM Mono,monospace;font-size:.85rem;text-align:center;font-weight:700;">' + day1Display + '</div>'
+      + '<input type="number" min="0" max="54" placeholder="—" value="' + day2Val + '" oninput="updateDay2PH(' + origIdx + ', this.value)" style="background:' + (isOverridden ? 'rgba(240,192,64,.14)' : 'rgba(255,255,255,.06)') + ';border:1.5px solid ' + (isOverridden ? 'rgba(240,192,64,.5)' : 'rgba(255,255,255,.12)') + ';border-radius:6px;padding:6px 8px;color:' + (isOverridden ? '#ffe066' : '#fff') + ';font-family:DM Mono,monospace;font-size:.95rem;font-weight:800;text-align:center;outline:none;">'
     + '</div>';
   }).join('');
 }
 
-var _phOverrideSaveTimer = null;
-function updatePHOverride(idx, val) {
+var _day2SaveTimer = null;
+function updateDay2PH(idx, val) {
+  var p = _players[idx];
+  if (!p) return;
+  var day1PH = calcPH(p.hi, p.teeKey, p.isPro);
   if (val === '' || val == null) {
-    delete _players[idx].phDay2Override;
+    // Empty → clear override (uses Day 1 PH)
+    delete p.phDay2Override;
   } else {
     var num = parseInt(val, 10);
-    if (!isNaN(num)) _players[idx].phDay2Override = num;
+    if (isNaN(num)) return;
+    // Only mark as override if it differs from Day 1 PH
+    if (num === day1PH) {
+      delete p.phDay2Override;
+    } else {
+      p.phDay2Override = num;
+    }
   }
-  clearTimeout(_phOverrideSaveTimer);
-  _phOverrideSaveTimer = setTimeout(async function() {
+  clearTimeout(_day2SaveTimer);
+  _day2SaveTimer = setTimeout(async function() {
     await saveData();
-    showAutosaveIndicator();
+    var ind = document.getElementById('day2AutosaveIndicator');
+    if (ind) { ind.style.opacity = '1'; setTimeout(function(){ ind.style.opacity = '0'; }, 1400); }
     renderAll();
+    renderDay2HcpList();
   }, 700);
+}
+
+async function resetAllDay2ToDay1() {
+  var overridden = _players.filter(function(p){ return p.phDay2Override != null; });
+  if (!overridden.length) {
+    alert('No Day 2 handicaps have been changed yet.');
+    return;
+  }
+  if (!confirm('Reset ' + overridden.length + ' player' + (overridden.length===1?'':'s') + ' back to their Day 1 handicap?')) return;
+  overridden.forEach(function(p){ delete p.phDay2Override; });
+  await saveData();
+  var ind = document.getElementById('day2AutosaveIndicator');
+  if (ind) { ind.style.opacity = '1'; setTimeout(function(){ ind.style.opacity = '0'; }, 1400); }
+  renderAll();
+  renderDay2HcpList();
 }
 
 async function saveScores() {
   var ok = await saveData();
   alert(ok ? '✅ Scores saved!' : '⚠️ Failed to save.');
   renderAll();
-  renderLockStatus();
 }
 
 async function clearScoresForPlayer() {
