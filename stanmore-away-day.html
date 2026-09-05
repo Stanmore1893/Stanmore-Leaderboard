@@ -1546,18 +1546,18 @@ function calcPH(hi, teeKey, isPro) {
   if (hi == null || hi === '' || isNaN(hi)) return null;
   var tee = HANBURY.tees[teeKey];
   if (!tee) return null;
-  // Effective PH for a given day (checks locks/overrides first, else auto-calc)
-function getPlayerDayPH(player, day) {
-  if (day === 1 && player.phDay1Locked != null) return player.phDay1Locked;
-  if (day === 2 && player.phDay2Override != null) return player.phDay2Override;
-  return calcPH(player.hi, player.teeKey, player.isPro);
-}
-
-// WHS Course Handicap = HI × (Slope/113) + (CR - Par)
+  // WHS Course Handicap = HI × (Slope/113) + (CR - Par)
   var courseHandicap = hi * (tee.slope / 113) + (tee.cr - HANBURY.par.reduce(function(a,b){ return a+b; }, 0));
   // Playing Handicap = Course Handicap × 95% (applied unrounded, then round final)
   var ph = Math.round(courseHandicap * 0.95);
   return ph;
+}
+
+// Effective PH for a given day (checks locks/overrides first, else auto-calc)
+function getPlayerDayPH(player, day) {
+  if (day === 1 && player.phDay1Locked != null) return player.phDay1Locked;
+  if (day === 2 && player.phDay2Override != null) return player.phDay2Override;
+  return calcPH(player.hi, player.teeKey, player.isPro);
 }
 
 // ── PLAYERS ──
