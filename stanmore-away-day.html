@@ -934,7 +934,7 @@ body{font-family:'Poppins',sans-serif;background:linear-gradient(175deg,#0a1428,
       <div style="background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:10px;padding:14px;box-shadow:0 4px 18px rgba(15,35,71,.35);">
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
           <div style="font-size:.7rem;font-weight:700;letter-spacing:.12em;color:#f0c040;text-transform:uppercase;">Players (<span id="playerCount">0</span>)</div>
-          <div id="autosaveIndicator" style="opacity:0;transition:opacity .3s;font-size:.65rem;color:#8ee0b4;font-weight:600;letter-spacing:.06em;">✓ Saved</div>
+          <div id="autosaveIndicator" style="opacity:0;transition:opacity .3s;background:linear-gradient(135deg,#4ade80,#22c55e);color:#022e0f;font-size:.72rem;font-weight:800;letter-spacing:.05em;padding:5px 12px;border-radius:20px;box-shadow:0 4px 14px rgba(74,222,128,.4);">✓ Saved</div>
         </div>
         <!-- Gender filter -->
         <div style="display:flex;gap:5px;margin-bottom:12px;">
@@ -1059,7 +1059,7 @@ body{font-family:'Poppins',sans-serif;background:linear-gradient(175deg,#0a1428,
       <div style="background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:10px;padding:14px;margin-bottom:12px;box-shadow:0 4px 18px rgba(15,35,71,.35);">
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
           <div style="font-size:.7rem;font-weight:700;letter-spacing:.12em;color:#f0c040;text-transform:uppercase;">Day 2 Handicaps</div>
-          <div id="day2AutosaveIndicator" style="opacity:0;transition:opacity .3s;font-size:.65rem;color:#8ee0b4;font-weight:600;letter-spacing:.06em;">✓ Saved</div>
+          <div id="day2AutosaveIndicator" style="opacity:0;transition:opacity .3s;background:linear-gradient(135deg,#4ade80,#22c55e);color:#022e0f;font-size:.78rem;font-weight:800;letter-spacing:.05em;padding:6px 14px;border-radius:20px;box-shadow:0 4px 14px rgba(74,222,128,.4);">✓ Saved</div>
         </div>
         <!-- Filter -->
         <div style="display:flex;gap:5px;margin-bottom:10px;">
@@ -1812,7 +1812,7 @@ function showAutosaveIndicator() {
   var el = document.getElementById('autosaveIndicator');
   if (!el) return;
   el.style.opacity = '1';
-  setTimeout(function(){ el.style.opacity = '0'; }, 1400);
+  setTimeout(function(){ el.style.opacity = '0'; }, 2200);
 }
 
 async function autosaveAndRefresh() {
@@ -2366,23 +2366,33 @@ function updateDay2PH(idx, val) {
   if (!p) return;
   var day1PH = calcPH(p.hi, p.teeKey, p.isPro);
   if (val === '' || val == null) {
-    // Empty → clear override (uses Day 1 PH)
     delete p.phDay2Override;
   } else {
     var num = parseInt(val, 10);
     if (isNaN(num)) return;
-    // Only mark as override if it differs from Day 1 PH
     if (num === day1PH) {
       delete p.phDay2Override;
     } else {
       p.phDay2Override = num;
     }
   }
+  // Immediate feedback: show "Saving..." pill
+  var ind = document.getElementById('day2AutosaveIndicator');
+  if (ind) {
+    ind.textContent = 'Saving…';
+    ind.style.background = 'linear-gradient(135deg,#fbbf24,#f59e0b)';
+    ind.style.color = '#2a1a02';
+    ind.style.opacity = '1';
+  }
   clearTimeout(_day2SaveTimer);
   _day2SaveTimer = setTimeout(async function() {
     await saveData();
-    var ind = document.getElementById('day2AutosaveIndicator');
-    if (ind) { ind.style.opacity = '1'; setTimeout(function(){ ind.style.opacity = '0'; }, 1400); }
+    if (ind) {
+      ind.textContent = '✓ Saved';
+      ind.style.background = 'linear-gradient(135deg,#4ade80,#22c55e)';
+      ind.style.color = '#022e0f';
+      setTimeout(function(){ ind.style.opacity = '0'; }, 2400);
+    }
     renderAll();
     renderDay2HcpList();
   }, 700);
@@ -2398,7 +2408,7 @@ async function resetAllDay2ToDay1() {
   overridden.forEach(function(p){ delete p.phDay2Override; });
   await saveData();
   var ind = document.getElementById('day2AutosaveIndicator');
-  if (ind) { ind.style.opacity = '1'; setTimeout(function(){ ind.style.opacity = '0'; }, 1400); }
+  if (ind) { ind.style.opacity = '1'; setTimeout(function(){ ind.style.opacity = '0'; }, 2200); }
   renderAll();
   renderDay2HcpList();
 }
