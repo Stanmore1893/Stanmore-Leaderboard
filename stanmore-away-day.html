@@ -1272,6 +1272,36 @@ function calcRoundPoints(player, holeScores, day) {
   return { total: total, holePts: holePts };
 }
 
+// Countback: back 9, back 6, back 3, back 2, back 1 Stableford points
+function calcCountback(holePts) {
+  if (!holePts || holePts.length < 18) return { b9:0, b6:0, b3:0, b2:0, b1:0 };
+  var sum = function(arr, from, to) {
+    var t = 0;
+    for (var i = from; i <= to; i++) t += (arr[i] || 0);
+    return t;
+  };
+  return {
+    b9: sum(holePts, 9, 17),   // holes 10-18
+    b6: sum(holePts, 12, 17),  // holes 13-18
+    b3: sum(holePts, 15, 17),  // holes 16-18
+    b2: sum(holePts, 16, 17),  // holes 17-18
+    b1: sum(holePts, 17, 17)   // hole 18
+  };
+}
+
+// Comparator: total DESC, then countback DESC (back 9, 6, 3, 2, 1)
+function compareByTotalThenCountback(a, b) {
+  if (b.total !== a.total) return b.total - a.total;
+  var ca = a.cb || { b9:0, b6:0, b3:0, b2:0, b1:0 };
+  var cb = b.cb || { b9:0, b6:0, b3:0, b2:0, b1:0 };
+  if (cb.b9 !== ca.b9) return cb.b9 - ca.b9;
+  if (cb.b6 !== ca.b6) return cb.b6 - ca.b6;
+  if (cb.b3 !== ca.b3) return cb.b3 - ca.b3;
+  if (cb.b2 !== ca.b2) return cb.b2 - ca.b2;
+  if (cb.b1 !== ca.b1) return cb.b1 - ca.b1;
+  return 0;
+}
+
 // ── RENDER LEADERBOARDS ──
 function renderAll() {
   renderLeaderboard(1);
@@ -1312,10 +1342,10 @@ function renderLeaderboard(day) {
       if (!s || !s.some(function(x){ return x > 0; })) return null;
       var r = calcRoundPoints(p, s, day);
       var holesPlayed = s.filter(function(x){ return x > 0; }).length;
-      var effPH = getPlayerDayPH(p, day); return { id: p.id, name: p.name, hi: p.hi, ph: effPH, total: r.total, holePts: r.holePts, isPro: p.isPro, holesPlayed: holesPlayed, gender: p.gender, isOverride: day===2 && p.phDay2Override != null };
+      var effPH = getPlayerDayPH(p, day); return { id: p.id, name: p.name, hi: p.hi, ph: effPH, total: r.total, holePts: r.holePts, cb: calcCountback(r.holePts), isPro: p.isPro, holesPlayed: holesPlayed, gender: p.gender, isOverride: day===2 && p.phDay2Override != null };
     })
     .filter(function(r){ return r; })
-    .sort(function(a,b){ return b.total - a.total; });
+    .sort(compareByTotalThenCountback);
 
   if (!results.length) {
     el.innerHTML = '<div class="lb-empty"><div class="icon">⛳</div>Scores will appear here as players finish.</div>';
@@ -1357,17 +1387,40 @@ function renderCombined() {
       var r1 = s1 && s1.some(function(x){ return x>0; }) ? calcRoundPoints(p, s1, 1) : null;
       var r2 = s2 && s2.some(function(x){ return x>0; }) ? calcRoundPoints(p, s2, 2) : null;
       if (!r1 && !r2) return null;
+      // Countback for combined uses Day 2 as primary tiebreaker, then Day 1
+      var cbD2 = r2 ? calcCountback(r2.holePts) : { b9:0, b6:0, b3:0, b2:0, b1:0 };
+      var cbD1 = r1 ? calcCountback(r1.holePts) : { b9:0, b6:0, b3:0, b2:0, b1:0 };
       return {
         id: p.id,
         name: p.name,
         d1: r1 ? r1.total : null,
         d2: r2 ? r2.total : null,
         total: (r1 ? r1.total : 0) + (r2 ? r2.total : 0),
-        complete: r1 && r2
+        complete: r1 && r2,
+        cbD2: cbD2,
+        cbD1: cbD1
       };
     })
     .filter(function(r){ return r; })
-    .sort(function(a,b){ return b.total - a.total; });
+    .sort(function(a, b) {
+      // 1) Combined total
+      if (b.total !== a.total) return b.total - a.total;
+      // 2) Better Day 2 total
+      var aD2 = a.d2 || 0, bD2 = b.d2 || 0;
+      if (bD2 !== aD2) return bD2 - aD2;
+      // 3) Day 2 countback (back 9 → 6 → 3 → 2 → 1)
+      if (b.cbD2.b9 !== a.cbD2.b9) return b.cbD2.b9 - a.cbD2.b9;
+      if (b.cbD2.b6 !== a.cbD2.b6) return b.cbD2.b6 - a.cbD2.b6;
+      if (b.cbD2.b3 !== a.cbD2.b3) return b.cbD2.b3 - a.cbD2.b3;
+      if (b.cbD2.b2 !== a.cbD2.b2) return b.cbD2.b2 - a.cbD2.b2;
+      if (b.cbD2.b1 !== a.cbD2.b1) return b.cbD2.b1 - a.cbD2.b1;
+      // 4) Day 1 countback (as final tiebreaker)
+      if (b.cbD1.b9 !== a.cbD1.b9) return b.cbD1.b9 - a.cbD1.b9;
+      if (b.cbD1.b6 !== a.cbD1.b6) return b.cbD1.b6 - a.cbD1.b6;
+      if (b.cbD1.b3 !== a.cbD1.b3) return b.cbD1.b3 - a.cbD1.b3;
+      if (b.cbD1.b2 !== a.cbD1.b2) return b.cbD1.b2 - a.cbD1.b2;
+      return b.cbD1.b1 - a.cbD1.b1;
+    });
 
   if (!results.length) {
     el.innerHTML = '<div class="lb-empty"><div class="icon">🏆</div>Combined totals will appear here once players complete both rounds.</div>';
@@ -1444,6 +1497,7 @@ function renderTeams(day) {
       perHoleBest2.push(best2);
       total += best2;
     }
+    var teamCB = calcCountback(perHoleBest2);
     // Per-member totals for display
     var memberSummaries = members.map(function(m) {
       var s = scores[m.id];
@@ -1457,8 +1511,8 @@ function renderTeams(day) {
       var ph = day === 1 ? m.phDay1 : m.phDay2;
       return sum + (m.isPro ? 0 : (ph || 0));
     }, 0);
-    return { origIdx: origIdx, name: t.name, teeTime: t.teeTime, members: memberSummaries, total: total, teamHcp: teamHcp, memberCount: members.length, hasScores: memberSummaries.some(function(m){ return m.total !== null; }) };
-  }).sort(function(a,b){ return b.total - a.total; });
+    return { origIdx: origIdx, name: t.name, teeTime: t.teeTime, members: memberSummaries, total: total, cb: teamCB, teamHcp: teamHcp, memberCount: members.length, hasScores: memberSummaries.some(function(m){ return m.total !== null; }) };
+  }).sort(compareByTotalThenCountback);
 
   // If NO scores yet, sort by tee time (earliest first) instead of by total
   var anyScores = teamResults.some(function(t){ return t.hasScores; });
