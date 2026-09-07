@@ -674,13 +674,13 @@ body{font-family:'Poppins',sans-serif;background:linear-gradient(175deg,#0a1428,
     <div class="ov-venue-eyebrow">The Venue</div>
     <div class="ov-venue-title">Hanbury Manor</div>
     <div class="ov-venue-sub">Marriott Hotel &amp; Country Club · Ware, Hertfordshire</div>
-    <div class="ov-venue-tee-label">Men · White</div>
+    <div class="ov-venue-tee-label">Men · Yellow</div>
     <div class="ov-venue-specs">
-      <div class="ov-spec"><div class="ov-spec-lbl">Course Rating</div><div class="ov-spec-val">72.3</div></div>
+      <div class="ov-spec"><div class="ov-spec-lbl">Course Rating</div><div class="ov-spec-val">69.7</div></div>
       <div class="ov-spec-div"></div>
-      <div class="ov-spec"><div class="ov-spec-lbl">Slope</div><div class="ov-spec-val">139</div></div>
+      <div class="ov-spec"><div class="ov-spec-lbl">Slope</div><div class="ov-spec-val">128</div></div>
       <div class="ov-spec-div"></div>
-      <div class="ov-spec"><div class="ov-spec-lbl">Yardage</div><div class="ov-spec-val">6,636</div></div>
+      <div class="ov-spec"><div class="ov-spec-lbl">Yardage</div><div class="ov-spec-val">~6,155</div></div>
     </div>
     <div class="ov-venue-tee-label" style="margin-top:12px;">Ladies · Red</div>
     <div class="ov-venue-specs">
@@ -840,7 +840,7 @@ body{font-family:'Poppins',sans-serif;background:linear-gradient(175deg,#0a1428,
     <div class="info-h">⛳ Golf Format</div>
     <ul class="info-list">
       <li><strong>Individual Stableford</strong> on both days at <strong>95% Playing Handicap</strong></li>
-      <li>Men play <strong>White tees</strong> · Ladies play <strong>Red tees</strong></li>
+      <li>Men play <strong>Yellow tees</strong> · Ladies play <strong>Red tees</strong></li>
       <li><strong>Team Stableford</strong>: best 2 Stableford points from the fourball counted on each hole</li>
       <li>Each day: Individual 1st/2nd, Ladies Winner, Winning Fourball, 2 × NP + 1 × NP2</li>
       <li>Overall 36-hole: 1st / 2nd / 3rd</li>
@@ -1129,7 +1129,7 @@ var HANBURY = {
     white:  { name:'White',  yards:[347,527,425,163,422,162,338,426,523, 381,178,534,407,394,393,171,480,365], total:6636, cr:72.3, slope:139, gender:'m' },
     // Other tees — placeholder values until confirmed
     blue:   { name:'Blue',   yards:[], total:7053, cr:74.4, slope:135, gender:'m' },
-    yellow: { name:'Yellow', yards:[], total:6534, cr:72.0, slope:130, gender:'m' },
+    yellow: { name:'Yellow', yards:[314,499,392,141,389,149,318,405,493, 350,165,495,378,364,364,158,447,338], total:6155, cr:69.7, slope:128, gender:'m' },
     red:    { name:'Red',    yards:[265,451,358,116,318,126,271,370,442, 312,131,473,328,347,312,117,404,274], total:5425, cr:72.3, slope:134, gender:'w' }
   }
 };
@@ -1175,6 +1175,10 @@ async function loadData() {
   var ad = record.awayDay;
   if (ad) {
     _players = ad.players || [];
+    // Auto-migrate: default men from White → Yellow (event decision)
+    _players.forEach(function(p) {
+      if (p.gender === 'm' && p.teeKey === 'white') p.teeKey = 'yellow';
+    });
     _teamsDay1 = ad.teamsDay1 || [];
     _teamsDay2 = ad.teamsDay2 || [];
     _scoresDay1 = ad.scoresDay1 || {};
@@ -1643,7 +1647,7 @@ async function quickAddPlayer() {
   var hiVal = document.getElementById('qaHI').value;
   var hi = isPro ? null : (hiVal ? parseFloat(hiVal) : null);
   var gender = document.getElementById('qaGender').value;
-  var teeKey = gender === 'w' ? 'red' : 'white';
+  var teeKey = gender === 'w' ? 'red' : 'yellow';
 
   var newPlayer = {
     id: makePlayerId(),
@@ -1707,7 +1711,7 @@ function bulkAddPlayers() {
     var hi = isPro ? null : (hiRaw ? parseFloat(hiRaw) : null);
     var genderRaw = (parts[2] || 'M').toUpperCase();
     var gender = genderRaw.startsWith('W') || genderRaw.startsWith('F') || genderRaw.startsWith('L') ? 'w' : 'm';
-    var teeRaw = (parts[3] || (gender === 'w' ? 'Red' : 'White')).toLowerCase();
+    var teeRaw = (parts[3] || (gender === 'w' ? 'Red' : 'Yellow')).toLowerCase();
     var teeKey = teeRaw.indexOf('red') > -1 ? 'red' : teeRaw.indexOf('yellow') > -1 ? 'yellow' : teeRaw.indexOf('blue') > -1 ? 'blue' : 'white';
     // Capitalise name properly
     name = name.replace(/\b\w/g, function(c){ return c.toUpperCase(); });
@@ -1825,7 +1829,7 @@ async function autosaveAndRefresh() {
 function updatePlayerGender(idx, gender) {
   _players[idx].gender = gender;
   // Auto-assign tee: Ladies → Red, Men → White (default)
-  _players[idx].teeKey = gender === 'w' ? 'red' : 'white';
+  _players[idx].teeKey = gender === 'w' ? 'red' : 'yellow';
   var ph = calcPH(_players[idx].hi, _players[idx].teeKey, _players[idx].isPro);
   _players[idx].phDay1 = ph;
   _players[idx].phDay2 = ph;
