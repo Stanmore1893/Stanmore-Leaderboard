@@ -347,6 +347,95 @@ header .sub{font-size:.62rem;color:rgba(240,192,64,.65);letter-spacing:.14em;tex
   color:rgba(255,255,255,.3);letter-spacing:.1em;
 }
 
+
+/* 1. Pulse glow animation on status change */
+@keyframes glowPulse {
+  0%,100% { text-shadow: 0 0 0 transparent; }
+  50% { text-shadow: 0 0 24px rgba(240,192,64,.9), 0 0 48px rgba(240,192,64,.5); }
+}
+.status-main.flash { animation: glowPulse 1.4s ease-out; }
+
+/* 2. Currently-playing banner */
+.now-playing{
+  margin:0 12px 14px;padding:14px 16px;
+  background:linear-gradient(135deg,rgba(74,222,128,.12),rgba(15,35,71,.3));
+  border:1.5px solid rgba(74,222,128,.35);
+  border-radius:12px;text-align:center;
+  display:flex;align-items:center;justify-content:center;gap:10px;
+}
+.now-playing .flag{font-size:1.2rem;animation:wave 2s ease-in-out infinite;transform-origin:bottom;}
+@keyframes wave{50%{transform:rotate(8deg);}}
+.now-playing .np-text{text-align:left;line-height:1.2;}
+.now-playing .np-main{font-family:'Playfair Display',serif;font-weight:800;color:#4ade80;font-size:.95rem;letter-spacing:.01em;}
+.now-playing .np-sub{font-size:.68rem;color:rgba(255,255,255,.65);margin-top:3px;letter-spacing:.04em;}
+
+/* 3. Momentum ribbon */
+.momentum{margin:0 12px 14px;padding:14px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);border-radius:12px;}
+.momentum .mo-label{font-size:.6rem;letter-spacing:.2em;color:rgba(240,192,64,.75);text-transform:uppercase;font-weight:700;margin-bottom:10px;text-align:center;}
+.momentum svg{display:block;width:100%;height:70px;}
+
+/* 4. Tally badges in scorecard */
+.sc-tally{
+  display:inline-block;padding:2px 7px;border-radius:12px;
+  font-family:'DM Mono',monospace;font-size:.6rem;font-weight:800;
+  letter-spacing:.04em;min-width:38px;text-align:center;
+}
+.tally-A{background:rgba(74,222,128,.15);color:#4ade80;}
+.tally-B{background:rgba(248,113,113,.15);color:#f87171;}
+.tally-H{background:rgba(255,255,255,.08);color:rgba(255,255,255,.6);}
+
+/* 6. Viewers chip */
+.viewers-chip{
+  position:fixed;top:72px;right:10px;z-index:50;
+  background:rgba(10,20,40,.85);backdrop-filter:blur(8px);
+  border:1px solid rgba(240,192,64,.25);
+  border-radius:16px;padding:5px 10px;
+  font-size:.65rem;color:#ffe066;font-weight:700;letter-spacing:.05em;
+  box-shadow:0 4px 14px rgba(0,0,0,.3);
+  display:none;align-items:center;gap:5px;
+}
+.viewers-chip .dot{width:6px;height:6px;border-radius:50%;background:#4ade80;box-shadow:0 0 6px #4ade80;animation:pulse 1.4s infinite;}
+
+/* 7. Share row */
+.share-row{display:flex;gap:8px;margin:0 12px 14px;}
+.share-btn{
+  flex:1;padding:11px 10px;background:rgba(255,255,255,.05);
+  border:1px solid rgba(255,255,255,.12);border-radius:10px;
+  color:#fff;font-size:.78rem;font-weight:600;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;gap:6px;
+  transition:all .15s;
+}
+.share-btn:hover{background:rgba(240,192,64,.1);border-color:rgba(240,192,64,.3);}
+.share-btn.wa{background:rgba(37,211,102,.14);border-color:rgba(37,211,102,.4);color:#4ade80;}
+.share-btn .ico{font-size:1rem;}
+
+/* 10. Weather chip */
+.weather-chip{
+  display:inline-flex;align-items:center;gap:6px;
+  background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);
+  border-radius:14px;padding:4px 11px;
+  font-size:.7rem;color:rgba(255,255,255,.8);font-weight:600;
+  margin:10px auto 0;letter-spacing:.03em;
+}
+
+/* 11. Match stats */
+.stats-grid{
+  display:grid;grid-template-columns:1fr 1fr;gap:8px;
+  margin:0 12px 14px;
+}
+.stat-tile{
+  background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);
+  border-radius:10px;padding:12px;text-align:center;
+}
+.stat-tile .st-val{
+  font-family:'Playfair Display',serif;font-weight:800;color:#ffe066;
+  font-size:1.4rem;line-height:1;margin-bottom:4px;
+}
+.stat-tile .st-lbl{font-size:.6rem;color:rgba(255,255,255,.55);letter-spacing:.1em;text-transform:uppercase;font-weight:700;}
+
+/* 15. Confetti */
+#confettiCanvas{position:fixed;inset:0;pointer-events:none;z-index:999;}
+
 @media (max-width:380px){
   .hero-title{font-size:1.45rem;}
   .status-main{font-size:1.8rem;}
@@ -367,7 +456,11 @@ header .sub{font-size:.62rem;color:rgba(240,192,64,.65);letter-spacing:.14em;tex
   <div class="hero-title">Gordon Bowl Final</div>
   <div class="hero-sub">36-Hole Matchplay · 2026</div>
   <div class="hero-meta">Saturday 17 October · Stanmore Golf Club</div>
+  <div id="weatherChip" class="weather-chip" style="display:none;">⛅ <span id="weatherTxt">—</span></div>
 </div>
+
+<!-- Viewers -->
+<div id="viewersChip" class="viewers-chip"><span class="dot"></span><span id="viewersCount">1</span> watching</div>
 
 <div class="tabs">
   <div class="tab active" data-view="live" onclick="pickTab(this)">Live</div>
@@ -378,6 +471,13 @@ header .sub{font-size:.62rem;color:rgba(240,192,64,.65);letter-spacing:.14em;tex
 
 <!-- LIVE VIEW -->
 <div class="view active" id="view-live">
+  <!-- COUNTDOWN (shows pre-match, hides once play begins) -->
+  <div id="countdownCard" style="margin:14px 12px;padding:18px 16px;background:linear-gradient(135deg,rgba(212,160,23,.1),rgba(15,35,71,.3));border:1px solid rgba(240,192,64,.3);border-radius:14px;text-align:center;box-shadow:0 6px 24px rgba(15,35,71,.4);display:none;">
+    <div style="font-size:.6rem;letter-spacing:.28em;color:rgba(240,192,64,.85);text-transform:uppercase;font-weight:700;margin-bottom:8px;">⏱ First Tee</div>
+    <div id="countdownValue" style="font-family:'Playfair Display',serif;font-weight:900;font-size:2.4rem;line-height:1.1;background:linear-gradient(180deg,#ffe066,#f0c040 55%,#d4a017);-webkit-background-clip:text;background-clip:text;color:transparent;-webkit-text-fill-color:transparent;padding:4px 0;">—</div>
+    <div id="countdownSub" style="font-size:.75rem;color:rgba(255,255,255,.6);margin-top:4px;letter-spacing:.04em;font-weight:600;">Saturday 17 October · 7:37 AM</div>
+  </div>
+
   <div class="status-card" id="statusCard">
     <div class="status-live" id="liveTag">Live</div>
     <div class="status-label">Match Status</div>
@@ -407,6 +507,26 @@ header .sub{font-size:.62rem;color:rgba(240,192,64,.65);letter-spacing:.14em;tex
   <div class="sect-h">Current / Last Hole</div>
   <div id="lastHoleCard" style="margin:0 12px 14px;padding:14px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);border-radius:12px;text-align:center;font-size:.85rem;color:rgba(255,255,255,.6);font-style:italic;">
     Match about to start — hole 1 up next
+  </div>
+
+  <!-- Currently Playing banner -->
+  <div id="nowPlayingWrap"></div>
+
+  <!-- Momentum ribbon -->
+  <div class="momentum" id="momentumWrap" style="display:none;">
+    <div class="mo-label">Match Momentum</div>
+    <svg id="momentumSvg" viewBox="0 0 360 70" preserveAspectRatio="none"></svg>
+  </div>
+
+  <!-- Stats panel (shown post-match) -->
+  <div id="statsWrap"></div>
+
+  <!-- Share -->
+  <div class="sect-h">Share This Match</div>
+  <div class="share-row">
+    <button class="share-btn wa" onclick="shareWhatsApp()"><span class="ico">💬</span> WhatsApp</button>
+    <button class="share-btn" onclick="shareLink()"><span class="ico">🔗</span> Copy Link</button>
+    <button class="share-btn" onclick="shareNative()"><span class="ico">📤</span> Share</button>
   </div>
 </div>
 
@@ -500,9 +620,9 @@ header .sub{font-size:.62rem;color:rgba(240,192,64,.65);letter-spacing:.14em;tex
 // ─── COURSE DATA (Stanmore, White tees) ───
 // NOTE: Confirm par/SI/yardage against Stanmore scorecard before match.
 var STANMORE = {
-  par:   [4,5,4,3,4,3,4,4,5, 4,3,5,4,4,4,3,5,4],
-  siMen: [15,9,3,17,5,11,13,1,7, 4,18,8,2,10,14,16,6,12],
-  yardsWhite:[]  // optional — not needed for match
+  par:   [4,4,4,3,4,3,4,3,4, 3,5,4,4,4,4,4,3,5],  // Par 69
+  siMen: [14,4,8,16,2,18,12,10,6, 17,5,7,1,15,3,11,9,13],  // From Stanmore scorecard
+  yardsWhite:[343,408,407,127,400,122,352,176,386, 165,515,416,422,307,410,380,196,493]
 };
 // Sum par = check (adjust if different for Stanmore)
 // 36 holes = play 1-18 twice
@@ -752,9 +872,10 @@ function renderLastHole() {
 function renderScorecard() {
   var t = document.getElementById('scTable');
   var s = computeMatchStatus();
-  var html = '<thead><tr><th class="hole-col">Hole</th><th class="par-col">Par</th><th class="si-col">SI</th><th class="score-col">A</th><th class="score-col">B</th><th class="result-col">W/L</th></tr></thead><tbody>';
+  var runUp = 0;
+  var html = '<thead><tr><th class="hole-col">Hole</th><th class="par-col">Par</th><th class="si-col">SI</th><th class="score-col">A</th><th class="score-col">B</th><th class="result-col">W/L</th><th style="width:46px;">State</th></tr></thead><tbody>';
   for (var r=0;r<2;r++) {
-    html += '<tr class="round-divider"><td colspan="6">Round ' + (r+1) + ' (' + (r===0?'1-18':'19-36') + ')</td></tr>';
+    html += '<tr class="round-divider"><td colspan="7">Round ' + (r+1) + ' (' + (r===0?'1-18':'19-36') + ')</td></tr>';
     for (var h=0;h<18;h++) {
       var matchHole = r*18 + h + 1;
       var idx = matchHole - 1;
@@ -769,11 +890,17 @@ function renderScorecard() {
       else if (hole.result) rowClass = 'played-row';
       else rowClass = 'future-row';
       var resCell = '';
-      if (hole.result === 'W') resCell = '<span class="result-W">A</span>';
-      else if (hole.result === 'L') resCell = '<span class="result-L">B</span>';
+      if (hole.result === 'W') { resCell = '<span class="result-W">A</span>'; runUp++; }
+      else if (hole.result === 'L') { resCell = '<span class="result-L">B</span>'; runUp--; }
       else if (hole.result === 'H') resCell = '<span class="result-H">½</span>';
       else resCell = '—';
-      html += '<tr class="' + rowClass + '"><td class="hole-col">' + matchHole + '</td><td class="par-col">' + par + '</td><td class="si-col">' + si + '<span class="shot-dot">' + dotStr + '</span></td><td class="score-col">' + (hole.a != null ? hole.a : '—') + '</td><td class="score-col">' + (hole.b != null ? hole.b : '—') + '</td><td class="result-col">' + resCell + '</td></tr>';
+      var tallyCell = '—';
+      if (hole.result) {
+        if (runUp === 0) tallyCell = '<span class="sc-tally tally-H">AS</span>';
+        else if (runUp > 0) tallyCell = '<span class="sc-tally tally-A">A ' + runUp + '↑</span>';
+        else tallyCell = '<span class="sc-tally tally-B">B ' + Math.abs(runUp) + '↑</span>';
+      }
+      html += '<tr class="' + rowClass + '"><td class="hole-col">' + matchHole + '</td><td class="par-col">' + par + '</td><td class="si-col">' + si + '<span class="shot-dot">' + dotStr + '</span></td><td class="score-col">' + (hole.a != null ? hole.a : '—') + '</td><td class="score-col">' + (hole.b != null ? hole.b : '—') + '</td><td class="result-col">' + resCell + '</td><td style="text-align:center;">' + tallyCell + '</td></tr>';
     }
   }
   html += '</tbody>';
@@ -1005,6 +1132,325 @@ async function resetMatch() {
   _match.endText = '';
   await saveData();
   renderAll();
+}
+
+// ─── COUNTDOWN to first tee (Sat 17 Oct 2026, 07:37 local) ───
+function renderCountdown() {
+  var card = document.getElementById('countdownCard');
+  var val = document.getElementById('countdownValue');
+  var sub = document.getElementById('countdownSub');
+  if (!card || !val || !sub) return;
+
+  // Hide countdown once match has started (any hole played)
+  var s = computeMatchStatus();
+  if (s.played > 0 || _match.ended) {
+    card.style.display = 'none';
+    return;
+  }
+
+  var target = new Date(2026, 9, 17, 7, 37, 0); // Oct = month 9 (0-indexed)
+  var now = new Date();
+  var diffMs = target - now;
+
+  card.style.display = 'block';
+
+  if (diffMs <= 0) {
+    val.innerHTML = '<span style="color:#4ade80;">🔴 TEEING OFF</span>';
+    sub.textContent = 'Match about to begin';
+    return;
+  }
+
+  var totalSec = Math.floor(diffMs / 1000);
+  var days = Math.floor(totalSec / 86400);
+  var hours = Math.floor((totalSec % 86400) / 3600);
+  var mins = Math.floor((totalSec % 3600) / 60);
+  var secs = totalSec % 60;
+
+  if (days > 0) {
+    val.innerHTML = days + '<span style="font-size:.55em;color:rgba(255,255,255,.6);font-family:Poppins,sans-serif;font-weight:600;letter-spacing:.04em;"> ' + (days===1?'day':'days') + ' </span>' + hours + '<span style="font-size:.55em;color:rgba(255,255,255,.6);font-family:Poppins,sans-serif;font-weight:600;letter-spacing:.04em;"> h</span>';
+  } else if (hours > 0) {
+    val.innerHTML = hours + '<span style="font-size:.55em;color:rgba(255,255,255,.6);font-family:Poppins,sans-serif;font-weight:600;letter-spacing:.04em;"> h </span>' + String(mins).padStart(2,'0') + '<span style="font-size:.55em;color:rgba(255,255,255,.6);font-family:Poppins,sans-serif;font-weight:600;letter-spacing:.04em;"> m</span>';
+  } else if (mins > 0) {
+    val.innerHTML = mins + '<span style="font-size:.55em;color:rgba(255,255,255,.6);font-family:Poppins,sans-serif;font-weight:600;letter-spacing:.04em;"> min </span>' + String(secs).padStart(2,'0') + '<span style="font-size:.55em;color:rgba(255,255,255,.6);font-family:Poppins,sans-serif;font-weight:600;letter-spacing:.04em;"> s</span>';
+  } else {
+    val.innerHTML = secs + '<span style="font-size:.55em;color:rgba(255,255,255,.6);font-family:Poppins,sans-serif;font-weight:600;letter-spacing:.04em;"> seconds</span>';
+  }
+  sub.textContent = 'Saturday 17 October · 7:37 AM';
+}
+
+// Update countdown every second
+setInterval(renderCountdown, 1000);
+renderCountdown();
+
+// ─── 1. STATUS PULSE on change ───
+var _lastStatusMain = '';
+var _origRenderStatus = renderStatus;
+renderStatus = function() {
+  _origRenderStatus();
+  var el = document.getElementById('statusMain');
+  if (!el) return;
+  var current = el.innerHTML;
+  if (_lastStatusMain && current !== _lastStatusMain) {
+    el.classList.remove('flash');
+    void el.offsetWidth; // reflow to restart animation
+    el.classList.add('flash');
+    // Check for match end trigger
+    if (_match.ended && !_confettiFired) {
+      fireConfetti();
+      _confettiFired = true;
+    }
+  }
+  _lastStatusMain = current;
+  renderNowPlaying();
+  renderMomentum();
+  renderStats();
+};
+
+// ─── 2. CURRENTLY PLAYING banner ───
+function renderNowPlaying() {
+  var wrap = document.getElementById('nowPlayingWrap');
+  if (!wrap) return;
+  if (_match.ended) { wrap.innerHTML = ''; return; }
+  var s = computeMatchStatus();
+  var nextIdx = s.lastPlayedIdx + 1;
+  if (nextIdx >= 36) { wrap.innerHTML = ''; return; }
+  var matchHole = nextIdx + 1;
+  var round = matchHole <= 18 ? 1 : 2;
+  var holeNum = ((matchHole-1)%18) + 1;
+  var par = STANMORE.par[(matchHole-1)%18];
+  var si = STANMORE.siMen[(matchHole-1)%18];
+  var yds = STANMORE.yardsWhite[(matchHole-1)%18];
+  var shots = shotsOnHole(matchHole);
+  var shotTxt = shots > 0 ? ' · Kristian receives ' + shots + ' shot' + (shots>1?'s':'') : '';
+  wrap.innerHTML = '<div class="now-playing"><span class="flag">⛳</span><div class="np-text">'
+    + '<div class="np-main">Currently Playing · R' + round + ' · Hole ' + holeNum + '</div>'
+    + '<div class="np-sub">Par ' + par + ' · ' + yds + ' yds · SI ' + si + shotTxt + '</div>'
+    + '</div></div>';
+}
+
+// ─── 3. MOMENTUM RIBBON ───
+function renderMomentum() {
+  var wrap = document.getElementById('momentumWrap');
+  var svg = document.getElementById('momentumSvg');
+  if (!wrap || !svg) return;
+  var pts = [];
+  var up = 0;
+  for (var i=0;i<36;i++) {
+    var h = _match.holes[i];
+    if (!h || !h.result) break;
+    if (h.result === 'W') up++;
+    else if (h.result === 'L') up--;
+    pts.push({ hole: i+1, up: up });
+  }
+  if (pts.length < 1) { wrap.style.display = 'none'; return; }
+  wrap.style.display = 'block';
+
+  // Scale: x = 0-360, y = 10-60 (35 = AS)
+  var maxAbs = Math.max(2, ...pts.map(function(p){ return Math.abs(p.up); }));
+  var W = 360, H = 70, PADX = 8;
+  var innerW = W - PADX*2;
+  var midY = H / 2;
+  var scaleY = (H/2 - 10) / maxAbs;
+
+  // Build grid
+  var gridLines = '';
+  gridLines += '<line x1="0" y1="' + midY + '" x2="' + W + '" y2="' + midY + '" stroke="rgba(255,255,255,.15)" stroke-dasharray="2,3"/>';
+
+  // Path
+  var pathD = '';
+  pts.forEach(function(p, i) {
+    var x = PADX + (p.hole / 36) * innerW;
+    var y = midY - (p.up * scaleY);
+    pathD += (i === 0 ? 'M' : 'L') + x.toFixed(1) + ',' + y.toFixed(1);
+  });
+
+  // Last point marker
+  var lp = pts[pts.length-1];
+  var lx = PADX + (lp.hole / 36) * innerW;
+  var ly = midY - (lp.up * scaleY);
+  var leaderColor = lp.up > 0 ? '#4ade80' : (lp.up < 0 ? '#f87171' : 'rgba(255,255,255,.5)');
+
+  // Round divider
+  var r2x = PADX + (18 / 36) * innerW;
+
+  svg.innerHTML = gridLines
+    + '<line x1="' + r2x + '" y1="4" x2="' + r2x + '" y2="' + (H-4) + '" stroke="rgba(240,192,64,.25)" stroke-dasharray="1,2"/>'
+    + '<text x="' + (r2x - 2) + '" y="10" text-anchor="end" fill="rgba(240,192,64,.5)" font-size="7" font-family="DM Mono">R1</text>'
+    + '<text x="' + (r2x + 3) + '" y="10" fill="rgba(240,192,64,.5)" font-size="7" font-family="DM Mono">R2</text>'
+    + '<text x="4" y="' + (midY - 2) + '" fill="rgba(255,255,255,.3)" font-size="7" font-family="DM Mono">AS</text>'
+    + '<path d="' + pathD + '" fill="none" stroke="url(#momentumGrad)" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>'
+    + '<circle cx="' + lx + '" cy="' + ly + '" r="4" fill="' + leaderColor + '" stroke="#0a1428" stroke-width="2"/>'
+    + '<defs><linearGradient id="momentumGrad" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="rgba(240,192,64,.4)"/><stop offset="1" stop-color="#ffe066"/></linearGradient></defs>';
+}
+
+// ─── 11. MATCH STATS ───
+function renderStats() {
+  var wrap = document.getElementById('statsWrap');
+  if (!wrap) return;
+  var s = computeMatchStatus();
+  if (s.played < 9) { wrap.innerHTML = ''; return; }
+
+  var aWins = 0, bWins = 0, halves = 0, aConc = 0, bConc = 0;
+  var aStreak = 0, bStreak = 0, aMaxStreak = 0, bMaxStreak = 0;
+  var up = 0, maxAup = 0, maxBup = 0;
+  var aBirdies = 0, bBirdies = 0;
+  for (var i=0;i<_match.holes.length;i++) {
+    var h = _match.holes[i];
+    if (!h.result) break;
+    var par = STANMORE.par[i%18];
+    if (h.result === 'W') { aWins++; up++; aStreak++; bStreak=0; if (aStreak>aMaxStreak) aMaxStreak=aStreak; if (h.concede) bConc++; }
+    else if (h.result === 'L') { bWins++; up--; bStreak++; aStreak=0; if (bStreak>bMaxStreak) bMaxStreak=bStreak; if (h.concede) aConc++; }
+    else if (h.result === 'H') { halves++; aStreak=0; bStreak=0; }
+    if (up > maxAup) maxAup = up;
+    if (-up > maxBup) maxBup = -up;
+    if (h.a != null && h.a < par) aBirdies++;
+    if (h.b != null && h.b < par) bBirdies++;
+  }
+
+  var h = '<div class="sect-h">Match Stats</div>';
+  h += '<div class="stats-grid">';
+  h += '<div class="stat-tile"><div class="st-val">' + aWins + '</div><div class="st-lbl">Tejas Holes Won</div></div>';
+  h += '<div class="stat-tile"><div class="st-val">' + bWins + '</div><div class="st-lbl">Kristian Holes Won</div></div>';
+  h += '<div class="stat-tile"><div class="st-val">' + halves + '</div><div class="st-lbl">Holes Halved</div></div>';
+  h += '<div class="stat-tile"><div class="st-val">' + Math.max(aMaxStreak,bMaxStreak) + '</div><div class="st-lbl">Longest Streak</div></div>';
+  h += '<div class="stat-tile"><div class="st-val">' + maxAup + '</div><div class="st-lbl">Tejas Biggest Lead</div></div>';
+  h += '<div class="stat-tile"><div class="st-val">' + maxBup + '</div><div class="st-lbl">Kristian Biggest Lead</div></div>';
+  if (aBirdies + bBirdies > 0) {
+    h += '<div class="stat-tile"><div class="st-val">' + aBirdies + '</div><div class="st-lbl">Tejas Birdies+</div></div>';
+    h += '<div class="stat-tile"><div class="st-val">' + bBirdies + '</div><div class="st-lbl">Kristian Birdies+</div></div>';
+  }
+  h += '</div>';
+  wrap.innerHTML = h;
+}
+
+// ─── 7. SHARE ───
+function shareWhatsApp() {
+  var txt = encodeURIComponent('Follow the Gordon Bowl Final live: ' + window.location.href);
+  window.open('https://wa.me/?text=' + txt, '_blank');
+}
+function shareLink() {
+  navigator.clipboard.writeText(window.location.href).then(function(){
+    alert('Link copied! Paste it anywhere.');
+  }).catch(function(){
+    prompt('Copy this link:', window.location.href);
+  });
+}
+function shareNative() {
+  if (navigator.share) {
+    navigator.share({ title:'Gordon Bowl Final 2026', text:'Follow the match live', url: window.location.href });
+  } else {
+    shareLink();
+  }
+}
+
+// ─── 10. WEATHER (Open-Meteo, no key required) ───
+async function loadWeather() {
+  try {
+    // Stanmore GC approx coords
+    var url = 'https://api.open-meteo.com/v1/forecast?latitude=51.6097&longitude=-0.3297&current=temperature_2m,wind_speed_10m,weather_code&wind_speed_unit=mph&temperature_unit=celsius&timezone=Europe%2FLondon';
+    var r = await fetch(url);
+    var data = await r.json();
+    if (!data.current) return;
+    var temp = Math.round(data.current.temperature_2m);
+    var wind = Math.round(data.current.wind_speed_10m);
+    var code = data.current.weather_code;
+    var icon = weatherIcon(code);
+    var chip = document.getElementById('weatherChip');
+    var txt = document.getElementById('weatherTxt');
+    if (chip && txt) {
+      chip.firstChild.textContent = icon + ' ';
+      txt.textContent = temp + '°C · ' + wind + ' mph';
+      chip.style.display = 'inline-flex';
+    }
+  } catch (e) {
+    // Silent fail
+  }
+}
+function weatherIcon(code) {
+  if (code === 0) return '☀️';
+  if (code <= 2) return '🌤';
+  if (code === 3) return '☁️';
+  if (code >= 45 && code <= 48) return '🌫';
+  if (code >= 51 && code <= 67) return '🌧';
+  if (code >= 71 && code <= 77) return '❄️';
+  if (code >= 80 && code <= 82) return '🌦';
+  if (code >= 95) return '⛈';
+  return '⛅';
+}
+loadWeather();
+setInterval(loadWeather, 15 * 60 * 1000); // refresh every 15 min
+
+// ─── 6. VIEWERS counter (lightweight, Supabase-backed) ───
+var _sessionId = 'v' + Math.random().toString(36).slice(2,10);
+async function heartbeat() {
+  try {
+    var record = await fetchRecord();
+    if (!record.gordonBowlViewers) record.gordonBowlViewers = {};
+    // Clean stale (> 90s)
+    var now = Date.now();
+    var active = {};
+    Object.keys(record.gordonBowlViewers).forEach(function(id){
+      if (now - record.gordonBowlViewers[id] < 90000) active[id] = record.gordonBowlViewers[id];
+    });
+    active[_sessionId] = now;
+    record.gordonBowlViewers = active;
+    await saveRecord(record);
+    var count = Object.keys(active).length;
+    var chip = document.getElementById('viewersChip');
+    var cnt = document.getElementById('viewersCount');
+    if (chip && cnt && count >= 2) {
+      cnt.textContent = count;
+      chip.style.display = 'flex';
+    } else if (chip) {
+      chip.style.display = 'none';
+    }
+  } catch (e) {
+    // Silent fail
+  }
+}
+heartbeat();
+setInterval(heartbeat, 30000); // every 30s
+
+// ─── 15. CONFETTI ───
+var _confettiFired = false;
+function fireConfetti() {
+  var canvas = document.createElement('canvas');
+  canvas.id = 'confettiCanvas';
+  document.body.appendChild(canvas);
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+  var ctx = canvas.getContext('2d');
+  var colors = ['#f0c040','#ffe066','#d4a017','#4ade80','#60a5fa','#fff'];
+  var pieces = [];
+  for (var i=0;i<140;i++) {
+    pieces.push({
+      x: Math.random() * canvas.width,
+      y: -20 - Math.random() * canvas.height,
+      vx: (Math.random() - .5) * 3,
+      vy: 2 + Math.random() * 4,
+      size: 4 + Math.random() * 6,
+      color: colors[Math.floor(Math.random()*colors.length)],
+      rot: Math.random() * Math.PI * 2,
+      vrot: (Math.random() - .5) * .2
+    });
+  }
+  var start = Date.now();
+  (function tick() {
+    var elapsed = Date.now() - start;
+    if (elapsed > 6000) { canvas.remove(); return; }
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    pieces.forEach(function(p) {
+      p.x += p.vx; p.y += p.vy; p.rot += p.vrot;
+      p.vy += 0.08;
+      ctx.save();
+      ctx.translate(p.x, p.y);
+      ctx.rotate(p.rot);
+      ctx.fillStyle = p.color;
+      ctx.fillRect(-p.size/2, -p.size/2, p.size, p.size*.5);
+      ctx.restore();
+    });
+    requestAnimationFrame(tick);
+  })();
 }
 
 // Auto-refresh every 20s for public viewers
