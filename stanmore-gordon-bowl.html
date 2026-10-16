@@ -455,7 +455,7 @@ header .sub{font-size:.62rem;color:rgba(240,192,64,.65);letter-spacing:.14em;tex
 <div class="hero">
   <div class="hero-title">Gordon Bowl Final</div>
   <div class="hero-sub">36-Hole Matchplay · 2026</div>
-  <div class="hero-meta">Saturday 17 October · Stanmore Golf Club</div>
+  <div class="hero-meta">Saturday 17 October · Stanmore Golf Club<br><span style="font-style:normal;font-family:DM Mono,monospace;font-size:.7rem;color:rgba(240,192,64,.65);letter-spacing:.05em;">AM 7:37 · PM 12:17</span></div>
   <div id="weatherChip" class="weather-chip" style="display:none;">⛅ <span id="weatherTxt">—</span></div>
 </div>
 
@@ -475,7 +475,7 @@ header .sub{font-size:.62rem;color:rgba(240,192,64,.65);letter-spacing:.14em;tex
   <div id="countdownCard" style="margin:14px 12px;padding:18px 16px;background:linear-gradient(135deg,rgba(212,160,23,.1),rgba(15,35,71,.3));border:1px solid rgba(240,192,64,.3);border-radius:14px;text-align:center;box-shadow:0 6px 24px rgba(15,35,71,.4);display:none;">
     <div style="font-size:.6rem;letter-spacing:.28em;color:rgba(240,192,64,.85);text-transform:uppercase;font-weight:700;margin-bottom:8px;">⏱ First Tee</div>
     <div id="countdownValue" style="font-family:'Playfair Display',serif;font-weight:900;font-size:2.4rem;line-height:1.1;background:linear-gradient(180deg,#ffe066,#f0c040 55%,#d4a017);-webkit-background-clip:text;background-clip:text;color:transparent;-webkit-text-fill-color:transparent;padding:4px 0;">—</div>
-    <div id="countdownSub" style="font-size:.75rem;color:rgba(255,255,255,.6);margin-top:4px;letter-spacing:.04em;font-weight:600;">Saturday 17 October · 7:37 AM</div>
+    <div id="countdownSub" style="font-size:.75rem;color:rgba(255,255,255,.6);margin-top:4px;letter-spacing:.04em;font-weight:600;">Saturday 17 October · AM 7:37 · PM 12:17</div>
   </div>
 
   <div class="status-card" id="statusCard">
@@ -495,13 +495,13 @@ header .sub{font-size:.62rem;color:rgba(240,192,64,.65);letter-spacing:.14em;tex
     <div class="vs">vs</div>
     <div class="player" id="playerBInfo">
       <div class="player-name">Kristian Hogberg</div>
-      <div class="player-hcp">HI 16.3 · CH 19</div>
+      <div class="player-hcp">HI 16.3 · CH 17 <span style="color:rgba(255,255,255,.4);font-size:.6rem;">(cap)</span></div>
     </div>
   </div>
 
   <div class="sect-h">Stroke Allowance (Full Difference)</div>
   <div style="margin:0 12px 14px;padding:12px 14px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);border-radius:12px;font-size:.82rem;color:rgba(255,255,255,.75);line-height:1.5;">
-    <strong style="color:#ffe066;">Kristian receives 16 shots</strong> from Tejas (full Course Handicap difference: 19 − 3). Shots fall on the hardest 16 stroke-index holes each round.
+    <strong style="color:#ffe066;">Kristian receives 14 shots</strong> from Tejas. Full Course Handicap difference would be 16 (19 − 3), but competition rules cap maximum Course Handicap at 17, so 17 − 3 = 14. Shots fall on the hardest 14 SI holes each round.
   </div>
 
   <div class="sect-h">Current / Last Hole</div>
@@ -607,8 +607,8 @@ header .sub{font-size:.62rem;color:rgba(240,192,64,.65);letter-spacing:.14em;tex
       <div class="info-row"><span class="k">Player A</span><span class="v">Tejas Patel</span></div>
       <div class="info-row"><span class="k">Player B</span><span class="v">Kristian Hogberg</span></div>
       <div class="info-row"><span class="k">Format</span><span class="v">36-hole matchplay</span></div>
-      <div class="info-row"><span class="k">Course HCPs</span><span class="v">3 vs 19</span></div>
-      <div class="info-row"><span class="k">Shots given</span><span class="v">16 to Kristian</span></div>
+      <div class="info-row"><span class="k">Course HCPs</span><span class="v">3 vs 17 (cap)</span></div>
+      <div class="info-row"><span class="k">Shots given</span><span class="v">14 to Kristian</span></div>
       <div class="info-row"><span class="k">Course</span><span class="v">Stanmore · White</span></div>
     </div>
   </div>
@@ -648,7 +648,7 @@ var STANMORE = {
 // 36 holes = play 1-18 twice
 
 var PLAYER_A = { name:'Tejas Patel', hi:2.1, ch:3 };
-var PLAYER_B = { name:'Kristian Hogberg', hi:16.3, ch:19 };
+var PLAYER_B = { name:'Kristian Hogberg', hi:16.3, ch:17 };  // Capped at 17 per competition rules
 var SHOTS_TO_B = Math.max(0, PLAYER_B.ch - PLAYER_A.ch);  // full Course Handicap difference = 16 shots
 
 var ADMIN_PW = 'Stanmore1893!';
@@ -1394,7 +1394,7 @@ function renderCountdown() {
   } else {
     val.innerHTML = secs + '<span style="font-size:.55em;color:rgba(255,255,255,.6);font-family:Poppins,sans-serif;font-weight:600;letter-spacing:.04em;"> seconds</span>';
   }
-  sub.textContent = 'Saturday 17 October · 7:37 AM';
+  sub.textContent = 'AM 7:37 · PM 12:17';
 }
 
 // Update countdown every second
@@ -1431,6 +1431,26 @@ function renderNowPlaying() {
   if (!wrap) return;
   if (_match.ended) { wrap.innerHTML = ''; return; }
   var s = computeMatchStatus();
+  // Lunch break: morning done, afternoon not yet started
+  if (s.played === 18 && !_match.playoff) {
+    var pmTarget = new Date(2026, 9, 17, 12, 17, 0);
+    var now = new Date();
+    var diffMs = pmTarget - now;
+    var subTxt;
+    if (diffMs > 0) {
+      var mins = Math.floor(diffMs / 60000);
+      if (mins > 60) subTxt = 'Afternoon round tees off at 12:17 (' + Math.floor(mins/60) + 'h ' + (mins%60) + 'm)';
+      else if (mins > 0) subTxt = 'Afternoon tees off in ' + mins + ' min · 12:17';
+      else subTxt = 'Afternoon round about to begin';
+    } else {
+      subTxt = 'Afternoon round · 12:17 tee time';
+    }
+    wrap.innerHTML = '<div class="now-playing" style="background:linear-gradient(135deg,rgba(96,165,250,.15),rgba(15,35,71,.3));border-color:rgba(96,165,250,.4);"><span class="flag">🍽</span><div class="np-text">'
+      + '<div class="np-main" style="color:#60a5fa;">Lunch Break · Morning Round Complete</div>'
+      + '<div class="np-sub">' + subTxt + '</div>'
+      + '</div></div>';
+    return;
+  }
   // Playoff mode
   if (_match.playoff) {
     var poIdx = s.playoffPlayed; // next unplayed playoff hole index
