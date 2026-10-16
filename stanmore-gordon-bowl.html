@@ -1,0 +1,1021 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<title>Gordon Bowl Final 2026 · Stanmore Golf Club</title>
+<link rel="icon" href="club-logo.png">
+<link rel="apple-touch-icon" href="club-logo.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Gordon Bowl">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,800;0,900;1,500&family=Poppins:wght@400;500;600;700;800&family=DM+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+
+<style>
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+html,body{overflow-x:hidden;}
+body{
+  font-family:'Poppins',sans-serif;
+  background:#0a1428;
+  color:#fff;
+  min-height:100vh;
+  background-image:
+    radial-gradient(ellipse at top, rgba(212,160,23,.08), transparent 60%),
+    radial-gradient(ellipse at bottom, rgba(18,35,68,.6), transparent 70%),
+    linear-gradient(180deg, #0a1428, #122344);
+  background-attachment:fixed;
+}
+
+/* Header */
+header{
+  display:flex;align-items:center;gap:12px;padding:14px 16px;
+  background:rgba(10,20,40,.75);backdrop-filter:blur(12px);
+  border-bottom:1px solid rgba(240,192,64,.15);
+  position:sticky;top:0;z-index:100;
+}
+header .logo{width:44px;height:44px;object-fit:contain;flex-shrink:0;}
+header .title{font-family:'Playfair Display',serif;font-size:1rem;font-weight:800;color:#fff;line-height:1.1;}
+header .sub{font-size:.62rem;color:rgba(240,192,64,.65);letter-spacing:.14em;text-transform:uppercase;font-weight:700;margin-top:2px;}
+
+/* Hero */
+.hero{
+  padding:22px 16px 16px;text-align:center;
+}
+.hero-title{
+  font-family:'Playfair Display',serif;
+  font-weight:900;
+  font-size:1.7rem;
+  background:linear-gradient(180deg,#ffe066,#f0c040 55%,#d4a017);
+  -webkit-background-clip:text;background-clip:text;
+  color:transparent;-webkit-text-fill-color:transparent;
+  letter-spacing:-.01em;line-height:1.05;padding:4px 0 2px;
+}
+.hero-sub{
+  font-size:.72rem;color:rgba(255,255,255,.6);
+  letter-spacing:.14em;text-transform:uppercase;font-weight:600;margin-top:4px;
+}
+.hero-meta{
+  font-size:.75rem;color:rgba(240,192,64,.75);margin-top:6px;font-style:italic;
+  font-family:'Playfair Display',serif;
+}
+
+/* Live status card */
+.status-card{
+  margin:14px 12px;padding:20px 16px;
+  background:linear-gradient(135deg,rgba(212,160,23,.12),rgba(15,35,71,.3));
+  border:1.5px solid rgba(240,192,64,.35);
+  border-radius:16px;
+  box-shadow:0 10px 36px rgba(15,35,71,.5);
+  text-align:center;position:relative;
+}
+.status-live{
+  position:absolute;top:12px;right:14px;
+  display:flex;align-items:center;gap:5px;
+  font-size:.6rem;letter-spacing:.14em;font-weight:800;
+  color:#4ade80;text-transform:uppercase;
+}
+.status-live::before{
+  content:'';width:8px;height:8px;border-radius:50%;background:#4ade80;
+  box-shadow:0 0 8px #4ade80;animation:pulse 1.4s ease-in-out infinite;
+}
+@keyframes pulse{50%{opacity:.4;transform:scale(.85);}}
+.status-pending{
+  position:absolute;top:12px;right:14px;
+  font-size:.6rem;letter-spacing:.14em;font-weight:800;
+  color:rgba(255,255,255,.4);text-transform:uppercase;
+}
+.status-done{
+  position:absolute;top:12px;right:14px;
+  font-size:.6rem;letter-spacing:.14em;font-weight:800;
+  color:#ffe066;text-transform:uppercase;
+}
+.status-label{
+  font-size:.62rem;letter-spacing:.28em;color:rgba(240,192,64,.85);
+  text-transform:uppercase;font-weight:700;margin-bottom:10px;
+}
+.status-main{
+  font-family:'Playfair Display',serif;
+  font-weight:900;font-size:2.1rem;line-height:1.1;color:#fff;
+  padding:4px 0;
+}
+.status-main .num-serif{
+  background:linear-gradient(180deg,#ffe066,#f0c040 55%,#d4a017);
+  -webkit-background-clip:text;background-clip:text;
+  color:transparent;-webkit-text-fill-color:transparent;
+}
+.status-thru{
+  font-size:.85rem;color:rgba(255,255,255,.7);margin-top:6px;font-weight:600;letter-spacing:.04em;
+}
+.status-dormie{
+  display:inline-block;margin-top:10px;
+  background:linear-gradient(135deg,#f0c040,#d4a017);color:#122344;
+  padding:5px 12px;border-radius:16px;
+  font-size:.72rem;font-weight:800;letter-spacing:.14em;text-transform:uppercase;
+  box-shadow:0 4px 14px rgba(240,192,64,.4);
+}
+.status-final{
+  margin-top:12px;padding:10px 14px;
+  background:linear-gradient(135deg,#4ade80,#22c55e);color:#022e0f;
+  border-radius:12px;
+  font-size:.9rem;font-weight:800;letter-spacing:.04em;
+}
+
+/* Players */
+.players{
+  display:grid;grid-template-columns:1fr auto 1fr;gap:10px;
+  margin:0 12px 14px;padding:14px 10px;
+  background:rgba(255,255,255,.03);
+  border:1px solid rgba(255,255,255,.08);
+  border-radius:14px;align-items:center;
+}
+.player{text-align:center;padding:4px;}
+.player-name{font-family:'Playfair Display',serif;font-weight:800;font-size:1rem;color:#fff;line-height:1.1;margin-bottom:4px;}
+.player-hcp{font-size:.65rem;color:rgba(240,192,64,.75);letter-spacing:.1em;font-weight:700;text-transform:uppercase;font-family:'DM Mono',monospace;}
+.player.leading .player-name{color:#ffe066;}
+.player.leading{position:relative;}
+.player.leading::after{
+  content:'●';color:#4ade80;font-size:.7rem;
+  position:absolute;top:0;right:0;
+}
+.vs{
+  font-family:'Playfair Display',serif;font-style:italic;
+  font-size:.9rem;color:rgba(240,192,64,.5);font-weight:700;
+}
+
+/* Section headers */
+.sect-h{
+  font-size:.65rem;letter-spacing:.2em;color:rgba(240,192,64,.8);
+  text-transform:uppercase;font-weight:700;
+  margin:18px 16px 10px;
+}
+
+/* Scorecard grid */
+.scorecard{
+  margin:0 12px 14px;padding:12px 10px;
+  background:rgba(255,255,255,.03);
+  border:1px solid rgba(255,255,255,.08);
+  border-radius:14px;
+  overflow-x:auto;
+}
+.sc-table{
+  width:100%;border-collapse:collapse;font-size:.72rem;min-width:100%;
+}
+.sc-table th,.sc-table td{
+  text-align:center;padding:5px 2px;border-bottom:1px solid rgba(255,255,255,.05);
+  font-weight:600;
+}
+.sc-table th{
+  font-size:.56rem;letter-spacing:.1em;color:rgba(240,192,64,.75);
+  text-transform:uppercase;font-weight:700;padding-bottom:7px;
+}
+.sc-table .hole-col{color:rgba(255,255,255,.5);font-family:'DM Mono',monospace;width:28px;}
+.sc-table .par-col{color:rgba(255,255,255,.4);font-family:'DM Mono',monospace;font-size:.65rem;width:24px;}
+.sc-table .si-col{color:rgba(240,192,64,.5);font-family:'DM Mono',monospace;font-size:.6rem;width:22px;}
+.sc-table .score-col{font-family:'DM Mono',monospace;font-weight:700;font-size:.78rem;}
+.sc-table .result-col{width:30px;font-weight:800;}
+.sc-table .shot-dot{color:#f0c040;font-size:.5rem;vertical-align:super;}
+
+.result-W{color:#4ade80;}
+.result-L{color:#f87171;}
+.result-H{color:rgba(255,255,255,.4);}
+.sc-table .current-row td{background:rgba(240,192,64,.08);}
+.sc-table .current-row .hole-col{color:#ffe066;font-weight:800;}
+.sc-table .played-row td{opacity:.95;}
+.sc-table .future-row td{opacity:.35;}
+
+.round-divider td{
+  background:rgba(240,192,64,.08) !important;
+  padding:8px 2px !important;
+  font-family:'Playfair Display',serif;font-weight:800;color:#ffe066;
+  font-size:.7rem;letter-spacing:.14em;text-transform:uppercase;
+  border-top:1px solid rgba(240,192,64,.3);
+  border-bottom:1px solid rgba(240,192,64,.3);
+}
+
+/* Log */
+.log{
+  margin:0 12px 14px;padding:12px 10px;
+  background:rgba(255,255,255,.03);
+  border:1px solid rgba(255,255,255,.08);
+  border-radius:14px;
+  max-height:280px;overflow-y:auto;
+}
+.log-row{
+  display:grid;grid-template-columns:40px 1fr auto;gap:10px;
+  padding:8px 6px;border-bottom:1px solid rgba(255,255,255,.05);
+  font-size:.78rem;align-items:center;
+}
+.log-row:last-child{border-bottom:none;}
+.log-hole{
+  font-family:'DM Mono',monospace;font-weight:800;color:#f0c040;
+  font-size:.85rem;text-align:center;
+}
+.log-detail{color:rgba(255,255,255,.85);line-height:1.3;}
+.log-detail .names{font-weight:600;}
+.log-status{
+  font-family:'Playfair Display',serif;font-weight:800;color:#ffe066;
+  font-size:.9rem;letter-spacing:.02em;
+}
+
+/* Nav tabs */
+.tabs{
+  display:flex;margin:0 12px 10px;background:rgba(0,0,0,.25);border-radius:10px;padding:4px;gap:3px;
+}
+.tab{
+  flex:1;padding:9px 10px;text-align:center;border-radius:7px;cursor:pointer;
+  font-size:.74rem;font-weight:600;color:rgba(255,255,255,.6);
+  transition:all .15s;
+}
+.tab.active{background:linear-gradient(135deg,#d4a017,#f0c040);color:#122344;font-weight:800;box-shadow:0 2px 10px rgba(240,192,64,.3);}
+
+.view{display:none;}
+.view.active{display:block;}
+
+/* Admin */
+#adminGate{text-align:center;padding:30px 16px;}
+#adminPanel{display:none;}
+.a-input{
+  width:100%;background:rgba(0,0,0,.25);border:1px solid rgba(255,255,255,.15);
+  border-radius:10px;padding:12px 14px;color:#fff;font-family:'Poppins',sans-serif;
+  font-size:.95rem;outline:none;margin-bottom:12px;
+}
+.a-input:focus{border-color:rgba(240,192,64,.5);}
+.a-btn{
+  width:100%;padding:12px 14px;border:none;border-radius:10px;
+  font-family:'Poppins',sans-serif;font-weight:700;font-size:.9rem;
+  cursor:pointer;letter-spacing:.02em;transition:transform .1s;
+}
+.a-btn:active{transform:scale(.97);}
+.a-gold{background:linear-gradient(135deg,#d4a017,#f0c040);color:#122344;box-shadow:0 4px 14px rgba(240,192,64,.3);}
+.a-out{background:rgba(255,255,255,.06);color:#fff;border:1px solid rgba(255,255,255,.15);}
+.a-red{background:rgba(192,57,43,.9);color:#fff;}
+
+.hole-entry{
+  margin:0 12px 14px;padding:16px 14px;
+  background:rgba(255,255,255,.03);
+  border:1.5px solid rgba(240,192,64,.3);
+  border-radius:14px;
+  box-shadow:0 6px 20px rgba(15,35,71,.4);
+}
+.hole-entry h3{
+  font-family:'Playfair Display',serif;font-weight:800;color:#ffe066;
+  text-align:center;margin-bottom:10px;font-size:1.2rem;
+}
+.hole-entry .meta{
+  text-align:center;font-size:.72rem;color:rgba(255,255,255,.6);
+  margin-bottom:14px;letter-spacing:.04em;
+}
+.hole-nav{
+  display:grid;grid-template-columns:auto 1fr auto;gap:8px;
+  align-items:center;margin-bottom:14px;
+}
+.hole-nav button{
+  background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);
+  color:#fff;padding:8px 14px;border-radius:8px;font-weight:700;cursor:pointer;
+}
+.hole-nav button:disabled{opacity:.3;cursor:not-allowed;}
+.hole-nav .hole-select{
+  background:rgba(0,0,0,.3);color:#ffe066;border:1px solid rgba(240,192,64,.3);
+  border-radius:8px;padding:8px;text-align:center;font-weight:800;
+  font-family:'DM Mono',monospace;font-size:1rem;outline:none;
+}
+
+.score-pair{
+  display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:14px 0;
+}
+.score-input{
+  text-align:center;
+}
+.score-input label{
+  display:block;font-size:.68rem;letter-spacing:.1em;color:rgba(240,192,64,.75);
+  text-transform:uppercase;font-weight:700;margin-bottom:6px;
+}
+.score-input .shots{
+  font-size:.6rem;color:rgba(255,255,255,.5);margin-bottom:4px;letter-spacing:.04em;
+}
+.score-input input{
+  width:100%;background:rgba(0,0,0,.3);border:1.5px solid rgba(255,255,255,.15);
+  border-radius:10px;padding:14px;color:#ffe066;font-family:'DM Mono',monospace;
+  font-size:1.4rem;font-weight:800;text-align:center;outline:none;
+}
+.score-input input:focus{border-color:rgba(240,192,64,.5);}
+
+.result-preview{
+  text-align:center;padding:12px;margin:10px 0;
+  background:rgba(240,192,64,.08);
+  border:1px solid rgba(240,192,64,.3);
+  border-radius:10px;
+  font-family:'Playfair Display',serif;font-weight:800;color:#ffe066;font-size:1.1rem;
+}
+
+.autosave-pill{
+  display:inline-block;padding:5px 12px;border-radius:20px;
+  font-size:.68rem;font-weight:800;letter-spacing:.05em;opacity:0;transition:opacity .3s;
+  background:linear-gradient(135deg,#4ade80,#22c55e);color:#022e0f;
+  box-shadow:0 4px 14px rgba(74,222,128,.4);
+}
+
+.info-row{
+  display:flex;justify-content:space-between;align-items:center;
+  padding:10px 12px;background:rgba(255,255,255,.04);
+  border:1px solid rgba(255,255,255,.08);border-radius:10px;
+  margin-bottom:8px;font-size:.82rem;
+}
+.info-row .k{color:rgba(255,255,255,.6);font-size:.72rem;letter-spacing:.06em;text-transform:uppercase;font-weight:600;}
+.info-row .v{color:#ffe066;font-weight:700;font-family:'DM Mono',monospace;}
+
+.quick-row{
+  display:flex;gap:6px;margin:12px 0 4px;flex-wrap:wrap;
+}
+.quick-btn{
+  flex:1 1 44%;min-width:0;
+  padding:12px 8px;border:none;border-radius:10px;
+  font-family:'Poppins',sans-serif;font-weight:700;font-size:.85rem;
+  cursor:pointer;transition:all .12s;
+}
+.quick-btn:active{transform:scale(.95);}
+.quick-W{background:linear-gradient(135deg,#4ade80,#22c55e);color:#022e0f;}
+.quick-L{background:linear-gradient(135deg,#f87171,#dc2626);color:#450a0a;}
+.quick-H{background:rgba(255,255,255,.08);color:rgba(255,255,255,.85);border:1px solid rgba(255,255,255,.15);}
+.quick-C{background:linear-gradient(135deg,#f0c040,#d4a017);color:#122344;}
+
+.footer-note{
+  text-align:center;padding:16px;font-size:.65rem;
+  color:rgba(255,255,255,.3);letter-spacing:.1em;
+}
+
+@media (max-width:380px){
+  .hero-title{font-size:1.45rem;}
+  .status-main{font-size:1.8rem;}
+}
+</style>
+</head>
+<body>
+
+<header>
+  <img src="club-logo.png" alt="Stanmore GC" class="logo">
+  <div>
+    <div class="title">Stanmore Golf Club</div>
+    <div class="sub">Gordon Bowl Final</div>
+  </div>
+</header>
+
+<div class="hero">
+  <div class="hero-title">Gordon Bowl Final</div>
+  <div class="hero-sub">36-Hole Matchplay · 2026</div>
+  <div class="hero-meta">Saturday 17 October · Stanmore Golf Club</div>
+</div>
+
+<div class="tabs">
+  <div class="tab active" data-view="live" onclick="pickTab(this)">Live</div>
+  <div class="tab" data-view="scorecard" onclick="pickTab(this)">Scorecard</div>
+  <div class="tab" data-view="log" onclick="pickTab(this)">Hole Log</div>
+  <div class="tab" data-view="admin" onclick="pickTab(this)">🔐</div>
+</div>
+
+<!-- LIVE VIEW -->
+<div class="view active" id="view-live">
+  <div class="status-card" id="statusCard">
+    <div class="status-live" id="liveTag">Live</div>
+    <div class="status-label">Match Status</div>
+    <div class="status-main" id="statusMain">All Square</div>
+    <div class="status-thru" id="statusThru">Match not yet started</div>
+    <div id="statusDormieWrap"></div>
+    <div id="statusFinalWrap"></div>
+  </div>
+
+  <div class="players">
+    <div class="player" id="playerAInfo">
+      <div class="player-name">Tejas Patel</div>
+      <div class="player-hcp">HI 2.1 · CH 3</div>
+    </div>
+    <div class="vs">vs</div>
+    <div class="player" id="playerBInfo">
+      <div class="player-name">Kristian Hogberg</div>
+      <div class="player-hcp">HI 16.3 · CH 19</div>
+    </div>
+  </div>
+
+  <div class="sect-h">Stroke Allowance (Full Difference)</div>
+  <div style="margin:0 12px 14px;padding:12px 14px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);border-radius:12px;font-size:.82rem;color:rgba(255,255,255,.75);line-height:1.5;">
+    <strong style="color:#ffe066;">Kristian receives 16 shots</strong> from Tejas (full Course Handicap difference: 19 − 3). Shots fall on the hardest 16 stroke-index holes each round.
+  </div>
+
+  <div class="sect-h">Current / Last Hole</div>
+  <div id="lastHoleCard" style="margin:0 12px 14px;padding:14px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);border-radius:12px;text-align:center;font-size:.85rem;color:rgba(255,255,255,.6);font-style:italic;">
+    Match about to start — hole 1 up next
+  </div>
+</div>
+
+<!-- SCORECARD VIEW -->
+<div class="view" id="view-scorecard">
+  <div class="scorecard">
+    <table class="sc-table" id="scTable"></table>
+  </div>
+</div>
+
+<!-- LOG VIEW -->
+<div class="view" id="view-log">
+  <div class="log" id="logBox">
+    <div style="text-align:center;color:rgba(255,255,255,.4);font-style:italic;padding:20px;font-size:.85rem;">Hole-by-hole log will appear here once play begins.</div>
+  </div>
+</div>
+
+<!-- ADMIN VIEW -->
+<div class="view" id="view-admin">
+  <div id="adminGate">
+    <div style="font-size:1.4rem;margin-bottom:12px;">🔐</div>
+    <div style="font-family:'Playfair Display',serif;font-size:1.2rem;font-weight:800;color:#f0c040;margin-bottom:16px;">Referee Access</div>
+    <input type="password" class="a-input" id="adminPw" placeholder="Password" onkeydown="if(event.key==='Enter')checkPw()">
+    <button class="a-btn a-gold" onclick="checkPw()">Unlock</button>
+  </div>
+
+  <div id="adminPanel">
+    <div style="text-align:right;margin:0 12px 10px;">
+      <span class="autosave-pill" id="autosavePill">✓ Saved</span>
+    </div>
+
+    <div class="hole-entry">
+      <h3>Enter Hole Score</h3>
+      <div class="meta" id="entryMeta">Hole 1 · Par — · SI —</div>
+
+      <div class="hole-nav">
+        <button onclick="navHole(-1)" id="prevBtn">‹ Prev</button>
+        <select class="hole-select" id="holeSelect" onchange="loadHole(parseInt(this.value))"></select>
+        <button onclick="navHole(1)" id="nextBtn">Next ›</button>
+      </div>
+
+      <div class="score-pair">
+        <div class="score-input">
+          <label>Tejas (A)</label>
+          <div class="shots" id="aShots">—</div>
+          <input type="number" id="scoreA" min="1" max="12" inputmode="numeric" placeholder="—" oninput="computeResult()">
+        </div>
+        <div class="score-input">
+          <label>Kristian (B)</label>
+          <div class="shots" id="bShots">—</div>
+          <input type="number" id="scoreB" min="1" max="12" inputmode="numeric" placeholder="—" oninput="computeResult()">
+        </div>
+      </div>
+
+      <div class="result-preview" id="resultPreview">Enter both scores to see result</div>
+
+      <div class="quick-row">
+        <button class="quick-btn quick-W" onclick="quickResult('W')">A Wins</button>
+        <button class="quick-btn quick-L" onclick="quickResult('L')">B Wins</button>
+      </div>
+      <div class="quick-row">
+        <button class="quick-btn quick-H" onclick="quickResult('H')">Half</button>
+        <button class="quick-btn quick-C" onclick="quickResult('C')">Concede Hole</button>
+      </div>
+
+      <button class="a-btn a-gold" style="margin-top:14px;" onclick="saveHole()">💾 Save Hole</button>
+      <button class="a-btn a-out" style="margin-top:8px;" onclick="clearHole()">↩ Clear This Hole</button>
+    </div>
+
+    <div style="margin:0 12px 14px;">
+      <div class="sect-h" style="margin-left:0;">Match Controls</div>
+      <button class="a-btn a-out" onclick="endMatch()">🏁 End Match (declare winner)</button>
+      <button class="a-btn a-red" style="margin-top:8px;" onclick="resetMatch()">🗑 Reset Entire Match</button>
+    </div>
+
+    <div style="margin:0 12px 14px;">
+      <div class="sect-h" style="margin-left:0;">Match Info</div>
+      <div class="info-row"><span class="k">Player A</span><span class="v">Tejas Patel</span></div>
+      <div class="info-row"><span class="k">Player B</span><span class="v">Kristian Hogberg</span></div>
+      <div class="info-row"><span class="k">Format</span><span class="v">36-hole matchplay</span></div>
+      <div class="info-row"><span class="k">Course HCPs</span><span class="v">3 vs 19</span></div>
+      <div class="info-row"><span class="k">Shots given</span><span class="v">16 to Kristian</span></div>
+      <div class="info-row"><span class="k">Course</span><span class="v">Stanmore · White</span></div>
+    </div>
+  </div>
+</div>
+
+<div class="footer-note">Stanmore Golf Club · Gordon Bowl Final 2026</div>
+
+<script>
+// ─── COURSE DATA (Stanmore, White tees) ───
+// NOTE: Confirm par/SI/yardage against Stanmore scorecard before match.
+var STANMORE = {
+  par:   [4,5,4,3,4,3,4,4,5, 4,3,5,4,4,4,3,5,4],
+  siMen: [15,9,3,17,5,11,13,1,7, 4,18,8,2,10,14,16,6,12],
+  yardsWhite:[]  // optional — not needed for match
+};
+// Sum par = check (adjust if different for Stanmore)
+// 36 holes = play 1-18 twice
+
+var PLAYER_A = { name:'Tejas Patel', hi:2.1, ch:3 };
+var PLAYER_B = { name:'Kristian Hogberg', hi:16.3, ch:19 };
+var SHOTS_TO_B = Math.max(0, PLAYER_B.ch - PLAYER_A.ch);  // full Course Handicap difference = 16 shots
+
+var ADMIN_PW = 'Stanmore1893!';
+var _isAdmin = false;
+var _match = {
+  holes: [],  // array of 36 items: { a:score|null, b:score|null, result:'W'|'L'|'H'|null, concede:bool }
+  ended: false,
+  endText: ''
+};
+var _currentEntryHole = 1; // 1-36
+
+// ─── SUPABASE (shared with hub) ───
+var PROXY = 'https://stanmore-proxy.vercel.app/api/proxy';
+
+async function fetchRecord() {
+  try {
+    var r = await fetch(PROXY + '?action=fetch');
+    var data = await r.json();
+    return data.record || {};
+  } catch (e) {
+    console.error('fetch error', e);
+    return {};
+  }
+}
+
+async function saveRecord(record) {
+  try {
+    var r = await fetch(PROXY, {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({action:'save', record:record})
+    });
+    return r.ok;
+  } catch (e) {
+    console.error('save error', e);
+    return false;
+  }
+}
+
+async function loadData() {
+  var record = await fetchRecord();
+  if (record.gordonBowl2026) {
+    _match = record.gordonBowl2026;
+    // Ensure holes array is 36
+    if (!_match.holes || _match.holes.length !== 36) {
+      _match.holes = [];
+      for (var i=0;i<36;i++) _match.holes.push({a:null,b:null,result:null,concede:false});
+    }
+  } else {
+    for (var i=0;i<36;i++) _match.holes.push({a:null,b:null,result:null,concede:false});
+  }
+  renderAll();
+}
+
+async function saveData() {
+  var record = await fetchRecord();
+  record.gordonBowl2026 = _match;
+  var ok = await saveRecord(record);
+  if (ok) flashSaved();
+  return ok;
+}
+
+function flashSaved() {
+  var p = document.getElementById('autosavePill');
+  if (!p) return;
+  p.style.opacity = '1';
+  setTimeout(function(){ p.style.opacity = '0'; }, 2200);
+}
+
+// ─── MATCH CALCULATIONS ───
+// Return the hole index within 18 (0-based) for round-1 hole (0-17) or round-2 hole (0-17)
+function holeIndex(matchHole) {
+  // matchHole 1-36 → 0-17
+  return ((matchHole - 1) % 18);
+}
+
+function shotsOnHole(matchHole) {
+  // Kristian gets 16 shots over 18 holes. Shots fall on SI 1-16 (16 lowest-SI holes).
+  // Each round of 18 he gets 16 shots.
+  if (SHOTS_TO_B <= 0) return 0;
+  var si = STANMORE.siMen[holeIndex(matchHole)];
+  var dotsPerHole = 0;
+  var remaining = SHOTS_TO_B;
+  if (remaining >= 18) {
+    dotsPerHole += 1; remaining -= 18;
+  }
+  // One shot on holes with SI <= remaining
+  if (si <= remaining) dotsPerHole += 1;
+  return dotsPerHole;
+}
+
+function computeMatchStatus() {
+  // Walk through played holes, compute current state
+  var aUp = 0; // positive = A up, negative = B up
+  var played = 0;
+  var lastResult = null;
+  var lastPlayedIdx = -1;
+  for (var i=0;i<_match.holes.length;i++) {
+    var h = _match.holes[i];
+    if (h.result) {
+      played++;
+      lastPlayedIdx = i;
+      lastResult = h;
+      if (h.result === 'W') aUp++;
+      else if (h.result === 'L') aUp--;
+    }
+  }
+  return { aUp: aUp, played: played, lastResult: lastResult, lastPlayedIdx: lastPlayedIdx };
+}
+
+function statusText() {
+  var s = computeMatchStatus();
+  if (_match.ended) {
+    return { main: _match.endText || 'Match Complete', thru: 'Final result' };
+  }
+  var remaining = 36 - s.played;
+  if (s.played === 0) {
+    return { main: 'All Square', thru: 'Match not yet started' };
+  }
+  var absUp = Math.abs(s.aUp);
+  var leader = s.aUp > 0 ? PLAYER_A.name.split(' ')[0] : (s.aUp < 0 ? PLAYER_B.name.split(' ')[0] : null);
+  var mainTxt;
+  if (s.aUp === 0) {
+    mainTxt = 'All Square';
+  } else {
+    mainTxt = leader + ' <span class="num-serif">' + absUp + '</span> UP';
+  }
+  var thruTxt = 'Thru ' + s.played + ' · ' + remaining + ' to play';
+  // Dormie check
+  if (absUp > 0 && absUp === remaining && remaining > 0) {
+    return { main: mainTxt, thru: thruTxt, dormie: true, dormieText: leader + ' DORMIE ' + absUp };
+  }
+  // Won check
+  if (absUp > remaining) {
+    var endBy = absUp - 0;  // technically it's X & (Y to play) with X holes up and Y remaining
+    // Actually: match is won when up by more than holes remaining. Score is "X&Y" where X = holes up at the moment of win, Y = holes remaining when win was clinched
+    // Compute at the moment match was won (walk forward)
+    return { main: mainTxt, thru: thruTxt };
+  }
+  return { main: mainTxt, thru: thruTxt };
+}
+
+// ─── RENDER ───
+function pickTab(el) {
+  document.querySelectorAll('.tab').forEach(function(t){ t.classList.remove('active'); });
+  document.querySelectorAll('.view').forEach(function(v){ v.classList.remove('active'); });
+  el.classList.add('active');
+  document.getElementById('view-' + el.dataset.view).classList.add('active');
+  if (el.dataset.view === 'admin' && _isAdmin) {
+    renderAdminHole();
+  }
+}
+
+function renderAll() {
+  renderStatus();
+  renderScorecard();
+  renderLog();
+  renderPlayers();
+  renderLastHole();
+  if (_isAdmin) renderAdminHole();
+}
+
+function renderPlayers() {
+  var s = computeMatchStatus();
+  var pa = document.getElementById('playerAInfo');
+  var pb = document.getElementById('playerBInfo');
+  pa.classList.toggle('leading', s.aUp > 0 && !_match.ended);
+  pb.classList.toggle('leading', s.aUp < 0 && !_match.ended);
+}
+
+function renderStatus() {
+  var st = statusText();
+  var card = document.getElementById('statusCard');
+  var liveTag = document.getElementById('liveTag');
+  document.getElementById('statusMain').innerHTML = st.main;
+  document.getElementById('statusThru').textContent = st.thru;
+
+  // Live indicator — simple: show "Live" when match has holes played and not ended
+  var s = computeMatchStatus();
+  if (_match.ended) {
+    liveTag.className = 'status-done';
+    liveTag.textContent = '✓ Final';
+  } else if (s.played === 0) {
+    liveTag.className = 'status-pending';
+    liveTag.textContent = 'Pending';
+  } else {
+    liveTag.className = 'status-live';
+    liveTag.textContent = 'Live';
+  }
+
+  // Dormie badge
+  var dormieWrap = document.getElementById('statusDormieWrap');
+  if (st.dormie) {
+    dormieWrap.innerHTML = '<div class="status-dormie">' + st.dormieText + '</div>';
+  } else {
+    dormieWrap.innerHTML = '';
+  }
+
+  // Final banner
+  var finalWrap = document.getElementById('statusFinalWrap');
+  if (_match.ended && _match.endText) {
+    finalWrap.innerHTML = '<div class="status-final">🏆 ' + _match.endText + '</div>';
+  } else {
+    finalWrap.innerHTML = '';
+  }
+}
+
+function renderLastHole() {
+  var s = computeMatchStatus();
+  var card = document.getElementById('lastHoleCard');
+  if (s.played === 0) {
+    card.innerHTML = 'Match about to start — hole 1 up next';
+    card.style.fontStyle = 'italic';
+    card.style.color = 'rgba(255,255,255,.6)';
+    return;
+  }
+  var h = s.lastResult;
+  var idx = s.lastPlayedIdx;
+  var holeNum = (idx % 18) + 1;
+  var roundNum = idx < 18 ? 1 : 2;
+  var par = STANMORE.par[idx % 18];
+  var resultText = '';
+  if (h.concede) {
+    resultText = h.result === 'W' ? PLAYER_B.name.split(' ')[0] + ' conceded hole' : PLAYER_A.name.split(' ')[0] + ' conceded hole';
+  } else if (h.result === 'W') {
+    resultText = PLAYER_A.name.split(' ')[0] + ' won with ' + h.a + ', ' + PLAYER_B.name.split(' ')[0] + ' had ' + h.b;
+  } else if (h.result === 'L') {
+    resultText = PLAYER_B.name.split(' ')[0] + ' won with ' + h.b + ', ' + PLAYER_A.name.split(' ')[0] + ' had ' + h.a;
+  } else if (h.result === 'H') {
+    resultText = 'Halved — ' + (h.a || '-') + ' vs ' + (h.b || '-');
+  }
+  var nextHoleNum = (idx + 1) < 36 ? ((idx + 1) % 18) + 1 : null;
+  var nextRound = (idx + 1) < 18 ? 1 : 2;
+  card.style.fontStyle = 'normal';
+  card.style.color = 'rgba(255,255,255,.85)';
+  card.innerHTML =
+    '<div style="font-family:\'Playfair Display\',serif;font-weight:800;font-size:1rem;color:#ffe066;margin-bottom:4px;">R' + roundNum + ' · Hole ' + holeNum + ' · Par ' + par + '</div>'
+    + '<div style="font-size:.8rem;color:rgba(255,255,255,.75);">' + resultText + '</div>'
+    + (nextHoleNum ? '<div style="margin-top:8px;font-size:.72rem;color:rgba(240,192,64,.65);letter-spacing:.05em;">Next: R' + nextRound + ' · Hole ' + nextHoleNum + '</div>' : '');
+}
+
+function renderScorecard() {
+  var t = document.getElementById('scTable');
+  var s = computeMatchStatus();
+  var html = '<thead><tr><th class="hole-col">Hole</th><th class="par-col">Par</th><th class="si-col">SI</th><th class="score-col">A</th><th class="score-col">B</th><th class="result-col">W/L</th></tr></thead><tbody>';
+  for (var r=0;r<2;r++) {
+    html += '<tr class="round-divider"><td colspan="6">Round ' + (r+1) + ' (' + (r===0?'1-18':'19-36') + ')</td></tr>';
+    for (var h=0;h<18;h++) {
+      var matchHole = r*18 + h + 1;
+      var idx = matchHole - 1;
+      var hole = _match.holes[idx] || {};
+      var par = STANMORE.par[h];
+      var si = STANMORE.siMen[h];
+      var dots = shotsOnHole(matchHole);
+      var dotStr = '';
+      for (var d=0;d<dots;d++) dotStr += '•';
+      var rowClass = '';
+      if (idx === s.lastPlayedIdx + 1 && !_match.ended) rowClass = 'current-row';
+      else if (hole.result) rowClass = 'played-row';
+      else rowClass = 'future-row';
+      var resCell = '';
+      if (hole.result === 'W') resCell = '<span class="result-W">A</span>';
+      else if (hole.result === 'L') resCell = '<span class="result-L">B</span>';
+      else if (hole.result === 'H') resCell = '<span class="result-H">½</span>';
+      else resCell = '—';
+      html += '<tr class="' + rowClass + '"><td class="hole-col">' + matchHole + '</td><td class="par-col">' + par + '</td><td class="si-col">' + si + '<span class="shot-dot">' + dotStr + '</span></td><td class="score-col">' + (hole.a != null ? hole.a : '—') + '</td><td class="score-col">' + (hole.b != null ? hole.b : '—') + '</td><td class="result-col">' + resCell + '</td></tr>';
+    }
+  }
+  html += '</tbody>';
+  t.innerHTML = html;
+}
+
+function renderLog() {
+  var box = document.getElementById('logBox');
+  var played = [];
+  for (var i=0;i<_match.holes.length;i++) {
+    if (_match.holes[i].result) played.push({idx:i, hole:_match.holes[i]});
+  }
+  if (!played.length) {
+    box.innerHTML = '<div style="text-align:center;color:rgba(255,255,255,.4);font-style:italic;padding:20px;font-size:.85rem;">Hole-by-hole log will appear here once play begins.</div>';
+    return;
+  }
+  var runningUp = 0;
+  var html = '';
+  played.forEach(function(p) {
+    var h = p.hole;
+    if (h.result === 'W') runningUp++;
+    else if (h.result === 'L') runningUp--;
+    var holeNum = (p.idx % 18) + 1;
+    var round = p.idx < 18 ? 1 : 2;
+    var scoreDetail = '';
+    if (h.concede) {
+      scoreDetail = h.result === 'W' ? '<span class="names">Kristian</span> conceded' : '<span class="names">Tejas</span> conceded';
+    } else if (h.result === 'W') {
+      scoreDetail = '<span class="names">Tejas</span> wins (' + h.a + ' vs ' + h.b + ')';
+    } else if (h.result === 'L') {
+      scoreDetail = '<span class="names">Kristian</span> wins (' + h.b + ' vs ' + h.a + ')';
+    } else if (h.result === 'H') {
+      scoreDetail = 'Halved (' + (h.a || '—') + ' vs ' + (h.b || '—') + ')';
+    }
+    var statusTxt = runningUp === 0 ? 'AS' : (runningUp > 0 ? 'A ' + runningUp + 'UP' : 'B ' + Math.abs(runningUp) + 'UP');
+    html += '<div class="log-row"><div class="log-hole">R' + round + ' H' + holeNum + '</div><div class="log-detail">' + scoreDetail + '</div><div class="log-status">' + statusTxt + '</div></div>';
+  });
+  box.innerHTML = html;
+}
+
+// ─── ADMIN ───
+function checkPw() {
+  var pw = document.getElementById('adminPw').value;
+  if (pw === ADMIN_PW) {
+    _isAdmin = true;
+    document.getElementById('adminGate').style.display = 'none';
+    document.getElementById('adminPanel').style.display = 'block';
+    // Jump to first unplayed hole
+    for (var i=0;i<_match.holes.length;i++) {
+      if (!_match.holes[i].result) { _currentEntryHole = i+1; break; }
+    }
+    buildHoleSelect();
+    renderAdminHole();
+  } else {
+    alert('Incorrect password');
+  }
+}
+
+function buildHoleSelect() {
+  var sel = document.getElementById('holeSelect');
+  var html = '';
+  for (var i=1;i<=36;i++) {
+    var round = i <= 18 ? 1 : 2;
+    var h = ((i-1)%18)+1;
+    html += '<option value="' + i + '"' + (i===_currentEntryHole?' selected':'') + '>R' + round + ' · Hole ' + h + '</option>';
+  }
+  sel.innerHTML = html;
+}
+
+function loadHole(matchHole) {
+  _currentEntryHole = matchHole;
+  renderAdminHole();
+}
+
+function navHole(delta) {
+  var next = _currentEntryHole + delta;
+  if (next < 1 || next > 36) return;
+  _currentEntryHole = next;
+  document.getElementById('holeSelect').value = next;
+  renderAdminHole();
+}
+
+function renderAdminHole() {
+  var mh = _currentEntryHole;
+  var idx = mh - 1;
+  var h18 = ((mh-1)%18);
+  var round = mh <= 18 ? 1 : 2;
+  var par = STANMORE.par[h18];
+  var si = STANMORE.siMen[h18];
+  var shots = shotsOnHole(mh);
+  var dots = '';
+  for (var d=0;d<shots;d++) dots += '•';
+  document.getElementById('entryMeta').textContent = 'Round ' + round + ' · Hole ' + ((mh-1)%18+1) + ' · Par ' + par + ' · SI ' + si;
+  document.getElementById('aShots').innerHTML = 'Shots: 0';
+  document.getElementById('bShots').innerHTML = 'Shots: ' + shots + (dots ? ' <span style="color:#f0c040;">' + dots + '</span>' : '');
+  var hole = _match.holes[idx] || {};
+  document.getElementById('scoreA').value = hole.a != null ? hole.a : '';
+  document.getElementById('scoreB').value = hole.b != null ? hole.b : '';
+  computeResult();
+  document.getElementById('prevBtn').disabled = (mh === 1);
+  document.getElementById('nextBtn').disabled = (mh === 36);
+}
+
+function computeResult() {
+  var a = parseInt(document.getElementById('scoreA').value, 10);
+  var b = parseInt(document.getElementById('scoreB').value, 10);
+  var preview = document.getElementById('resultPreview');
+  if (isNaN(a) || isNaN(b)) {
+    preview.textContent = 'Enter both scores to see result';
+    preview.style.color = 'rgba(240,192,64,.6)';
+    return;
+  }
+  var shots = shotsOnHole(_currentEntryHole);
+  var netA = a; // A gets 0 shots
+  var netB = b - shots;
+  if (netA < netB) {
+    preview.innerHTML = '<span style="color:#4ade80;">Tejas wins hole</span> (nett ' + netA + ' vs ' + netB + ')';
+  } else if (netB < netA) {
+    preview.innerHTML = '<span style="color:#f87171;">Kristian wins hole</span> (nett ' + netB + ' vs ' + netA + ')';
+  } else {
+    preview.innerHTML = '<span style="color:#ffe066;">Half</span> (nett ' + netA + ' vs ' + netB + ')';
+  }
+}
+
+async function saveHole() {
+  var a = parseInt(document.getElementById('scoreA').value, 10);
+  var b = parseInt(document.getElementById('scoreB').value, 10);
+  if (isNaN(a) || isNaN(b)) { alert('Enter both scores first (or use the quick buttons for H/Concede)'); return; }
+  var shots = shotsOnHole(_currentEntryHole);
+  var netA = a, netB = b - shots;
+  var result = netA < netB ? 'W' : (netB < netA ? 'L' : 'H');
+  _match.holes[_currentEntryHole - 1] = { a:a, b:b, result:result, concede:false };
+  checkAutoEnd();
+  await saveData();
+  renderAll();
+  // Auto-advance to next hole
+  if (_currentEntryHole < 36) navHole(1);
+}
+
+async function quickResult(type) {
+  var a = parseInt(document.getElementById('scoreA').value, 10);
+  var b = parseInt(document.getElementById('scoreB').value, 10);
+  var holeData;
+  if (type === 'W') {
+    holeData = { a: isNaN(a)?null:a, b: isNaN(b)?null:b, result:'W', concede:false };
+  } else if (type === 'L') {
+    holeData = { a: isNaN(a)?null:a, b: isNaN(b)?null:b, result:'L', concede:false };
+  } else if (type === 'H') {
+    holeData = { a: isNaN(a)?null:a, b: isNaN(b)?null:b, result:'H', concede:false };
+  } else if (type === 'C') {
+    // Conceded hole — ask who conceded
+    var who = prompt('Who conceded the hole? Type A (Tejas conceded, Kristian wins) or B (Kristian conceded, Tejas wins):');
+    if (!who) return;
+    who = who.trim().toUpperCase();
+    if (who === 'A') holeData = { a: isNaN(a)?null:a, b: isNaN(b)?null:b, result:'L', concede:true };
+    else if (who === 'B') holeData = { a: isNaN(a)?null:a, b: isNaN(b)?null:b, result:'W', concede:true };
+    else { alert('Invalid input'); return; }
+  }
+  _match.holes[_currentEntryHole - 1] = holeData;
+  checkAutoEnd();
+  await saveData();
+  renderAll();
+  if (_currentEntryHole < 36) navHole(1);
+}
+
+async function clearHole() {
+  if (!confirm('Clear scores for this hole?')) return;
+  _match.holes[_currentEntryHole - 1] = { a:null, b:null, result:null, concede:false };
+  _match.ended = false;
+  _match.endText = '';
+  await saveData();
+  renderAll();
+}
+
+function checkAutoEnd() {
+  // Walk through holes; if up by more than holes remaining, match is won
+  var aUp = 0;
+  for (var i=0;i<_match.holes.length;i++) {
+    var h = _match.holes[i];
+    if (!h.result) break; // only consider contiguous played holes
+    if (h.result === 'W') aUp++;
+    else if (h.result === 'L') aUp--;
+    var played = i + 1;
+    var remaining = 36 - played;
+    if (Math.abs(aUp) > remaining) {
+      // Match is won on this hole
+      var winner = aUp > 0 ? PLAYER_A.name : PLAYER_B.name;
+      _match.ended = true;
+      _match.endText = winner + ' wins ' + Math.abs(aUp) + ' & ' + remaining;
+      return;
+    }
+  }
+  // If all 36 played and still not ended
+  if (_match.holes[35] && _match.holes[35].result) {
+    if (aUp !== 0) {
+      var winner = aUp > 0 ? PLAYER_A.name : PLAYER_B.name;
+      _match.ended = true;
+      _match.endText = winner + ' wins on the last';
+    } else {
+      _match.ended = true;
+      _match.endText = 'Match All Square after 36';
+    }
+  }
+}
+
+async function endMatch() {
+  var winner = prompt('Declare winner — type A (Tejas) or B (Kristian), or H for halved:');
+  if (!winner) return;
+  winner = winner.trim().toUpperCase();
+  var txt;
+  if (winner === 'A') txt = PLAYER_A.name + ' wins the Gordon Bowl';
+  else if (winner === 'B') txt = PLAYER_B.name + ' wins the Gordon Bowl';
+  else if (winner === 'H') txt = 'Final halved';
+  else { alert('Invalid'); return; }
+  var detail = prompt('Score detail (e.g. "3 & 2", "1 UP", "on 37th") — leave blank for none:');
+  if (detail) txt += ' — ' + detail;
+  _match.ended = true;
+  _match.endText = txt;
+  await saveData();
+  renderAll();
+}
+
+async function resetMatch() {
+  if (!confirm('Reset the ENTIRE match? This clears all scores and status.')) return;
+  if (!confirm('Really sure? This cannot be undone.')) return;
+  _match.holes = [];
+  for (var i=0;i<36;i++) _match.holes.push({a:null,b:null,result:null,concede:false});
+  _match.ended = false;
+  _match.endText = '';
+  await saveData();
+  renderAll();
+}
+
+// Auto-refresh every 20s for public viewers
+setInterval(function() {
+  if (_isAdmin) return;
+  var activeTab = document.querySelector('.tab.active');
+  if (activeTab && activeTab.dataset.view !== 'admin') loadData();
+}, 20000);
+
+// Init
+loadData();
+</script>
+</body>
+</html>
