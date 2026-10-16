@@ -614,6 +614,26 @@ header .sub{font-size:.62rem;color:rgba(240,192,64,.65);letter-spacing:.14em;tex
   </div>
 </div>
 
+<!-- Concede modal -->
+<div id="concedeModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:900;backdrop-filter:blur(6px);align-items:center;justify-content:center;padding:20px;" onclick="if(event.target===this)closeConcedeModal()">
+  <div style="background:linear-gradient(180deg,#122344,#1e3d70);border:1.5px solid rgba(240,192,64,.45);border-radius:16px;padding:20px 18px;width:100%;max-width:380px;box-shadow:0 20px 60px rgba(0,0,0,.6);">
+    <div style="text-align:center;margin-bottom:16px;">
+      <div style="font-size:1.6rem;margin-bottom:4px;">🤝</div>
+      <div style="font-family:'Playfair Display',serif;font-weight:800;color:#ffe066;font-size:1.15rem;">Who conceded?</div>
+      <div style="font-size:.72rem;color:rgba(255,255,255,.55);margin-top:4px;" id="concedeMeta">—</div>
+    </div>
+    <button class="concede-choice" onclick="confirmConcede('A')" style="width:100%;padding:14px;margin-bottom:10px;background:linear-gradient(135deg,rgba(248,113,113,.15),rgba(220,38,38,.1));border:1.5px solid rgba(248,113,113,.4);border-radius:12px;color:#fff;font-family:'Poppins',sans-serif;font-weight:700;font-size:.92rem;cursor:pointer;text-align:left;transition:all .12s;">
+      <div style="font-family:'Playfair Display',serif;font-size:1rem;color:#f87171;margin-bottom:3px;">Tejas conceded</div>
+      <div style="font-size:.72rem;color:rgba(255,255,255,.6);font-weight:500;">Kristian wins the hole</div>
+    </button>
+    <button class="concede-choice" onclick="confirmConcede('B')" style="width:100%;padding:14px;margin-bottom:12px;background:linear-gradient(135deg,rgba(74,222,128,.15),rgba(34,197,94,.1));border:1.5px solid rgba(74,222,128,.4);border-radius:12px;color:#fff;font-family:'Poppins',sans-serif;font-weight:700;font-size:.92rem;cursor:pointer;text-align:left;transition:all .12s;">
+      <div style="font-family:'Playfair Display',serif;font-size:1rem;color:#4ade80;margin-bottom:3px;">Kristian conceded</div>
+      <div style="font-size:.72rem;color:rgba(255,255,255,.6);font-weight:500;">Tejas wins the hole</div>
+    </button>
+    <button onclick="closeConcedeModal()" style="width:100%;padding:10px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);border-radius:10px;color:rgba(255,255,255,.7);font-weight:600;cursor:pointer;font-size:.82rem;">Cancel</button>
+  </div>
+</div>
+
 <div class="footer-note">Stanmore Golf Club · Gordon Bowl Final 2026</div>
 
 <script>
@@ -676,9 +696,11 @@ async function loadData() {
       _match.holes = [];
       for (var i=0;i<36;i++) _match.holes.push({a:null,b:null,result:null,concede:false});
     }
+    if (!_match.playoffHoles) _match.playoffHoles = [];
   } else {
     for (var i=0;i<36;i++) _match.holes.push({a:null,b:null,result:null,concede:false});
   }
+  if (!_match.playoffHoles) _match.playoffHoles = [];
   renderAll();
 }
 
@@ -720,8 +742,7 @@ function shotsOnHole(matchHole) {
 }
 
 function computeMatchStatus() {
-  // Walk through played holes, compute current state
-  var aUp = 0; // positive = A up, negative = B up
+  var aUp = 0;
   var played = 0;
   var lastResult = null;
   var lastPlayedIdx = -1;
@@ -735,13 +756,33 @@ function computeMatchStatus() {
       else if (h.result === 'L') aUp--;
     }
   }
-  return { aUp: aUp, played: played, lastResult: lastResult, lastPlayedIdx: lastPlayedIdx };
+  // Playoff holes played count (don't change aUp — the ONLY purpose is sudden death)
+  var playoffPlayed = 0;
+  var playoffLast = null;
+  if (_match.playoffHoles) {
+    for (var p=0;p<_match.playoffHoles.length;p++) {
+      if (_match.playoffHoles[p].result) {
+        playoffPlayed++;
+        playoffLast = _match.playoffHoles[p];
+      }
+    }
+  }
+  return { aUp: aUp, played: played, lastResult: lastResult, lastPlayedIdx: lastPlayedIdx, playoffPlayed: playoffPlayed, playoffLast: playoffLast };
 }
 
 function statusText() {
   var s = computeMatchStatus();
   if (_match.ended) {
     return { main: _match.endText || 'Match Complete', thru: 'Final result' };
+  }
+  // In playoff mode (all square after 36)
+  if (_match.playoff) {
+    var poCount = s.playoffPlayed;
+    return {
+      main: '⚡ Playoff · All Square',
+      thru: poCount === 0 ? 'Sudden death starts on the 37th' : poCount + ' playoff hole' + (poCount>1?'s':'') + ' halved — continuing',
+      playoff: true
+    };
   }
   var remaining = 36 - s.played;
   if (s.played === 0) {
@@ -756,16 +797,8 @@ function statusText() {
     mainTxt = leader + ' <span class="num-serif">' + absUp + '</span> UP';
   }
   var thruTxt = 'Thru ' + s.played + ' · ' + remaining + ' to play';
-  // Dormie check
   if (absUp > 0 && absUp === remaining && remaining > 0) {
     return { main: mainTxt, thru: thruTxt, dormie: true, dormieText: leader + ' DORMIE ' + absUp };
-  }
-  // Won check
-  if (absUp > remaining) {
-    var endBy = absUp - 0;  // technically it's X & (Y to play) with X holes up and Y remaining
-    // Actually: match is won when up by more than holes remaining. Score is "X&Y" where X = holes up at the moment of win, Y = holes remaining when win was clinched
-    // Compute at the moment match was won (walk forward)
-    return { main: mainTxt, thru: thruTxt };
   }
   return { main: mainTxt, thru: thruTxt };
 }
@@ -838,6 +871,29 @@ function renderStatus() {
 function renderLastHole() {
   var s = computeMatchStatus();
   var card = document.getElementById('lastHoleCard');
+  // Playoff last hole takes priority if any played
+  if (_match.playoff && s.playoffLast) {
+    var ph = s.playoffLast;
+    var poIdx = s.playoffPlayed - 1;
+    var courseHole = (poIdx % 18) + 1;
+    var par = STANMORE.par[poIdx % 18];
+    var txt = '';
+    if (ph.concede) {
+      txt = ph.result === 'W' ? PLAYER_B.name.split(' ')[0] + ' conceded playoff hole' : PLAYER_A.name.split(' ')[0] + ' conceded playoff hole';
+    } else if (ph.result === 'W') {
+      txt = PLAYER_A.name.split(' ')[0] + ' won with ' + ph.a + ', ' + PLAYER_B.name.split(' ')[0] + ' had ' + ph.b;
+    } else if (ph.result === 'L') {
+      txt = PLAYER_B.name.split(' ')[0] + ' won with ' + ph.b + ', ' + PLAYER_A.name.split(' ')[0] + ' had ' + ph.a;
+    } else {
+      txt = 'Halved — ' + (ph.a || '-') + ' vs ' + (ph.b || '-') + ' · going again';
+    }
+    card.style.fontStyle = 'normal';
+    card.style.color = 'rgba(255,255,255,.85)';
+    card.innerHTML =
+      '<div style="font-family:\'Playfair Display\',serif;font-weight:800;font-size:1rem;color:#ffe066;margin-bottom:4px;">Playoff Hole ' + (poIdx+1) + ' · Course Hole ' + courseHole + ' · Par ' + par + '</div>'
+      + '<div style="font-size:.8rem;color:rgba(255,255,255,.75);">' + txt + '</div>';
+    return;
+  }
   if (s.played === 0) {
     card.innerHTML = 'Match about to start — hole 1 up next';
     card.style.fontStyle = 'italic';
@@ -903,6 +959,29 @@ function renderScorecard() {
       html += '<tr class="' + rowClass + '"><td class="hole-col">' + matchHole + '</td><td class="par-col">' + par + '</td><td class="si-col">' + si + '<span class="shot-dot">' + dotStr + '</span></td><td class="score-col">' + (hole.a != null ? hole.a : '—') + '</td><td class="score-col">' + (hole.b != null ? hole.b : '—') + '</td><td class="result-col">' + resCell + '</td><td style="text-align:center;">' + tallyCell + '</td></tr>';
     }
   }
+  // Append playoff rows if any
+  if (_match.playoff && _match.playoffHoles && _match.playoffHoles.length) {
+    html += '<tr class="round-divider"><td colspan="7">⚡ Sudden Death Playoff</td></tr>';
+    for (var pp=0;pp<_match.playoffHoles.length;pp++) {
+      var ph = _match.playoffHoles[pp];
+      var pHoleIdx = pp % 18;
+      var pPar = STANMORE.par[pHoleIdx];
+      var pSi = STANMORE.siMen[pHoleIdx];
+      var pLabel = 'P' + (pp+1);
+      var pResCell = '—';
+      if (ph.result === 'W') { pResCell = '<span class="result-W">A</span>'; runUp++; }
+      else if (ph.result === 'L') { pResCell = '<span class="result-L">B</span>'; runUp--; }
+      else if (ph.result === 'H') pResCell = '<span class="result-H">½</span>';
+      var pTally = '—';
+      if (ph.result) {
+        if (ph.result === 'H') pTally = '<span class="sc-tally tally-H">Halved</span>';
+        else if (ph.result === 'W') pTally = '<span class="sc-tally tally-A">A WIN</span>';
+        else pTally = '<span class="sc-tally tally-B">B WIN</span>';
+      }
+      var pRowCls = ph.result ? 'played-row' : 'current-row';
+      html += '<tr class="' + pRowCls + '"><td class="hole-col">' + pLabel + '</td><td class="par-col">' + pPar + '</td><td class="si-col">' + pSi + '</td><td class="score-col">' + (ph.a != null ? ph.a : '—') + '</td><td class="score-col">' + (ph.b != null ? ph.b : '—') + '</td><td class="result-col">' + pResCell + '</td><td style="text-align:center;">' + pTally + '</td></tr>';
+    }
+  }
   html += '</tbody>';
   t.innerHTML = html;
 }
@@ -938,6 +1017,24 @@ function renderLog() {
     var statusTxt = runningUp === 0 ? 'AS' : (runningUp > 0 ? 'A ' + runningUp + 'UP' : 'B ' + Math.abs(runningUp) + 'UP');
     html += '<div class="log-row"><div class="log-hole">R' + round + ' H' + holeNum + '</div><div class="log-detail">' + scoreDetail + '</div><div class="log-status">' + statusTxt + '</div></div>';
   });
+  // Playoff holes
+  if (_match.playoff && _match.playoffHoles && _match.playoffHoles.length) {
+    _match.playoffHoles.forEach(function(ph, pp) {
+      if (!ph.result) return;
+      var scoreDetail = '';
+      if (ph.concede) {
+        scoreDetail = ph.result === 'W' ? '<span class="names">Kristian</span> conceded (playoff)' : '<span class="names">Tejas</span> conceded (playoff)';
+      } else if (ph.result === 'W') {
+        scoreDetail = '<span class="names">Tejas</span> wins playoff hole (' + ph.a + ' vs ' + ph.b + ')';
+      } else if (ph.result === 'L') {
+        scoreDetail = '<span class="names">Kristian</span> wins playoff hole (' + ph.b + ' vs ' + ph.a + ')';
+      } else if (ph.result === 'H') {
+        scoreDetail = 'Halved — ' + (ph.a || '—') + ' vs ' + (ph.b || '—');
+      }
+      var statusTxt = ph.result === 'H' ? 'ALL SQ' : (ph.result === 'W' ? 'A WINS' : 'B WINS');
+      html += '<div class="log-row" style="background:rgba(240,192,64,.06);"><div class="log-hole" style="color:#ffe066;">⚡P' + (pp+1) + '</div><div class="log-detail">' + scoreDetail + '</div><div class="log-status">' + statusTxt + '</div></div>';
+    });
+  }
   box.innerHTML = html;
 }
 
@@ -948,9 +1045,16 @@ function checkPw() {
     _isAdmin = true;
     document.getElementById('adminGate').style.display = 'none';
     document.getElementById('adminPanel').style.display = 'block';
-    // Jump to first unplayed hole
+    // Jump to first unplayed hole (incl playoff holes)
+    var jumped = false;
     for (var i=0;i<_match.holes.length;i++) {
-      if (!_match.holes[i].result) { _currentEntryHole = i+1; break; }
+      if (!_match.holes[i].result) { _currentEntryHole = i+1; jumped = true; break; }
+    }
+    if (!jumped && _match.playoff) {
+      for (var p=0;p<(_match.playoffHoles||[]).length;p++) {
+        if (!_match.playoffHoles[p].result) { _currentEntryHole = 37+p; jumped = true; break; }
+      }
+      if (!jumped) _currentEntryHole = 37 + (_match.playoffHoles||[]).length;
     }
     buildHoleSelect();
     renderAdminHole();
@@ -967,6 +1071,15 @@ function buildHoleSelect() {
     var h = ((i-1)%18)+1;
     html += '<option value="' + i + '"' + (i===_currentEntryHole?' selected':'') + '>R' + round + ' · Hole ' + h + '</option>';
   }
+  // Add playoff holes if in playoff mode
+  if (_match.playoff) {
+    var totalPo = Math.max(1, (_match.playoffHoles ? _match.playoffHoles.length : 0) + 1);
+    for (var p=0;p<totalPo;p++) {
+      var mh = 37 + p;
+      var ch = (p % 18) + 1;
+      html += '<option value="' + mh + '"' + (mh===_currentEntryHole?' selected':'') + '>⚡ Playoff ' + (p+1) + ' · Hole ' + ch + '</option>';
+    }
+  }
   sel.innerHTML = html;
 }
 
@@ -976,32 +1089,48 @@ function loadHole(matchHole) {
 }
 
 function navHole(delta) {
+  var maxHole = 36 + (_match.playoff ? Math.max(1, (_match.playoffHoles ? _match.playoffHoles.length : 0) + 1) : 0);
   var next = _currentEntryHole + delta;
-  if (next < 1 || next > 36) return;
+  if (next < 1 || next > maxHole) return;
   _currentEntryHole = next;
+  buildHoleSelect();
   document.getElementById('holeSelect').value = next;
   renderAdminHole();
 }
 
 function renderAdminHole() {
   var mh = _currentEntryHole;
-  var idx = mh - 1;
-  var h18 = ((mh-1)%18);
-  var round = mh <= 18 ? 1 : 2;
-  var par = STANMORE.par[h18];
-  var si = STANMORE.siMen[h18];
-  var shots = shotsOnHole(mh);
+  var isPlayoff = mh > 36;
+  var h18, par, si, shots;
+  var hole;
+  if (isPlayoff) {
+    var poIdx = mh - 37;
+    h18 = poIdx % 18;
+    par = STANMORE.par[h18];
+    si = STANMORE.siMen[h18];
+    shots = 0; // no shots in playoff
+    hole = _match.playoffHoles[poIdx] || {};
+    document.getElementById('entryMeta').innerHTML = '<span style="color:#ffe066;">⚡ Playoff Hole ' + (poIdx+1) + '</span> · Course Hole ' + (h18+1) + ' · Par ' + par + ' · SI ' + si + ' · <strong>No shots given</strong>';
+  } else {
+    var idx = mh - 1;
+    h18 = ((mh-1)%18);
+    var round = mh <= 18 ? 1 : 2;
+    par = STANMORE.par[h18];
+    si = STANMORE.siMen[h18];
+    shots = shotsOnHole(mh);
+    hole = _match.holes[idx] || {};
+    document.getElementById('entryMeta').textContent = 'Round ' + round + ' · Hole ' + ((mh-1)%18+1) + ' · Par ' + par + ' · SI ' + si;
+  }
   var dots = '';
   for (var d=0;d<shots;d++) dots += '•';
-  document.getElementById('entryMeta').textContent = 'Round ' + round + ' · Hole ' + ((mh-1)%18+1) + ' · Par ' + par + ' · SI ' + si;
   document.getElementById('aShots').innerHTML = 'Shots: 0';
   document.getElementById('bShots').innerHTML = 'Shots: ' + shots + (dots ? ' <span style="color:#f0c040;">' + dots + '</span>' : '');
-  var hole = _match.holes[idx] || {};
   document.getElementById('scoreA').value = hole.a != null ? hole.a : '';
   document.getElementById('scoreB').value = hole.b != null ? hole.b : '';
   computeResult();
   document.getElementById('prevBtn').disabled = (mh === 1);
-  document.getElementById('nextBtn').disabled = (mh === 36);
+  var maxHole = 36 + (_match.playoff ? Math.max(1, (_match.playoffHoles ? _match.playoffHoles.length : 0) + 1) : 0);
+  document.getElementById('nextBtn').disabled = (mh >= maxHole);
 }
 
 function computeResult() {
@@ -1029,15 +1158,69 @@ async function saveHole() {
   var a = parseInt(document.getElementById('scoreA').value, 10);
   var b = parseInt(document.getElementById('scoreB').value, 10);
   if (isNaN(a) || isNaN(b)) { alert('Enter both scores first (or use the quick buttons for H/Concede)'); return; }
-  var shots = shotsOnHole(_currentEntryHole);
+  var isPlayoff = _currentEntryHole > 36;
+  var shots = isPlayoff ? 0 : shotsOnHole(_currentEntryHole);
   var netA = a, netB = b - shots;
   var result = netA < netB ? 'W' : (netB < netA ? 'L' : 'H');
-  _match.holes[_currentEntryHole - 1] = { a:a, b:b, result:result, concede:false };
+  var holeData = { a:a, b:b, result:result, concede:false };
+  if (isPlayoff) {
+    var poIdx = _currentEntryHole - 37;
+    while (_match.playoffHoles.length <= poIdx) _match.playoffHoles.push({a:null,b:null,result:null,concede:false});
+    _match.playoffHoles[poIdx] = holeData;
+  } else {
+    _match.holes[_currentEntryHole - 1] = holeData;
+  }
   checkAutoEnd();
   await saveData();
   renderAll();
-  // Auto-advance to next hole
-  if (_currentEntryHole < 36) navHole(1);
+  var maxHole = 36 + (_match.playoff ? Math.max(1, _match.playoffHoles.length + 1) : 0);
+  if (_currentEntryHole < maxHole && !_match.ended) navHole(1);
+}
+
+// ─── Concede modal ───
+function openConcedeModal() {
+  var mh = _currentEntryHole;
+  var isPlayoff = mh > 36;
+  var meta;
+  if (isPlayoff) {
+    meta = 'Playoff Hole ' + (mh - 36);
+  } else {
+    var round = mh <= 18 ? 1 : 2;
+    var holeNum = ((mh-1)%18) + 1;
+    meta = 'R' + round + ' · Hole ' + holeNum;
+  }
+  document.getElementById('concedeMeta').textContent = meta;
+  document.getElementById('concedeModal').style.display = 'flex';
+}
+
+function closeConcedeModal() {
+  document.getElementById('concedeModal').style.display = 'none';
+}
+
+async function confirmConcede(who) {
+  closeConcedeModal();
+  var a = parseInt(document.getElementById('scoreA').value, 10);
+  var b = parseInt(document.getElementById('scoreB').value, 10);
+  // A conceded → B wins → result 'L' from A's perspective
+  // B conceded → A wins → result 'W' from A's perspective
+  var holeData;
+  if (who === 'A') {
+    holeData = { a: isNaN(a)?null:a, b: isNaN(b)?null:b, result:'L', concede:true };
+  } else {
+    holeData = { a: isNaN(a)?null:a, b: isNaN(b)?null:b, result:'W', concede:true };
+  }
+  if (_currentEntryHole > 36) {
+    var poIdx = _currentEntryHole - 37;
+    while (_match.playoffHoles.length <= poIdx) _match.playoffHoles.push({a:null,b:null,result:null,concede:false});
+    _match.playoffHoles[poIdx] = holeData;
+  } else {
+    _match.holes[_currentEntryHole - 1] = holeData;
+  }
+  checkAutoEnd();
+  await saveData();
+  renderAll();
+  var maxHole = 36 + (_match.playoff ? Math.max(1, _match.playoffHoles.length + 1) : 0);
+  if (_currentEntryHole < maxHole && !_match.ended) navHole(1);
 }
 
 async function quickResult(type) {
@@ -1051,59 +1234,90 @@ async function quickResult(type) {
   } else if (type === 'H') {
     holeData = { a: isNaN(a)?null:a, b: isNaN(b)?null:b, result:'H', concede:false };
   } else if (type === 'C') {
-    // Conceded hole — ask who conceded
-    var who = prompt('Who conceded the hole? Type A (Tejas conceded, Kristian wins) or B (Kristian conceded, Tejas wins):');
-    if (!who) return;
-    who = who.trim().toUpperCase();
-    if (who === 'A') holeData = { a: isNaN(a)?null:a, b: isNaN(b)?null:b, result:'L', concede:true };
-    else if (who === 'B') holeData = { a: isNaN(a)?null:a, b: isNaN(b)?null:b, result:'W', concede:true };
-    else { alert('Invalid input'); return; }
+    openConcedeModal();
+    return;
   }
-  _match.holes[_currentEntryHole - 1] = holeData;
+  if (_currentEntryHole > 36) {
+    var poIdx = _currentEntryHole - 37;
+    while (_match.playoffHoles.length <= poIdx) _match.playoffHoles.push({a:null,b:null,result:null,concede:false});
+    _match.playoffHoles[poIdx] = holeData;
+  } else {
+    _match.holes[_currentEntryHole - 1] = holeData;
+  }
   checkAutoEnd();
   await saveData();
   renderAll();
-  if (_currentEntryHole < 36) navHole(1);
+  var maxHole = 36 + (_match.playoff ? Math.max(1, _match.playoffHoles.length + 1) : 0);
+  if (_currentEntryHole < maxHole && !_match.ended) navHole(1);
 }
 
 async function clearHole() {
   if (!confirm('Clear scores for this hole?')) return;
-  _match.holes[_currentEntryHole - 1] = { a:null, b:null, result:null, concede:false };
+  if (_currentEntryHole > 36) {
+    var poIdx = _currentEntryHole - 37;
+    if (_match.playoffHoles[poIdx]) _match.playoffHoles[poIdx] = { a:null, b:null, result:null, concede:false };
+  } else {
+    _match.holes[_currentEntryHole - 1] = { a:null, b:null, result:null, concede:false };
+  }
   _match.ended = false;
   _match.endText = '';
+  _confettiFired = false;
   await saveData();
   renderAll();
 }
 
 function checkAutoEnd() {
-  // Walk through holes; if up by more than holes remaining, match is won
+  // Walk through 36 holes; if up by more than holes remaining, match is won
   var aUp = 0;
   for (var i=0;i<_match.holes.length;i++) {
     var h = _match.holes[i];
-    if (!h.result) break; // only consider contiguous played holes
+    if (!h.result) return; // need contiguous play before ending
     if (h.result === 'W') aUp++;
     else if (h.result === 'L') aUp--;
     var played = i + 1;
     var remaining = 36 - played;
     if (Math.abs(aUp) > remaining) {
-      // Match is won on this hole
       var winner = aUp > 0 ? PLAYER_A.name : PLAYER_B.name;
       _match.ended = true;
       _match.endText = winner + ' wins ' + Math.abs(aUp) + ' & ' + remaining;
+      _match.playoff = false;
       return;
     }
   }
-  // If all 36 played and still not ended
+  // All 36 played
   if (_match.holes[35] && _match.holes[35].result) {
     if (aUp !== 0) {
       var winner = aUp > 0 ? PLAYER_A.name : PLAYER_B.name;
       _match.ended = true;
       _match.endText = winner + ' wins on the last';
-    } else {
-      _match.ended = true;
-      _match.endText = 'Match All Square after 36';
+      _match.playoff = false;
+      return;
+    }
+    // ALL SQUARE after 36 → trigger sudden-death playoff
+    _match.playoff = true;
+    // Check playoff holes
+    for (var p=0;p<_match.playoffHoles.length;p++) {
+      var ph = _match.playoffHoles[p];
+      if (!ph.result) return;
+      if (ph.result === 'W') {
+        _match.ended = true;
+        _match.endText = PLAYER_A.name + ' wins on the ' + ordinal(37 + p) + ' (playoff hole ' + (p+1) + ')';
+        return;
+      }
+      if (ph.result === 'L') {
+        _match.ended = true;
+        _match.endText = PLAYER_B.name + ' wins on the ' + ordinal(37 + p) + ' (playoff hole ' + (p+1) + ')';
+        return;
+      }
+      // 'H' = halved, continue to next playoff hole
     }
   }
+}
+
+function ordinal(n) {
+  var s = ['th','st','nd','rd'];
+  var v = n % 100;
+  return n + (s[(v-20)%10] || s[v] || s[0]);
 }
 
 async function endMatch() {
@@ -1128,8 +1342,13 @@ async function resetMatch() {
   if (!confirm('Really sure? This cannot be undone.')) return;
   _match.holes = [];
   for (var i=0;i<36;i++) _match.holes.push({a:null,b:null,result:null,concede:false});
+  _match.playoffHoles = [];
+  _match.playoff = false;
   _match.ended = false;
   _match.endText = '';
+  _confettiFired = false;
+  _currentEntryHole = 1;
+  buildHoleSelect();
   await saveData();
   renderAll();
 }
@@ -1212,6 +1431,20 @@ function renderNowPlaying() {
   if (!wrap) return;
   if (_match.ended) { wrap.innerHTML = ''; return; }
   var s = computeMatchStatus();
+  // Playoff mode
+  if (_match.playoff) {
+    var poIdx = s.playoffPlayed; // next unplayed playoff hole index
+    var courseHole = (poIdx % 18) + 1; // playoff starts at hole 1
+    var par = STANMORE.par[poIdx % 18];
+    var si = STANMORE.siMen[poIdx % 18];
+    var yds = STANMORE.yardsWhite[poIdx % 18];
+    var pNum = poIdx + 1;
+    wrap.innerHTML = '<div class="now-playing" style="background:linear-gradient(135deg,rgba(240,192,64,.18),rgba(15,35,71,.3));border-color:rgba(240,192,64,.5);"><span class="flag">⚡</span><div class="np-text">'
+      + '<div class="np-main" style="color:#ffe066;">Sudden Death · Playoff Hole ' + pNum + ' (course hole ' + courseHole + ')</div>'
+      + '<div class="np-sub">Par ' + par + ' · ' + yds + ' yds · SI ' + si + ' · <strong>No shots given</strong></div>'
+      + '</div></div>';
+    return;
+  }
   var nextIdx = s.lastPlayedIdx + 1;
   if (nextIdx >= 36) { wrap.innerHTML = ''; return; }
   var matchHole = nextIdx + 1;
@@ -1459,6 +1692,10 @@ setInterval(function() {
   var activeTab = document.querySelector('.tab.active');
   if (activeTab && activeTab.dataset.view !== 'admin') loadData();
 }, 20000);
+
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'Escape') closeConcedeModal();
+});
 
 // Init
 loadData();
