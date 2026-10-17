@@ -554,8 +554,15 @@ header .sub{font-size:.62rem;color:rgba(240,192,64,.65);letter-spacing:.14em;tex
   </div>
 
   <div id="adminPanel">
-    <div style="text-align:right;margin:0 12px 10px;">
-      <span class="autosave-pill" id="autosavePill">✓ Saved</span>
+    <div style="margin:0 12px 10px;padding:10px 12px;background:rgba(0,0,0,.25);border:1px solid rgba(255,255,255,.1);border-radius:10px;">
+      <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;">
+        <div id="saveStatusLine" style="font-size:.72rem;font-family:DM Mono,monospace;">—</div>
+        <span class="autosave-pill" id="autosavePill">✓ Saved</span>
+      </div>
+      <div style="display:flex;gap:6px;margin-top:8px;">
+        <button onclick="forceSyncNow()" style="flex:1;padding:7px;background:rgba(240,192,64,.15);border:1px solid rgba(240,192,64,.3);border-radius:7px;color:#ffe066;font-size:.72rem;font-weight:700;cursor:pointer;">↻ Force Sync Now</button>
+        <button onclick="exportMatchData()" style="flex:1;padding:7px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);border-radius:7px;color:#fff;font-size:.72rem;font-weight:700;cursor:pointer;">📅 Download Backup</button>
+      </div>
     </div>
 
     <div class="hole-entry">
@@ -687,48 +694,146 @@ async function saveRecord(record) {
   }
 }
 
+var LOCAL_KEY = 'gordonBowl2026_v1';
+
+function saveLocal() {
+  try { localStorage.setItem(LOCAL_KEY, JSON.stringify(_match)); } catch(e) { console.error('localStorage save failed', e); }
+}
+function loadLocal() {
+  try {
+    var raw = localStorage.getItem(LOCAL_KEY);
+    if (!raw) return null;
+    return JSON.parse(raw);
+  } catch(e) { return null; }
+}
+
 async function loadData() {
-  var record = await fetchRecord();
-  if (record.gordonBowl2026) {
-    _match = record.gordonBowl2026;
-    // Ensure holes array is 36
-    if (!_match.holes || _match.holes.length !== 36) {
-      _match.holes = [];
-      for (var i=0;i<36;i++) _match.holes.push({a:null,b:null,result:null,concede:false});
-    }
-    if (!_match.playoffHoles) _match.playoffHoles = [];
-  } else {
+  // Try remote first
+  var remoteMatch = null;
+  try {
+    var record = await fetchRecord();
+    console.log('fetchRecord returned keys:', Object.keys(record || {}));
+    if (record && record.gordonBowl2026) remoteMatch = record.gordonBowl2026;
+  } catch (e) {
+    console.error('loadData remote fetch failed:', e);
+  }
+
+  // Try local
+  var localMatch = loadLocal();
+
+  // Prefer whichever has more played holes (more recent progress)
+  var remoteCount = remoteMatch && remoteMatch.holes ? remoteMatch.holes.filter(function(h){return h && h.result;}).length : -1;
+  var localCount = localMatch && localMatch.holes ? localMatch.holes.filter(function(h){return h && h.result;}).length : -1;
+
+  console.log('Load: remote played=', remoteCount, 'local played=', localCount);
+
+  if (localCount > remoteCount) {
+    console.log('Using LOCAL copy (more recent)');
+    _match = localMatch;
+    // Push local back to remote
+    saveData();
+  } else if (remoteMatch) {
+    _match = remoteMatch;
+    saveLocal(); // sync local
+  }
+
+  // Ensure structure
+  if (!_match.holes || _match.holes.length !== 36) {
+    _match.holes = [];
     for (var i=0;i<36;i++) _match.holes.push({a:null,b:null,result:null,concede:false});
   }
   if (!_match.playoffHoles) _match.playoffHoles = [];
+
+  updateSaveStatus();
   renderAll();
 }
 
+var _lastSaveStatus = { local:false, remote:false, time:0, err:'' };
+
 async function saveData() {
-  // Robust save: fetch fresh, merge, save, verify
+  // 1) ALWAYS save locally first (instant, cannot fail)
+  saveLocal();
+  _lastSaveStatus.local = true;
+  _lastSaveStatus.time = Date.now();
+
+  // 2) Try remote save
+  var remoteOk = false;
+  var errMsg = '';
   try {
     var record = await fetchRecord();
+    if (!record || typeof record !== 'object') record = {};
     record.gordonBowl2026 = _match;
-    var ok = await saveRecord(record);
-    if (!ok) {
+    remoteOk = await saveRecord(record);
+    if (!remoteOk) {
       // Retry once
-      await new Promise(function(r){ setTimeout(r, 500); });
+      await new Promise(function(r){ setTimeout(r, 600); });
       var record2 = await fetchRecord();
+      if (!record2 || typeof record2 !== 'object') record2 = {};
       record2.gordonBowl2026 = _match;
-      ok = await saveRecord(record2);
+      remoteOk = await saveRecord(record2);
     }
-    if (ok) flashSaved();
-    else {
-      var p = document.getElementById('autosavePill');
-      if (p) { p.textContent = '⚠ Save failed'; p.style.background = 'linear-gradient(135deg,#f87171,#dc2626)'; p.style.color = '#fff'; p.style.opacity = '1'; setTimeout(function(){ p.style.opacity = '0'; }, 4000); }
+    // 3) VERIFY the save actually persisted
+    if (remoteOk) {
+      await new Promise(function(r){ setTimeout(r, 400); });
+      var verifyRec = await fetchRecord();
+      if (!verifyRec || !verifyRec.gordonBowl2026) {
+        remoteOk = false;
+        errMsg = 'Save appeared OK but data not found on reload';
+      } else {
+        // Check holes count matches
+        var verifiedCount = verifyRec.gordonBowl2026.holes ? verifyRec.gordonBowl2026.holes.filter(function(h){return h && h.result;}).length : 0;
+        var localCount = _match.holes.filter(function(h){return h && h.result;}).length;
+        if (verifiedCount < localCount) {
+          remoteOk = false;
+          errMsg = 'Verify failed: remote has ' + verifiedCount + ' holes, local has ' + localCount;
+        }
+      }
     }
-    return ok;
   } catch (e) {
     console.error('saveData error', e);
-    alert('⚠ Save FAILED — your last entry was NOT saved. Please try again. (' + (e.message || e) + ')');
-    return false;
+    errMsg = e.message || String(e);
   }
+  _lastSaveStatus.remote = remoteOk;
+  _lastSaveStatus.err = errMsg;
+  updateSaveStatus();
+
+  // Flash the pill
+  var p = document.getElementById('autosavePill');
+  if (p) {
+    if (remoteOk) {
+      p.textContent = '✓ Saved';
+      p.style.background = 'linear-gradient(135deg,#4ade80,#22c55e)';
+      p.style.color = '#022e0f';
+    } else {
+      p.textContent = '⚠ Local only';
+      p.style.background = 'linear-gradient(135deg,#fbbf24,#f59e0b)';
+      p.style.color = '#2a1a02';
+    }
+    p.style.opacity = '1';
+    setTimeout(function(){ p.style.opacity = '0'; }, 3200);
+  }
+
+  return remoteOk;
 }
+
+function updateSaveStatus() {
+  var el = document.getElementById('saveStatusLine');
+  if (!el) return;
+  if (!_lastSaveStatus.time) {
+    el.innerHTML = '<span style="color:rgba(255,255,255,.5);">No saves yet this session</span>';
+    return;
+  }
+  var secs = Math.floor((Date.now() - _lastSaveStatus.time) / 1000);
+  var timeAgo = secs < 60 ? secs + 's ago' : Math.floor(secs/60) + 'm ago';
+  var localTag = '<span style="color:#4ade80;">✓ Local</span>';
+  var remoteTag = _lastSaveStatus.remote
+    ? '<span style="color:#4ade80;">✓ Cloud</span>'
+    : '<span style="color:#f87171;" title="' + (_lastSaveStatus.err||'') + '">⚠ Cloud failed</span>';
+  el.innerHTML = localTag + ' · ' + remoteTag + ' · <span style="color:rgba(255,255,255,.5);">' + timeAgo + '</span>';
+}
+
+// Keep status line fresh
+setInterval(updateSaveStatus, 10000);
 
 function flashSaved() {
   var p = document.getElementById('autosavePill');
@@ -1695,6 +1800,22 @@ function fireConfetti() {
     });
     requestAnimationFrame(tick);
   })();
+}
+
+async function forceSyncNow() {
+  var ok = await saveData();
+  if (ok) alert('✓ Synced to cloud successfully.');
+  else alert('⚠ Cloud sync FAILED. Your data IS safe locally.\n\nError: ' + (_lastSaveStatus.err || 'unknown'));
+}
+
+function exportMatchData() {
+  var blob = new Blob([JSON.stringify(_match, null, 2)], {type:'application/json'});
+  var url = URL.createObjectURL(blob);
+  var a = document.createElement('a');
+  a.href = url;
+  a.download = 'gordon-bowl-2026-backup-' + new Date().toISOString().replace(/[:.]/g,'-') + '.json';
+  a.click();
+  URL.revokeObjectURL(url);
 }
 
 // Auto-refresh for public viewers only
