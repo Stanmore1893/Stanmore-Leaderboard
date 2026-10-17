@@ -705,11 +705,29 @@ async function loadData() {
 }
 
 async function saveData() {
-  var record = await fetchRecord();
-  record.gordonBowl2026 = _match;
-  var ok = await saveRecord(record);
-  if (ok) flashSaved();
-  return ok;
+  // Robust save: fetch fresh, merge, save, verify
+  try {
+    var record = await fetchRecord();
+    record.gordonBowl2026 = _match;
+    var ok = await saveRecord(record);
+    if (!ok) {
+      // Retry once
+      await new Promise(function(r){ setTimeout(r, 500); });
+      var record2 = await fetchRecord();
+      record2.gordonBowl2026 = _match;
+      ok = await saveRecord(record2);
+    }
+    if (ok) flashSaved();
+    else {
+      var p = document.getElementById('autosavePill');
+      if (p) { p.textContent = '⚠ Save failed'; p.style.background = 'linear-gradient(135deg,#f87171,#dc2626)'; p.style.color = '#fff'; p.style.opacity = '1'; setTimeout(function(){ p.style.opacity = '0'; }, 4000); }
+    }
+    return ok;
+  } catch (e) {
+    console.error('saveData error', e);
+    alert('⚠ Save FAILED — your last entry was NOT saved. Please try again. (' + (e.message || e) + ')');
+    return false;
+  }
 }
 
 function flashSaved() {
@@ -1633,36 +1651,9 @@ function weatherIcon(code) {
 loadWeather();
 setInterval(loadWeather, 15 * 60 * 1000); // refresh every 15 min
 
-// ─── 6. VIEWERS counter (lightweight, Supabase-backed) ───
-var _sessionId = 'v' + Math.random().toString(36).slice(2,10);
-async function heartbeat() {
-  try {
-    var record = await fetchRecord();
-    if (!record.gordonBowlViewers) record.gordonBowlViewers = {};
-    // Clean stale (> 90s)
-    var now = Date.now();
-    var active = {};
-    Object.keys(record.gordonBowlViewers).forEach(function(id){
-      if (now - record.gordonBowlViewers[id] < 90000) active[id] = record.gordonBowlViewers[id];
-    });
-    active[_sessionId] = now;
-    record.gordonBowlViewers = active;
-    await saveRecord(record);
-    var count = Object.keys(active).length;
-    var chip = document.getElementById('viewersChip');
-    var cnt = document.getElementById('viewersCount');
-    if (chip && cnt && count >= 2) {
-      cnt.textContent = count;
-      chip.style.display = 'flex';
-    } else if (chip) {
-      chip.style.display = 'none';
-    }
-  } catch (e) {
-    // Silent fail
-  }
-}
-heartbeat();
-setInterval(heartbeat, 30000); // every 30s
+// ─── 6. VIEWERS counter (DISABLED on race-condition safety grounds) ───
+// Heartbeat was racing with match saves — removed. The chip stays hidden.
+// If you want viewer count back later, use a separate row/table.
 
 // ─── 15. CONFETTI ───
 var _confettiFired = false;
@@ -1706,9 +1697,9 @@ function fireConfetti() {
   })();
 }
 
-// Auto-refresh every 20s for public viewers
+// Auto-refresh for public viewers only
 setInterval(function() {
-  if (_isAdmin) return;
+  if (_isAdmin) return;  // never refresh if admin unlocked
   var activeTab = document.querySelector('.tab.active');
   if (activeTab && activeTab.dataset.view !== 'admin') loadData();
 }, 20000);
