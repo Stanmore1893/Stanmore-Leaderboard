@@ -689,23 +689,39 @@ async function fetchRecord() {
 }
 
 async function saveRecord(record) {
-  try {
-    var r = await fetch(PROXY, {
-      method:'POST', headers:{'Content-Type':'application/json'},
-      body: JSON.stringify({action:'save', record:record})
-    });
-    if (!r.ok) {
-      var bodyText = '';
-      try { bodyText = await r.text(); } catch(e){}
-      _lastSaveStatus.err = 'HTTP ' + r.status + ' ' + r.statusText + (bodyText ? ': ' + bodyText.slice(0,200) : '');
-      console.error('saveRecord non-ok:', _lastSaveStatus.err);
+  // Try several save strategies in order. First one that returns ok wins.
+  var strategies = [
+    // Original
+    { url: PROXY, method:'POST', body: JSON.stringify({action:'save', record:record}) },
+    // Action in querystring
+    { url: PROXY + '?action=save', method:'POST', body: JSON.stringify({record:record}) },
+    // PUT method
+    { url: PROXY, method:'PUT', body: JSON.stringify({action:'save', record:record}) },
+    // PATCH method
+    { url: PROXY, method:'PATCH', body: JSON.stringify({action:'save', record:record}) },
+    // Different path
+    { url: PROXY.replace(/\/proxy$/, '/save'), method:'POST', body: JSON.stringify({record:record}) }
+  ];
+  var errs = [];
+  for (var i=0;i<strategies.length;i++) {
+    var s = strategies[i];
+    try {
+      var r = await fetch(s.url, {
+        method: s.method, headers:{'Content-Type':'application/json'},
+        body: s.body
+      });
+      if (r.ok) {
+        if (i > 0) console.log('saveRecord: strategy ' + i + ' worked (' + s.method + ' ' + s.url + ')');
+        return true;
+      }
+      errs.push(s.method + ' ' + s.url.slice(-30) + ' → ' + r.status);
+    } catch (e) {
+      errs.push(s.method + ' → ' + (e.message || e));
     }
-    return r.ok;
-  } catch (e) {
-    _lastSaveStatus.err = 'Network error: ' + (e.message || e);
-    console.error('save error', e);
-    return false;
   }
+  _lastSaveStatus.err = 'All save strategies failed: ' + errs.join(' | ');
+  console.error('saveRecord all strategies failed:', errs);
+  return false;
 }
 
 var LOCAL_KEY = 'gordonBowl2026_v1';
