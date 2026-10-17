@@ -560,8 +560,9 @@ header .sub{font-size:.62rem;color:rgba(240,192,64,.65);letter-spacing:.14em;tex
         <span class="autosave-pill" id="autosavePill">✓ Saved</span>
       </div>
       <div style="display:flex;gap:6px;margin-top:8px;">
-        <button onclick="forceSyncNow()" style="flex:1;padding:7px;background:rgba(240,192,64,.15);border:1px solid rgba(240,192,64,.3);border-radius:7px;color:#ffe066;font-size:.72rem;font-weight:700;cursor:pointer;">↻ Force Sync Now</button>
-        <button onclick="exportMatchData()" style="flex:1;padding:7px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);border-radius:7px;color:#fff;font-size:.72rem;font-weight:700;cursor:pointer;">📅 Download Backup</button>
+        <button onclick="forceSyncNow()" style="flex:1;padding:7px;background:rgba(240,192,64,.15);border:1px solid rgba(240,192,64,.3);border-radius:7px;color:#ffe066;font-size:.72rem;font-weight:700;cursor:pointer;">↻ Force Sync</button>
+        <button onclick="diagnoseCloud()" style="flex:1;padding:7px;background:rgba(96,165,250,.15);border:1px solid rgba(96,165,250,.4);border-radius:7px;color:#60a5fa;font-size:.72rem;font-weight:700;cursor:pointer;">🔧 Diagnose</button>
+        <button onclick="exportMatchData()" style="flex:1;padding:7px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);border-radius:7px;color:#fff;font-size:.72rem;font-weight:700;cursor:pointer;">📅 Backup</button>
       </div>
     </div>
 
@@ -673,9 +674,15 @@ var PROXY = 'https://stanmore-proxy.vercel.app/api/proxy';
 async function fetchRecord() {
   try {
     var r = await fetch(PROXY + '?action=fetch');
+    if (!r.ok) {
+      _lastSaveStatus.err = 'Fetch HTTP ' + r.status;
+      console.error('fetchRecord status', r.status);
+      return {};
+    }
     var data = await r.json();
-    return data.record || {};
+    return (data && data.record) || {};
   } catch (e) {
+    _lastSaveStatus.err = 'Fetch network error: ' + (e.message || e);
     console.error('fetch error', e);
     return {};
   }
@@ -687,8 +694,15 @@ async function saveRecord(record) {
       method:'POST', headers:{'Content-Type':'application/json'},
       body: JSON.stringify({action:'save', record:record})
     });
+    if (!r.ok) {
+      var bodyText = '';
+      try { bodyText = await r.text(); } catch(e){}
+      _lastSaveStatus.err = 'HTTP ' + r.status + ' ' + r.statusText + (bodyText ? ': ' + bodyText.slice(0,200) : '');
+      console.error('saveRecord non-ok:', _lastSaveStatus.err);
+    }
     return r.ok;
   } catch (e) {
+    _lastSaveStatus.err = 'Network error: ' + (e.message || e);
     console.error('save error', e);
     return false;
   }
@@ -794,7 +808,8 @@ async function saveData() {
     errMsg = e.message || String(e);
   }
   _lastSaveStatus.remote = remoteOk;
-  _lastSaveStatus.err = errMsg;
+  if (errMsg) _lastSaveStatus.err = errMsg;
+  // (if errMsg is empty, saveRecord/fetchRecord may have already set a detailed err — preserve it)
   updateSaveStatus();
 
   // Flash the pill
@@ -828,7 +843,7 @@ function updateSaveStatus() {
   var localTag = '<span style="color:#4ade80;">✓ Local</span>';
   var remoteTag = _lastSaveStatus.remote
     ? '<span style="color:#4ade80;">✓ Cloud</span>'
-    : '<span style="color:#f87171;" title="' + (_lastSaveStatus.err||'') + '">⚠ Cloud failed</span>';
+    : '<span style="color:#f87171;cursor:pointer;text-decoration:underline;" onclick="showCloudError()">⚠ Cloud failed (tap for details)</span>';
   el.innerHTML = localTag + ' · ' + remoteTag + ' · <span style="color:rgba(255,255,255,.5);">' + timeAgo + '</span>';
 }
 
@@ -1802,10 +1817,82 @@ function fireConfetti() {
   })();
 }
 
+function showCloudError() {
+  var msg = 'Cloud save error:\n\n' + (_lastSaveStatus.err || '(no error message captured)');
+  msg += '\n\nTime: ' + new Date(_lastSaveStatus.time).toLocaleTimeString();
+  msg += '\n\nYour match data IS safe on this device.';
+  alert(msg);
+}
+
 async function forceSyncNow() {
   var ok = await saveData();
   if (ok) alert('✓ Synced to cloud successfully.');
   else alert('⚠ Cloud sync FAILED. Your data IS safe locally.\n\nError: ' + (_lastSaveStatus.err || 'unknown'));
+}
+
+async function diagnoseCloud() {
+  var report = '🔧 CLOUD DIAGNOSTIC\n\n';
+  report += 'Proxy: ' + PROXY + '\n\n';
+  // Test 1: GET fetch
+  report += 'TEST 1 — GET fetch:\n';
+  try {
+    var r = await fetch(PROXY + '?action=fetch');
+    report += '  HTTP ' + r.status + ' ' + r.statusText + '\n';
+    var txt = await r.text();
+    report += '  Body length: ' + txt.length + ' chars\n';
+    report += '  First 200 chars: ' + txt.slice(0, 200) + '\n\n';
+    // Try parse
+    try {
+      var parsed = JSON.parse(txt);
+      report += '  Parsed OK. Top keys: ' + Object.keys(parsed || {}).join(', ') + '\n';
+      if (parsed && parsed.record) {
+        report += '  record keys: ' + Object.keys(parsed.record || {}).join(', ') + '\n';
+      }
+    } catch(e) { report += '  Parse FAILED: ' + e.message + '\n'; }
+  } catch (e) {
+    report += '  NETWORK ERROR: ' + (e.message || e) + '\n';
+  }
+  report += '\n';
+
+  // Test 2: POST tiny save
+  report += 'TEST 2 — POST tiny save:\n';
+  try {
+    var fetchR = await fetch(PROXY + '?action=fetch');
+    var existing = {};
+    try { var fd = await fetchR.json(); existing = (fd && fd.record) || {}; } catch(e){}
+    existing._diagTest = Date.now();
+    var r2 = await fetch(PROXY, {
+      method: 'POST',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({action:'save', record: existing})
+    });
+    report += '  HTTP ' + r2.status + ' ' + r2.statusText + '\n';
+    var txt2 = await r2.text();
+    report += '  Response body: ' + txt2.slice(0, 300) + '\n';
+  } catch (e) {
+    report += '  NETWORK ERROR: ' + (e.message || e) + '\n';
+  }
+  report += '\n';
+
+  // Test 3: Verify diag write
+  report += 'TEST 3 — Verify write persisted:\n';
+  try {
+    await new Promise(function(r){ setTimeout(r, 500); });
+    var r3 = await fetch(PROXY + '?action=fetch');
+    var d = await r3.json();
+    var hasDiag = d && d.record && d.record._diagTest;
+    report += '  _diagTest in record: ' + (hasDiag ? 'YES (' + d.record._diagTest + ')' : 'NO — writes not persisting!') + '\n';
+    report += '  gordonBowl2026 in record: ' + (d && d.record && d.record.gordonBowl2026 ? 'YES' : 'NO') + '\n';
+  } catch (e) {
+    report += '  NETWORK ERROR: ' + (e.message || e) + '\n';
+  }
+
+  // Copy to clipboard
+  try {
+    if (navigator.clipboard) navigator.clipboard.writeText(report);
+  } catch(e) {}
+
+  alert(report + '\n(Report copied to clipboard if supported.)');
 }
 
 function exportMatchData() {
