@@ -1,0 +1,995 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>Society Trip — Mockup</title>
+<link rel="icon" href="club-logo.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,800;0,900;1,500&family=Poppins:wght@400;500;600;700;800&family=DM+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+
+<style>
+:root{
+  --bg-deep:#0a1428;
+  --bg:#122344;
+  --bg-mid:#1e3d70;
+  --accent:#f0c040;
+  --accent-dk:#d4a017;
+  --accent-lt:#ffe066;
+  --text:#ffffff;
+  --text-mut:rgba(255,255,255,.6);
+  --green:#4ade80;
+  --red:#f87171;
+  --blue:#60a5fa;
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+html,body{overflow-x:hidden;}
+body{
+  font-family:'Poppins',sans-serif;
+  background:var(--bg-deep);color:var(--text);min-height:100vh;
+  background-image:
+    radial-gradient(ellipse at top,color-mix(in srgb,var(--accent) 10%,transparent),transparent 60%),
+    radial-gradient(ellipse at bottom,color-mix(in srgb,var(--bg) 60%,transparent),transparent 70%),
+    linear-gradient(180deg,var(--bg-deep),var(--bg));
+  background-attachment:fixed;transition:background .3s;
+}
+
+/* Header */
+header{
+  display:flex;align-items:center;gap:12px;padding:14px 16px;
+  background:color-mix(in srgb,var(--bg-deep) 75%,transparent);backdrop-filter:blur(12px);
+  border-bottom:1px solid color-mix(in srgb,var(--accent) 15%,transparent);
+  position:sticky;top:0;z-index:100;
+}
+header .logo{width:44px;height:44px;object-fit:contain;flex-shrink:0;background:#fff;border-radius:6px;padding:3px;}
+header .logo.no-bg{background:transparent;padding:0;}
+header .title{font-family:'Playfair Display',serif;font-size:1rem;font-weight:800;color:var(--text);line-height:1.1;}
+header .sub{font-size:.62rem;color:color-mix(in srgb,var(--accent) 65%,transparent);letter-spacing:.14em;text-transform:uppercase;font-weight:700;margin-top:2px;}
+
+/* Hero */
+.hero{padding:24px 16px 18px;text-align:center;position:relative;}
+.hero-logo{width:72px;height:72px;object-fit:contain;background:#fff;border-radius:12px;padding:5px;margin:0 auto 14px;display:block;box-shadow:0 6px 24px rgba(0,0,0,.35);}
+.hero-logo.no-bg{background:transparent;padding:0;}
+.hero-title{
+  font-family:'Playfair Display',serif;font-weight:900;font-size:1.9rem;line-height:1.05;padding:4px 0 2px;
+  background:linear-gradient(180deg,var(--accent-lt),var(--accent) 55%,var(--accent-dk));
+  -webkit-background-clip:text;background-clip:text;color:transparent;-webkit-text-fill-color:transparent;
+  letter-spacing:-.01em;
+}
+.hero-sub{font-size:.72rem;color:var(--text-mut);letter-spacing:.14em;text-transform:uppercase;font-weight:600;margin-top:6px;}
+.hero-meta{font-family:'Playfair Display',serif;font-style:italic;font-size:.9rem;color:color-mix(in srgb,var(--accent) 75%,transparent);margin-top:8px;}
+
+/* Tabs */
+.tabs{display:flex;margin:0 12px 10px;background:rgba(0,0,0,.25);border-radius:10px;padding:4px;gap:3px;overflow-x:auto;scrollbar-width:none;}
+.tabs::-webkit-scrollbar{display:none;}
+.tab{flex:1;min-width:70px;padding:9px 10px;text-align:center;border-radius:7px;cursor:pointer;font-size:.74rem;font-weight:600;color:var(--text-mut);transition:all .15s;white-space:nowrap;}
+.tab.active{background:linear-gradient(135deg,var(--accent-dk),var(--accent));color:#122344;font-weight:800;box-shadow:0 2px 10px color-mix(in srgb,var(--accent) 30%,transparent);}
+.view{display:none;}
+.view.active{display:block;animation:fadeIn .22s ease-out;}
+@keyframes fadeIn{from{opacity:0;transform:translateY(4px);}to{opacity:1;transform:translateY(0);}}
+
+/* Section headers */
+.sect-h{font-size:.65rem;letter-spacing:.2em;color:color-mix(in srgb,var(--accent) 80%,transparent);text-transform:uppercase;font-weight:700;margin:18px 16px 10px;}
+
+/* Cards */
+.card{margin:0 12px 14px;padding:14px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);border-radius:12px;box-shadow:0 6px 24px rgba(0,0,0,.3);}
+.card-accent{background:linear-gradient(135deg,color-mix(in srgb,var(--accent) 10%,transparent),color-mix(in srgb,var(--bg) 30%,transparent));border-color:color-mix(in srgb,var(--accent) 30%,transparent);}
+
+/* Days list on overview */
+.day-card{display:flex;align-items:center;gap:12px;padding:12px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);border-radius:12px;margin-bottom:10px;cursor:pointer;transition:all .15s;}
+.day-card:hover{border-color:color-mix(in srgb,var(--accent) 35%,transparent);background:rgba(255,255,255,.05);}
+.day-num{font-family:'Playfair Display',serif;font-weight:900;font-size:1.6rem;color:var(--accent-lt);line-height:1;min-width:54px;text-align:center;}
+.day-info{flex:1;}
+.day-course{font-family:'Playfair Display',serif;font-weight:800;font-size:1rem;color:var(--text);line-height:1.2;}
+.day-sub{font-size:.72rem;color:var(--text-mut);margin-top:3px;}
+.day-arrow{color:color-mix(in srgb,var(--accent) 70%,transparent);font-size:1.2rem;}
+
+/* Signature stats row */
+.sig-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:rgba(255,255,255,.08);border-radius:12px;overflow:hidden;margin:0 12px 14px;}
+.sig{background:rgba(10,20,40,.5);padding:14px 6px;text-align:center;}
+.sig-val{font-family:'Playfair Display',serif;font-weight:900;font-size:1.6rem;color:var(--accent-lt);line-height:1;}
+.sig-lbl{font-size:.56rem;color:var(--text-mut);letter-spacing:.14em;text-transform:uppercase;font-weight:700;margin-top:4px;}
+
+/* Captain's quote */
+.ov-quote{background:linear-gradient(135deg,color-mix(in srgb,var(--accent) 8%,transparent),color-mix(in srgb,var(--bg) 15%,transparent));border:1px solid color-mix(in srgb,var(--accent) 25%,transparent);border-radius:16px;padding:22px 20px;margin:14px 12px;text-align:center;}
+.ov-quote-mark{font-family:'Playfair Display',serif;font-size:3.5rem;line-height:.4;color:color-mix(in srgb,var(--accent) 40%,transparent);margin-bottom:6px;font-weight:900;}
+.ov-quote-text{font-family:'Playfair Display',serif;font-style:italic;font-size:1rem;color:color-mix(in srgb,var(--text) 90%,transparent);line-height:1.5;margin-bottom:12px;}
+.ov-quote-attr{font-size:.68rem;color:var(--accent);letter-spacing:.14em;text-transform:uppercase;font-weight:700;}
+
+/* Leaderboard */
+.lb-header{display:grid;grid-template-columns:34px 1fr 44px 50px 60px;gap:4px;padding:10px 12px;font-size:.56rem;letter-spacing:.12em;color:color-mix(in srgb,var(--accent) 70%,transparent);text-transform:uppercase;font-weight:700;}
+.lb-row{display:grid;grid-template-columns:34px 1fr 44px 50px 60px;gap:4px;padding:11px 12px;align-items:center;border-top:1px solid rgba(255,255,255,.05);font-size:.84rem;}
+.lb-row:nth-child(odd){background:rgba(255,255,255,.015);}
+.lb-row.leader{background:linear-gradient(90deg,color-mix(in srgb,var(--accent) 12%,transparent),transparent);border-left:3px solid var(--accent);padding-left:9px;}
+.lb-row .pos{font-family:'Playfair Display',serif;font-weight:800;color:var(--text-mut);font-size:.88rem;}
+.lb-row .name{font-weight:600;}
+.lb-row .hcp{font-family:'DM Mono',monospace;font-size:.72rem;color:var(--text-mut);text-align:center;}
+.lb-row .thru{font-family:'DM Mono',monospace;font-size:.72rem;color:color-mix(in srgb,var(--accent) 70%,transparent);text-align:center;}
+.lb-row .pts{font-family:'Playfair Display',serif;font-weight:800;font-size:1.1rem;color:var(--accent-lt);text-align:right;}
+.lb-row.partial .pts{color:var(--text-mut);font-size:.95rem;}
+
+/* Teams */
+.team-card{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);border-radius:12px;padding:12px;margin-bottom:10px;}
+.team-head{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:8px;}
+.team-name{font-family:'Playfair Display',serif;font-size:1rem;font-weight:800;color:var(--text);}
+.team-total{font-family:'Playfair Display',serif;font-size:1.4rem;font-weight:900;color:var(--accent-lt);}
+.team-members{display:flex;flex-direction:column;gap:4px;font-size:.78rem;}
+.team-mem{display:flex;justify-content:space-between;padding:4px 0;color:var(--text-mut);}
+.team-mem .mem-pts{color:var(--accent-lt);font-family:'DM Mono',monospace;font-weight:700;}
+.badge-letter{display:inline-block;width:18px;height:18px;line-height:18px;text-align:center;background:rgba(255,255,255,.08);color:var(--text-mut);font-family:'DM Mono',monospace;font-size:.6rem;font-weight:800;border-radius:4px;margin-right:6px;}
+.badge-letter.capt{background:linear-gradient(135deg,var(--accent-dk),var(--accent));color:#122344;}
+
+/* Admin bits */
+.a-input,.a-select{width:100%;background:rgba(0,0,0,.25);border:1px solid rgba(255,255,255,.15);border-radius:10px;padding:11px 14px;color:var(--text);font-family:'Poppins',sans-serif;font-size:.9rem;outline:none;margin-bottom:10px;}
+.a-input:focus,.a-select:focus{border-color:color-mix(in srgb,var(--accent) 50%,transparent);}
+.a-btn{width:100%;padding:12px 14px;border:none;border-radius:10px;font-family:'Poppins',sans-serif;font-weight:700;font-size:.88rem;cursor:pointer;transition:transform .1s;}
+.a-btn:active{transform:scale(.97);}
+.a-gold{background:linear-gradient(135deg,var(--accent-dk),var(--accent));color:#122344;box-shadow:0 4px 14px color-mix(in srgb,var(--accent) 30%,transparent);}
+.a-out{background:rgba(255,255,255,.06);color:var(--text);border:1px solid rgba(255,255,255,.15);}
+.a-red{background:rgba(192,57,43,.9);color:#fff;}
+
+#adminGate{text-align:center;padding:30px 16px;}
+#adminPanel{display:none;}
+
+.autosave-pill{display:inline-block;padding:5px 12px;border-radius:20px;font-size:.68rem;font-weight:800;opacity:0;transition:opacity .3s;background:linear-gradient(135deg,var(--green),#22c55e);color:#022e0f;}
+
+/* Theme picker */
+.theme-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:10px;}
+.theme-chip{display:flex;flex-direction:column;align-items:center;padding:10px 6px;background:rgba(255,255,255,.04);border:1.5px solid rgba(255,255,255,.1);border-radius:10px;cursor:pointer;font-size:.68rem;font-weight:600;color:var(--text-mut);transition:all .12s;}
+.theme-chip.active{border-color:var(--accent);color:var(--text);background:color-mix(in srgb,var(--accent) 12%,transparent);}
+.theme-swatch{width:44px;height:28px;border-radius:6px;margin-bottom:4px;position:relative;overflow:hidden;}
+.theme-swatch .swl{position:absolute;top:0;left:0;width:50%;height:100%;}
+.theme-swatch .swr{position:absolute;top:0;right:0;width:50%;height:100%;}
+
+.hole-grid{display:grid;grid-template-columns:40px repeat(9,1fr);gap:4px;margin-bottom:14px;}
+.hole-grid .hgh,.hole-grid .hgv{text-align:center;font-family:'DM Mono',monospace;font-size:.68rem;padding:5px 2px;}
+.hole-grid .hgh{color:color-mix(in srgb,var(--accent) 70%,transparent);font-weight:700;}
+.hole-grid .hgl{color:var(--text-mut);font-size:.6rem;}
+.hole-grid input{background:rgba(0,0,0,.3);border:1px solid rgba(255,255,255,.1);border-radius:5px;padding:7px 2px;color:var(--accent-lt);font-family:'DM Mono',monospace;font-size:.9rem;font-weight:700;text-align:center;width:100%;}
+.hole-grid input:focus{outline:none;border-color:var(--accent);background:color-mix(in srgb,var(--accent) 8%,transparent);}
+
+.footer-note{text-align:center;padding:16px;font-size:.65rem;color:var(--text-mut);letter-spacing:.1em;}
+
+@media (max-width:380px){
+  .hero-title{font-size:1.55rem;}
+  .lb-header,.lb-row{grid-template-columns:30px 1fr 38px 44px 54px;font-size:.78rem;}
+}
+</style>
+</head>
+<body>
+
+<header>
+  <img id="hdrLogo" src="club-logo.png" alt="" class="logo">
+  <div>
+    <div class="title" id="hdrTitle">Society Trip</div>
+    <div class="sub" id="hdrSub">Mockup Demo</div>
+  </div>
+</header>
+
+<div class="hero">
+  <img id="heroLogo" src="club-logo.png" alt="" class="hero-logo" style="display:none;">
+  <div class="hero-title" id="heroTitle">Society Trip Mockup</div>
+  <div class="hero-sub" id="heroSub">3 Days · Prince's Golf Club · 16 players</div>
+  <div class="hero-meta" id="heroMeta">12 – 14 May 2027 · Sandwich, Kent</div>
+</div>
+
+<!-- Tabs -->
+<div class="tabs" id="tabsBar"></div>
+
+<!-- Overview -->
+<div class="view active" id="view-overview">
+  <div class="sig-stats">
+    <div class="sig"><div class="sig-val" id="sigDays">3</div><div class="sig-lbl">Days</div></div>
+    <div class="sig"><div class="sig-val" id="sigPlayers">16</div><div class="sig-lbl">Players</div></div>
+    <div class="sig"><div class="sig-val" id="sigHoles">54</div><div class="sig-lbl">Holes</div></div>
+    <div class="sig"><div class="sig-val" id="sigFormats">3</div><div class="sig-lbl">Formats</div></div>
+  </div>
+
+  <div class="sect-h">Days</div>
+  <div style="margin:0 12px 14px;" id="daysList"></div>
+
+  <div class="ov-quote">
+    <div class="ov-quote-mark">"</div>
+    <div class="ov-quote-text" id="captQuote">Three days of great links golf, great banter and great company. Enjoy every shot.</div>
+    <div class="ov-quote-attr" id="captAttr">— Trip Host</div>
+  </div>
+</div>
+
+<!-- Day views dynamic -->
+<div id="dayViews"></div>
+
+<!-- Combined -->
+<div class="view" id="view-combined">
+  <div class="sect-h">Overall Trip Standings</div>
+  <div class="card" style="padding:0;" id="combinedBox"></div>
+  <div class="sect-h">How It's Scored</div>
+  <div class="card" style="font-size:.82rem;color:var(--text-mut);line-height:1.5;">
+    Combined uses each day's primary individual format. Team-format days contribute each player's own Stableford/strokeplay score to the overall individual trip tally. Lowest gross or highest Stableford depending on day type.
+  </div>
+</div>
+
+<!-- Admin -->
+<div class="view" id="view-admin">
+  <div id="adminGate">
+    <div style="font-size:1.6rem;margin-bottom:12px;">🔐</div>
+    <div style="font-family:'Playfair Display',serif;font-size:1.2rem;font-weight:800;color:var(--accent);margin-bottom:16px;">Admin Access</div>
+    <input type="password" class="a-input" id="adminPw" placeholder="Password" onkeydown="if(event.key==='Enter')checkPw()">
+    <button class="a-btn a-gold" onclick="checkPw()">Unlock</button>
+  </div>
+
+  <div id="adminPanel">
+    <div style="margin:0 12px 10px;padding:10px 12px;background:rgba(0,0,0,.25);border:1px solid rgba(255,255,255,.1);border-radius:10px;display:flex;justify-content:space-between;align-items:center;gap:8px;">
+      <div id="saveStatusLine" style="font-size:.72rem;font-family:DM Mono,monospace;">—</div>
+      <span class="autosave-pill" id="autosavePill">✓ Saved</span>
+    </div>
+
+    <!-- Branding -->
+    <div class="sect-h">🎨 Branding</div>
+    <div class="card">
+      <div style="font-size:.75rem;color:var(--text-mut);margin-bottom:10px;">Pick a theme or upload a club logo. Admin changes save instantly.</div>
+
+      <label style="font-size:.68rem;letter-spacing:.1em;color:color-mix(in srgb,var(--accent) 80%,transparent);text-transform:uppercase;font-weight:700;">Theme preset</label>
+      <div class="theme-grid" id="themeGrid"></div>
+
+      <div style="margin-top:14px;">
+        <label style="font-size:.68rem;letter-spacing:.1em;color:color-mix(in srgb,var(--accent) 80%,transparent);text-transform:uppercase;font-weight:700;">Custom colours</label>
+        <div style="display:flex;gap:8px;margin-top:6px;">
+          <div style="flex:1;">
+            <div style="font-size:.65rem;color:var(--text-mut);margin-bottom:3px;">Primary (background)</div>
+            <input type="color" id="cPrimary" oninput="setCustomTheme()" style="width:100%;height:40px;border:none;border-radius:8px;background:transparent;cursor:pointer;">
+          </div>
+          <div style="flex:1;">
+            <div style="font-size:.65rem;color:var(--text-mut);margin-bottom:3px;">Accent</div>
+            <input type="color" id="cAccent" oninput="setCustomTheme()" style="width:100%;height:40px;border:none;border-radius:8px;background:transparent;cursor:pointer;">
+          </div>
+        </div>
+      </div>
+
+      <div style="margin-top:14px;">
+        <label style="font-size:.68rem;letter-spacing:.1em;color:color-mix(in srgb,var(--accent) 80%,transparent);text-transform:uppercase;font-weight:700;">Club logo</label>
+        <input type="file" id="logoFile" accept="image/*" onchange="uploadLogo(event)" style="margin-top:6px;color:var(--text-mut);font-size:.78rem;">
+        <div style="font-size:.65rem;color:var(--text-mut);margin-top:4px;">Will attempt to sample colour from logo and offer a matched theme.</div>
+        <div id="logoMatchHint" style="display:none;margin-top:8px;padding:8px;background:color-mix(in srgb,var(--accent) 10%,transparent);border:1px solid color-mix(in srgb,var(--accent) 30%,transparent);border-radius:8px;font-size:.75rem;color:var(--text);"></div>
+        <button class="a-btn a-out" style="margin-top:10px;font-size:.76rem;padding:8px;" onclick="removeLogo()">Remove logo</button>
+      </div>
+    </div>
+
+    <!-- Trip meta -->
+    <div class="sect-h">🏷 Trip Details</div>
+    <div class="card">
+      <label style="font-size:.68rem;letter-spacing:.1em;color:color-mix(in srgb,var(--accent) 80%,transparent);text-transform:uppercase;font-weight:700;">Trip name</label>
+      <input type="text" class="a-input" id="tripName" oninput="updateTripMeta()">
+      <label style="font-size:.68rem;letter-spacing:.1em;color:color-mix(in srgb,var(--accent) 80%,transparent);text-transform:uppercase;font-weight:700;">Dates line</label>
+      <input type="text" class="a-input" id="tripDates" oninput="updateTripMeta()">
+      <label style="font-size:.68rem;letter-spacing:.1em;color:color-mix(in srgb,var(--accent) 80%,transparent);text-transform:uppercase;font-weight:700;">Venue line</label>
+      <input type="text" class="a-input" id="tripVenue" oninput="updateTripMeta()">
+      <label style="font-size:.68rem;letter-spacing:.1em;color:color-mix(in srgb,var(--accent) 80%,transparent);text-transform:uppercase;font-weight:700;">Host quote</label>
+      <textarea class="a-input" id="tripQuote" oninput="updateTripMeta()" rows="2" style="font-family:'Playfair Display',serif;font-style:italic;"></textarea>
+      <label style="font-size:.68rem;letter-spacing:.1em;color:color-mix(in srgb,var(--accent) 80%,transparent);text-transform:uppercase;font-weight:700;">Host name</label>
+      <input type="text" class="a-input" id="tripHost" oninput="updateTripMeta()">
+    </div>
+
+    <!-- Quick score entry -->
+    <div class="sect-h">⚡ Rapid Score Entry</div>
+    <div class="card">
+      <div style="display:flex;gap:8px;margin-bottom:12px;">
+        <select class="a-select" id="rseDay" onchange="rseRender()" style="flex:1;margin-bottom:0;"></select>
+        <select class="a-select" id="rsePlayer" onchange="rseRender()" style="flex:1;margin-bottom:0;"></select>
+      </div>
+      <div id="rseMeta" style="font-size:.72rem;color:var(--text-mut);margin-bottom:10px;text-align:center;">—</div>
+      <div id="rseFront" class="hole-grid"></div>
+      <div id="rseBack" class="hole-grid"></div>
+      <div style="font-size:.68rem;color:var(--text-mut);text-align:center;margin-top:10px;line-height:1.4;">
+        Type a digit → auto-advances to next hole. Enter 0 or leave blank for no score. Autosaves every 0.5s.
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="footer-note">Society Trip · Mockup v1</div>
+
+<script>
+// ═══════════════════════════════════════════════════════
+// APP CONFIG
+// ═══════════════════════════════════════════════════════
+var APP_KEY = 'trip_mockup_princes';
+var ADMIN_PW = 'Stanmore1893!';
+var SB_URL = 'https://sysnimzmrnengwhdaiga.supabase.co';
+var SB_KEY = 'sb_publishable_WBgBahOK6tKSyxr5TG2tHQ_5BY79zpL';
+var SB_HEADERS = { apikey:SB_KEY, Authorization:'Bearer '+SB_KEY, 'Content-Type':'application/json' };
+var LOCAL_KEY = APP_KEY + '_local_v1';
+
+// ═══════════════════════════════════════════════════════
+// COURSES — Prince's Golf Club, 3×9 holes
+// NOTE: Yardages & SIs are plausible estimates for the mockup — verify against real scorecard before production use.
+// ═══════════════════════════════════════════════════════
+var COURSES = {
+  himalayas: { name:"Himalayas", par:[4,4,3,5,4,4,3,5,4], si:[7,3,9,1,5,13,17,11,15], yardsWhite:[395,415,165,520,385,410,180,500,415], yardsRed:[345,370,135,460,340,365,145,445,370], cr9m:35.4, slope9m:124, cr9w:36.9, slope9w:125 },
+  shore:     { name:"Shore",     par:[4,5,3,4,4,4,3,4,5], si:[5,1,15,7,11,3,17,9,13], yardsWhite:[405,540,170,435,395,420,185,405,520], yardsRed:[355,475,150,380,355,365,160,355,460], cr9m:35.6, slope9m:128, cr9w:37.1, slope9w:130 },
+  dunes:     { name:"Dunes",     par:[4,4,3,5,4,5,4,3,4], si:[9,3,17,5,7,1,13,15,11], yardsWhite:[400,420,175,525,415,540,420,165,395], yardsRed:[345,370,145,470,360,470,365,145,345], cr9m:35.5, slope9m:126, cr9w:36.8, slope9w:127 }
+};
+
+// Combination 18-hole CR/Slope approximations (per combo per gender)
+function combinedTee(c1, c2, teeKey) {
+  var a = COURSES[c1], b = COURSES[c2];
+  if (teeKey === 'red') return { cr: a.cr9w + b.cr9w, slope: Math.round((a.slope9w + b.slope9w)/2) };
+  return { cr: a.cr9m + b.cr9m, slope: Math.round((a.slope9m + b.slope9m)/2) };
+}
+
+// ═══════════════════════════════════════════════════════
+// DEFAULT DEMO DATA (used first-time if nothing in Supabase)
+// ═══════════════════════════════════════════════════════
+function demoTrip() {
+  var players = [
+    {id:'p1', name:'Alex Persaud', hi:0.4, gender:'m', isPro:true},
+    {id:'p2', name:'Jits Lachhani', hi:12.3, gender:'m'},
+    {id:'p3', name:'Mikael Khursheed', hi:3.1, gender:'m'},
+    {id:'p4', name:'Tejas Patel', hi:2.1, gender:'m'},
+    {id:'p5', name:'Kristian Hogberg', hi:16.3, gender:'m'},
+    {id:'p6', name:'Sanjai Mistry', hi:19.4, gender:'m'},
+    {id:'p7', name:'Joey Limbani', hi:18.3, gender:'m'},
+    {id:'p8', name:'Sapna Lachhani', hi:15.5, gender:'w'},
+    {id:'p9', name:'Bob Bobby', hi:8.2, gender:'m'},
+    {id:'p10', name:'Dilly Gill', hi:6.4, gender:'m'},
+    {id:'p11', name:'James Reynolds', hi:14.2, gender:'m'},
+    {id:'p12', name:'Jimmy R', hi:11.8, gender:'m'},
+    {id:'p13', name:'Ali P', hi:1.2, gender:'m'},
+    {id:'p14', name:'Alex Bowell', hi:3.8, gender:'m'},
+    {id:'p15', name:'Porky Persaud', hi:26.1, gender:'m'},
+    {id:'p16', name:'Alex Wright', hi:9.6, gender:'m'}
+  ];
+  return {
+    meta: {
+      name: "Prince's Society Trip 2027",
+      dates: "12 – 14 May 2027",
+      venue: "Prince's Golf Club · Sandwich, Kent",
+      host: "Alex Persaud",
+      quote: "Three days of great links golf, great banter and great company. Enjoy every shot.",
+      logo: null,
+      theme: 'navy-gold'
+    },
+    players: players,
+    days: [
+      { date:'2027-05-12', label:'Day 1', courses:['shore','dunes'], tees:{m:'white',w:'red'}, format:'ind_stableford', allowance:0.95 },
+      { date:'2027-05-13', label:'Day 2', courses:['dunes','himalayas'], tees:{m:'white',w:'red'}, format:'team_stableford', allowance:0.85,
+        teams:[
+          { name:"Shore Thing", playerIds:['p1','p2','p3','p4'] },
+          { name:"Dune Riders", playerIds:['p5','p6','p7','p8'] },
+          { name:"The Himalayans", playerIds:['p9','p10','p11','p12'] },
+          { name:"Bunker Hunters", playerIds:['p13','p14','p15','p16'] }
+        ]},
+      { date:'2027-05-14', label:'Day 3', courses:['himalayas','shore'], tees:{m:'white',w:'red'}, format:'ind_stableford', allowance:0.95 }
+    ],
+    scores: {} // scores[dayIdx][playerId] = [18 gross]
+  };
+}
+
+// ═══════════════════════════════════════════════════════
+// THEMES
+// ═══════════════════════════════════════════════════════
+var THEMES = {
+  'navy-gold':      { name:'Navy + Gold', bgDeep:'#0a1428', bg:'#122344', bgMid:'#1e3d70', accent:'#f0c040', accentDk:'#d4a017', accentLt:'#ffe066' },
+  'royal-blue':     { name:'Royal Blue',  bgDeep:'#0b1a3c', bg:'#13306e', bgMid:'#1e4ba5', accent:'#f5c960', accentDk:'#d9a738', accentLt:'#ffd97a' },
+  'forest-green':   { name:'Forest Green',bgDeep:'#0b1e14', bg:'#133825', bgMid:'#1f583a', accent:'#c6a764', accentDk:'#a68745', accentLt:'#dcc389' },
+  'burgundy':       { name:'Burgundy',    bgDeep:'#1f0808', bg:'#391414', bgMid:'#5a1c1c', accent:'#d4af6c', accentDk:'#b58a4b', accentLt:'#ebc989' },
+  'monochrome':     { name:'Monochrome',  bgDeep:'#0a0a0a', bg:'#1a1a1a', bgMid:'#2c2c2c', accent:'#cccccc', accentDk:'#aaaaaa', accentLt:'#eeeeee' },
+  'ocean-teal':     { name:'Ocean Teal',  bgDeep:'#061e26', bg:'#0f3741', bgMid:'#1a5560', accent:'#eac98c', accentDk:'#c7a665', accentLt:'#f6dba7' }
+};
+
+function applyTheme(key, custom) {
+  var t = (key === 'custom' && custom) ? custom : THEMES[key];
+  if (!t) t = THEMES['navy-gold'];
+  var root = document.documentElement;
+  root.style.setProperty('--bg-deep', t.bgDeep);
+  root.style.setProperty('--bg', t.bg);
+  root.style.setProperty('--bg-mid', t.bgMid);
+  root.style.setProperty('--accent', t.accent);
+  root.style.setProperty('--accent-dk', t.accentDk);
+  root.style.setProperty('--accent-lt', t.accentLt);
+  // Update theme chip active state
+  document.querySelectorAll('.theme-chip').forEach(function(c) {
+    c.classList.toggle('active', c.dataset.theme === key);
+  });
+}
+
+// ═══════════════════════════════════════════════════════
+// STATE + STORAGE
+// ═══════════════════════════════════════════════════════
+var _state = demoTrip();
+var _isAdmin = false;
+var _lastSave = { time:0, remote:false, err:'' };
+
+async function loadState() {
+  var remote = null;
+  try {
+    var r = await fetch(SB_URL+'/rest/v1/app_state?app_key=eq.'+APP_KEY+'&select=data', { headers:SB_HEADERS });
+    if (r.ok) {
+      var rows = await r.json();
+      if (rows[0]) remote = rows[0].data;
+    }
+  } catch(e){ console.error('loadState remote', e); }
+  var local = null;
+  try { local = JSON.parse(localStorage.getItem(LOCAL_KEY)||'null'); } catch(e){}
+
+  var rT = (remote && remote._savedAt)||0, lT = (local && local._savedAt)||0;
+  if (lT > rT && local) { _state = local; saveState(); }
+  else if (remote) { _state = remote; try{ localStorage.setItem(LOCAL_KEY, JSON.stringify(remote)); }catch(e){} }
+  // else keep demo defaults
+
+  if (!_state.scores) _state.scores = {};
+  applyTheme(_state.meta.theme || 'navy-gold', _state.meta.customTheme);
+  renderAll();
+  updateSaveStatus();
+}
+
+async function saveState() {
+  _state._savedAt = Date.now();
+  try { localStorage.setItem(LOCAL_KEY, JSON.stringify(_state)); } catch(e){}
+  _lastSave.time = Date.now();
+
+  try {
+    var r = await fetch(SB_URL+'/rest/v1/app_state?on_conflict=app_key', {
+      method:'POST',
+      headers:Object.assign({},SB_HEADERS,{Prefer:'resolution=merge-duplicates,return=minimal'}),
+      body: JSON.stringify({ app_key:APP_KEY, data:_state, updated_at:new Date().toISOString() })
+    });
+    _lastSave.remote = r.ok;
+    if (!r.ok) _lastSave.err = 'HTTP '+r.status;
+  } catch(e) {
+    _lastSave.remote = false; _lastSave.err = e.message||e;
+  }
+  flashPill(_lastSave.remote);
+  updateSaveStatus();
+}
+
+function flashPill(ok) {
+  var p = document.getElementById('autosavePill'); if (!p) return;
+  if (ok) { p.textContent='✓ Saved'; p.style.background='linear-gradient(135deg,#4ade80,#22c55e)'; p.style.color='#022e0f'; }
+  else { p.textContent='⚠ Local only'; p.style.background='linear-gradient(135deg,#fbbf24,#f59e0b)'; p.style.color='#2a1a02'; }
+  p.style.opacity='1';
+  setTimeout(function(){ p.style.opacity='0'; }, 2200);
+}
+
+function updateSaveStatus() {
+  var el = document.getElementById('saveStatusLine'); if (!el) return;
+  if (!_lastSave.time) { el.innerHTML='<span style="color:var(--text-mut);">No saves yet</span>'; return; }
+  var secs = Math.floor((Date.now()-_lastSave.time)/1000);
+  var ago = secs<60 ? secs+'s ago' : Math.floor(secs/60)+'m ago';
+  var rem = _lastSave.remote ? '<span style="color:#4ade80;">✓ Cloud</span>' : '<span style="color:#f87171;">⚠ Cloud</span>';
+  el.innerHTML = '<span style="color:#4ade80;">✓ Local</span> · '+rem+' · <span style="color:var(--text-mut);">'+ago+'</span>';
+}
+setInterval(updateSaveStatus, 10000);
+
+// ═══════════════════════════════════════════════════════
+// SCORING HELPERS
+// ═══════════════════════════════════════════════════════
+function dayCombinedCourse(day) {
+  var c1 = COURSES[day.courses[0]], c2 = COURSES[day.courses[1]];
+  return {
+    par: c1.par.concat(c2.par),
+    si: c1.si.concat(c2.si),
+    yardsWhite: c1.yardsWhite.concat(c2.yardsWhite),
+    yardsRed: c1.yardsRed.concat(c2.yardsRed),
+    name: c1.name + ' + ' + c2.name
+  };
+}
+
+function calcPH(hi, day, player) {
+  if (player.isPro) return 0;
+  if (hi == null || isNaN(hi)) return null;
+  var teeKey = day.tees[player.gender === 'w' ? 'w' : 'm'];
+  var tee = combinedTee(day.courses[0], day.courses[1], teeKey);
+  var parTot = dayCombinedCourse(day).par.reduce(function(a,b){return a+b;},0);
+  var ch = hi * (tee.slope/113) + (tee.cr - parTot);
+  return Math.round(ch * (day.allowance || 0.95));
+}
+
+function shotsOnHole(ph, siArr, holeIdx) {
+  if (ph <= 0) return 0;
+  var si = siArr[holeIdx], shots = 0;
+  if (ph >= 18) shots += 1;
+  var rem = ph % 18;
+  if (si <= rem) shots += 1;
+  if (ph >= 36) shots += 1;
+  return shots;
+}
+
+function stablefordPts(gross, par, shots) {
+  if (!gross || gross <= 0) return 0;
+  var nett = gross - shots;
+  return Math.max(0, 2 + (par - nett));
+}
+
+function calcRoundPoints(player, day, scoresArr) {
+  if (!scoresArr || !scoresArr.length) return { total:0, holePts:[], holesPlayed:0 };
+  var course = dayCombinedCourse(day);
+  var ph = calcPH(player.hi, day, player);
+  if (ph == null) ph = 0;
+  var holePts = [];
+  var total = 0, played = 0;
+  for (var h=0; h<18; h++) {
+    var gross = scoresArr[h];
+    if (gross && gross > 0) {
+      var shots = shotsOnHole(ph, course.si, h);
+      var pts = stablefordPts(gross, course.par[h], shots);
+      holePts.push(pts);
+      total += pts;
+      played++;
+    } else {
+      holePts.push(0);
+    }
+  }
+  return { total:total, holePts:holePts, holesPlayed:played, ph:ph };
+}
+
+function calcCountback(holePts) {
+  function sum(f,t){ var s=0; for(var i=f;i<=t;i++) s+=(holePts[i]||0); return s; }
+  return { b9:sum(9,17), b6:sum(12,17), b3:sum(15,17), b2:sum(16,17), b1:holePts[17]||0 };
+}
+
+// ═══════════════════════════════════════════════════════
+// RENDER
+// ═══════════════════════════════════════════════════════
+function renderAll() {
+  renderHeader();
+  renderHero();
+  renderTabs();
+  renderOverview();
+  renderDays();
+  renderCombined();
+  if (_isAdmin) renderAdmin();
+}
+
+function renderHeader() {
+  var h = document.getElementById('hdrLogo');
+  if (_state.meta.logo) { h.src = _state.meta.logo; h.style.display=''; }
+  else { h.src = 'club-logo.png'; }
+  document.getElementById('hdrTitle').textContent = _state.meta.name;
+  document.getElementById('hdrSub').textContent = _state.meta.venue;
+}
+
+function renderHero() {
+  var l = document.getElementById('heroLogo');
+  if (_state.meta.logo) { l.src = _state.meta.logo; l.style.display=''; }
+  else l.style.display='none';
+  document.getElementById('heroTitle').textContent = _state.meta.name;
+  document.getElementById('heroSub').textContent = _state.days.length+' Days · '+_state.players.length+' players';
+  document.getElementById('heroMeta').textContent = _state.meta.dates+' · '+_state.meta.venue;
+  document.getElementById('captQuote').textContent = _state.meta.quote;
+  document.getElementById('captAttr').textContent = '— ' + _state.meta.host;
+}
+
+function renderTabs() {
+  var bar = document.getElementById('tabsBar');
+  var html = '<div class="tab active" data-view="overview" onclick="pickTab(this)">Overview</div>';
+  _state.days.forEach(function(d, i) {
+    html += '<div class="tab" data-view="day-'+i+'" onclick="pickTab(this)">'+d.label+'</div>';
+  });
+  html += '<div class="tab" data-view="combined" onclick="pickTab(this)">Combined</div>';
+  html += '<div class="tab" data-view="admin" onclick="pickTab(this)">🔐</div>';
+  bar.innerHTML = html;
+}
+
+function pickTab(el) {
+  document.querySelectorAll('.tab').forEach(function(t){ t.classList.remove('active'); });
+  document.querySelectorAll('.view').forEach(function(v){ v.classList.remove('active'); });
+  el.classList.add('active');
+  var view = document.getElementById('view-'+el.dataset.view);
+  if (view) view.classList.add('active');
+}
+
+function renderOverview() {
+  document.getElementById('sigDays').textContent = _state.days.length;
+  document.getElementById('sigPlayers').textContent = _state.players.length;
+  var totalHoles = _state.days.reduce(function(s,d){ return s + 18; }, 0);
+  document.getElementById('sigHoles').textContent = totalHoles;
+  var formats = {};
+  _state.days.forEach(function(d){ formats[d.format] = 1; });
+  document.getElementById('sigFormats').textContent = Object.keys(formats).length;
+
+  var list = document.getElementById('daysList');
+  list.innerHTML = _state.days.map(function(d, i) {
+    var c1 = COURSES[d.courses[0]].name, c2 = COURSES[d.courses[1]].name;
+    var fmt = formatLabel(d.format);
+    return '<div class="day-card" onclick="pickTab(document.querySelector(\'[data-view=day-'+i+']\'))">'
+      + '<div class="day-num">'+(i+1)+'</div>'
+      + '<div class="day-info">'
+        + '<div class="day-course">'+c1+' + '+c2+'</div>'
+        + '<div class="day-sub">'+formatDate(d.date)+' · '+fmt+'</div>'
+      + '</div>'
+      + '<div class="day-arrow">›</div>'
+    + '</div>';
+  }).join('');
+}
+
+function formatDate(iso) {
+  var d = new Date(iso);
+  var days = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+  var mons = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  return days[d.getDay()] + ' ' + d.getDate() + ' ' + mons[d.getMonth()];
+}
+
+function formatLabel(fmt) {
+  var map = { ind_stableford:'Individual Stableford', ind_strokeplay:'Individual Strokeplay', team_stableford:'Team Stableford (best 2 of 4)', fourball:'4BBB', scramble:'Texas Scramble', matchplay:'Matchplay' };
+  return map[fmt] || fmt;
+}
+
+function renderDays() {
+  var container = document.getElementById('dayViews');
+  container.innerHTML = _state.days.map(function(d, i) {
+    var c = dayCombinedCourse(d);
+    return '<div class="view" id="view-day-'+i+'">'
+      + '<div class="sect-h">'+d.label+' · '+formatDate(d.date)+'</div>'
+      + '<div class="card card-accent">'
+        + '<div style="font-family:\'Playfair Display\',serif;font-weight:800;font-size:1.1rem;color:var(--accent-lt);margin-bottom:4px;">'+c.name+'</div>'
+        + '<div style="font-size:.78rem;color:var(--text-mut);">'+formatLabel(d.format)+' · '+Math.round(d.allowance*100)+'% allowance</div>'
+      + '</div>'
+      + '<div class="sect-h">Individual Leaderboard</div>'
+      + '<div class="card" style="padding:0;" id="dayLb-'+i+'"></div>'
+      + (d.format === 'team_stableford' ? '<div class="sect-h">Team Leaderboard</div><div id="dayTeams-'+i+'" style="margin:0 12px 14px;"></div>' : '')
+    + '</div>';
+  }).join('');
+
+  _state.days.forEach(function(d, i) {
+    renderDayLeaderboard(d, i);
+    if (d.format === 'team_stableford') renderDayTeams(d, i);
+  });
+}
+
+function renderDayLeaderboard(day, dayIdx) {
+  var el = document.getElementById('dayLb-'+dayIdx);
+  if (!el) return;
+  var results = _state.players.map(function(p) {
+    var sc = (_state.scores[dayIdx]||{})[p.id];
+    var r = calcRoundPoints(p, day, sc);
+    return { p:p, r:r };
+  }).filter(function(x){ return x.r.holesPlayed > 0; })
+    .sort(function(a,b){
+      if (b.r.total !== a.r.total) return b.r.total - a.r.total;
+      var ac = calcCountback(a.r.holePts), bc = calcCountback(b.r.holePts);
+      if (bc.b9 !== ac.b9) return bc.b9 - ac.b9;
+      if (bc.b6 !== ac.b6) return bc.b6 - ac.b6;
+      return bc.b3 - ac.b3;
+    });
+  if (!results.length) {
+    el.innerHTML = '<div style="padding:30px;text-align:center;color:var(--text-mut);font-style:italic;font-size:.85rem;">No scores entered yet. Add some in Admin → Rapid Score Entry.</div>';
+    return;
+  }
+  var h = '<div class="lb-header"><div>POS</div><div>PLAYER</div><div style="text-align:center;">HCP</div><div style="text-align:center;">THRU</div><div style="text-align:right;">PTS</div></div>';
+  results.forEach(function(x, i) {
+    var partial = x.r.holesPlayed < 18;
+    h += '<div class="lb-row'+(i===0?' leader':'')+(partial?' partial':'')+'">'
+      + '<div class="pos">'+(i===0?'🥇':i===1?'🥈':i===2?'🥉':(i+1))+'</div>'
+      + '<div class="name">'+x.p.name+'</div>'
+      + '<div class="hcp">'+(x.p.isPro?'PRO':x.r.ph)+'</div>'
+      + '<div class="thru">'+(partial?x.r.holesPlayed:'F')+'</div>'
+      + '<div class="pts">'+x.r.total+'</div>'
+    + '</div>';
+  });
+  el.innerHTML = h;
+}
+
+function renderDayTeams(day, dayIdx) {
+  var el = document.getElementById('dayTeams-'+dayIdx);
+  if (!el || !day.teams) return;
+  var teamResults = day.teams.map(function(t) {
+    var members = t.playerIds.map(function(id){ return _state.players.find(function(p){ return p.id===id; }); }).filter(Boolean);
+    var memberData = members.map(function(m) {
+      var sc = (_state.scores[dayIdx]||{})[m.id];
+      var r = calcRoundPoints(m, day, sc);
+      return { m:m, r:r };
+    });
+    var perHoleBest2 = [], total = 0;
+    for (var h=0; h<18; h++) {
+      var pts = memberData.map(function(md){ return md.r.holePts[h]||0; }).sort(function(a,b){ return b-a; });
+      var best2 = (pts[0]||0) + (pts[1]||0);
+      perHoleBest2.push(best2);
+      total += best2;
+    }
+    return { name:t.name, total:total, members:memberData, playedHoles:Math.max.apply(null, memberData.map(function(md){ return md.r.holesPlayed; })) };
+  }).sort(function(a,b){ return b.total - a.total; });
+
+  el.innerHTML = teamResults.map(function(tr, i) {
+    var sortedMems = tr.members.slice().sort(function(a,b){
+      var aH = a.m.isPro ? -100 : (a.m.hi != null ? a.m.hi : 999);
+      var bH = b.m.isPro ? -100 : (b.m.hi != null ? b.m.hi : 999);
+      return aH - bH;
+    });
+    var letters = ['A','B','C','D'];
+    return '<div class="team-card">'
+      + '<div class="team-head"><span class="team-name">'+(i===0?'🥇 ':i===1?'🥈 ':i===2?'🥉 ':'')+tr.name+'</span><span class="team-total">'+tr.total+'</span></div>'
+      + '<div class="team-members">'
+      + sortedMems.map(function(md, idx) {
+          var isCapt = idx === 0;
+          return '<div class="team-mem"><span><span class="badge-letter'+(isCapt?' capt':'')+'">'+letters[idx]+'</span>'+md.m.name+'</span><span class="mem-pts">'+(md.r.total||'—')+'</span></div>';
+        }).join('')
+      + '</div>'
+    + '</div>';
+  }).join('');
+}
+
+function renderCombined() {
+  var box = document.getElementById('combinedBox');
+  var results = _state.players.map(function(p) {
+    var dayTotals = _state.days.map(function(d, i) {
+      var sc = (_state.scores[i]||{})[p.id];
+      return calcRoundPoints(p, d, sc).total;
+    });
+    var total = dayTotals.reduce(function(a,b){ return a+b; }, 0);
+    return { p:p, dayTotals:dayTotals, total:total };
+  }).filter(function(x){ return x.total > 0; })
+    .sort(function(a,b){ return b.total - a.total; });
+  if (!results.length) {
+    box.innerHTML = '<div style="padding:30px;text-align:center;color:var(--text-mut);font-style:italic;font-size:.85rem;">Trip standings will appear once scores are entered.</div>';
+    return;
+  }
+  var cols = 'grid-template-columns:34px 1fr '+_state.days.map(function(){ return '42px'; }).join(' ')+' 60px;';
+  var h = '<div class="lb-header" style="'+cols+'"><div>POS</div><div>PLAYER</div>'+_state.days.map(function(d){ return '<div style="text-align:center;">'+d.label.replace('Day ','D')+'</div>'; }).join('')+'<div style="text-align:right;">TOTAL</div></div>';
+  results.forEach(function(x, i) {
+    h += '<div class="lb-row'+(i===0?' leader':'')+'" style="'+cols+'">'
+      + '<div class="pos">'+(i===0?'🥇':i===1?'🥈':i===2?'🥉':(i+1))+'</div>'
+      + '<div class="name">'+x.p.name+'</div>'
+      + x.dayTotals.map(function(dt){ return '<div class="hcp">'+(dt||'—')+'</div>'; }).join('')
+      + '<div class="pts">'+x.total+'</div>'
+    + '</div>';
+  });
+  box.innerHTML = h;
+}
+
+// ═══════════════════════════════════════════════════════
+// ADMIN
+// ═══════════════════════════════════════════════════════
+function checkPw() {
+  if (document.getElementById('adminPw').value === ADMIN_PW) {
+    _isAdmin = true;
+    document.getElementById('adminGate').style.display='none';
+    document.getElementById('adminPanel').style.display='block';
+    renderAdmin();
+  } else alert('Incorrect password');
+}
+
+function renderAdmin() {
+  renderThemePicker();
+  renderTripMetaInputs();
+  renderRseControls();
+  rseRender();
+}
+
+function renderThemePicker() {
+  var grid = document.getElementById('themeGrid');
+  var current = _state.meta.theme || 'navy-gold';
+  grid.innerHTML = Object.keys(THEMES).map(function(k) {
+    var t = THEMES[k];
+    return '<div class="theme-chip'+(current===k?' active':'')+'" data-theme="'+k+'" onclick="pickTheme(\''+k+'\')">'
+      + '<div class="theme-swatch"><div class="swl" style="background:'+t.bg+';"></div><div class="swr" style="background:'+t.accent+';"></div></div>'
+      + '<div>'+t.name+'</div>'
+    + '</div>';
+  }).join('');
+  // Set custom colour inputs
+  var t = THEMES[current] || THEMES['navy-gold'];
+  document.getElementById('cPrimary').value = t.bg;
+  document.getElementById('cAccent').value = t.accent;
+}
+
+async function pickTheme(key) {
+  _state.meta.theme = key;
+  delete _state.meta.customTheme;
+  applyTheme(key);
+  renderThemePicker();
+  await saveState();
+}
+
+function setCustomTheme() {
+  var primary = document.getElementById('cPrimary').value;
+  var accent = document.getElementById('cAccent').value;
+  var custom = deriveTheme(primary, accent);
+  _state.meta.theme = 'custom';
+  _state.meta.customTheme = custom;
+  applyTheme('custom', custom);
+  document.querySelectorAll('.theme-chip').forEach(function(c){ c.classList.remove('active'); });
+  saveState();
+}
+
+function deriveTheme(primary, accent) {
+  // Build a theme from one primary (background) + one accent
+  // bgDeep is darker version of primary, bgMid is lighter
+  return {
+    bgDeep: shadeHex(primary, -0.35),
+    bg: primary,
+    bgMid: shadeHex(primary, 0.25),
+    accent: accent,
+    accentDk: shadeHex(accent, -0.2),
+    accentLt: shadeHex(accent, 0.25)
+  };
+}
+
+function shadeHex(hex, amt) {
+  // amt in [-1, 1]
+  var h = hex.replace('#','');
+  var r = parseInt(h.substr(0,2),16), g = parseInt(h.substr(2,2),16), b = parseInt(h.substr(4,2),16);
+  function adj(c) {
+    if (amt < 0) return Math.max(0, Math.round(c * (1 + amt)));
+    return Math.min(255, Math.round(c + (255 - c) * amt));
+  }
+  r = adj(r); g = adj(g); b = adj(b);
+  return '#' + [r,g,b].map(function(x){ return x.toString(16).padStart(2,'0'); }).join('');
+}
+
+function uploadLogo(ev) {
+  var file = ev.target.files[0]; if (!file) return;
+  var reader = new FileReader();
+  reader.onload = async function(e) {
+    _state.meta.logo = e.target.result;
+    renderHeader(); renderHero();
+    await saveState();
+    // Attempt colour sampling
+    sampleLogoColour(e.target.result);
+  };
+  reader.readAsDataURL(file);
+}
+
+function sampleLogoColour(dataUrl) {
+  var img = new Image();
+  img.onload = function() {
+    var canvas = document.createElement('canvas');
+    canvas.width = 32; canvas.height = 32;
+    var ctx = canvas.getContext('2d');
+    ctx.drawImage(img, 0, 0, 32, 32);
+    var data = ctx.getImageData(0, 0, 32, 32).data;
+    var r=0, g=0, b=0, n=0;
+    for (var i=0;i<data.length;i+=4) {
+      // Skip near-white and near-transparent pixels
+      if (data[i+3] < 128) continue;
+      if (data[i] > 230 && data[i+1] > 230 && data[i+2] > 230) continue;
+      r += data[i]; g += data[i+1]; b += data[i+2]; n++;
+    }
+    if (n === 0) return;
+    r = Math.round(r/n); g = Math.round(g/n); b = Math.round(b/n);
+    var sampled = '#'+[r,g,b].map(function(x){ return x.toString(16).padStart(2,'0'); }).join('');
+    var hint = document.getElementById('logoMatchHint');
+    hint.style.display='block';
+    hint.innerHTML = 'Dominant colour sampled: <strong style="color:'+sampled+';">'+sampled+'</strong> &nbsp; <button class="a-btn a-out" style="display:inline-block;width:auto;padding:5px 10px;font-size:.7rem;margin-left:8px;" onclick="applySampledTheme(\''+sampled+'\')">Use as theme</button>';
+  };
+  img.src = dataUrl;
+}
+
+function applySampledTheme(sampled) {
+  // Use the sampled colour as background, pick a complementary accent (shift hue 180°)
+  var accent = complementHue(sampled);
+  document.getElementById('cPrimary').value = sampled;
+  document.getElementById('cAccent').value = accent;
+  setCustomTheme();
+}
+
+function complementHue(hex) {
+  var h = hex.replace('#','');
+  var r = parseInt(h.substr(0,2),16), g = parseInt(h.substr(2,2),16), b = parseInt(h.substr(4,2),16);
+  // Simple complement: lighten and shift to warm gold-ish if cool bg, or cool blue if warm bg
+  var brightness = (r + g + b) / 3;
+  if (b > r) return '#f0c040'; // cool → gold
+  if (r > b) return '#60a5fa'; // warm → blue
+  return '#f0c040';
+}
+
+function removeLogo() {
+  _state.meta.logo = null;
+  renderHeader(); renderHero();
+  document.getElementById('logoMatchHint').style.display='none';
+  saveState();
+}
+
+// Trip meta inputs
+function renderTripMetaInputs() {
+  document.getElementById('tripName').value = _state.meta.name || '';
+  document.getElementById('tripDates').value = _state.meta.dates || '';
+  document.getElementById('tripVenue').value = _state.meta.venue || '';
+  document.getElementById('tripQuote').value = _state.meta.quote || '';
+  document.getElementById('tripHost').value = _state.meta.host || '';
+}
+
+var _metaSaveTimer = null;
+function updateTripMeta() {
+  _state.meta.name = document.getElementById('tripName').value;
+  _state.meta.dates = document.getElementById('tripDates').value;
+  _state.meta.venue = document.getElementById('tripVenue').value;
+  _state.meta.quote = document.getElementById('tripQuote').value;
+  _state.meta.host = document.getElementById('tripHost').value;
+  renderHeader(); renderHero();
+  clearTimeout(_metaSaveTimer);
+  _metaSaveTimer = setTimeout(function(){ saveState(); }, 700);
+}
+
+// Rapid Score Entry
+function renderRseControls() {
+  var daySel = document.getElementById('rseDay');
+  daySel.innerHTML = _state.days.map(function(d, i) { return '<option value="'+i+'">'+d.label+' · '+COURSES[d.courses[0]].name+' + '+COURSES[d.courses[1]].name+'</option>'; }).join('');
+  var pSel = document.getElementById('rsePlayer');
+  pSel.innerHTML = _state.players.slice().sort(function(a,b){ return a.name.localeCompare(b.name); }).map(function(p) {
+    return '<option value="'+p.id+'">'+p.name+(p.isPro?' (Pro)':' · HI '+p.hi)+'</option>';
+  }).join('');
+}
+
+var _rseSaveTimer = null;
+function rseRender() {
+  var dayIdx = parseInt(document.getElementById('rseDay').value, 10);
+  var playerId = document.getElementById('rsePlayer').value;
+  var day = _state.days[dayIdx]; var player = _state.players.find(function(p){ return p.id===playerId; });
+  if (!day || !player) return;
+  var course = dayCombinedCourse(day);
+  var ph = calcPH(player.hi, day, player);
+  if (ph == null) ph = 0;
+  document.getElementById('rseMeta').innerHTML = course.name + ' · PH <strong style="color:var(--accent-lt);">'+(player.isPro?'0 (Pro)':ph)+'</strong>';
+  var sc = (_state.scores[dayIdx]||{})[playerId] || new Array(18).fill(0);
+
+  function buildHalf(elId, from, to) {
+    var html = '<div class="hgh" style="grid-column:1;">H</div>';
+    for (var h=from; h<to; h++) html += '<div class="hgh">'+(h+1)+'</div>';
+    html += '<div class="hgh hgl" style="grid-column:1;">Par</div>';
+    for (var h=from; h<to; h++) html += '<div class="hgv hgl">'+course.par[h]+'</div>';
+    html += '<div class="hgh hgl" style="grid-column:1;">SI</div>';
+    for (var h=from; h<to; h++) {
+      var shots = shotsOnHole(ph, course.si, h);
+      var dots = '';
+      for (var d=0; d<shots; d++) dots += '•';
+      html += '<div class="hgv hgl">'+course.si[h]+(dots?'<span style="color:var(--accent);">'+dots+'</span>':'')+'</div>';
+    }
+    html += '<div class="hgh" style="grid-column:1;color:var(--accent-lt);">S</div>';
+    for (var h=from; h<to; h++) {
+      html += '<input type="number" inputmode="numeric" min="0" max="12" data-hole="'+h+'" value="'+(sc[h]||'')+'" oninput="rseInput(event)" onfocus="this.select()">';
+    }
+    document.getElementById(elId).innerHTML = html;
+  }
+  buildHalf('rseFront', 0, 9);
+  buildHalf('rseBack', 9, 18);
+}
+
+async function rseInput(ev) {
+  var hole = parseInt(ev.target.dataset.hole, 10);
+  var val = parseInt(ev.target.value, 10);
+  var dayIdx = parseInt(document.getElementById('rseDay').value, 10);
+  var playerId = document.getElementById('rsePlayer').value;
+
+  if (!_state.scores[dayIdx]) _state.scores[dayIdx] = {};
+  if (!_state.scores[dayIdx][playerId]) _state.scores[dayIdx][playerId] = new Array(18).fill(0);
+  _state.scores[dayIdx][playerId][hole] = isNaN(val) ? 0 : val;
+
+  // Auto-advance to next hole input
+  if (!isNaN(val) && val > 0) {
+    var inputs = document.querySelectorAll('#view-admin input[data-hole]');
+    for (var i=0; i<inputs.length; i++) {
+      if (parseInt(inputs[i].dataset.hole,10) === hole) {
+        var next = inputs[i+1];
+        if (next) { next.focus(); next.select(); }
+        break;
+      }
+    }
+  }
+
+  clearTimeout(_rseSaveTimer);
+  _rseSaveTimer = setTimeout(async function() {
+    await saveState();
+    // Re-render public views so leaderboards update
+    renderDays();
+    renderCombined();
+  }, 500);
+}
+
+// ═══════════════════════════════════════════════════════
+// AUTO-REFRESH (public only, never when admin unlocked)
+// ═══════════════════════════════════════════════════════
+setInterval(function() {
+  if (_isAdmin) return;
+  var active = document.activeElement;
+  if (active && ['INPUT','TEXTAREA','SELECT'].indexOf(active.tagName) >= 0) return;
+  loadState();
+}, 20000);
+
+// INIT
+loadState();
+</script>
+</body>
+</html>
