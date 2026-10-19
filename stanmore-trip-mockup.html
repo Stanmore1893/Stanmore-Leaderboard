@@ -51,7 +51,10 @@ header .title{font-family:'Playfair Display',serif;font-size:1rem;font-weight:80
 header .sub{font-size:.62rem;color:color-mix(in srgb,var(--accent) 65%,transparent);letter-spacing:.14em;text-transform:uppercase;font-weight:700;margin-top:2px;}
 
 /* Hero */
-.hero{padding:24px 16px 18px;text-align:center;position:relative;}
+.hero{padding:24px 16px 18px;text-align:center;position:relative;overflow:hidden;}
+.hero.has-bg{padding:60px 16px 40px;min-height:300px;}
+.hero-bg{position:absolute;inset:0;background-size:cover;background-position:center 60%;z-index:-2;}
+.hero-bg-overlay{position:absolute;inset:0;background:linear-gradient(180deg,color-mix(in srgb,var(--bg-deep) 55%,transparent) 0%,color-mix(in srgb,var(--bg-deep) 80%,transparent) 75%,var(--bg-deep) 100%);z-index:-1;}
 .hero-logo{width:72px;height:72px;object-fit:contain;background:#fff;border-radius:12px;padding:5px;margin:0 auto 14px;display:block;box-shadow:0 6px 24px rgba(0,0,0,.35);}
 .hero-logo.no-bg{background:transparent;padding:0;}
 .hero-title{
@@ -63,11 +66,46 @@ header .sub{font-size:.62rem;color:color-mix(in srgb,var(--accent) 65%,transpare
 .hero-sub{font-size:.72rem;color:var(--text-mut);letter-spacing:.14em;text-transform:uppercase;font-weight:600;margin-top:6px;}
 .hero-meta{font-family:'Playfair Display',serif;font-style:italic;font-size:.9rem;color:color-mix(in srgb,var(--accent) 75%,transparent);margin-top:8px;}
 
-/* Tabs */
-.tabs{display:flex;margin:0 12px 10px;background:rgba(0,0,0,.25);border-radius:10px;padding:4px;gap:3px;overflow-x:auto;scrollbar-width:none;}
-.tabs::-webkit-scrollbar{display:none;}
-.tab{flex:1;min-width:70px;padding:9px 10px;text-align:center;border-radius:7px;cursor:pointer;font-size:.74rem;font-weight:600;color:var(--text-mut);transition:all .15s;white-space:nowrap;}
-.tab.active{background:linear-gradient(135deg,var(--accent-dk),var(--accent));color:#122344;font-weight:800;box-shadow:0 2px 10px color-mix(in srgb,var(--accent) 30%,transparent);}
+/* Dropdown nav */
+.navwrap{margin:0 12px 14px;position:relative;}
+.navbtn{
+  width:100%;display:flex;align-items:center;justify-content:space-between;gap:10px;
+  padding:14px 16px;background:linear-gradient(135deg,color-mix(in srgb,var(--accent) 12%,transparent),color-mix(in srgb,var(--bg-mid) 50%,transparent));
+  border:1.5px solid color-mix(in srgb,var(--accent) 30%,transparent);border-radius:12px;color:var(--text);
+  font-family:'Playfair Display',serif;font-weight:700;font-size:1rem;cursor:pointer;transition:all .15s;
+  box-shadow:0 4px 14px rgba(0,0,0,.25);
+}
+.navbtn:hover{border-color:color-mix(in srgb,var(--accent) 50%,transparent);}
+.navbtn-current{display:flex;align-items:center;gap:10px;}
+.navbtn-icon{font-size:1.1rem;}
+.navbtn-chev{font-size:.7rem;color:color-mix(in srgb,var(--accent) 80%,transparent);transition:transform .2s;}
+.navwrap.open .navbtn-chev{transform:rotate(180deg);}
+.navbtn-sub{font-size:.65rem;color:var(--text-mut);font-family:'Poppins',sans-serif;font-weight:500;margin-left:4px;letter-spacing:.03em;}
+
+.navmenu{
+  position:absolute;top:calc(100% + 6px);left:0;right:0;z-index:50;
+  background:linear-gradient(180deg,var(--bg),var(--bg-deep));
+  border:1.5px solid color-mix(in srgb,var(--accent) 35%,transparent);border-radius:12px;
+  padding:6px;max-height:0;overflow:hidden;opacity:0;transition:all .22s ease-out;
+  box-shadow:0 12px 40px rgba(0,0,0,.5);
+}
+.navwrap.open .navmenu{max-height:600px;opacity:1;padding:8px;}
+
+.navsection{padding:6px 10px 2px;font-size:.56rem;letter-spacing:.18em;color:color-mix(in srgb,var(--accent) 70%,transparent);text-transform:uppercase;font-weight:700;}
+.navitem{
+  display:flex;align-items:center;gap:12px;padding:11px 12px;border-radius:9px;cursor:pointer;
+  color:var(--text-mut);font-size:.9rem;font-weight:600;transition:all .12s;
+}
+.navitem:hover{background:color-mix(in srgb,var(--accent) 10%,transparent);color:var(--text);}
+.navitem.active{background:linear-gradient(135deg,var(--accent-dk),var(--accent));color:#122344;font-weight:800;}
+.navitem .navitem-icon{font-size:1.1rem;width:24px;text-align:center;flex-shrink:0;}
+.navitem .navitem-name{flex:1;line-height:1.2;}
+.navitem .navitem-sub{font-size:.68rem;color:var(--text-mut);font-weight:500;margin-top:2px;}
+.navitem.active .navitem-sub{color:color-mix(in srgb,#122344 70%,transparent);}
+
+/* Backdrop when open */
+.navbackdrop{position:fixed;inset:0;background:rgba(0,0,0,.3);z-index:40;opacity:0;pointer-events:none;transition:opacity .22s;}
+.navwrap.open .navbackdrop{opacity:1;pointer-events:auto;}
 .view{display:none;}
 .view.active{display:block;animation:fadeIn .22s ease-out;}
 @keyframes fadeIn{from{opacity:0;transform:translateY(4px);}to{opacity:1;transform:translateY(0);}}
@@ -170,15 +208,30 @@ header .sub{font-size:.62rem;color:color-mix(in srgb,var(--accent) 65%,transpare
   </div>
 </header>
 
-<div class="hero">
+<div class="hero" id="heroWrap">
+  <div class="hero-bg" id="heroBg" style="display:none;"></div>
+  <div class="hero-bg-overlay" id="heroBgOverlay" style="display:none;"></div>
   <img id="heroLogo" src="club-logo.png" alt="" class="hero-logo" style="display:none;">
   <div class="hero-title" id="heroTitle">Society Trip Mockup</div>
   <div class="hero-sub" id="heroSub">3 Days · Prince's Golf Club · 16 players</div>
   <div class="hero-meta" id="heroMeta">12 – 14 May 2027 · Sandwich, Kent</div>
 </div>
 
-<!-- Tabs -->
-<div class="tabs" id="tabsBar"></div>
+<!-- Dropdown Nav -->
+<div class="navwrap" id="navWrap">
+  <div class="navbackdrop" onclick="closeNav()"></div>
+  <button class="navbtn" onclick="toggleNav()">
+    <span class="navbtn-current">
+      <span class="navbtn-icon" id="navBtnIcon">🏠</span>
+      <span>
+        <span id="navBtnName">Overview</span>
+        <span class="navbtn-sub" id="navBtnSub">Trip summary</span>
+      </span>
+    </span>
+    <span class="navbtn-chev">▼</span>
+  </button>
+  <div class="navmenu" id="navMenu"></div>
+</div>
 
 <!-- Overview -->
 <div class="view active" id="view-overview">
@@ -255,6 +308,13 @@ header .sub{font-size:.62rem;color:color-mix(in srgb,var(--accent) 65%,transpare
         <div style="font-size:.65rem;color:var(--text-mut);margin-top:4px;">Will attempt to sample colour from logo and offer a matched theme.</div>
         <div id="logoMatchHint" style="display:none;margin-top:8px;padding:8px;background:color-mix(in srgb,var(--accent) 10%,transparent);border:1px solid color-mix(in srgb,var(--accent) 30%,transparent);border-radius:8px;font-size:.75rem;color:var(--text);"></div>
         <button class="a-btn a-out" style="margin-top:10px;font-size:.76rem;padding:8px;" onclick="removeLogo()">Remove logo</button>
+
+        <div style="margin-top:16px;padding-top:14px;border-top:1px dashed rgba(255,255,255,.1);">
+          <label style="font-size:.68rem;letter-spacing:.1em;color:color-mix(in srgb,var(--accent) 80%,transparent);text-transform:uppercase;font-weight:700;">Course hero image</label>
+          <input type="file" id="heroBgFile" accept="image/*" onchange="uploadHeroBg(event)" style="margin-top:6px;color:var(--text-mut);font-size:.78rem;">
+          <div style="font-size:.65rem;color:var(--text-mut);margin-top:4px;">Wide landscape shot of the course or clubhouse. Appears behind the title on the Overview page.</div>
+          <button class="a-btn a-out" style="margin-top:10px;font-size:.76rem;padding:8px;" onclick="removeHeroBg()">Remove hero image</button>
+        </div>
       </div>
     </div>
 
@@ -553,6 +613,19 @@ function renderHeader() {
 }
 
 function renderHero() {
+  var wrap = document.getElementById('heroWrap');
+  var bg = document.getElementById('heroBg');
+  var overlay = document.getElementById('heroBgOverlay');
+  if (_state.meta.heroBg) {
+    bg.style.backgroundImage = 'url("' + _state.meta.heroBg + '")';
+    bg.style.display = '';
+    overlay.style.display = '';
+    wrap.classList.add('has-bg');
+  } else {
+    bg.style.display = 'none';
+    overlay.style.display = 'none';
+    wrap.classList.remove('has-bg');
+  }
   var l = document.getElementById('heroLogo');
   if (_state.meta.logo) { l.src = _state.meta.logo; l.style.display=''; }
   else l.style.display='none';
@@ -563,24 +636,78 @@ function renderHero() {
   document.getElementById('captAttr').textContent = '— ' + _state.meta.host;
 }
 
+var _currentView = 'overview';
+
 function renderTabs() {
-  var bar = document.getElementById('tabsBar');
-  var html = '<div class="tab active" data-view="overview" onclick="pickTab(this)">Overview</div>';
-  _state.days.forEach(function(d, i) {
-    html += '<div class="tab" data-view="day-'+i+'" onclick="pickTab(this)">'+d.label+'</div>';
+  var menu = document.getElementById('navMenu');
+  var items = [
+    { section:'Overview', items:[{ view:'overview', icon:'🏠', name:'Overview', sub:'Trip summary' }]},
+    { section:'Days', items: _state.days.map(function(d,i){
+        var c1 = COURSES[d.courses[0]].name, c2 = COURSES[d.courses[1]].name;
+        return { view:'day-'+i, icon: (i===0?'1️⃣':i===1?'2️⃣':i===2?'3️⃣':'📅'), name:d.label, sub: c1+' + '+c2 };
+      })},
+    { section:'Standings', items:[{ view:'combined', icon:'🏆', name:'Combined', sub:'Trip-wide standings' }]},
+    { section:'Setup', items:[{ view:'admin', icon:'🔐', name:'Admin', sub:'Branding & scores' }]}
+  ];
+
+  var html = '';
+  items.forEach(function(group){
+    html += '<div class="navsection">'+group.section+'</div>';
+    group.items.forEach(function(it){
+      html += '<div class="navitem" data-view="'+it.view+'" onclick="pickTabByView(\''+it.view+'\')">'
+        + '<span class="navitem-icon">'+it.icon+'</span>'
+        + '<span class="navitem-name">'+it.name+'<div class="navitem-sub">'+it.sub+'</div></span>'
+      + '</div>';
+    });
   });
-  html += '<div class="tab" data-view="combined" onclick="pickTab(this)">Combined</div>';
-  html += '<div class="tab" data-view="admin" onclick="pickTab(this)">🔐</div>';
-  bar.innerHTML = html;
+  menu.innerHTML = html;
+  updateNavButton();
+  updateNavActive();
 }
 
-function pickTab(el) {
-  document.querySelectorAll('.tab').forEach(function(t){ t.classList.remove('active'); });
+function toggleNav() { document.getElementById('navWrap').classList.toggle('open'); }
+function closeNav() { document.getElementById('navWrap').classList.remove('open'); }
+
+function pickTabByView(view) {
+  _currentView = view;
   document.querySelectorAll('.view').forEach(function(v){ v.classList.remove('active'); });
-  el.classList.add('active');
-  var view = document.getElementById('view-'+el.dataset.view);
-  if (view) view.classList.add('active');
+  var el = document.getElementById('view-'+view);
+  if (el) el.classList.add('active');
+  updateNavButton();
+  updateNavActive();
+  closeNav();
+  window.scrollTo({top:0,behavior:'smooth'});
 }
+
+// Legacy — keep pickTab for compatibility
+function pickTab(el) { pickTabByView(el.dataset.view); }
+
+function updateNavButton() {
+  // Find current item details
+  var allItems = [{view:'overview',icon:'🏠',name:'Overview',sub:'Trip summary'}];
+  _state.days.forEach(function(d,i){
+    var c1 = COURSES[d.courses[0]].name, c2 = COURSES[d.courses[1]].name;
+    allItems.push({ view:'day-'+i, icon: (i===0?'1️⃣':i===1?'2️⃣':i===2?'3️⃣':'📅'), name:d.label, sub: c1+' + '+c2 });
+  });
+  allItems.push({view:'combined',icon:'🏆',name:'Combined',sub:'Trip-wide standings'});
+  allItems.push({view:'admin',icon:'🔐',name:'Admin',sub:'Branding & scores'});
+  var cur = allItems.find(function(i){ return i.view === _currentView; }) || allItems[0];
+  document.getElementById('navBtnIcon').textContent = cur.icon;
+  document.getElementById('navBtnName').textContent = cur.name;
+  document.getElementById('navBtnSub').textContent = cur.sub;
+}
+
+function updateNavActive() {
+  document.querySelectorAll('.navitem').forEach(function(it){
+    it.classList.toggle('active', it.dataset.view === _currentView);
+  });
+}
+
+// Close nav when clicking outside
+document.addEventListener('click', function(e) {
+  var wrap = document.getElementById('navWrap');
+  if (wrap && !wrap.contains(e.target)) closeNav();
+}, true);
 
 function renderOverview() {
   document.getElementById('sigDays').textContent = _state.days.length;
@@ -879,6 +1006,23 @@ function removeLogo() {
   _state.meta.logo = null;
   renderHeader(); renderHero();
   document.getElementById('logoMatchHint').style.display='none';
+  saveState();
+}
+
+function uploadHeroBg(ev) {
+  var file = ev.target.files[0]; if (!file) return;
+  var reader = new FileReader();
+  reader.onload = async function(e) {
+    _state.meta.heroBg = e.target.result;
+    renderHero();
+    await saveState();
+  };
+  reader.readAsDataURL(file);
+}
+
+function removeHeroBg() {
+  _state.meta.heroBg = null;
+  renderHero();
   saveState();
 }
 
