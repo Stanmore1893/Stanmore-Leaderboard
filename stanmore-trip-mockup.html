@@ -405,18 +405,46 @@ var COURSES = {
   }
 };
 
-// CR/Slope per 9 holes per tee — ESTIMATES, verify against WHS tables
-var TEE_RATINGS = {
-  black:  { cr9: 36.9, slope9: 139 },
-  gold:   { cr9: 35.8, slope9: 132 },
-  white:  { cr9: 34.9, slope9: 126 },
-  ladies: { cr9: 36.0, slope9: 128 }
+// WHS course ratings — pulled directly from princesgolfclub.co.uk/whs-tables (Oct 2026, verified)
+// Key format: '<combo>-<tee>-<gender>' where tee is black|gold|white|black-gold
+var COURSE_RATINGS = {
+  // Shore + Dunes
+  'shore+dunes-black-gold-m': { cr:74.4, slope:132, yds:7298 },
+  'shore+dunes-black-m':      { cr:72.9, slope:131, yds:6855 },
+  'shore+dunes-gold-m':       { cr:70.4, slope:123, yds:6329 },
+  'shore+dunes-white-m':      { cr:66.2, slope:110, yds:5546 },
+  'shore+dunes-gold-w':       { cr:76.4, slope:132, yds:6329 },
+  'shore+dunes-white-w':      { cr:72.0, slope:124, yds:5546 },
+  // Dunes + Himalayas
+  'dunes+himalayas-black-gold-m': { cr:74.4, slope:133, yds:7245 },
+  'dunes+himalayas-black-m':      { cr:73.0, slope:132, yds:6812 },
+  'dunes+himalayas-gold-m':       { cr:70.4, slope:126, yds:6272 },
+  'dunes+himalayas-white-m':      { cr:66.7, slope:112, yds:5605 },
+  'dunes+himalayas-gold-w':       { cr:76.5, slope:135, yds:6272 },
+  'dunes+himalayas-white-w':      { cr:72.8, slope:127, yds:5605 },
+  // Himalayas + Shore
+  'himalayas+shore-black-gold-m': { cr:74.0, slope:129, yds:7275 },
+  'himalayas+shore-black-m':      { cr:72.9, slope:131, yds:6795 },
+  'himalayas+shore-gold-m':       { cr:70.0, slope:125, yds:6223 },
+  'himalayas+shore-white-m':      { cr:66.3, slope:113, yds:5577 },
+  'himalayas+shore-gold-w':       { cr:76.3, slope:134, yds:6223 },
+  'himalayas+shore-white-w':      { cr:72.6, slope:127, yds:5577 }
 };
 
-// Combination 18-hole CR/Slope: double the per-9 values (approximation)
 function combinedTee(c1, c2, teeKey) {
-  var r = TEE_RATINGS[teeKey] || TEE_RATINGS.gold;
-  return { cr: r.cr9 * 2, slope: r.slope9 };
+  // Look up the real certified rating for this combination + tee
+  var combo = c1 + '+' + c2;
+  var gender = (teeKey === 'ladies') ? 'w' : 'm';
+  var tee = (teeKey === 'ladies') ? 'gold' : teeKey; // ladies default to Gold tees at Prince's
+  var key = combo + '-' + tee + '-' + gender;
+  var r = COURSE_RATINGS[key];
+  if (r) return { cr: r.cr, slope: r.slope };
+  // Fallback: try reverse combo
+  var revKey = c2 + '+' + c1 + '-' + tee + '-' + gender;
+  var r2 = COURSE_RATINGS[revKey];
+  if (r2) return { cr: r2.cr, slope: r2.slope };
+  // Last-resort estimate
+  return { cr: 70, slope: 125 };
 }
 
 // ═══════════════════════════════════════════════════════
