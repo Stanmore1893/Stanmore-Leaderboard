@@ -365,19 +365,58 @@ var LOCAL_KEY = APP_KEY + '_local_v1';
 
 // ═══════════════════════════════════════════════════════
 // COURSES — Prince's Golf Club, 3×9 holes
-// NOTE: Yardages & SIs are plausible estimates for the mockup — verify against real scorecard before production use.
+// VERIFIED from PGC scorecard Oct 2026 — par, SI (front/back), yardages for Black/Gold/White tees.
+// Each 9 has TWO SI columns because any 9 can be played as front OR back of the 18.
+// CR/Slope values are estimates — update with real values from WHS table (QR on scorecard) before competition use.
 // ═══════════════════════════════════════════════════════
 var COURSES = {
-  himalayas: { name:"Himalayas", par:[4,4,3,5,4,4,3,5,4], si:[7,3,9,1,5,13,17,11,15], yardsWhite:[395,415,165,520,385,410,180,500,415], yardsRed:[345,370,135,460,340,365,145,445,370], cr9m:35.4, slope9m:124, cr9w:36.9, slope9w:125 },
-  shore:     { name:"Shore",     par:[4,5,3,4,4,4,3,4,5], si:[5,1,15,7,11,3,17,9,13], yardsWhite:[405,540,170,435,395,420,185,405,520], yardsRed:[355,475,150,380,355,365,160,355,460], cr9m:35.6, slope9m:128, cr9w:37.1, slope9w:130 },
-  dunes:     { name:"Dunes",     par:[4,4,3,5,4,5,4,3,4], si:[9,3,17,5,7,1,13,15,11], yardsWhite:[400,420,175,525,415,540,420,165,395], yardsRed:[345,370,145,470,360,470,365,145,345], cr9m:35.5, slope9m:126, cr9w:36.8, slope9w:127 }
+  shore: {
+    name: "Shore",
+    yards: { black:[426,530,173,410,137,383,405,542,413], gold:[417,468,137,387,110,336,378,522,385], white:[325,431,124,339,103,282,303,512,340] },
+    totals: { black:3419, gold:3140, white:2759 },
+    par: [4,5,3,4,3,4,4,5,4],
+    siFront: [6,12,16,4,18,14,2,8,10],
+    siBack:  [5,11,15,3,17,13,1,7,9],
+    ladiesPar: [4,5,3,4,3,4,4,5,4],
+    ladiesSiFront: [9,7,17,3,15,13,11,1,5],
+    ladiesSiBack:  [10,8,18,4,16,14,12,2,6]
+  },
+  dunes: {
+    name: "Dunes",
+    yards: { black:[440,155,527,408,394,495,357,198,462], gold:[420,150,484,375,365,460,325,186,424], white:[395,140,397,315,324,415,286,151,364] },
+    totals: { black:3436, gold:3189, white:2787 },
+    par: [4,3,5,4,4,5,4,3,4],
+    siFront: [4,16,14,2,6,10,18,12,8],
+    siBack:  [3,15,13,1,5,9,17,11,7],
+    ladiesPar: [5,3,5,4,4,5,4,3,5],  // ladies par 38 (hole 9 is par 5 for ladies)
+    ladiesSiFront: [5,17,3,7,9,1,13,15,11],
+    ladiesSiBack:  [4,18,6,12,10,2,14,16,8]
+  },
+  himalayas: {
+    name: "Himalayas",
+    yards: { black:[377,575,372,433,135,556,190,312,426], gold:[363,540,312,391,116,524,170,289,378], white:[348,500,294,335,103,470,141,278,349] },
+    totals: { black:3376, gold:3083, white:2818 },
+    par: [4,5,4,4,3,5,3,4,4],
+    siFront: [14,6,12,4,18,2,8,16,10],
+    siBack:  [13,5,11,3,17,1,7,15,9],
+    ladiesPar: [4,5,4,4,3,5,3,4,4],
+    ladiesSiFront: [13,5,11,3,17,1,7,15,9],
+    ladiesSiBack:  [14,6,12,4,18,2,8,16,10]
+  }
 };
 
-// Combination 18-hole CR/Slope approximations (per combo per gender)
+// CR/Slope per 9 holes per tee — ESTIMATES, verify against WHS tables
+var TEE_RATINGS = {
+  black:  { cr9: 36.9, slope9: 139 },
+  gold:   { cr9: 35.8, slope9: 132 },
+  white:  { cr9: 34.9, slope9: 126 },
+  ladies: { cr9: 36.0, slope9: 128 }
+};
+
+// Combination 18-hole CR/Slope: double the per-9 values (approximation)
 function combinedTee(c1, c2, teeKey) {
-  var a = COURSES[c1], b = COURSES[c2];
-  if (teeKey === 'red') return { cr: a.cr9w + b.cr9w, slope: Math.round((a.slope9w + b.slope9w)/2) };
-  return { cr: a.cr9m + b.cr9m, slope: Math.round((a.slope9m + b.slope9m)/2) };
+  var r = TEE_RATINGS[teeKey] || TEE_RATINGS.gold;
+  return { cr: r.cr9 * 2, slope: r.slope9 };
 }
 
 // ═══════════════════════════════════════════════════════
@@ -414,15 +453,15 @@ function demoTrip() {
     },
     players: players,
     days: [
-      { date:'2027-05-12', label:'Day 1', courses:['shore','dunes'], tees:{m:'white',w:'red'}, format:'ind_stableford', allowance:0.95 },
-      { date:'2027-05-13', label:'Day 2', courses:['dunes','himalayas'], tees:{m:'white',w:'red'}, format:'team_stableford', allowance:0.85,
+      { date:'2027-05-12', label:'Day 1', courses:['shore','dunes'], tees:{m:'gold'}, format:'ind_stableford', allowance:0.95 },
+      { date:'2027-05-13', label:'Day 2', courses:['dunes','himalayas'], tees:{m:'gold'}, format:'team_stableford', allowance:0.85,
         teams:[
           { name:"Shore Thing", playerIds:['p1','p2','p3','p4'] },
           { name:"Dune Riders", playerIds:['p5','p6','p7','p8'] },
           { name:"The Himalayans", playerIds:['p9','p10','p11','p12'] },
           { name:"Bunker Hunters", playerIds:['p13','p14','p15','p16'] }
         ]},
-      { date:'2027-05-14', label:'Day 3', courses:['himalayas','shore'], tees:{m:'white',w:'red'}, format:'ind_stableford', allowance:0.95 }
+      { date:'2027-05-14', label:'Day 3', courses:['himalayas','shore'], tees:{m:'gold'}, format:'ind_stableford', allowance:0.95 }
     ],
     scores: {} // scores[dayIdx][playerId] = [18 gross]
   };
@@ -527,23 +566,33 @@ setInterval(updateSaveStatus, 10000);
 // ═══════════════════════════════════════════════════════
 // SCORING HELPERS
 // ═══════════════════════════════════════════════════════
-function dayCombinedCourse(day) {
+function dayCombinedCourse(day, forGender) {
   var c1 = COURSES[day.courses[0]], c2 = COURSES[day.courses[1]];
+  var isLadies = forGender === 'w';
+  var tee = isLadies ? 'ladies' : (day.tees.m || 'gold');
+  // When combining two 9s, first course uses Front SI, second uses Back SI
+  var si = (isLadies ? c1.ladiesSiFront : c1.siFront).concat(isLadies ? c2.ladiesSiBack : c2.siBack);
+  var par = (isLadies ? c1.ladiesPar : c1.par).concat(isLadies ? c2.ladiesPar : c2.par);
+  // Yardages: ladies default to white yardages for the mockup
+  var yardKey = isLadies ? 'white' : tee;
+  var yards = (c1.yards[yardKey] || c1.yards.gold).concat(c2.yards[yardKey] || c2.yards.gold);
   return {
-    par: c1.par.concat(c2.par),
-    si: c1.si.concat(c2.si),
-    yardsWhite: c1.yardsWhite.concat(c2.yardsWhite),
-    yardsRed: c1.yardsRed.concat(c2.yardsRed),
-    name: c1.name + ' + ' + c2.name
+    par: par,
+    si: si,
+    yards: yards,
+    yardTotal: yards.reduce(function(a,b){ return a+b; }, 0),
+    name: c1.name + ' + ' + c2.name,
+    tee: tee
   };
 }
 
 function calcPH(hi, day, player) {
   if (player.isPro) return 0;
   if (hi == null || isNaN(hi)) return null;
-  var teeKey = day.tees[player.gender === 'w' ? 'w' : 'm'];
+  var isLadies = player.gender === 'w';
+  var teeKey = isLadies ? 'ladies' : (day.tees.m || 'gold');
   var tee = combinedTee(day.courses[0], day.courses[1], teeKey);
-  var parTot = dayCombinedCourse(day).par.reduce(function(a,b){return a+b;},0);
+  var parTot = dayCombinedCourse(day, player.gender).par.reduce(function(a,b){return a+b;},0);
   var ch = hi * (tee.slope/113) + (tee.cr - parTot);
   return Math.round(ch * (day.allowance || 0.95));
 }
@@ -566,7 +615,7 @@ function stablefordPts(gross, par, shots) {
 
 function calcRoundPoints(player, day, scoresArr) {
   if (!scoresArr || !scoresArr.length) return { total:0, holePts:[], holesPlayed:0 };
-  var course = dayCombinedCourse(day);
+  var course = dayCombinedCourse(day, player.gender);
   var ph = calcPH(player.hi, day, player);
   if (ph == null) ph = 0;
   var holePts = [];
@@ -753,7 +802,7 @@ function renderDays() {
       + '<div class="sect-h">'+d.label+' · '+formatDate(d.date)+'</div>'
       + '<div class="card card-accent">'
         + '<div style="font-family:\'Playfair Display\',serif;font-weight:800;font-size:1.1rem;color:var(--accent-lt);margin-bottom:4px;">'+c.name+'</div>'
-        + '<div style="font-size:.78rem;color:var(--text-mut);">'+formatLabel(d.format)+' · '+Math.round(d.allowance*100)+'% allowance</div>'
+        + '<div style="font-size:.78rem;color:var(--text-mut);">'+formatLabel(d.format)+' · '+Math.round(d.allowance*100)+'% allowance · '+(d.tees.m||'gold').charAt(0).toUpperCase()+(d.tees.m||'gold').slice(1)+' tees ('+dayCombinedCourse(d,'m').yardTotal+' yds)</div>'
       + '</div>'
       + '<div class="sect-h">Individual Leaderboard</div>'
       + '<div class="card" style="padding:0;" id="dayLb-'+i+'"></div>'
@@ -1063,10 +1112,11 @@ function rseRender() {
   var playerId = document.getElementById('rsePlayer').value;
   var day = _state.days[dayIdx]; var player = _state.players.find(function(p){ return p.id===playerId; });
   if (!day || !player) return;
-  var course = dayCombinedCourse(day);
+  var course = dayCombinedCourse(day, player.gender);
   var ph = calcPH(player.hi, day, player);
   if (ph == null) ph = 0;
-  document.getElementById('rseMeta').innerHTML = course.name + ' · PH <strong style="color:var(--accent-lt);">'+(player.isPro?'0 (Pro)':ph)+'</strong>';
+  var teeLabel = player.gender === 'w' ? 'Ladies' : (day.tees.m||'gold').charAt(0).toUpperCase()+(day.tees.m||'gold').slice(1);
+  document.getElementById('rseMeta').innerHTML = course.name + ' · ' + teeLabel + ' tees · PH <strong style="color:var(--accent-lt);">'+(player.isPro?'0 (Pro)':ph)+'</strong>';
   var sc = (_state.scores[dayIdx]||{})[playerId] || new Array(18).fill(0);
 
   function buildHalf(elId, from, to) {
