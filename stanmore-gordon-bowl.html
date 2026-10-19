@@ -668,60 +668,61 @@ var _match = {
 };
 var _currentEntryHole = 1; // 1-36
 
-// ─── SUPABASE (shared with hub) ───
-var PROXY = 'https://stanmore-proxy.vercel.app/api/proxy';
+// ─── SUPABASE STORAGE (new, Oct 2026) ───
+var SB_URL = 'https://sysnimzmrnengwhdaiga.supabase.co';
+var SB_KEY = 'sb_publishable_WBgBahOK6tKSyxr5TG2tHQ_5BY79zpL';
+var APP_KEY = 'gordon_bowl_2026';
+var SB_HEADERS = {
+  apikey: SB_KEY,
+  Authorization: 'Bearer ' + SB_KEY,
+  'Content-Type': 'application/json'
+};
 
 async function fetchRecord() {
+  // Fetches ONLY this app's own row from Supabase. Cannot affect other apps.
   try {
-    var r = await fetch(PROXY + '?action=fetch');
+    var r = await fetch(SB_URL + '/rest/v1/app_state?app_key=eq.' + APP_KEY + '&select=data', { headers: SB_HEADERS });
     if (!r.ok) {
       _lastSaveStatus.err = 'Fetch HTTP ' + r.status;
-      console.error('fetchRecord status', r.status);
       return {};
     }
-    var data = await r.json();
-    return (data && data.record) || {};
+    var rows = await r.json();
+    // Return a wrapper record so existing code can do record.gordonBowl2026
+    var payload = (rows[0] && rows[0].data) || {};
+    return { gordonBowl2026: payload };
   } catch (e) {
     _lastSaveStatus.err = 'Fetch network error: ' + (e.message || e);
-    console.error('fetch error', e);
+    console.error('fetchRecord error', e);
     return {};
   }
 }
 
 async function saveRecord(record) {
-  // Try several save strategies in order. First one that returns ok wins.
-  var strategies = [
-    // Original
-    { url: PROXY, method:'POST', body: JSON.stringify({action:'save', record:record}) },
-    // Action in querystring
-    { url: PROXY + '?action=save', method:'POST', body: JSON.stringify({record:record}) },
-    // PUT method
-    { url: PROXY, method:'PUT', body: JSON.stringify({action:'save', record:record}) },
-    // PATCH method
-    { url: PROXY, method:'PATCH', body: JSON.stringify({action:'save', record:record}) },
-    // Different path
-    { url: PROXY.replace(/\/proxy$/, '/save'), method:'POST', body: JSON.stringify({record:record}) }
-  ];
-  var errs = [];
-  for (var i=0;i<strategies.length;i++) {
-    var s = strategies[i];
-    try {
-      var r = await fetch(s.url, {
-        method: s.method, headers:{'Content-Type':'application/json'},
-        body: s.body
-      });
-      if (r.ok) {
-        if (i > 0) console.log('saveRecord: strategy ' + i + ' worked (' + s.method + ' ' + s.url + ')');
-        return true;
-      }
-      errs.push(s.method + ' ' + s.url.slice(-30) + ' → ' + r.status);
-    } catch (e) {
-      errs.push(s.method + ' → ' + (e.message || e));
+  // Upserts ONLY this app's own row to Supabase. Cannot affect other apps.
+  // record is {gordonBowl2026: ...} so we extract the actual payload.
+  var payload = record.gordonBowl2026 || record;
+  try {
+    var r = await fetch(SB_URL + '/rest/v1/app_state', {
+      method: 'POST',
+      headers: Object.assign({}, SB_HEADERS, { Prefer: 'resolution=merge-duplicates,return=minimal' }),
+      body: JSON.stringify({
+        app_key: APP_KEY,
+        data: payload,
+        updated_at: new Date().toISOString()
+      })
+    });
+    if (!r.ok) {
+      var bodyText = '';
+      try { bodyText = await r.text(); } catch(e) {}
+      _lastSaveStatus.err = 'HTTP ' + r.status + ': ' + bodyText.slice(0, 200);
+      return false;
     }
+    return true;
+  } catch (e) {
+    _lastSaveStatus.err = 'Network error: ' + (e.message || e);
+    console.error('saveRecord error', e);
+    return false;
   }
-  _lastSaveStatus.err = 'All save strategies failed: ' + errs.join(' | ');
-  console.error('saveRecord all strategies failed:', errs);
-  return false;
 }
 
 var LOCAL_KEY = 'gordonBowl2026_v1';
@@ -1847,58 +1848,50 @@ async function forceSyncNow() {
 }
 
 async function diagnoseCloud() {
-  var report = '🔧 CLOUD DIAGNOSTIC\n\n';
-  report += 'Proxy: ' + PROXY + '\n\n';
-  // Test 1: GET fetch
-  report += 'TEST 1 — GET fetch:\n';
+  var report = '🔧 CLOUD DIAGNOSTIC (Supabase)\n\n';
+  report += 'URL: ' + SB_URL + '\n';
+  report += 'App key: ' + APP_KEY + '\n\n';
+  // Test 1: Read this app's row
+  report += 'TEST 1 — Read this app row:\n';
   try {
-    var r = await fetch(PROXY + '?action=fetch');
+    var r = await fetch(SB_URL + '/rest/v1/app_state?app_key=eq.' + APP_KEY + '&select=data,updated_at', { headers: SB_HEADERS });
     report += '  HTTP ' + r.status + ' ' + r.statusText + '\n';
-    var txt = await r.text();
-    report += '  Body length: ' + txt.length + ' chars\n';
-    report += '  First 200 chars: ' + txt.slice(0, 200) + '\n\n';
-    // Try parse
-    try {
-      var parsed = JSON.parse(txt);
-      report += '  Parsed OK. Top keys: ' + Object.keys(parsed || {}).join(', ') + '\n';
-      if (parsed && parsed.record) {
-        report += '  record keys: ' + Object.keys(parsed.record || {}).join(', ') + '\n';
-      }
-    } catch(e) { report += '  Parse FAILED: ' + e.message + '\n'; }
+    var rows = await r.json();
+    if (rows[0]) {
+      report += '  Row exists. Last updated: ' + rows[0].updated_at + '\n';
+      report += '  Data keys: ' + Object.keys(rows[0].data || {}).join(', ') + '\n';
+    } else {
+      report += '  No row yet (will be created on first save)\n';
+    }
   } catch (e) {
     report += '  NETWORK ERROR: ' + (e.message || e) + '\n';
   }
   report += '\n';
 
-  // Test 2: POST tiny save
-  report += 'TEST 2 — POST tiny save:\n';
+  // Test 2: Upsert a tiny no-op change
+  report += 'TEST 2 — Upsert test:\n';
+  var testStamp = Date.now();
   try {
-    var fetchR = await fetch(PROXY + '?action=fetch');
-    var existing = {};
-    try { var fd = await fetchR.json(); existing = (fd && fd.record) || {}; } catch(e){}
-    existing._diagTest = Date.now();
-    var r2 = await fetch(PROXY, {
+    var r2 = await fetch(SB_URL + '/rest/v1/app_state', {
       method: 'POST',
-      headers: {'Content-Type':'application/json'},
-      body: JSON.stringify({action:'save', record: existing})
+      headers: Object.assign({}, SB_HEADERS, { Prefer: 'resolution=merge-duplicates,return=minimal' }),
+      body: JSON.stringify({ app_key: 'test_connection', data: { diag: testStamp }, updated_at: new Date().toISOString() })
     });
     report += '  HTTP ' + r2.status + ' ' + r2.statusText + '\n';
-    var txt2 = await r2.text();
-    report += '  Response body: ' + txt2.slice(0, 300) + '\n';
+    if (!r2.ok) report += '  Body: ' + (await r2.text()).slice(0,200) + '\n';
   } catch (e) {
     report += '  NETWORK ERROR: ' + (e.message || e) + '\n';
   }
   report += '\n';
 
-  // Test 3: Verify diag write
+  // Test 3: Verify write persisted
   report += 'TEST 3 — Verify write persisted:\n';
   try {
-    await new Promise(function(r){ setTimeout(r, 500); });
-    var r3 = await fetch(PROXY + '?action=fetch');
-    var d = await r3.json();
-    var hasDiag = d && d.record && d.record._diagTest;
-    report += '  _diagTest in record: ' + (hasDiag ? 'YES (' + d.record._diagTest + ')' : 'NO — writes not persisting!') + '\n';
-    report += '  gordonBowl2026 in record: ' + (d && d.record && d.record.gordonBowl2026 ? 'YES' : 'NO') + '\n';
+    await new Promise(function(r){ setTimeout(r, 400); });
+    var r3 = await fetch(SB_URL + '/rest/v1/app_state?app_key=eq.test_connection&select=data', { headers: SB_HEADERS });
+    var rows = await r3.json();
+    var found = rows[0] && rows[0].data && rows[0].data.diag === testStamp;
+    report += '  Test write found: ' + (found ? 'YES ✓' : 'NO — writes not persisting!') + '\n';
   } catch (e) {
     report += '  NETWORK ERROR: ' + (e.message || e) + '\n';
   }
