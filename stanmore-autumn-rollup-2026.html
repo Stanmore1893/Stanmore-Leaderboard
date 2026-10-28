@@ -152,9 +152,32 @@
     .grp-slot{grid-template-columns:1.3fr .6fr .9fr 70px;font-size:.86rem;}
     .hero-title{font-size:1.6rem;}
   }
+  @media (min-width:800px){
+    .hero-crest{width:130px;height:130px;}
+    .hero-title{font-size:2.8rem;}
+    .hero-sub{font-size:1rem;margin-top:12px;}
+    .hero-meta{font-size:.9rem;padding:10px 18px;}
+    .hdr-logo{width:50px;height:50px;}
+    .hdr-title{font-size:1.3rem;}
+    .hdr-sub{font-size:.78rem;}
+  }
   @media (max-width:1000px){
     .tv-grid{grid-template-columns:1fr;}
   }
+
+  /* Scorer pickers */
+  .pick-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:10px;margin-top:6px;}
+  .pick-card{background:rgba(0,0,0,.3);border:1px solid rgba(240,192,64,.2);border-radius:12px;padding:14px;cursor:pointer;transition:all .15s;}
+  .pick-card:hover{border-color:var(--gold);background:rgba(240,192,64,.08);}
+  .pick-tee{font-family:'Playfair Display',serif;font-weight:800;color:var(--gold-lt);font-size:1.3rem;margin-bottom:6px;}
+  .pick-names{color:var(--text);font-size:.86rem;line-height:1.4;}
+  .pick-empty{color:var(--text-mut);font-style:italic;font-size:.82rem;}
+  .pick-player{display:block;background:rgba(0,0,0,.3);border:1px solid rgba(240,192,64,.25);border-radius:12px;padding:16px 18px;margin-bottom:8px;cursor:pointer;transition:all .15s;text-align:left;width:100%;color:var(--text);font-family:inherit;}
+  .pick-player:hover{border-color:var(--gold);background:rgba(240,192,64,.08);}
+  .pick-player-n{font-weight:700;font-size:1.1rem;}
+  .pick-player-s{font-size:.76rem;color:var(--text-mut);margin-top:3px;}
+  .scorer-ident{display:flex;justify-content:space-between;align-items:center;padding:8px 12px;background:rgba(240,192,64,.08);border:1px solid rgba(240,192,64,.25);border-radius:10px;margin:0 0 10px;font-size:.78rem;}
+  .scorer-ident-me{color:var(--gold-lt);font-weight:700;}
 </style>
 </head>
 <body>
@@ -197,6 +220,15 @@ let _tvRotateTimer = null;
 let _tvRotateIdx = 0;
 let _pubTimer = null;
 let _saveTimer = null;
+let _scorerSlot = null;
+
+const SCORER_KEY = APP_KEY + '_scorer_identity';
+function loadScorerIdentity() { try { return JSON.parse(localStorage.getItem(SCORER_KEY)||'null'); } catch(e) { return null; } }
+function saveScorerIdentity(gid, slot) { try { localStorage.setItem(SCORER_KEY, JSON.stringify({groupId:gid, slot})); } catch(e){} _scoreGroupId = gid; _scorerSlot = slot; }
+function clearScorerIdentity() { try { localStorage.removeItem(SCORER_KEY); } catch(e){} _scoreGroupId = null; _scorerSlot = null; _scoreHoleIdx = 0; }
+function pickGroup(gid) { saveScorerIdentity(gid, null); renderAll(); }
+function pickPlayer(slot) { const id = loadScorerIdentity()||{}; saveScorerIdentity(id.groupId, slot); renderAll(); }
+function switchScorer() { if (confirm('Switch to a different group or player?')) { clearScorerIdentity(); renderAll(); } }
 
 /* ---- Storage ---- */
 async function loadState() {
@@ -292,8 +324,11 @@ function playerPts(p) {
 /* ---- Routing ---- */
 function parseRoute() {
   const h = location.hash || '';
-  const m = h.match(/^#\/score\/(g\d+)/);
-  if (m) { _scoreGroupId = m[1]; _currentView = 'score'; return; }
+  if (h.startsWith('#/score')) {
+    const m = h.match(/^#\/score\/(g\d+)/);
+    if (m) { _scoreGroupId = m[1]; } // deep link still works
+    _currentView = 'score'; return;
+  }
   if (h === '#/tv') { _currentView = 'tv'; return; }
   if (h === '#/admin') { _currentView = 'admin'; return; }
   _currentView = 'leaderboard';
@@ -399,17 +434,79 @@ function ntpCard() {
   return `<div class="card"><div class="card-h">🎯 Nearest the Pin</div>${rows}</div>`;
 }
 
-/* ---- Scorer ---- */
+/* ---- Scorer (dispatcher + pickers + entry) ---- */
 function renderScorer(root) {
+  // Resume from saved identity if present
+  const id = loadScorerIdentity();
+  if (id && id.groupId) { _scoreGroupId = id.groupId; _scorerSlot = (id.slot != null ? id.slot : null); }
+
+  // No group chosen → group picker
+  if (!_scoreGroupId) return renderGroupPicker(root);
   const grp = _state.groups.find(g => g.id === _scoreGroupId);
-  if (!grp) {
-    root.innerHTML = `<div class="wrap">${headerHTML()}<div class="hero">
-      <div class="hero-title">Group not found</div>
-      <div class="hero-sub">Ask the organiser for the correct link.</div>
-      <div style="margin-top:20px;"><a class="btn btn-out" href="#/" style="text-decoration:none;">Back to leaderboard</a></div>
-    </div></div>`;
-    return;
+  if (!grp) { clearScorerIdentity(); return renderGroupPicker(root); }
+
+  // No player chosen → player picker
+  if (_scorerSlot == null || !grp.players[_scorerSlot] || !grp.players[_scorerSlot].name) {
+    return renderPlayerPicker(root, grp);
   }
+  renderScoreEntry(root, grp);
+}
+
+function renderGroupPicker(root) {
+  const cards = _state.groups.map(g => {
+    const names = g.players.filter(p => p.name).map(p => escH(p.name));
+    const body = names.length ? `<div class="pick-names">${names.join(' · ')}</div>` : `<div class="pick-empty">No players set up yet</div>`;
+    return `<div class="pick-card" onclick="pickGroup('${g.id}')">
+      <div class="pick-tee">⛳ ${g.teeTime}</div>
+      ${body}
+    </div>`;
+  }).join('');
+  root.innerHTML = `<div class="wrap">
+    ${headerHTML()}
+    <div class="hero">
+      <img class="hero-crest" src="club-logo.png" alt="" onerror="this.style.display='none'">
+      <div class="hero-title">Scorer Sign-In</div>
+      <div class="hero-sub">Pick your tee-time group to start marking.</div>
+    </div>
+    <div class="view">
+      <div class="card">
+        <div class="card-h">👥 Which group are you in?</div>
+        <div class="pick-grid">${cards}</div>
+      </div>
+      <div style="text-align:center;color:var(--text-mut);font-size:.78rem;margin-top:12px;">
+        <a href="#/">View leaderboard</a>
+      </div>
+    </div>
+  </div>`;
+}
+
+function renderPlayerPicker(root, grp) {
+  const rows = grp.players.map((p, slot) => {
+    if (!p.name) return '';
+    return `<button class="pick-player" onclick="pickPlayer(${slot})">
+      <div class="pick-player-n">${escH(p.name)}${p.isGuest?'<span class="gchip">G</span>':''}</div>
+      <div class="pick-player-s">${p.gender==='w'?'Red tees':'Yellow tees'}${p.hi!=null?` · HI ${p.hi}`:''}</div>
+    </button>`;
+  }).join('');
+  root.innerHTML = `<div class="wrap">
+    ${headerHTML()}
+    <div class="hero">
+      <div class="hero-title">⛳ ${grp.teeTime}</div>
+      <div class="hero-sub">Who's doing the scoring?</div>
+    </div>
+    <div class="view">
+      <div class="card">
+        <div class="card-h">👤 Pick your name</div>
+        ${rows || `<div class="pick-empty" style="padding:20px;text-align:center;">No players set up for this group yet. Ask Alex.</div>`}
+      </div>
+      <div style="text-align:center;margin-top:10px;">
+        <button class="btn btn-ghost" onclick="clearScorerIdentity();renderAll();">← Pick a different group</button>
+      </div>
+    </div>
+  </div>`;
+}
+
+function renderScoreEntry(root, grp) {
   const h = _scoreHoleIdx, par = COURSE.par[h], isPar3 = par === 3;
 
   const holeGrid = [0,1].map(half => `
@@ -460,6 +557,10 @@ function renderScorer(root) {
         <span class="save-pill">—</span>
       </div>
       <div class="view">
+        <div class="scorer-ident">
+          <div>Signed in as <span class="scorer-ident-me">${escH(grp.players[_scorerSlot].name)}</span></div>
+          <button class="btn btn-ghost" style="padding:5px 10px;font-size:.72rem;" onclick="switchScorer()">Switch</button>
+        </div>
         <div class="se-head">
           <div class="se-grp">⛳ Your Group · ${grp.teeTime}</div>
           <div style="font-size:.75rem;color:var(--text-mut);margin-top:3px;">
@@ -557,8 +658,7 @@ function renderAdmin(root) {
       </div>
       ${slotRows}
       <div class="grp-share">
-        <button class="btn btn-out" style="font-size:.74rem;padding:7px 10px;" onclick="showScorerLink('${g.id}')">📱 Scorer link + QR</button>
-        <button class="btn btn-ghost" style="font-size:.74rem;padding:7px 10px;" onclick="clearGroup(${gi})">Clear scores</button>
+        <button class="btn btn-ghost" style="font-size:.74rem;padding:7px 10px;" onclick="clearGroup(${gi})">Clear scores for this group</button>
       </div>
     </div>`;
   }).join('');
@@ -573,8 +673,13 @@ function renderAdmin(root) {
       </div>
       <div class="view">
         <div class="card">
+          <div class="card-h">📱 Scorer Sign-In Link</div>
+          <div style="font-size:.82rem;color:var(--text-mut);margin-bottom:12px;">One link for every marker. They open it, pick their group, pick their name — then score. If they close the tab by mistake, re-opening the link puts them straight back where they were.</div>
+          <button class="btn btn-gold" style="width:100%;" onclick="showScorerLink()">📱 Show scorer link + QR</button>
+        </div>
+        <div class="card">
           <div class="card-h">👥 Groups & Players</div>
-          <div style="font-size:.78rem;color:var(--text-mut);margin-bottom:12px;">Enter names + HI on the morning. Mark the scorer per group, then tap "Scorer link + QR" to share.</div>
+          <div style="font-size:.78rem;color:var(--text-mut);margin-bottom:12px;">Enter names + HI on the morning. Pick who the designated scorer is per group (they'll see their own name highlighted when they sign in).</div>
           ${groupsHTML}
         </div>
         <div class="card">
@@ -616,16 +721,15 @@ function clearGroup(gi) {
   _state.groups[gi].players.forEach(p => p.scores = new Array(18).fill(null));
   saveState().then(() => renderAdmin(document.getElementById('root')));
 }
-function showScorerLink(gid) {
-  const url = location.origin + location.pathname + '#/score/' + gid;
+function showScorerLink() {
+  const url = location.origin + location.pathname + '#/score';
   const existing = document.querySelector('.modal'); if (existing) existing.remove();
-  const grp = _state.groups.find(g => g.id === gid);
   const m = document.createElement('div');
   m.className = 'modal';
   m.innerHTML = `
     <div class="modal-c">
-      <h2>Scorer link · ${grp.teeTime}</h2>
-      <div class="sub">${grp.players.filter(p=>p.name).map(p=>escH(p.name)).join(' · ') || 'No players yet'}</div>
+      <h2>Scorer sign-in link</h2>
+      <div class="sub">One link for every scorer. They'll pick their group and name.</div>
       <div id="qrbox"></div>
       <div class="modal-link">${url}</div>
       <div style="display:flex;gap:8px;">
@@ -636,7 +740,7 @@ function showScorerLink(gid) {
   m.addEventListener('click', (e) => { if (e.target === m) m.remove(); });
   document.body.appendChild(m);
   if (window.QRCode) {
-    QRCode.toCanvas(url, { width: 220, margin: 1, color:{ dark:'#122344', light:'#ffffff' } }, (err, canvas) => {
+    QRCode.toCanvas(url, { width: 240, margin: 1, color:{ dark:'#122344', light:'#ffffff' } }, (err, canvas) => {
       if (!err) document.getElementById('qrbox').appendChild(canvas);
       else document.getElementById('qrbox').textContent = 'QR unavailable — use the link below';
     });
