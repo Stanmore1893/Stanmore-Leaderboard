@@ -58,7 +58,9 @@
   .lb tbody td.r{text-align:right;font-family:'DM Mono',monospace;font-weight:700;}
   .lb tbody td.c{text-align:center;font-family:'DM Mono',monospace;font-weight:600;}
   .lb .pos{font-family:'Playfair Display',serif;font-weight:800;font-size:1.05rem;color:var(--gold);width:36px;}
-  .lb .pts{font-family:'Playfair Display',serif;font-weight:900;font-size:1.4rem;color:var(--gold-lt);}
+  .lb .pts{font-family:'DM Mono',monospace;font-weight:700;color:var(--text);font-size:.95rem;}
+  .lb .diff{font-family:'Playfair Display',serif;font-weight:900;font-size:1.4rem;}
+  .diff-pos{color:var(--green);} .diff-neg{color:var(--red);} .diff-ev{color:var(--gold-lt);}
   .gchip{display:inline-block;padding:1px 6px;border-radius:4px;background:rgba(96,165,250,.2);color:var(--blue);font-size:.6rem;font-weight:800;margin-left:5px;letter-spacing:.05em;vertical-align:middle;}
   .lb tr.top1 td{background:rgba(240,192,64,.08);}
   .lb tr.top1 .pos{font-size:1.3rem;color:var(--gold-lt);}
@@ -131,10 +133,11 @@
   .tv-lb td.r{text-align:right;font-family:'DM Mono',monospace;font-weight:700;}
   .tv-lb td.c{text-align:center;font-family:'DM Mono',monospace;font-weight:600;}
   .tv-lb .pos{font-family:'Playfair Display',serif;font-weight:800;color:var(--gold);font-size:1.3rem;}
-  .tv-lb .pts{font-family:'Playfair Display',serif;font-weight:900;color:var(--gold-lt);font-size:1.8rem;}
+  .tv-lb .pts{font-family:'DM Mono',monospace;font-weight:700;color:var(--text);font-size:1.1rem;}
+  .tv-lb .diff{font-family:'Playfair Display',serif;font-weight:900;font-size:1.8rem;}
   .tv-lb tr.top1 td{background:rgba(240,192,64,.1);}
   .tv-lb tr.top1 .pos{font-size:1.6rem;color:var(--gold-lt);}
-  .tv-lb tr.top1 .pts{font-size:2.2rem;}
+  .tv-lb tr.top1 .diff{font-size:2.4rem;}
   .tv-ntp-row{display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid rgba(255,255,255,.06);font-size:1rem;}
   .tv-ntp-hole{font-family:'Playfair Display',serif;font-weight:800;color:var(--gold);}
   .tv-ntp-name{font-weight:600;color:var(--text);}
@@ -182,6 +185,23 @@
   /* Demo banner */
   .demo-banner{background:linear-gradient(135deg,#dc2626,#ef4444);color:#fff;text-align:center;padding:8px 14px;font-size:.78rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;border-bottom:2px solid #991b1b;position:relative;z-index:40;}
   .demo-banner a{color:#fff;text-decoration:underline;}
+
+  /* How-it-works modal (wider) */
+  .how-modal .modal-c{max-width:720px;text-align:left;max-height:85vh;overflow-y:auto;}
+  .how-h{font-family:'Playfair Display',serif;font-weight:800;color:var(--gold-lt);font-size:1.6rem;margin-bottom:4px;text-align:center;}
+  .how-sub{color:var(--text-mut);font-size:.9rem;margin-bottom:20px;text-align:center;}
+  .how-sec{background:rgba(0,0,0,.3);border:1px solid rgba(240,192,64,.2);border-radius:12px;padding:16px;margin-bottom:14px;}
+  .how-sec h3{font-family:'Playfair Display',serif;font-weight:800;color:var(--gold-lt);font-size:1.05rem;margin-bottom:10px;display:flex;align-items:center;gap:8px;}
+  .how-sec p{font-size:.88rem;line-height:1.5;margin-bottom:8px;color:var(--text);}
+  .how-sec ol, .how-sec ul{padding-left:22px;font-size:.86rem;line-height:1.55;}
+  .how-sec li{margin-bottom:5px;}
+  .how-sec strong{color:var(--gold-lt);}
+  .how-sec code{background:rgba(0,0,0,.5);padding:2px 6px;border-radius:4px;font-family:'DM Mono',monospace;font-size:.82rem;color:var(--gold-lt);}
+  .how-cols{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+  @media (max-width:600px){ .how-cols{grid-template-columns:1fr;} }
+
+  .how-btn{display:inline-block;margin-top:14px;padding:9px 16px;background:rgba(240,192,64,.15);border:1px solid rgba(240,192,64,.4);border-radius:20px;color:var(--gold-lt);font-weight:700;font-size:.82rem;cursor:pointer;text-decoration:none;}
+  .how-btn:hover{background:rgba(240,192,64,.25);}
 </style>
 </head>
 <body>
@@ -235,6 +255,93 @@ function clearScorerIdentity() { try { localStorage.removeItem(SCORER_KEY); } ca
 function pickGroup(gid) { saveScorerIdentity(gid, null); renderAll(); }
 function pickPlayer(slot) { const id = loadScorerIdentity()||{}; saveScorerIdentity(id.groupId, slot); renderAll(); }
 function switchScorer() { if (confirm('Switch to a different group or player?')) { clearScorerIdentity(); renderAll(); } }
+
+function showHowItWorks() {
+  const existing = document.querySelector('.modal'); if (existing) existing.remove();
+  const m = document.createElement('div');
+  m.className = 'modal how-modal';
+  m.innerHTML = `
+    <div class="modal-c">
+      <div class="how-h">👋 Welcome Dave — how this works</div>
+      <div class="how-sub">A live-scoring app for the Autumn Roll Up. Phones mark scores → leaderboard on the TV updates automatically.</div>
+
+      <div class="how-sec">
+        <h3>⛳ The basic idea</h3>
+        <p>One nominated scorer per group opens a link on their phone, taps in gross scores hole by hole for all 4 players, and the leaderboard on the clubhouse TV updates within seconds. Nobody has to do maths — the app handles Stableford points, playing handicaps, countback, guest leaderboard and nearest-the-pins.</p>
+      </div>
+
+      <div class="how-cols">
+        <div class="how-sec">
+          <h3>🧑‍💼 Admin — Alex / organiser</h3>
+          <ol>
+            <li>Open the app, tap <strong>Admin</strong> (password <code>Davospurs</code>)</li>
+            <li>For each of the 8 groups, type the <strong>player name</strong> and <strong>handicap index</strong> (just once, morning of event)</li>
+            <li>Tick <strong>M · Yellow</strong> or <strong>W · Red</strong> for the tee</li>
+            <li>Tick <strong>Guest</strong> for anyone who's a guest (they go in the Best Guest sub-table)</li>
+            <li>Tap <strong>"Show scorer link + QR"</strong> once — one link covers every group</li>
+            <li>Share the QR / link to the designated scorers (text, WhatsApp, print it, whatever)</li>
+          </ol>
+        </div>
+
+        <div class="how-sec">
+          <h3>📱 Scorer — the group's designated marker</h3>
+          <ol>
+            <li>Scan the QR / tap the link on their phone</li>
+            <li>Pick their <strong>tee-time group</strong> (big tappable cards)</li>
+            <li>Pick <strong>their own name</strong> from the 4 in that group</li>
+            <li>On every hole: tap gross score for each of the 4 players — the box auto-advances to the next player after 2 digits</li>
+            <li>Hit <strong>Next ▶</strong> to go to the next hole (or tap any hole number at the top)</li>
+            <li>On par 3s, a <strong>🎯 Nearest the Pin</strong> dropdown appears — pick a player if they claim it</li>
+          </ol>
+        </div>
+      </div>
+
+      <div class="how-sec">
+        <h3>📺 TV view — on the laptop by the 11th tee</h3>
+        <p>Open the <strong>TV link</strong> on the laptop and press <code>F11</code> for fullscreen. The screen refreshes every 15 seconds and rotates between <strong>Top 15</strong> and <strong>Full Field</strong>. The right-hand panels show <strong>Best Guest</strong> and <strong>Nearest the Pin</strong> winners for each par 3.</p>
+      </div>
+
+      <div class="how-sec">
+        <h3>✨ Features it handles for you</h3>
+        <ul>
+          <li><strong>Autosave after every tap</strong> — nothing to "save". If a scorer's phone loses signal, scores save locally and sync when back online.</li>
+          <li><strong>Failsafe:</strong> if a scorer closes the tab by mistake, re-opening the link takes them straight back to their group with every score intact.</li>
+          <li><strong>Switch button</strong> at the top of the scorer page — change group or player if someone's taken the wrong one.</li>
+          <li><strong>WHS maths done automatically</strong> — playing handicap, 95% allowance, shots-per-hole dots shown next to each player.</li>
+          <li><strong>Countback</strong> on ties — back 9 / 6 / 3 / 2 / 1 per R&amp;A rules.</li>
+          <li><strong>vs HCP column</strong> — golf-style: <span style="color:var(--green);font-weight:700;">-3</span> means 3 under handicap, <span style="color:var(--red);font-weight:700;">+2</span> means 2 over. Ranked on this, so groups on different holes compare fairly.</li>
+          <li><strong>Physical scorecards still count</strong> — players keep marking cards as normal and enter them on the terminals outside the office for handicap purposes. The app is just the live leaderboard; the official result comes from the cards.</li>
+          <li><strong>Guest leaderboard</strong> appears automatically as soon as a guest has a score.</li>
+          <li><strong>NTP</strong> on the 5 par 3s (holes 4, 6, 8, 10, 17) — set from the course by the scorer, or overridden in Admin.</li>
+        </ul>
+      </div>
+
+      <div class="how-sec">
+        <h3>🧪 Demo controls</h3>
+        <p>This demo is loaded with <strong>32 fake players</strong> and partial scores across 6 of the 8 groups so the leaderboard already looks alive. Groups 7 and 8 (including <strong>Dave's group at 10:56</strong>) haven't started — try scoring them yourself.</p>
+        <p>In <strong>Admin → Demo Controls</strong>:</p>
+        <ul>
+          <li><strong>🔄 Reset demo to seed data</strong> — wipes any changes and restores the exact fake field so you can start over.</li>
+          <li><strong>Wipe to empty groups</strong> — see what it looks like completely blank, as Alex will on the real morning.</li>
+        </ul>
+        <p style="color:var(--text-mut);font-size:.82rem;margin-top:8px;">You can't break anything — this demo runs on separate storage from the real Autumn Roll Up event.</p>
+      </div>
+
+      <div style="text-align:center;margin-top:16px;">
+        <button class="btn btn-gold" style="min-width:140px;" onclick="this.closest('.modal').remove()">Got it, let's go</button>
+      </div>
+    </div>`;
+  m.addEventListener('click', (e) => { if (e.target === m) m.remove(); });
+  document.body.appendChild(m);
+  try { localStorage.setItem(APP_KEY + '_seen_howto', '1'); } catch(e){}
+}
+function maybeAutoShowHowItWorks() {
+  try {
+    if (!localStorage.getItem(APP_KEY + '_seen_howto')) {
+      setTimeout(showHowItWorks, 400);
+    }
+  } catch(e){}
+}
 
 /* ---- Storage ---- */
 async function loadState() {
@@ -437,10 +544,13 @@ function computeLeaderboard() {
     const pts = playerPts(p);
     all.push({ name:p.name, ph:pts.ph, thru:pts.thru, total:pts.total, isGuest:p.isGuest, perHole:pts.perHole });
   }));
+  // Diff vs level handicap = points above (positive) or below (negative) the par-net expectation.
+  all.forEach(r => { r.diff = r.total - (2 * r.thru); });
   all.sort((a,b) => {
-    if (b.total !== a.total) return b.total - a.total;
+    if (b.diff !== a.diff) return b.diff - a.diff;        // 1st: better vs handicap wins
+    if (b.total !== a.total) return b.total - a.total;    // 2nd: more total points wins
     const cb = (x,from,to) => x.perHole.slice(from,to+1).reduce((s,v)=>s+(v||0),0);
-    const d9 = cb(b,9,17)-cb(a,9,17); if (d9) return d9;
+    const d9 = cb(b,9,17)-cb(a,9,17); if (d9) return d9;  // 3rd+: countback
     const d6 = cb(b,12,17)-cb(a,12,17); if (d6) return d6;
     const d3 = cb(b,15,17)-cb(a,15,17); if (d3) return d3;
     const d2 = cb(b,16,17)-cb(a,16,17); if (d2) return d2;
@@ -449,6 +559,16 @@ function computeLeaderboard() {
   const played = all.filter(r => r.thru > 0);
   played.forEach((r,i) => r.pos = i+1);
   return played;
+}
+// Golf-style display: under handicap shows as negative (e.g. 3 pts ahead → "-3")
+function fmtDiff(d) {
+  if (d === 0) return 'E';
+  return d > 0 ? '-' + d : '+' + Math.abs(d);
+}
+function diffCls(d) {
+  if (d > 0) return 'diff-pos';
+  if (d < 0) return 'diff-neg';
+  return 'diff-ev';
 }
 
 /* ---- Public leaderboard ---- */
@@ -463,6 +583,7 @@ function renderLeaderboard(root) {
         <div class="hero-title">Autumn Roll Up</div>
         <div class="hero-sub">Stanmore Golf Club · Thursday 5 November 2026</div>
         <div class="hero-meta">⛳ Individual Stableford · 95%</div>
+        <div style="margin-top:14px;"><a class="how-btn" onclick="showHowItWorks()">📖 How this works</a></div>
       </div>
       <div class="view">
         <div class="card">
@@ -495,11 +616,13 @@ function leaderboardTable(rows, isTV) {
       <td>${escH(r.name)}${r.isGuest?'<span class="gchip">G</span>':''}</td>
       <td class="c">${r.ph!=null?r.ph:'—'}</td>
       <td class="c">${r.thru||'—'}</td>
-      <td class="r pts">${r.total}</td>
+      <td class="c pts">${r.total}</td>
+      <td class="r diff ${diffCls(r.diff)}">${fmtDiff(r.diff)}</td>
     </tr>`).join('');
   return `<table class="${cls}">
-    <thead><tr><th>Pos</th><th>Player</th><th class="c">PH</th><th class="c">Thru</th><th class="r">Pts</th></tr></thead>
-    <tbody>${trs}</tbody></table>`;
+    <thead><tr><th>Pos</th><th>Player</th><th class="c">PH</th><th class="c">Thru</th><th class="c">Pts</th><th class="r">vs HCP</th></tr></thead>
+    <tbody>${trs}</tbody></table>
+    <div style="font-size:.68rem;color:var(--text-mut);text-align:right;margin-top:6px;font-style:italic;">vs HCP: -3 = 3 under handicap (2 pts/hole = level). Countback on ties. Unofficial — physical card is the official score.</div>`;
 }
 
 function guestLeaderboardCard(rows) {
@@ -908,7 +1031,7 @@ function navHTML(current) {
 function escH(s){ if (s == null) return ''; return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
 
 /* ---- Boot ---- */
-(async function(){ parseRoute(); await loadState(); renderAll(); })();
+(async function(){ parseRoute(); await loadState(); renderAll(); maybeAutoShowHowItWorks(); })();
 </script>
 </body>
 </html>

@@ -58,7 +58,9 @@
   .lb tbody td.r{text-align:right;font-family:'DM Mono',monospace;font-weight:700;}
   .lb tbody td.c{text-align:center;font-family:'DM Mono',monospace;font-weight:600;}
   .lb .pos{font-family:'Playfair Display',serif;font-weight:800;font-size:1.05rem;color:var(--gold);width:36px;}
-  .lb .pts{font-family:'Playfair Display',serif;font-weight:900;font-size:1.4rem;color:var(--gold-lt);}
+  .lb .pts{font-family:'DM Mono',monospace;font-weight:700;color:var(--text);font-size:.95rem;}
+  .lb .diff{font-family:'Playfair Display',serif;font-weight:900;font-size:1.4rem;}
+  .diff-pos{color:var(--green);} .diff-neg{color:var(--red);} .diff-ev{color:var(--gold-lt);}
   .gchip{display:inline-block;padding:1px 6px;border-radius:4px;background:rgba(96,165,250,.2);color:var(--blue);font-size:.6rem;font-weight:800;margin-left:5px;letter-spacing:.05em;vertical-align:middle;}
   .lb tr.top1 td{background:rgba(240,192,64,.08);}
   .lb tr.top1 .pos{font-size:1.3rem;color:var(--gold-lt);}
@@ -131,10 +133,11 @@
   .tv-lb td.r{text-align:right;font-family:'DM Mono',monospace;font-weight:700;}
   .tv-lb td.c{text-align:center;font-family:'DM Mono',monospace;font-weight:600;}
   .tv-lb .pos{font-family:'Playfair Display',serif;font-weight:800;color:var(--gold);font-size:1.3rem;}
-  .tv-lb .pts{font-family:'Playfair Display',serif;font-weight:900;color:var(--gold-lt);font-size:1.8rem;}
+  .tv-lb .pts{font-family:'DM Mono',monospace;font-weight:700;color:var(--text);font-size:1.1rem;}
+  .tv-lb .diff{font-family:'Playfair Display',serif;font-weight:900;font-size:1.8rem;}
   .tv-lb tr.top1 td{background:rgba(240,192,64,.1);}
   .tv-lb tr.top1 .pos{font-size:1.6rem;color:var(--gold-lt);}
-  .tv-lb tr.top1 .pts{font-size:2.2rem;}
+  .tv-lb tr.top1 .diff{font-size:2.4rem;}
   .tv-ntp-row{display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid rgba(255,255,255,.06);font-size:1rem;}
   .tv-ntp-hole{font-family:'Playfair Display',serif;font-weight:800;color:var(--gold);}
   .tv-ntp-name{font-weight:600;color:var(--text);}
@@ -353,10 +356,13 @@ function computeLeaderboard() {
     const pts = playerPts(p);
     all.push({ name:p.name, ph:pts.ph, thru:pts.thru, total:pts.total, isGuest:p.isGuest, perHole:pts.perHole });
   }));
+  // Diff vs level handicap = points above (positive) or below (negative) the par-net expectation.
+  all.forEach(r => { r.diff = r.total - (2 * r.thru); });
   all.sort((a,b) => {
-    if (b.total !== a.total) return b.total - a.total;
+    if (b.diff !== a.diff) return b.diff - a.diff;        // 1st: better vs handicap wins
+    if (b.total !== a.total) return b.total - a.total;    // 2nd: more total points wins
     const cb = (x,from,to) => x.perHole.slice(from,to+1).reduce((s,v)=>s+(v||0),0);
-    const d9 = cb(b,9,17)-cb(a,9,17); if (d9) return d9;
+    const d9 = cb(b,9,17)-cb(a,9,17); if (d9) return d9;  // 3rd+: countback
     const d6 = cb(b,12,17)-cb(a,12,17); if (d6) return d6;
     const d3 = cb(b,15,17)-cb(a,15,17); if (d3) return d3;
     const d2 = cb(b,16,17)-cb(a,16,17); if (d2) return d2;
@@ -365,6 +371,16 @@ function computeLeaderboard() {
   const played = all.filter(r => r.thru > 0);
   played.forEach((r,i) => r.pos = i+1);
   return played;
+}
+// Golf-style display: under handicap shows as negative (e.g. 3 pts ahead → "-3")
+function fmtDiff(d) {
+  if (d === 0) return 'E';
+  return d > 0 ? '-' + d : '+' + Math.abs(d);
+}
+function diffCls(d) {
+  if (d > 0) return 'diff-pos';
+  if (d < 0) return 'diff-neg';
+  return 'diff-ev';
 }
 
 /* ---- Public leaderboard ---- */
@@ -411,11 +427,13 @@ function leaderboardTable(rows, isTV) {
       <td>${escH(r.name)}${r.isGuest?'<span class="gchip">G</span>':''}</td>
       <td class="c">${r.ph!=null?r.ph:'—'}</td>
       <td class="c">${r.thru||'—'}</td>
-      <td class="r pts">${r.total}</td>
+      <td class="c pts">${r.total}</td>
+      <td class="r diff ${diffCls(r.diff)}">${fmtDiff(r.diff)}</td>
     </tr>`).join('');
   return `<table class="${cls}">
-    <thead><tr><th>Pos</th><th>Player</th><th class="c">PH</th><th class="c">Thru</th><th class="r">Pts</th></tr></thead>
-    <tbody>${trs}</tbody></table>`;
+    <thead><tr><th>Pos</th><th>Player</th><th class="c">PH</th><th class="c">Thru</th><th class="c">Pts</th><th class="r">vs HCP</th></tr></thead>
+    <tbody>${trs}</tbody></table>
+    <div style="font-size:.68rem;color:var(--text-mut);text-align:right;margin-top:6px;font-style:italic;">vs HCP: -3 = 3 under handicap (2 pts/hole = level). Countback on ties. Unofficial — physical card is the official score.</div>`;
 }
 
 function guestLeaderboardCard(rows) {
