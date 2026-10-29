@@ -254,6 +254,33 @@
   .sc-foot{font-size:.82rem;color:var(--text);text-align:right;}
   .sc-key{color:var(--text-mut);font-size:.72rem;}
   .tv-lb .sc-wrap .sc th,.tv-lb .sc-wrap .sc td{font-size:1rem;padding:7px 3px;}
+
+  /* Tee-time inputs in admin */
+  .tee-inp{background:rgba(0,0,0,.35);border:1px solid rgba(240,192,64,.35);border-radius:6px;color:var(--gold-lt);font-family:'Playfair Display',serif;font-weight:800;font-size:1.05rem;padding:3px 6px;color-scheme:dark;}
+  /* Groups board */
+  .gb-sec{font-size:.7rem;letter-spacing:.14em;text-transform:uppercase;font-weight:800;margin:14px 2px 8px;}
+  .gb-sec:first-child{margin-top:0;}
+  .gb-sec-inplay{color:var(--green);} .gb-sec-upcoming{color:var(--gold-lt);} .gb-sec-finished{color:var(--text-mut);}
+  .gb-grp{background:rgba(0,0,0,.25);border:1px solid rgba(255,255,255,.08);border-radius:10px;padding:10px 12px;margin-bottom:8px;}
+  .gb-inplay{border-color:rgba(74,222,128,.35);box-shadow:inset 3px 0 0 var(--green);}
+  .gb-finished{opacity:.75;}
+  .gb-h{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;}
+  .gb-time{font-family:'Playfair Display',serif;font-weight:800;color:var(--gold-lt);font-size:1.05rem;}
+  .gb-badge{font-size:.72rem;font-weight:800;padding:3px 9px;border-radius:12px;}
+  .gb-badge.live{background:rgba(74,222,128,.15);color:var(--green);}
+  .gb-badge.done{background:rgba(255,255,255,.08);color:var(--text-mut);}
+  .gb-badge.soon{background:rgba(240,192,64,.12);color:var(--gold-lt);}
+  .gb-p{display:grid;grid-template-columns:1fr 62px 58px 44px;gap:6px;align-items:center;padding:5px 0;border-top:1px solid rgba(255,255,255,.05);font-size:.88rem;}
+  .gb-names{color:var(--text-mut);font-size:.88rem;line-height:1.5;}
+  .gb-grp.tv .gb-names{font-size:1rem;}
+  .gb-t{font-family:'DM Mono',monospace;color:var(--text-mut);font-size:.78rem;text-align:right;}
+  .gb-pts{font-family:'DM Mono',monospace;font-weight:700;text-align:right;}
+  .gb-d{font-family:'Playfair Display',serif;font-weight:900;font-size:1.1rem;text-align:right;}
+  .gb-tvgrid{display:grid;grid-template-columns:repeat(2,1fr);gap:0 14px;}
+  .gb-tvgrid .gb-sec{grid-column:1/-1;font-size:.85rem;}
+  .gb-grp.tv .gb-p{font-size:1.05rem;grid-template-columns:1fr 80px 70px 54px;}
+  .gb-grp.tv .gb-time{font-size:1.25rem;}
+  .gb-grp.tv .gb-d{font-size:1.35rem;}
 </style>
 </head>
 <body>
@@ -327,10 +354,11 @@ function showHowItWorks() {
           <h3>🧑‍💼 Admin — Alex / organiser</h3>
           <ol>
             <li>Open the app, tap <strong>Admin</strong> (password <code>Davospurs</code>)</li>
-            <li>For each of the 8 groups, type the <strong>player name</strong> and <strong>handicap index</strong> (just once, morning of event)</li>
+            <li>For each tee time, type the <strong>player name</strong> and <strong>handicap index</strong> (just once, morning of event)</li>
             <li>Tick <strong>M · Yellow</strong> or <strong>W · Red</strong> for the tee</li>
             <li>Tick <strong>Guest</strong> for anyone who's a guest (they go in the Best Guest sub-table)</li>
-            <li>Tap <strong>"Show scorer link + QR"</strong> once — one link covers every group</li>
+            <li>Need another group? Tap <strong>＋ Add tee time</strong> at the bottom — tap any time to change it</li>
+          <li>Tap <strong>"Show scorer link + QR"</strong> once — one link covers every group</li>
             <li>Share the QR / link to the designated scorers (text, WhatsApp, print it, whatever)</li>
           </ol>
         </div>
@@ -650,6 +678,7 @@ function renderLeaderboard(root) {
           <div class="card-h">🏆 Overall Leaderboard</div>
           ${leaderboardTable(rows, false)}
         </div>
+        ${groupsCard()}
         ${guestLeaderboardCard(rows)}
         ${ntpCard()}
         <div style="text-align:center;color:var(--text-mut);font-size:.75rem;margin-top:12px;">
@@ -721,6 +750,45 @@ function scorecardHTML(r) {
     ${half(0)}${half(9)}
     <div class="sc-foot"><b>${r.total} pts</b> thru ${r.thru} · <span class="${diffCls(r.diff)}">${fmtDiff(r.diff)}</span> vs handicap · <span class="sc-key">• = shot received</span></div>
   </div>`;
+}
+
+function groupStatusList() {
+  const out = [];
+  _state.groups.forEach(g => {
+    const named = g.players.filter(p => p.name);
+    if (!named.length) return;
+    const players = named.map(p => { const s = playerPts(p); return { name:p.name, isGuest:p.isGuest, thru:s.thru, total:s.total, diff:s.total - 2*s.thru }; });
+    const maxThru = Math.max(...players.map(x => x.thru));
+    const status = maxThru === 0 ? 'upcoming' : (players.every(x => x.thru === 18) ? 'finished' : 'inplay');
+    out.push({ teeTime:g.teeTime, players, maxThru, status });
+  });
+  const rank = { inplay:0, upcoming:1, finished:2 };
+  out.sort((a,b) => rank[a.status] - rank[b.status] || a.teeTime.localeCompare(b.teeTime));
+  return out;
+}
+function groupsBoardHTML(isTV) {
+  const list = groupStatusList();
+  if (!list.length) return `<div style="text-align:center;color:var(--text-mut);padding:16px;font-style:italic;">No groups set up yet.</div>`;
+  const label = { inplay:'On the course', upcoming:'Still to tee off', finished:'Finished' };
+  let lastStatus = null, out = '';
+  list.forEach(g => {
+    if (g.status !== lastStatus) { out += `<div class="gb-sec gb-sec-${g.status}">${label[g.status]}</div>`; lastStatus = g.status; }
+    const badge = g.status === 'inplay' ? `<span class="gb-badge live">● Thru ${g.maxThru}</span>`
+                : g.status === 'finished' ? `<span class="gb-badge done">✓ Finished</span>`
+                : `<span class="gb-badge soon">Tees off ${g.teeTime}</span>`;
+    const rows = g.status === 'upcoming'
+      ? `<div class="gb-names">${g.players.map(x => escH(x.name) + (x.isGuest?'<span class="gchip">G</span>':'')).join(' · ')}</div>`
+      : g.players.map(x => `<div class="gb-p"><span class="gb-n">${escH(x.name)}${x.isGuest?'<span class="gchip">G</span>':''}</span>
+           <span class="gb-t">${x.thru ? 'Thru ' + x.thru : '—'}</span>
+           <span class="gb-pts">${x.total} pts</span>
+           <span class="gb-d ${diffCls(x.diff)}">${fmtDiff(x.diff)}</span></div>`).join('');
+    out += `<div class="gb-grp gb-${g.status}${isTV?' tv':''}">
+      <div class="gb-h"><span class="gb-time">⛳ ${g.teeTime}</span>${badge}</div>${rows}</div>`;
+  });
+  return `<div class="gb${isTV?' gb-tvgrid':''}">${out}</div>`;
+}
+function groupsCard() {
+  return `<div class="card"><div class="card-h">🕐 Tee Times &amp; Groups</div>${groupsBoardHTML(false)}</div>`;
 }
 
 function guestLeaderboardCard(rows) {
@@ -956,7 +1024,8 @@ function renderAdmin(root) {
       </div>`).join('');
     return `<div class="grp">
       <div class="grp-h">
-        <div class="grp-tee">⛳ ${g.teeTime}</div>
+        <div class="grp-tee">⛳ <input class="tee-inp" type="time" value="${g.teeTime}" onchange="setTeeTime(${gi},this.value)"></div>
+        ${groupIsEmpty(g) ? `<button class="btn btn-ghost" style="font-size:.72rem;padding:5px 10px;" onclick="removeGroup(${gi})">✕ Remove tee time</button>` : ''}
       </div>
       ${slotRows}
       <div class="grp-share">
@@ -984,6 +1053,8 @@ function renderAdmin(root) {
           <div class="card-h">👥 Groups & Players</div>
           <div style="font-size:.78rem;color:var(--text-mut);margin-bottom:12px;">Enter names + HI on the morning. No need to pick scorers here — each group's scorer picks themselves when they open the scorer link.</div>
           ${groupsHTML}
+          <button class="btn btn-out" style="width:100%;margin-top:4px;" onclick="addGroup()">＋ Add tee time</button>
+          <div style="font-size:.72rem;color:var(--text-mut);margin-top:6px;text-align:center;">New tee time is set 8 minutes after the last one — tap the time to change it. Empty tee times can be removed.</div>
         </div>
         <div class="card">
           <div class="card-h">🎯 Nearest the Pin (Par 3s)</div>
@@ -1020,6 +1091,29 @@ function updPlayer(gi, si, key, val) {
   else p[key] = val;
   debouncedSave();
 }
+function groupIsEmpty(g) { return g.players.every(p => !p.name && p.scores.every(s => s == null)); }
+function sortGroups() { _state.groups.sort((a,b) => (a.teeTime||'').localeCompare(b.teeTime||'')); }
+function setTeeTime(gi, val) {
+  if (!val) return;
+  _state.groups[gi].teeTime = val;
+  sortGroups(); saveState(); renderAdmin(document.getElementById('root'));
+}
+function addGroup() {
+  const last = _state.groups.map(g => g.teeTime).sort().pop() || '09:52';
+  const [hh, mm] = last.split(':').map(Number);
+  const t = hh * 60 + mm + 8;
+  const time = String(Math.floor(t / 60) % 24).padStart(2,'0') + ':' + String(t % 60).padStart(2,'0');
+  const nextId = 'g' + (Math.max(-1, ..._state.groups.map(g => parseInt(g.id.slice(1)) || 0)) + 1);
+  _state.groups.push({ id: nextId, teeTime: time, scorerSlot: 0,
+    players: [0,1,2,3].map(() => ({ name:'', hi:null, gender:'m', isGuest:false, isPro:false, scores:new Array(18).fill(null) })) });
+  sortGroups(); saveState(); renderAdmin(document.getElementById('root'));
+}
+function removeGroup(gi) {
+  const g = _state.groups[gi];
+  if (!groupIsEmpty(g)) { alert('Clear the names and scores in this group first.'); return; }
+  if (!confirm('Remove the ' + g.teeTime + ' tee time?')) return;
+  _state.groups.splice(gi, 1); saveState(); renderAdmin(document.getElementById('root'));
+}
 function setScorer(gi, slot) { _state.groups[gi].scorerSlot = slot; debouncedSave(); }
 function clearGroup(gi) {
   if (!confirm('Clear scores for this group?')) return;
@@ -1054,7 +1148,8 @@ function renderTV(root) {
   const guests = rows.filter(r => r.isGuest).map((r,i)=>({...r,pos:i+1}));
   const panels = [
     { title:'Overall Leaderboard — Top 15', rows: rows.slice(0,15) },
-    { title:'Full Field', rows: rows }
+    { title:'Full Field', rows: rows },
+    { title:'Tee Times & Groups', groups: true }
   ];
   const panel = panels[_tvRotateIdx % panels.length];
 
@@ -1075,7 +1170,7 @@ function renderTV(root) {
     <div class="tv-grid">
       <div class="tv-main">
         <h3 style="font-family:'Playfair Display',serif;color:var(--gold-lt);margin-bottom:14px;font-size:1.4rem;">${escH(panel.title)}</h3>
-        ${leaderboardTable(panel.rows, true)}
+        ${panel.groups ? groupsBoardHTML(true) : leaderboardTable(panel.rows, true)}
       </div>
       <div class="tv-side">
         <div class="tv-panel">
