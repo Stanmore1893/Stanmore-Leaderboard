@@ -282,10 +282,12 @@ const SB_HEADERS = { apikey: SB_KEY, Authorization: 'Bearer ' + SB_KEY, 'Content
 const COURSE = {
   par:      [4,4,4,3,4,3,4,3,4, 3,5,4,4,4,4,4,3,5],
   siMen:    [14,4,8,16,2,18,12,10,6, 17,5,7,1,15,3,11,9,13],
-  siLadies: [12,4,8,18,2,16,10,14,6, 17,7,1,15,5,11,13,9,3], // back 9 last SI inferred — verify
+  parLadies: [4,5,4,3,4,3,4,3,4, 3,5,4,5,4,5,4,3,5], // ladies par 72: par 5s on 2, 11, 13, 15, 18 (confirmed by Alex)
+  siLadies: [12,4,8,18,2,16,10,14,6, 17,7,1,3,15,5,11,13,9],
   tees: {
+    // Men off Yellow: 68.8 / 127, par 69.  Women off Red (WOMEN's rating): 72.1 / 127, par 72.
     yellow: { name:'Yellow', total:5758, cr:68.8, slope:127, gender:'m' },
-    red:    { name:'Red',    total:5385, cr:66.8, slope:121, gender:'w' }
+    red:    { name:'Red',    total:5385, cr:72.1, slope:127, gender:'w' }
   }
 };
 const PAR_TOTAL = COURSE.par.reduce((a,b)=>a+b,0);
@@ -372,11 +374,15 @@ function _initGroups() {
 /* ---- Handicap maths ---- */
 const teeKey = p => p.gender === 'w' ? 'red' : 'yellow';
 const siArr  = p => p.gender === 'w' ? COURSE.siLadies : COURSE.siMen;
+const parArr = p => p.gender === 'w' ? COURSE.parLadies : COURSE.par;
+// WHS: Course Handicap = HI x Slope/113 + (CR - Par); Playing Handicap = Course Handicap x 95%,
+// rounded once at the end (Course Handicap is not rounded before the allowance).
 function calcPH(p) {
   if (p.isPro) return 0;
   if (p.hi == null || isNaN(p.hi)) return null;
   const tee = COURSE.tees[teeKey(p)];
-  return Math.round((p.hi * (tee.slope/113) + (tee.cr - PAR_TOTAL)) * 0.95);
+  const par = parArr(p).reduce((a,b)=>a+b,0);
+  return Math.round((p.hi * (tee.slope/113) + (tee.cr - par)) * 0.95);
 }
 function shotsOnHole(ph, holeIdx, p) {
   if (ph == null || ph <= 0) return 0;
@@ -396,7 +402,7 @@ function playerPts(p) {
   for (let i=0; i<18; i++) {
     const g = p.scores[i];
     if (g != null && g > 0) {
-      const pts = stbPts(g, COURSE.par[i], shotsOnHole(ph, i, p));
+      const pts = stbPts(g, parArr(p)[i], shotsOnHole(ph, i, p));
       perHole.push(pts); total += pts; thru = i+1;
     } else perHole.push(null);
   }
@@ -539,6 +545,7 @@ function ptsCls(v) {
 }
 function scorecardHTML(r) {
   const si = r.gender === 'w' ? COURSE.siLadies : COURSE.siMen;
+  const par = r.gender === 'w' ? COURSE.parLadies : COURSE.par;
   const sum = a => a.reduce((s,v)=>s+(v||0),0);
   const half = from => {
     const idx = [0,1,2,3,4,5,6,7,8].map(k => from + k);
@@ -547,7 +554,7 @@ function scorecardHTML(r) {
     const any = gross.some(v => v != null);
     return `<table class="sc">
       <tr class="sc-h"><th>Hole</th>${idx.map(i=>`<th>${i+1}</th>`).join('')}<th>${from===0?'Out':'In'}</th></tr>
-      <tr class="sc-par"><td>Par</td>${idx.map(i=>`<td>${COURSE.par[i]}</td>`).join('')}<td>${sum(idx.map(i=>COURSE.par[i]))}</td></tr>
+      <tr class="sc-par"><td>Par</td>${idx.map(i=>`<td>${par[i]}</td>`).join('')}<td>${sum(idx.map(i=>par[i]))}</td></tr>
       <tr class="sc-si"><td>SI</td>${idx.map(i=>`<td>${si[i]}${r.shots[i]?`<span class="sc-dot">${'•'.repeat(r.shots[i])}</span>`:''}</td>`).join('')}<td></td></tr>
       <tr class="sc-g"><td>Gross</td>${idx.map(i=>`<td>${r.scores[i]!=null?r.scores[i]:''}</td>`).join('')}<td>${any?sum(gross):''}</td></tr>
       <tr class="sc-p"><td>Pts</td>${idx.map(i=>`<td class="${ptsCls(r.perHole[i])}">${r.perHole[i]!=null?r.perHole[i]:''}</td>`).join('')}<td>${any?sum(pts):''}</td></tr>
@@ -688,7 +695,7 @@ function renderPlayerPicker(root, grp) {
 }
 
 function renderScoreEntry(root, grp) {
-  const h = _scoreHoleIdx, par = COURSE.par[h], isPar3 = par === 3;
+  const h = _scoreHoleIdx, par = COURSE.par[h], isPar3 = PAR3_HOLES.includes(h+1);
 
   const holeGrid = [0,1].map(half => `
     <div class="se-grid">${[0,1,2,3,4,5,6,7,8].map(k => {
@@ -704,12 +711,14 @@ function renderScoreEntry(root, grp) {
     const ph = calcPH(p);
     const shots = shotsOnHole(ph, h, p);
     const g = p.scores[h];
-    const pts = g ? stbPts(g, par, shots) : null;
+    const myPar = parArr(p)[h], mySi = siArr(p)[h];
+    const pts = g ? stbPts(g, myPar, shots) : null;
     const dots = shots > 0 ? '•'.repeat(shots) : '';
+    const ladyNote = p.gender === 'w' ? ` · Red: par ${myPar}, SI ${mySi}` : '';
     return `<div class="se-player">
       <div>
         <div class="se-pname">${escH(p.name)}${p.isGuest?'<span class="gchip">G</span>':''}</div>
-        <div class="se-psub">PH ${ph!=null?ph:'—'}${dots?` · <span class="se-pdots">${dots}</span>`:''}</div>
+        <div class="se-psub">PH ${ph!=null?ph:'—'}${dots?` · <span class="se-pdots">${dots}</span>`:''}${ladyNote}</div>
       </div>
       <div class="se-pscore">
         <input class="se-inp" inputmode="numeric" pattern="[0-9]*" maxlength="2"
@@ -751,7 +760,7 @@ function renderScoreEntry(root, grp) {
         ${holeGrid}
         <div class="se-hole">
           <div class="se-hole-n">${h+1}</div>
-          <div class="se-hole-meta">Par ${par} · SI ${COURSE.siMen[h]}${isPar3?' · 🎯 Par 3':''}</div>
+          <div class="se-hole-meta">Yellow: par ${par} · SI ${COURSE.siMen[h]}${isPar3?' · 🎯 Par 3':''}</div>
         </div>
         ${playerCards || `<div style="text-align:center;padding:20px;color:var(--text-mut);font-style:italic;">No players set up for this group yet.</div>`}
         ${ntpBlock}
@@ -773,8 +782,8 @@ function scorerInput(el) {
   el.value = v;
   grp.players[slot].scores[_scoreHoleIdx] = v ? +v : null;
   const row = el.closest('.se-player');
-  const par = COURSE.par[_scoreHoleIdx];
   const p = grp.players[slot];
+  const par = parArr(p)[_scoreHoleIdx];
   const shots = shotsOnHole(calcPH(p), _scoreHoleIdx, p);
   const pts = v ? stbPts(+v, par, shots) : null;
   row.querySelector('.se-pts').textContent = pts!=null?pts:'—';
