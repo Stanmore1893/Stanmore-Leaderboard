@@ -281,6 +281,8 @@
   .gb-grp.tv .gb-p{font-size:1.05rem;grid-template-columns:1fr 80px 70px 54px;}
   .gb-grp.tv .gb-time{font-size:1.25rem;}
   .gb-grp.tv .gb-d{font-size:1.35rem;}
+  .gb-ph{display:inline-block;margin-left:6px;padding:0 6px;border-radius:4px;background:rgba(240,192,64,.14);color:var(--gold-lt);font-family:'DM Mono',monospace;font-size:.74rem;font-weight:700;vertical-align:middle;}
+  .gb-grp.tv .gb-ph{font-size:.85rem;}
 </style>
 </head>
 <body>
@@ -764,7 +766,7 @@ function groupStatusList() {
   _state.groups.forEach(g => {
     const named = g.players.filter(p => p.name);
     if (!named.length) return;
-    const players = named.map(p => { const s = playerPts(p); return { name:p.name, isGuest:p.isGuest, thru:s.thru, total:s.total, diff:s.total - 2*s.thru }; });
+    const players = named.map(p => { const s = playerPts(p); return { name:p.name, isGuest:p.isGuest, ph:s.ph, thru:s.thru, total:s.total, diff:s.total - 2*s.thru }; });
     const maxThru = Math.max(...players.map(x => x.thru));
     const status = maxThru === 0 ? 'upcoming' : (players.every(x => x.thru === 18) ? 'finished' : 'inplay');
     out.push({ teeTime:g.teeTime, players, maxThru, status });
@@ -773,6 +775,7 @@ function groupStatusList() {
   out.sort((a,b) => rank[a.status] - rank[b.status] || a.teeTime.localeCompare(b.teeTime));
   return out;
 }
+function phTag(ph) { return ph != null ? `<span class="gb-ph">${ph}</span>` : ''; }
 function groupsBoardHTML(isTV) {
   const list = groupStatusList();
   if (!list.length) return `<div style="text-align:center;color:var(--text-mut);padding:16px;font-style:italic;">No groups set up yet.</div>`;
@@ -784,8 +787,8 @@ function groupsBoardHTML(isTV) {
                 : g.status === 'finished' ? `<span class="gb-badge done">✓ Finished</span>`
                 : `<span class="gb-badge soon">Tees off ${g.teeTime}</span>`;
     const rows = g.status === 'upcoming'
-      ? `<div class="gb-names">${g.players.map(x => escH(x.name) + (x.isGuest?'<span class="gchip">G</span>':'')).join(' · ')}</div>`
-      : g.players.map(x => `<div class="gb-p"><span class="gb-n">${escH(x.name)}${x.isGuest?'<span class="gchip">G</span>':''}</span>
+      ? `<div class="gb-names">${g.players.map(x => escH(x.name) + phTag(x.ph) + (x.isGuest?'<span class="gchip">G</span>':'')).join(' · ')}</div>`
+      : g.players.map(x => `<div class="gb-p"><span class="gb-n">${escH(x.name)}${phTag(x.ph)}${x.isGuest?'<span class="gchip">G</span>':''}</span>
            <span class="gb-t">${x.thru ? 'Thru ' + x.thru : '—'}</span>
            <span class="gb-pts">${x.total} pts</span>
            <span class="gb-d ${diffCls(x.diff)}">${fmtDiff(x.diff)}</span></div>`).join('');
@@ -834,7 +837,7 @@ function renderScorer(root) {
 
 function renderGroupPicker(root) {
   const cards = _state.groups.map(g => {
-    const names = g.players.filter(p => p.name).map(p => escH(p.name));
+    const names = g.players.filter(p => p.name).map(p => escH(p.name) + phTag(calcPH(p)));
     const body = names.length ? `<div class="pick-names">${names.join(' · ')}</div>` : `<div class="pick-empty">No players set up yet</div>`;
     return `<div class="pick-card" onclick="pickGroup('${g.id}')">
       <div class="pick-tee">⛳ ${g.teeTime}</div>
